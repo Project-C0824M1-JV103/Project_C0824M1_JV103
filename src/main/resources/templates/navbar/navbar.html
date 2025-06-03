@@ -1,73 +1,178 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+<html
+  lang="en"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head>
+    <meta charset="UTF-8" />
     <title>Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" th:href="@{navbar.css}">
-</head>
-<header class="header">
-    <div class="header-container">
-        <div class="logo">
-            <img src="https://via.placeholder.com/40x40" alt="Logo">
-            <span>SHOP ĐIỆN THOẠI</span>
-        </div>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/navbar.css}" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-container">
+        <!-- Top bar with logo, search, and user actions -->
+        <div>
+          <div class="logo">
+            <img
+              src="https://ideogram.ai/assets/progressive-image/balanced/response/jJ_0S-HwQPqKmnTgESV2fQ"
+              alt="Logo"
+            />
+            <span>TPQDT Phone</span>
+          </div>
 
-        <div class="search-bar">
-            <input type="text" placeholder="Tìm kiếm điện thoại, phụ kiện...">
-            <button>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                </svg>
+          <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm điện thoại, phụ kiện..." />
+            <button type="button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+                />
+              </svg>
             </button>
-        </div>
+          </div>
 
-        <div class="user-actions">
+          <div class="user-actions">
             <div sec:authorize="isAnonymous()">
-                <button class="login-btn" onclick="window.location.href='/login'">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-                    </svg>
-                    Đăng nhập
-                </button>
+              <button class="login-btn" onclick="window.location.href='/login'">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"
+                  />
+                </svg>
+                Đăng xuất
+              </button>
             </div>
 
             <div sec:authorize="isAuthenticated()">
-                <form th:action="@{/logout}" method="post" style="display: inline;">
-                    <button type="submit" class="login-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             viewBox="0 0 16 16">
-                            <path fill-rule="evenodd"
-                                  d="M10 15a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2h-1V1H3v14h6v-2h1v2z"/>
-                            <path fill-rule="evenodd"
-                                  d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L14.293 8l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                            <path fill-rule="evenodd"
-                                  d="M5 8a.5.5 0 0 0 .5.5H14.5a.5.5 0 0 0 0-1H5.5A.5.5 0 0 0 5 8z"/>
-                        </svg>
-                        Đăng xuất
-                    </button>
-                </form>
+              <form
+                th:action="@{/logout}"
+                method="post"
+                style="display: inline"
+              >
+                <button type="submit" class="login-btn">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 15a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2h-1V1H3v14h6v-2h1v2z"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L14.293 8l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M5 8a.5.5 0 0 0 .5.5H14.5a.5.5 0 0 0 0-1H5.5A.5.5 0 0 0 5 8z"
+                    />
+                  </svg>
+                  Đăng xuất
+                </button>
+              </form>
             </div>
-            <button class="cart-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-                </svg>
-                Giỏ hàng (0)
-            </button>
+
+          </div>
         </div>
 
+        <!-- Navigation menu -->
         <nav class="nav-container">
-            <div class="nav-item">Trang chủ</div>
-            <div class="nav-item">Điện thoại</div>
-            <div class="nav-item">Phụ kiện</div>
-            <div class="nav-item">Khuyến mãi</div>
-            <div class="nav-item">Tin tức</div>
-            <div class="nav-item">Hỗ trợ</div>
+          <div class="nav-item active" onclick="window.location.href='/'">
+            Trang chủ
+          </div>
+          <div class="nav-item" onclick="window.location.href='/phones'">
+            Điện thoại
+          </div>
+          <div class="nav-item" onclick="window.location.href='/accessories'">
+            Phụ kiện
+          </div>
+          <div class="nav-item" onclick="window.location.href='/promotions'">
+            Khuyến mãi
+          </div>
+          <div class="nav-item" onclick="window.location.href='/news'">
+            Tin tức
+          </div>
+          <div class="nav-item" onclick="window.location.href='/support'">
+            Hỗ trợ
+          </div>
         </nav>
-    </div>
-</header>
-<br>
-<body>
-</body>
+      </div>
+    </header>
+
+    <!-- JavaScript for navbar functionality -->
+    <script>
+      // Search functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.querySelector(".search-bar input");
+        const searchButton = document.querySelector(".search-bar button");
+
+        searchButton.addEventListener("click", function () {
+          const searchTerm = searchInput.value.trim();
+          if (searchTerm) {
+            // Implement search functionality here
+            console.log("Searching for:", searchTerm);
+            // window.location.href = `/search?q=${encodeURIComponent(searchTerm)}`;
+          }
+        });
+
+        searchInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            searchButton.click();
+          }
+        });
+
+        // Navigation active state
+        const navItems = document.querySelectorAll(".nav-item");
+        const currentPath = window.location.pathname;
+
+        navItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            navItems.forEach((nav) => nav.classList.remove("active"));
+            this.classList.add("active");
+          });
+        });
+
+        // Scroll effect for navbar
+        let lastScrollTop = 0;
+        window.addEventListener("scroll", function () {
+          const header = document.querySelector(".header");
+          const scrollTop =
+            window.pageYOffset || document.documentElement.scrollTop;
+
+          if (scrollTop > 50) {
+            header.classList.add("scrolled");
+          } else {
+            header.classList.remove("scrolled");
+          }
+
+          lastScrollTop = scrollTop;
+        });
+      });
+    </script>
+  </body>
 </html>

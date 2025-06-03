@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<html
-  lang="en"
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns="http://www.w3.org/1999/html"
->
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
   <head>
     <meta charset="UTF-8" />
     <title>Employee Management</title>
@@ -14,10 +10,7 @@
       rel="stylesheet"
     />
     <!-- Bootstrap Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
 
     <style>
       body {
@@ -447,14 +440,9 @@
 
     <script>
       let selectedEmployees = [];
-
-      // Initialize event listeners
       document.addEventListener("DOMContentLoaded", function () {
         console.log("DOM loaded");
-
-        // Add event listener for single delete buttons using event delegation
         document.body.addEventListener("click", function (e) {
-          // Handle single delete button
           if (e.target.closest(".delete-single-btn")) {
             console.log("Delete single button clicked");
             const btn = e.target.closest(".delete-single-btn");
@@ -471,15 +459,11 @@
             );
             return;
           }
-
-          // Handle delete selected button
           if (e.target.id === "deleteSelectedBtn" && !e.target.disabled) {
             console.log("Delete selected button clicked");
             showDeleteModal();
             return;
           }
-
-          // Handle modal close button
           if (
             e.target.closest(".btn-close") ||
             e.target.closest('[data-bs-dismiss="modal"]')
