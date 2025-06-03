@@ -1,0 +1,42 @@
+body {
+    background-color: #eaeaea;
+}
+.lookup-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.lookup-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    padding: 40px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+.lookup-form {
+    max-width: 400px;
+    width: 100%;
+}
+.lookup-input {
+    border-radius: 50px;
+    padding: 12px 20px;
+    border: 1px solid #ccc;
+}
+.lookup-button {
+    width: 100%;
+    border-radius: 50px;
+    padding: 12px;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+}
+.lookup-button:hover {
+    background-color: #2f6ad9;
+}
+.lookup-img {
+    max-width: 400px;
+    width: 100%;
+}

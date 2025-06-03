@@ -1,10 +1,320 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Cửa hàng điện thoại</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{homePage.css}">
 </head>
+<div th:insert="~{navbar/navbar}"></div>
 <body>
+<!--body 1-->
+<div class="main-wrapper">
+    <div class="image-container">
+        <img class="banner" src="https://cdnv2.tgdd.vn/mwg-static/dmx/News/Thumb/1481870/app638690108072514856.jpg"
+             alt="Điện thoại">
 
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="badge">TRẢ GÓP 0%</div>
+                <div class="hot-deal">Hot Deal</div>
+                <img src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
+                     alt="iphone 15">
+                <h6>iPhone 15 Pro Max 256GB</h6>
+                <p class="price">29.990.000₫</p>
+                <p class="old-price">30.990.000₫ -3%</p>
+                <p class="rating">★ 4.9 | Đã bán 48,9k</p>
+                <button class="buy-btn">Mua ngay</button>
+            </div>
+            <div class="product-card">
+                <div class="badge">TRẢ GÓP 0%</div>
+                <div class="hot-deal">Hot Deal</div>
+                <img src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/s/ss-s24-ultra-xam-222_1.png"
+                     alt="SamSung Galaxy S24">
+                <h6>Samsung Galaxy S24 Ultra 512GB</h6>
+                <p class="price">25.990.000₫</p>
+                <p class="old-price">37.490.000₫ -33%</p>
+                <p class="rating">★ 4.9 | Đã bán 28,3k</p>
+                <button class="buy-btn">Mua ngay</button>
+            </div>
+            <div class="product-card">
+                <div class="badge">TRẢ GÓP 0%</div>
+                <div class="hot-deal">Hot Deal</div>
+                <img src="https://cdn.tgdd.vn/Products/Images/42/313889/xiaomi-14-ultra-white-thumbnew-600x600.jpg"
+                     alt="Xiaomi 14">
+                <h6>Xiaomi 14 Ultra 512GB</h6>
+                <p class="price">6.990.000₫</p>
+                <p class="old-price">8.390.000₫ -16%</p>
+                <p class="rating">★ 5.0 | Đã bán 15,2k</p>
+                <button class="buy-btn">Mua ngay</button>
+            </div>
+            <div class="product-card">
+                <div class="badge">TRẢ GÓP 0%</div>
+                <div class="hot-deal">Hot Deal</div>
+                <img src="https://www.duchuymobile.com/images/detailed/65/realme-gt5-pro-cam.jpg" alt="Realme GT5">
+                <h6>Realme GT5 Pro 16GB/512GB</h6>
+                <p class="price">24.90.000₫</p>
+                <p class="old-price">32.990.000₫ -25%</p>
+                <p class="rating">★ 4.9 | Đã bán 9,2k</p>
+                <button class="buy-btn">Mua ngay</button>
+            </div>
+            <div class="product-card">
+                <div class="badge">TRẢ GÓP 0%</div>
+                <div class="hot-deal">Hot Deal</div>
+                <img src="https://cdn.xtmobile.vn/vnt_upload/product/01_2024/thumbs/(500x500)_crop_oppo-find-x7-12gb-256gb-xtmobile.png"
+                     alt="OPPO Find X7">
+                <h6>OPPO Find X7 Ultra 256GB</h6>
+                <p class="price">12.190.000₫</p>
+                <p class="old-price">15.990.000₫ -30%</p>
+                <p class="rating">★ 4.9 | Đã bán 1,4k</p>
+                <button class="buy-btn">Mua ngay</button>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!--body 2-->
+    <!-- Banner -->
+    <div class="position-relative banner-container d-flex overflow-hidden mb-4" id="bannerSlider" style="height: 200px">
+        <button class="nav-button nav-left" onclick="prevSlide()"><i class="bi bi-chevron-left"></i></button>
+        <div class="d-flex w-100 transition" id="bannerTrack" style="width: auto;">
+            <div class="banner-slide" style="flex: 0 0 50%; height: 200px;">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGDFc6weHb7mLZToyko2MrNjQq9rT2nKEQVQ&s"
+                     alt="Hisense Banner" class="img-fluid banner-img rounded">
+            </div>
+            <div class="banner-slide" style="flex: 0 0 50%;height: 200px;">
+                <img src="https://cdn11.dienmaycholon.vn/filewebdmclnew/DMCL21/Picture//Tm/Tm_picture_2915/giam-5_mobi_298_800.png.webp"
+                     alt="Panasonic Banner" class="img-fluid banner-img rounded">
+            </div>
+            <div class="banner-slide" style="flex: 0 0 50%;height: 200px;">
+                <img src="https://news.khangz.com/wp-content/uploads/2023/12/sale-2-1-750x418.jpg"
+                     alt="Panasonic Banner" class="img-fluid banner-img rounded">
+            </div>
+            <div class="banner-slide" style="flex: 0 0 50%;height: 200px;">
+                <img src="https://cdn.tgdd.vn/Files/2022/03/22/1421763/dienthoaigiamgia_1280x720-800-resize.jpg"
+                     alt="Panasonic Banner" class="img-fluid banner-img rounded">
+            </div>
+        </div>
+        <button class="nav-button nav-right" onclick="nextSlide()"><i class="bi bi-chevron-right"></i></button>
+    </div>
+
+
+    <div class="card-header-custom">
+        <!-- Thanh lọc -->
+        <div class="filter-bar">
+            <button class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-funnel"></i> Lọc
+            </button>
+            <button class="btn btn-outline-secondary btn-sm">SAMSUNG</button>
+            <button class="btn btn-outline-secondary btn-sm">IPHONE</button>
+        </div>
+
+        <!-- Nút sắp xếp -->
+        <div class="mb-4">
+            <a>Sắp xếp theo:</a>
+            <button class="btn btn-sm">Nổi bật</button>
+            <button class="btn btn-sm">Bán chạy</button>
+            <button class="btn btn-sm">Giảm giá</button>
+            <button class="btn btn-sm">Mới</button>
+            <button class="btn btn-sm">Giá</button>
+        </div>
+    </div>
+
+    <!-- Danh sách sản phẩm -->
+    <div class="card-footer-custom">
+        <div class="row row-cols-1 row-cols-md-5">
+
+            <!-- Sản phẩm -->
+            <div class="col custom-padding">
+                <div class="card h-100 position-relative">
+                    <img src="https://cdn.tgdd.vn/Products/Images/42/336625/realme-14-5g-xam-thumb-600x600.jpg"
+                         class="card-img-top" alt="Panasonic">
+                    <div class="card-body">
+                        <h6 class="card-title">iPhone 15 128GB</h6>
+                        <p class="price">11.990.000₫</p>
+                        <p class="rating">★ 4.9 | Đã bán 78,4k</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col custom-padding">
+                <div class="card h-100 position-relative">
+                    <img src="https://cdn.tgdd.vn/Products/Images/42/305886/samsung-galaxy-a24-green-thumb-600x600.jpg"
+                         class="card-img-top" alt="Daikin">
+                    <div class="card-body">
+                        <h6 class="card-title">Samsung Galaxy Z Fold5 256GB</h6>
+                        <p class="price">9.990.000₫</p>
+                        <p class="rating">★ 4.9 | Đã bán 57,4k</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col custom-padding">
+                <div class="card h-100 position-relative">
+                    <img src="https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/42/333281/realme-note-60x-4gb-191224-040048-245-600x600.jpg"
+                         class="card-img-top" alt="LG">
+                    <div class="card-body">
+                        <h6 class="card-title">Xiaomi Redmi Note 13 Pro+ 5G</h6>
+                        <p class="price">11.490.000₫</p>
+                        <p class="rating">★ 4.9 | Đã bán 5,8k</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col custom-padding">
+                <div class="card h-100 position-relative">
+                    <img src="https://cdn1.viettelstore.vn/images/Product/ProductImage/medium/A36.Pur1746084263.jpg"
+                         class="card-img-top" alt="Panasonic">
+                    <div class="card-body">
+                        <h6 class="card-title">OPPO Reno11 F 5G</h6>
+                        <p class="price">11.990.000₫</p>
+                        <p class="rating">★ 4.9 | Đã bán 78,4k</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col custom-padding">
+                <div class="card h-100 position-relative">
+                    <img src="https://cdn.tgdd.vn/Products/Images/42/321434/realme-note-50-black-thumb-600x600.jpg"
+                         class="card-img-top" alt="Panasonic">
+                    <div class="card-body">
+                        <h6 class="card-title">Realme C67 5G</h6>
+                        <p class="price">11.990.000₫</p>
+                        <p class="rating">★ 4.9 | Đã bán 78,4k</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!--footer-->
+<footer class="bg-white text-black mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <h5>Tổng đài hỗ trợ</h5>
+                <p>Kỹ thuật: <a href="/tel:1900123456" class="custom-link-phone">1900 123 456</a> (8:00 - 21:30)</p>
+                <p>Bảo hành: <a href="/tel:1900456789" class="custom-link-phone">1900 456 789</a> (8:00 - 21:00)</p>
+            </div>
+
+            <div class="col-md-3">
+                <h5>Email liên hệ</h5>
+                <p>Hỗ trợ khách hàng:<br><a href="mailto:cskh@codegym.vn" class="custom-link">cskh@codegym.vn</a></p>
+                <p>Hợp tác phát triển:<br><a href="mailto:hoptac@codegym.vn" class="custom-link">hoptac@codegym.vn</a>
+                </p>
+            </div>
+
+            <div class="col-md-3">
+                <h5>Liên kết khác</h5>
+                <p><a href="/" class="custom-link" aria-label="Quay về trang chủ">Về trang chính</a></p>
+                <p><a href="/cart" class="custom-link" aria-label="Xem thông tin tài khoản">Thông tin tài khoản</a></p>
+            </div>
+
+            <div class="col-md-3">
+                <h5>Thông tin khác</h5>
+                <p><a href="/purchase-history" class="custom-link">Lịch sử mua hàng</a></p>
+                <p><a href="/warranty-policy" class="custom-link">Chính sách bảo hành</a></p>
+                <p><a href="/return-policy" class="custom-link">Chính sách đổi trả</a></p>
+                <p><a href="/promotions" class="custom-link">Khuyến mãi</a></p>
+                <p><a href="/services" class="custom-link">Dịch vụ lắp đặt/sửa chữa</a></p>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <h5>Kết nối với chúng tôi</h5>
+                <div class="social-icons">
+                    <a href="https://facebook.com" class="custom-link me-2"
+                       aria-label="Theo dõi chúng tôi trên Facebook" rel="noopener noreferrer"><i
+                            class="bi bi-facebook"></i></a>
+                    <a href="https://twitter.com" class="custom-link me-2" aria-label="Theo dõi chúng tôi trên Twitter"
+                       rel="noopener noreferrer"><i class="bi bi-twitter"></i></a>
+                    <a href="https://instagram.com" class="custom-link me-2"
+                       aria-label="Theo dõi chúng tôi trên Instagram" rel="noopener noreferrer"><i
+                            class="bi bi-instagram"></i></a>
+                    <a href="https://youtube.com" class="custom-link" aria-label="Theo dõi chúng tôi trên YouTube"
+                       rel="noopener noreferrer"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <p class="mb-0">© 2025 Công ty cổ phần C0824M1. Trụ sở tại Codegym Đà Nẵng, phường Thuận Phước, quận Hải
+                Châu, thành phố Đà Nẵng</p>
+        </div>
+    </div>
+</footer>
 </body>
+<script>
+    // JavaScript for search functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.querySelector('.search-bar input');
+        const searchButton = document.querySelector('.search-bar button');
+
+        searchButton.addEventListener('click', function () {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                alert(`Đang tìm kiếm: ${searchTerm}`);
+                // Thực hiện tìm kiếm thực tế ở đây
+            }
+        });
+
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+    });
+
+
+    let currentSlide = 0;
+    const bannerTrack = document.getElementById('bannerTrack');
+    const bannerSlider = document.getElementById('bannerSlider');
+    const slides = document.querySelectorAll('.banner-slide');
+    const totalSlides = slides.length;
+
+    function updateSlidePosition() {
+        const slideWidth = bannerSlider.offsetWidth / 2;
+        bannerTrack.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+    }
+
+    function nextSlide() {
+        if (currentSlide < totalSlides - 2) {
+            currentSlide++;
+        } else {
+            currentSlide = 0;
+        }
+        updateSlidePosition();
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+        } else {
+            currentSlide = totalSlides - 2;
+        }
+        updateSlidePosition();
+    }
+
+    window.addEventListener('resize', updateSlidePosition);
+
+    updateSlidePosition();
+
+    // script fix header khi lướt xuống
+    const nav = document.querySelector('.nav-container');
+
+    window.addEventListener('scroll', function () {
+        if (window.scrollY === 0) {
+            // Khi quay lại đầu trang
+            nav.style.display = 'flex';
+        } else {
+            // Khi lướt xuống dưới
+            nav.style.display = 'none';
+        }
+    });
+</script>
+<br>
 </html>
