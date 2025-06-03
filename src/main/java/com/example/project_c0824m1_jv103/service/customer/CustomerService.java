@@ -16,4 +16,9 @@ public class CustomerService implements ICustomerService {
     public List<Customer> findAll() {
         return iCustomerRepository.findAll();
     }
+
+    @Override
+    public List<Customer> searchByNameAndPhone(String keyword) {
+        return iCustomerRepository.searchByNameOrPhone(keyword);
+    }
 }
