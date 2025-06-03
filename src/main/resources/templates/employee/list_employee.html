@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns="http://www.w3.org/1999/html"
+>
   <head>
     <meta charset="UTF-8" />
     <title>Employee Management</title>
@@ -10,7 +14,10 @@
       rel="stylesheet"
     />
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+    />
 
     <style>
       body {
@@ -275,6 +282,77 @@
             ></button>
           </div>
 
+          <!-- Search Form -->
+          <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+              <h6 class="mb-0">
+                <i class="bi bi-search"></i>
+                Tìm kiếm nhân viên
+              </h6>
+            </div>
+            <div class="card-body">
+              <form th:action="@{/employees/list}" method="get">
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label for="fullName" class="form-label"
+                      >Tên nhân viên:</label
+                    >
+                    <input
+                      type="text"
+                      id="fullName"
+                      name="fullName"
+                      class="form-control"
+                      placeholder="Nhập tên nhân viên..."
+                      th:value="${param.fullName}"
+                    />
+                  </div>
+
+                  <div class="col-md-4">
+                    <label for="phone" class="form-label">Số điện thoại:</label>
+                    <input
+                      type="text"
+                      id="phone"
+                      name="phone"
+                      class="form-control"
+                      placeholder="Nhập số điện thoại..."
+                      th:value="${param.phone}"
+                    />
+                  </div>
+
+                  <div class="col-md-4">
+                    <label for="role" class="form-label">Phòng ban:</label>
+                    <select id="role" name="role" class="form-select">
+                      <option value="">-- Chọn phòng ban --</option>
+                      <option
+                        th:each="role : ${roles}"
+                        th:value="${role}"
+                        th:text="${role}"
+                        th:selected="${param.role == role}"
+                      />
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="bi bi-search"></i>
+                      Tìm kiếm
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary ms-2"
+                      onclick="clearSearch()"
+                    >
+                      <i class="bi bi-x-circle"></i>
+                      Xóa bộ lọc
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
           <!-- Action Buttons -->
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
@@ -292,7 +370,10 @@
             </div>
 
             <div>
-              <button class="btn btn-primary">
+              <button
+                class="btn btn-primary"
+                onclick="window.location.href='/employees/create'"
+              >
                 <i class="bi bi-plus-circle"></i>
                 Thêm nhân viên
               </button>
@@ -363,6 +444,14 @@
                       th:attr="data-employee-id=${e.employeeId},data-employee-name=${e.fullName},data-employee-email=${e.email},data-employee-phone=${e.phone}"
                     >
                       <i class="bi bi-trash3"></i>
+                    </button>
+
+                    <!-- Edit Button with icon and onclick -->
+                    <button
+                      class="btn btn-outline-warning btn-sm ms-1 edit-btn"
+                      th:onclick="'window.location.href=\'/employees/show-edit-employee/' + ${e.employeeId} + '\''"
+                    >
+                      <i class="bi bi-pencil"></i>
                     </button>
                   </td>
                 </tr>
@@ -656,7 +745,7 @@
           // Create form and submit
           const form = document.createElement("form");
           form.method = "POST";
-          form.action = "/Employee/delete";
+          form.action = "/employees/delete";
 
           employeeIds.forEach((id) => {
             const input = document.createElement("input");
@@ -699,6 +788,16 @@
           autohide: false,
         });
         toast.show();
+      }
+
+      // Clear search form
+      function clearSearch() {
+        document.getElementById("fullName").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("role").value = "";
+
+        // Optionally submit the form to show all employees
+        window.location.href = "/employees/list";
       }
     </script>
   </body>
