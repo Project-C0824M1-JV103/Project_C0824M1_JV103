@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách nhân viên</title>
+    <meta charset="UTF-8">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .search-form {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<h2>Danh sách nhân viên</h2>
+
+<!-- Form tìm kiếm -->
+<form class="search-form" th:action="@{/employees}" method="get">
+    <label for="fullName">Tên nhân viên:</label>
+    <input type="text" id="fullName" name="fullName" th:value="${param.fullName}"/>
+
+    <label for="phone">Số điện thoại:</label>
+    <input type="text" id="phone" name="phone" th:value="${param.phone}"/>
+
+    <label for="role">Phòng ban:</label>
+    <select id="role" name="role">
+        <option value="">-- Chọn phòng ban --</option>
+        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"
+                th:selected="${param.role == role}"/>
+    </select>
+
+    <button type="submit">Tìm kiếm</button>
+</form>
+
+<!-- Bảng danh sách nhân viên -->
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Họ tên</th>
+        <th>Email</th>
+        <th>Số điện thoại</th>
+        <th>Phòng ban</th>
+        <th>Trạng thái</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="employee : ${employees}">
+        <td th:text="${employee.employeeId}"></td>
+        <td th:text="${employee.fullName}"></td>
+        <td th:text="${employee.email}"></td>
+        <td th:text="${employee.phone}"></td>
+        <td th:text="${employee.role}"></td>
+        <td th:text="${employee.status}"></td>
+    </tr>
+    <tr th:if="${employees.isEmpty}">
+        ಸó
+        <td colspan="6">Không tìm thấy nhân viên.</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

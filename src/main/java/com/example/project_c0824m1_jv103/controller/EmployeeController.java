@@ -14,8 +14,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Arrays;
 import java.util.List;
 
-@Controller("/")
-@RequestMapping("employees")
+@Controller
+@RequestMapping("/employees")
 public class EmployeeController {
 
     @Autowired
@@ -58,10 +58,27 @@ public class EmployeeController {
     }
 
     // Test (Phần của anh hiển)
-    @GetMapping
-    public String showAll(Model model) {
-        model.addAttribute("employees", employeeService.findAll());
-        return "employee-list";
+    @GetMapping("")
+    public String listEmployees(Model model,
+                                @RequestParam(value = "fullName", required = false) String fullName,
+                                @RequestParam(value = "phone", required = false) String phone,
+                                @RequestParam(value = "role", required = false) String role) {
+        List<String> roles = Arrays.stream(Employee.Role.values())
+                .map(Enum::name)
+                .toList();
+        model.addAttribute("roles", roles);
+
+        List<Employee> employees;
+        if ((fullName == null || fullName.isEmpty()) &&
+                (phone == null || phone.isEmpty()) &&
+                (role == null || role.isEmpty())) {
+            employees = employeeService.findAll();
+        } else {
+            employees = employeeService.searchEmployees(fullName, phone, role);
+        }
+
+        model.addAttribute("employees", employees);
+        return "list";
     }
 
     @PostMapping("edit-employee")

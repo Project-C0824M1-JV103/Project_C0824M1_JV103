@@ -26,4 +26,10 @@ public class EmployeeService implements IEmployeeService {
     public Employee findById(Integer id) {
         return employeeRepository.findById(id).get();
     }
+
+    @Override
+    public List<Employee> searchEmployees(String fullName, String phone, String role) {
+        Employee.Role roleEnum = (role == null || role.isEmpty()) ? null : Employee.Role.valueOf(role);
+        return employeeRepository.searchEmployees(fullName, phone, roleEnum);
+    }
 }
