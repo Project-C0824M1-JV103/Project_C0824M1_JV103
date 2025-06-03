@@ -9,4 +9,5 @@ import java.util.List;
 public interface IEmployeeService {
     void save(Employee employee);
     List<Employee> findAll();
+    Employee findById(Integer id);
 }

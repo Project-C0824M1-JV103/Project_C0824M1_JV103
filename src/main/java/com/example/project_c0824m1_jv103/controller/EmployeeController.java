@@ -1,14 +1,15 @@
 package com.example.project_c0824m1_jv103.controller;
 
+import com.example.project_c0824m1_jv103.dto.EmployeeDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.service.employee.EmployeeService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +35,22 @@ public class EmployeeController {
         return "add-employee-form";
     }
 
+    @GetMapping("show-edit-employee/{id}")
+    public String showEditEmployeeForm(@PathVariable Integer id, Model model) {
+        List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
+
+        List<Employee.Role> filteredRoles = allRoles.stream()
+                .filter(role -> role != Employee.Role.Admin)
+                .toList();
+        Employee employee = employeeService.findById(id);
+        EmployeeDto employeeDto = new EmployeeDto();
+        BeanUtils.copyProperties(employee, employeeDto);
+        model.addAttribute("employeeDto", employeeDto);
+        model.addAttribute("roles", filteredRoles);
+        return "edit-employee-form";
+    }
+
+
     @PostMapping("create")
     public String createEmployee(@ModelAttribute("employee") Employee employee) {
         employeeService.save(employee);
@@ -45,5 +62,38 @@ public class EmployeeController {
     public String showAll(Model model) {
         model.addAttribute("employees", employeeService.findAll());
         return "employee-list";
+    }
+
+    @PostMapping("edit-employee")
+    public String editEmployee(@ModelAttribute("employeeDto") EmployeeDto employeeDto,
+//                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes) {
+//        if (bindingResult.hasErrors()) {
+//            return "edit-employee-form";
+//        }
+//        if (EncryptPasswordUtils.CheckPassword(userDto.getOldPassword(), user.getPassword())) {
+//            if (userDto.getPassword().equals(userDto.getConfirmPassword())) {
+//                user.setPassword(EncryptPasswordUtils.EncryptPasswordUtils(userDto.getPassword()));
+//                usersService.saveUser(user);
+//                redirectAttributes.addFlashAttribute("message", "Thay đổi mật khẩu thành công");
+//                return "redirect:/user/profile";
+//            } else {
+//                redirectAttributes.addFlashAttribute("message", "Vui lòng nhập lại mật khẩu mới cho trùng khớp!");
+//                return "redirect:/user/change-password-page";
+//            }
+//        } else {
+//            redirectAttributes.addFlashAttribute("message", "Mật khẩu hiện tại không đúng!");
+//            return "redirect:/user/change-password-page";
+//        }
+        if(employeeDto.getPasswordConfirm().equals(employeeDto.getPassword())) {
+            Employee employee = employeeService.findById(employeeDto.getEmployeeId());
+            BeanUtils.copyProperties(employeeDto, employee);
+            employeeService.save(employee);
+            redirectAttributes.addFlashAttribute("message", "Thay đổi thành công!");
+            return "redirect:/employees";
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Vui lòng nhập lại mật khẩu cho khớp!");
+            return "redirect:/employees/show-edit-employee/" + employeeDto.getEmployeeId();
+        }
     }
 }
