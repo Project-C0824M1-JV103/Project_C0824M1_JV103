@@ -12,4 +12,5 @@ public interface IEmployeeService {
     List<Employee> findAll();
     Employee findById(Integer id);
     List<Employee> searchEmployees(String fullName, String phone, String role);
+    Employee findByEmail(String email);
 }

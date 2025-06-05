@@ -1,6 +1,5 @@
 package com.example.project_c0824m1_jv103.controller;
 
-import com.example.project_c0824m1_jv103.common.EncryptPasswordUtils;
 import com.example.project_c0824m1_jv103.dto.EmployeeDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.service.employee.EmployeeService;
@@ -17,13 +16,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-@RequestMapping("/employees")
+@RequestMapping("/Admin")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("create")
+    @GetMapping("/employees/create")
     public String showCreateForm(Model model) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -37,7 +36,7 @@ public class EmployeeController {
         return "employee/add-employee-form";
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/employees/delete")
     public String deleteEmployees(@RequestParam("employeeIds") List<Integer> employeeIds,
                                   RedirectAttributes redirectAttributes) {
         try {
@@ -50,10 +49,10 @@ public class EmployeeController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi xóa nhân viên: " + e.getMessage());
         }
-        return "redirect:/employees/list";
+        return "redirect:/Admin/employees/list";
     }
 
-    @GetMapping("show-edit-employee/{id}")
+    @GetMapping("/employees/show-edit-employee/{id}")
     public String showEditEmployeeForm(@PathVariable Integer id, Model model) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -63,21 +62,36 @@ public class EmployeeController {
         Employee employee = employeeService.findById(id);
         EmployeeDto employeeDto = new EmployeeDto();
         BeanUtils.copyProperties(employee, employeeDto);
-        employeeDto.setRole(employee.getRole().toString());
         model.addAttribute("employeeDto", employeeDto);
         model.addAttribute("roles", filteredRoles);
         return "employee/edit-employee-form";
     }
 
-
-    @PostMapping("create")
-    public String createEmployee(@ModelAttribute("employee") Employee employee) {
+    @PostMapping("/employees/create")
+    public String createEmployee(@Valid @ModelAttribute("employee") EmployeeDto employeeDto,
+                                 BindingResult bindingResult,
+                                 Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("roles", Employee.Role.values());
+            return "employee/add-employee-form";
+        }
+        // Kiểm tra trùng email
+        if (employeeService.findByEmail(employeeDto.getEmail()) != null) {
+            model.addAttribute("errorMessage", "Email đã tồn tại, vui lòng nhập email khác!");
+            model.addAttribute("roles", Employee.Role.values());
+            return "employee/add-employee-form";
+        }
+        Employee employee = new Employee();
+        org.springframework.beans.BeanUtils.copyProperties(employeeDto, employee);
+        if (employeeDto.getRole() != null) {
+            employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
+        }
         employeeService.save(employee);
-        return "redirect:/employees/list";
+        return "redirect:/Admin/employees/list";
     }
 
     // Test (Phần của anh hiển)
-    @GetMapping("/list")
+    @GetMapping("/employees/list")
     public String listEmployees(Model model,
                                 @RequestParam(value = "fullName", required = false) String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
@@ -109,7 +123,7 @@ public class EmployeeController {
         return listEmployees(model, fullName, phone, role);
     }
 
-    @PostMapping("edit-employee")
+    @PostMapping("/employees/edit-employee")
     public String editEmployee(@Valid @ModelAttribute("employeeDto") EmployeeDto employeeDto, BindingResult bindingResult,
                                Model model,
                                RedirectAttributes redirectAttributes) {
@@ -128,6 +142,7 @@ public class EmployeeController {
         employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
         employeeService.save(employee);
         redirectAttributes.addFlashAttribute("successMessage", "Thay đổi thông tin nhân viên " + employee.getFullName() + " thành công!");
-        return "redirect:/employees/list";
+        return "redirect:/Admin/employees/list";
     }
 }
+

@@ -17,4 +17,6 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> searchEmployees(@Param("fullName") String fullName,
                                    @Param("phone") String phone,
                                    @Param("role") Employee.Role role);
+                                   
+    Employee findByEmail(String email);
 }

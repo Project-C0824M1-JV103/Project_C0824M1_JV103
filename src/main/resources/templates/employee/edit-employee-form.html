@@ -274,7 +274,7 @@
 
                 <div class="search-section">
                     <h4 class="section-title">Chỉnh sửa thông tin nhân viên</h4>
-                    <form th:action="@{/employees/edit-employee}" th:object="${employeeDto}" method="post" class="mt-4">
+                    <form th:action="@{/Admin/employees/edit-employee}" th:object="${employeeDto}" method="post" class="mt-4">
                         <input type="hidden" th:field="*{employeeId}">
 
                         <div class="mb-3">
@@ -309,11 +309,10 @@
 
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-warning">Xác nhận</button>
-                            <a th:href="@{/employees}" class="btn btn-secondary">Quay lại</a>
+                            <a th:href="@{/Admin/employees/list}" class="btn btn-secondary">Quay lại</a>
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
