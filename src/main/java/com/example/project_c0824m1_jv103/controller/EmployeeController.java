@@ -17,13 +17,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-@RequestMapping("/employees")
+@RequestMapping("/Admin/employees")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("create")
+    @GetMapping("/create")
     public String showCreateForm(Model model) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -50,10 +50,10 @@ public class EmployeeController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi xóa nhân viên: " + e.getMessage());
         }
-        return "redirect:/employees/list";
+        return "redirect:/Admin/employees/list";
     }
 
-    @GetMapping("show-edit-employee/{id}")
+    @GetMapping("/show-edit-employee/{id}")
     public String showEditEmployeeForm(@PathVariable Integer id, Model model) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -88,7 +88,7 @@ public class EmployeeController {
             employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
         }
         employeeService.save(employee);
-        return "redirect:/employees";
+        return "redirect:/Admin/employees/list";
     }
 
     // Test (Phần của anh hiển)
@@ -124,7 +124,7 @@ public class EmployeeController {
         return listEmployees(model, fullName, phone, role);
     }
 
-    @PostMapping("edit-employee")
+    @PostMapping("/edit-employee")
     public String editEmployee(@ModelAttribute("employeeDto") EmployeeDto employeeDto,
 //                               BindingResult bindingResult,
                                RedirectAttributes redirectAttributes) {
@@ -151,10 +151,10 @@ public class EmployeeController {
             employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
             employeeService.save(employee);
             redirectAttributes.addFlashAttribute("message", "Thay đổi thành công!");
-            return "redirect:/employees/list";
+            return "redirect:/Admin/employees/list";
         } else {
             redirectAttributes.addFlashAttribute("message", "Vui lòng nhập lại mật khẩu cho khớp!");
-            return "redirect:/employees/show-edit-employee/" + employeeDto.getEmployeeId();
+            return "redirect:/Admin/employees/show-edit-employee/" + employeeDto.getEmployeeId();
         }
     }
 }

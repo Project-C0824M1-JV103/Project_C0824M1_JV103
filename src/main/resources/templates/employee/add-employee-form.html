@@ -129,7 +129,7 @@
 
                 <div class="search-section">
                     <h4 class="section-title">Thêm nhân viên mới</h4>
-                    <form th:action="@{/employees/create}" th:object="${employee}" method="post" class="mt-4">
+                    <form th:action="@{/Admin/employees/create}" th:object="${employee}" method="post" class="mt-4">
                         <div class="mb-3">
                             <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
                             <input type="text" th:field="*{fullName}" class="form-control" required />
