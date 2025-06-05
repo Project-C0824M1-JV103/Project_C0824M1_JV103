@@ -3,10 +3,13 @@ package com.example.project_c0824m1_jv103.controller;
 import com.example.project_c0824m1_jv103.dto.EmployeeDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.service.employee.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -65,11 +68,27 @@ public class EmployeeController {
         return "employee/edit-employee-form";
     }
 
-
-    @PostMapping("create")
-    public String createEmployee(@ModelAttribute("employee") Employee employee) {
+    @PostMapping("/create")
+    public String createEmployee(@Valid @ModelAttribute("employee") EmployeeDto employeeDto,
+                               BindingResult bindingResult,
+                               Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("roles", Employee.Role.values());
+            return "employee/add-employee-form";
+        }
+        // Kiểm tra trùng email
+        if (employeeService.findByEmail(employeeDto.getEmail()) != null) {
+            model.addAttribute("errorMessage", "Email đã tồn tại, vui lòng nhập email khác!");
+            model.addAttribute("roles", Employee.Role.values());
+            return "employee/add-employee-form";
+        }
+        Employee employee = new Employee();
+        org.springframework.beans.BeanUtils.copyProperties(employeeDto, employee);
+        if (employeeDto.getRole() != null) {
+            employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
+        }
         employeeService.save(employee);
-        return "redirect:/employees/list";
+        return "redirect:/employees";
     }
 
     // Test (Phần của anh hiển)

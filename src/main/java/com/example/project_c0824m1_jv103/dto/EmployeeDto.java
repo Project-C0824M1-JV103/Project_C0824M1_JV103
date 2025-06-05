@@ -1,6 +1,7 @@
 package com.example.project_c0824m1_jv103.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Mod10Check;
 import org.hibernate.validator.constraints.UniqueElements;
 
 public class EmployeeDto {
@@ -21,7 +22,6 @@ public class EmployeeDto {
     private String passwordConfirm;
 
     @NotBlank(message = "Nhập số điện thoại!")
-    @UniqueElements(message = "Số điện thoại đã tồn tại!")
     private String phone;
 
     @NotBlank(message = "Chọn vị trí")
