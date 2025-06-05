@@ -290,7 +290,7 @@
               <div class="col-auto">
                 <button
                   class="btn btn-primary"
-                  onclick="window.location.href='/employees/create'"
+                  onclick="window.location.href='/Admin/employees/create'"
                 >
                   <i class="fas fa-plus"></i> Thêm nhân viên
                 </button>
@@ -329,7 +329,7 @@
 
           <!-- Search Section -->
           <div class="search-section">
-            <form th:action="@{/employees/list}" method="get">
+            <form th:action="@{/Admin/employees/list}" method="get">
               <div class="row g-3">
                 <div class="col-md-4">
                   <div class="input-group">
@@ -504,7 +504,7 @@
                         </button>
                         <button
                           class="btn btn-sm btn-outline-warning edit-btn"
-                          th:onclick="'window.location.href=\'/employees/show-edit-employee/' + ${e.employeeId} + '\''"
+                          th:onclick="'window.location.href=\'/Admin/employees/show-edit-employee/' + ${e.employeeId} + '\''"
                           title="Chỉnh sửa"
                         >
                           <i class="fas fa-edit"></i>
@@ -845,7 +845,7 @@
           // Create form and submit
           const form = document.createElement("form");
           form.method = "POST";
-          form.action = "/employees/delete";
+          form.action = "/Admin/employees/delete";
 
           employeeIds.forEach((id) => {
             const input = document.createElement("input");
@@ -897,7 +897,7 @@
         document.getElementById("role").value = "";
 
         // Optionally submit the form to show all employees
-        window.location.href = "/employees/list";
+        window.location.href = "/Admin/employees/list";
       }
     </script>
   </body>

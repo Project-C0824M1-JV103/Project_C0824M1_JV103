@@ -47,7 +47,7 @@ public class EmployeeController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi xóa nhân viên: " + e.getMessage());
         }
-        return "redirect:/employees/list";
+        return "redirect:/Admin/employees/list";
     }
 
     @GetMapping("/employees/show-edit-employee/{id}")
@@ -72,7 +72,7 @@ public class EmployeeController {
         try {
             employeeService.save(employee);
             redirectAttributes.addFlashAttribute("successMessage", "Thêm nhân viên thành công!");
-            return "redirect:/employees/list";
+            return "redirect:/Admin/employees/list";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra: " + e.getMessage());
             return "redirect:/Admin/employees/create";
@@ -139,10 +139,10 @@ public class EmployeeController {
             employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
             employeeService.save(employee);
             redirectAttributes.addFlashAttribute("message", "Thay đổi thành công!");
-            return "redirect:/employees/list";
+            return "redirect:/Admin/employees/list";
         } else {
             redirectAttributes.addFlashAttribute("message", "Vui lòng nhập lại mật khẩu cho khớp!");
-            return "redirect:/employees/show-edit-employee/" + employeeDto.getEmployeeId();
+            return "redirect:/Admin/employees/show-edit-employee/" + employeeDto.getEmployeeId();
         }
     }
 }
