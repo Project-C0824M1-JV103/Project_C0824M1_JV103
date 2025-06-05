@@ -17,7 +17,7 @@ public class AdminDashboard {
     private ICustomerService iCustomerService;
 
     @GetMapping("/Customer")
-    public String showListCutomer(Model model){
+    public String showListCustomer(Model model){
         List<Customer> customers = iCustomerService.findAll();
         model.addAttribute("customers",customers);
         model.addAttribute("currentPage", "customer");
