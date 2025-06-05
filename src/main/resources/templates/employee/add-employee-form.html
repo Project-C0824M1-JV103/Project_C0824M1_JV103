@@ -1,56 +1,82 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <title>Thêm nhân viên</title>
-  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
-  <link rel="stylesheet" th:href="@{/add-employee-form.css}" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-</head>
-<body class="container mt-4">
+  <head>
+    <title>Thêm nhân viên</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/add-employee-form.css}" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+  </head>
+  <body class="container mt-4">
+    <h2>Thêm nhân viên</h2>
 
-<h2>Thêm nhân viên</h2>
+    <form
+      th:action="@{/employees/create}"
+      th:object="${employee}"
+      method="post"
+      class="mt-4"
+    >
+      <div class="form-inner">
+        <div class="mb-3">
+          <label>Họ và tên</label>
+          <input
+            type="text"
+            th:field="*{fullName}"
+            class="form-control"
+            required
+          />
+        </div>
 
-<form th:action="@{/employees/create}" th:object="${employee}" method="post" class="mt-4">
-  <div class="form-inner">
-    <div class="mb-3">
-      <label>Họ và tên</label>
-      <input type="text" th:field="*{fullName}" class="form-control" required />
-    </div>
+        <div class="mb-3">
+          <label>Số điện thoại</label>
+          <input type="text" th:field="*{phone}" class="form-control" />
+        </div>
 
-    <div class="mb-3">
-      <label>Số điện thoại</label>
-      <input type="text" th:field="*{phone}" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-      <label>Công việc</label>
-      <select th:field="*{role}" class="form-select" required>
-        <option th:each="role : ${roles}" th:if="${role.name() != 'Admin'}"
-                th:value="${role}"
-                th:text="${role.name() == 'Sales' ? 'Nhân viên bán hàng'
+        <div class="mb-3">
+          <label>Công việc</label>
+          <select th:field="*{role}" class="form-select" required>
+            <option
+              th:each="role : ${roles}"
+              th:if="${role.name() != 'Admin'}"
+              th:value="${role}"
+              th:text="${role.name() == 'Sales' ? 'Nhân viên bán hàng'
                         : (role.name() == 'Business' ? 'Nhân viên kinh doanh'
-                        : (role.name() == 'Warehouse' ? 'Thủ kho' : role.name()))}">
-        </option>
-      </select>
-    </div>
+                        : (role.name() == 'Warehouse' ? 'Thủ kho' : role.name()))}"
+            ></option>
+          </select>
+        </div>
 
-    <div class="mb-3">
-      <label>Email (tên đăng nhập)</label>
-      <input type="email" th:field="*{email}" class="form-control" required />
-    </div>
+        <div class="mb-3">
+          <label>Email (tên đăng nhập)</label>
+          <input
+            type="email"
+            th:field="*{email}"
+            class="form-control"
+            required
+          />
+        </div>
 
-    <div class="mb-3">
-      <label> Mật khẩu </label>
-      <input type="password" th:field="*{password}" class="form-control" required />
-    </div>
+        <div class="mb-3">
+          <label> Mật khẩu </label>
+          <input
+            type="password"
+            th:field="*{password}"
+            class="form-control"
+            required
+          />
+        </div>
 
-    <div class="text-center mt-4">
-      <button type="submit" class="btn btn-success">Thêm</button>
-      <a th:href="@{/employees}" class="btn btn-secondary">Quay lại</a>
-    </div>
-  </div>
-</form>
-
-</body>
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-success">Thêm</button>
+          <a th:href="@{/employees}" class="btn btn-secondary">Quay lại</a>
+        </div>
+      </div>
+    </form>
+  </body>
 </html>
