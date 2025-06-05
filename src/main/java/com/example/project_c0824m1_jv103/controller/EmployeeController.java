@@ -1,12 +1,15 @@
 package com.example.project_c0824m1_jv103.controller;
 
+import com.example.project_c0824m1_jv103.common.EncryptPasswordUtils;
 import com.example.project_c0824m1_jv103.dto.EmployeeDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.service.employee.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -33,10 +36,10 @@ public class EmployeeController {
         model.addAttribute("statuses", Employee.Status.values());
         return "employee/add-employee-form";
     }
-    
+
     @PostMapping("/delete")
     public String deleteEmployees(@RequestParam("employeeIds") List<Integer> employeeIds,
-                                 RedirectAttributes redirectAttributes) {
+                                  RedirectAttributes redirectAttributes) {
         try {
             employeeService.deleteEmployeesByIds(employeeIds);
             if (employeeIds.size() == 1) {
@@ -60,6 +63,7 @@ public class EmployeeController {
         Employee employee = employeeService.findById(id);
         EmployeeDto employeeDto = new EmployeeDto();
         BeanUtils.copyProperties(employee, employeeDto);
+        employeeDto.setRole(employee.getRole().toString());
         model.addAttribute("employeeDto", employeeDto);
         model.addAttribute("roles", filteredRoles);
         return "employee/edit-employee-form";
@@ -99,43 +103,31 @@ public class EmployeeController {
     // Add main listing endpoint
     @GetMapping({"", "/"})
     public String mainListEmployees(Model model,
-                                   @RequestParam(value = "fullName", required = false) String fullName,
-                                   @RequestParam(value = "phone", required = false) String phone,
-                                   @RequestParam(value = "role", required = false) String role) {
+                                    @RequestParam(value = "fullName", required = false) String fullName,
+                                    @RequestParam(value = "phone", required = false) String phone,
+                                    @RequestParam(value = "role", required = false) String role) {
         return listEmployees(model, fullName, phone, role);
     }
 
     @PostMapping("edit-employee")
-    public String editEmployee(@ModelAttribute("employeeDto") EmployeeDto employeeDto,
-//                               BindingResult bindingResult,
+    public String editEmployee(@Valid @ModelAttribute("employeeDto") EmployeeDto employeeDto, BindingResult bindingResult,
+                               Model model,
                                RedirectAttributes redirectAttributes) {
-//        if (bindingResult.hasErrors()) {
-//            return "edit-employee-form";
-//        }
-//        if (EncryptPasswordUtils.CheckPassword(userDto.getOldPassword(), user.getPassword())) {
-//            if (userDto.getPassword().equals(userDto.getConfirmPassword())) {
-//                user.setPassword(EncryptPasswordUtils.EncryptPasswordUtils(userDto.getPassword()));
-//                usersService.saveUser(user);
-//                redirectAttributes.addFlashAttribute("message", "Thay đổi mật khẩu thành công");
-//                return "redirect:/user/profile";
-//            } else {
-//                redirectAttributes.addFlashAttribute("message", "Vui lòng nhập lại mật khẩu mới cho trùng khớp!");
-//                return "redirect:/user/change-password-page";
-//            }
-//        } else {
-//            redirectAttributes.addFlashAttribute("message", "Mật khẩu hiện tại không đúng!");
-//            return "redirect:/user/change-password-page";
-//        }
-        if(employeeDto.getPasswordConfirm().equals(employeeDto.getPassword())) {
-            Employee employee = employeeService.findById(employeeDto.getEmployeeId());
-            BeanUtils.copyProperties(employeeDto, employee);
-            employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
-            employeeService.save(employee);
-            redirectAttributes.addFlashAttribute("message", "Thay đổi thành công!");
-            return "redirect:/employees/list";
-        } else {
-            redirectAttributes.addFlashAttribute("message", "Vui lòng nhập lại mật khẩu cho khớp!");
-            return "redirect:/employees/show-edit-employee/" + employeeDto.getEmployeeId();
+        if (bindingResult.hasErrors()) {
+            List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
+
+            List<Employee.Role> filteredRoles = allRoles.stream()
+                    .filter(role -> role != Employee.Role.Admin)
+                    .toList();
+            model.addAttribute("roles", filteredRoles);
+            return "employee/edit-employee-form";
         }
+
+        Employee employee = employeeService.findById(employeeDto.getEmployeeId());
+        BeanUtils.copyProperties(employeeDto, employee);
+        employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
+        employeeService.save(employee);
+        redirectAttributes.addFlashAttribute("successMessage", "Thay đổi thông tin nhân viên " + employee.getFullName() + " thành công!");
+        return "redirect:/employees/list";
     }
 }

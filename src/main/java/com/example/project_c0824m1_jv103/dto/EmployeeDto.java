@@ -7,34 +7,24 @@ public class EmployeeDto {
 
     private Integer employeeId;
 
-    @NotBlank(message = "Nhập tên đầy đủ!")
+    @NotBlank(message = "Nhập đầy đủ họ và tên!")
     private String fullName;
 
     @NotBlank(message = "Nhập email người dùng!")
-    @UniqueElements(message = "Email đã tồn tại!")
     private String email;
 
-    @NotBlank(message = "Nhập mật khẩu!")
-    private String password;
-
-    @NotBlank(message = "Nhập mật khẩu!")
-    private String passwordConfirm;
-
     @NotBlank(message = "Nhập số điện thoại!")
-    @UniqueElements(message = "Số điện thoại đã tồn tại!")
     private String phone;
 
-    @NotBlank(message = "Chọn vị trí")
+    @NotBlank(message = "Chọn vai trò!")
     private String role;
 
     public EmployeeDto() {}
 
-    public EmployeeDto(Integer employeeId, String fullName, String email, String password, String passwordConfirm, String phone, String role) {
+    public EmployeeDto(Integer employeeId, String fullName, String email, String phone, String role) {
         this.employeeId = employeeId;
         this.fullName = fullName;
         this.email = email;
-        this.password = password;
-        this.passwordConfirm = passwordConfirm;
         this.phone = phone;
         this.role = role;
     }
@@ -61,22 +51,6 @@ public class EmployeeDto {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPasswordConfirm() {
-        return passwordConfirm;
-    }
-
-    public void setPasswordConfirm(String passwordConfirm) {
-        this.passwordConfirm = passwordConfirm;
     }
 
     public String getPhone() {
