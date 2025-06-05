@@ -17,13 +17,11 @@
             <input type="hidden" th:field="*{employeeId}">
             <label>Họ và tên</label>
             <input type="text" th:field="*{fullName}" class="form-control" required />
-            <span class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
         </div>
 
         <div class="mb-3">
             <label>Số điện thoại</label>
             <input type="text" th:field="*{phone}" class="form-control" />
-            <span class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
         </div>
 
         <div class="mb-3">
@@ -36,25 +34,21 @@
                         : (role.name() == 'Warehouse' ? 'Thủ kho' : role.name()))}">
                 </option>
             </select>
-            <span class="text-danger" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></span>
         </div>
 
         <div class="mb-3">
             <label>Email (tên đăng nhập)</label>
             <input type="email" th:field="*{email}" class="form-control" required />
-            <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
         </div>
 
         <div class="mb-3">
             <label>Mật khẩu</label>
             <input type="password" th:field="*{password}" class="form-control" required />
-            <span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
         </div>
         <div class="mb-3">
             <label>Xác nhận mật khẩu</label>
             <input type="password" th:field="*{passwordConfirm}" class="form-control" required />
-            <span class="text-danger" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}"></span>
-            <p th:if="${message}" th:text="${message}" class="text-danger"></p>
+            <p th:if="${message}" th:text="${message}" style="color: red"></p>
         </div>
 
         <div class="text-center mt-4">

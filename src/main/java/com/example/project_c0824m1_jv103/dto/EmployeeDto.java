@@ -1,8 +1,6 @@
 package com.example.project_c0824m1_jv103.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.UniqueElements;
 
 public class EmployeeDto {
@@ -17,15 +15,12 @@ public class EmployeeDto {
     private String email;
 
     @NotBlank(message = "Nhập mật khẩu!")
-    @Size(min = 3, max = 8, message = "Mật khẩu phải từ 3 đến 8 ký tự!")
     private String password;
 
     @NotBlank(message = "Nhập mật khẩu!")
-    @Size(min = 3, max = 8, message = "Mật khẩu phải từ 3 đến 8 ký tự!")
     private String passwordConfirm;
 
     @NotBlank(message = "Nhập số điện thoại!")
-    @Pattern(regexp = "\\d{10}", message = "Số điện thoại phải có đúng 10 chữ số!")
     @UniqueElements(message = "Số điện thoại đã tồn tại!")
     private String phone;
 

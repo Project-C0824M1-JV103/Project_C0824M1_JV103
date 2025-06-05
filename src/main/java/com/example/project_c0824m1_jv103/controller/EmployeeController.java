@@ -3,12 +3,10 @@ package com.example.project_c0824m1_jv103.controller;
 import com.example.project_c0824m1_jv103.dto.EmployeeDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.service.employee.EmployeeService;
-import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -69,34 +67,9 @@ public class EmployeeController {
 
 
     @PostMapping("create")
-    public String createEmployee(@ModelAttribute("employee") @Valid Employee employee,
-                               BindingResult bindingResult,
-                               Model model,
-                               RedirectAttributes redirectAttributes) {
-        try {
-            if (bindingResult.hasErrors()) {
-                List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
-                List<Employee.Role> filteredRoles = allRoles.stream()
-                        .filter(role -> role != Employee.Role.Admin)
-                        .toList();
-                model.addAttribute("roles", filteredRoles);
-                return "employee/add-employee-form";
-            }
-
-            // Check if email already exists
-            Employee existingEmployee = employeeService.findByEmail(employee.getEmail());
-            if (existingEmployee != null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Email " + employee.getEmail() + " đã tồn tại trong hệ thống!");
-                return "redirect:/employees/create";
-            }
-
-            employeeService.save(employee);
-            redirectAttributes.addFlashAttribute("successMessage", "Thêm mới nhân viên thành công!");
-            return "redirect:/employees/list";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra: " + e.getMessage());
-            return "redirect:/employees/create";
-        }
+    public String createEmployee(@ModelAttribute("employee") Employee employee) {
+        employeeService.save(employee);
+        return "redirect:/employees/list";
     }
 
     // Test (Phần của anh hiển)
@@ -133,13 +106,26 @@ public class EmployeeController {
     }
 
     @PostMapping("edit-employee")
-    public String editEmployee(@ModelAttribute("employeeDto") @Valid EmployeeDto employeeDto,
-                             BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "employee/edit-employee-form";
-        }
-        
+    public String editEmployee(@ModelAttribute("employeeDto") EmployeeDto employeeDto,
+//                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes) {
+//        if (bindingResult.hasErrors()) {
+//            return "edit-employee-form";
+//        }
+//        if (EncryptPasswordUtils.CheckPassword(userDto.getOldPassword(), user.getPassword())) {
+//            if (userDto.getPassword().equals(userDto.getConfirmPassword())) {
+//                user.setPassword(EncryptPasswordUtils.EncryptPasswordUtils(userDto.getPassword()));
+//                usersService.saveUser(user);
+//                redirectAttributes.addFlashAttribute("message", "Thay đổi mật khẩu thành công");
+//                return "redirect:/user/profile";
+//            } else {
+//                redirectAttributes.addFlashAttribute("message", "Vui lòng nhập lại mật khẩu mới cho trùng khớp!");
+//                return "redirect:/user/change-password-page";
+//            }
+//        } else {
+//            redirectAttributes.addFlashAttribute("message", "Mật khẩu hiện tại không đúng!");
+//            return "redirect:/user/change-password-page";
+//        }
         if(employeeDto.getPasswordConfirm().equals(employeeDto.getPassword())) {
             Employee employee = employeeService.findById(employeeDto.getEmployeeId());
             BeanUtils.copyProperties(employeeDto, employee);
