@@ -14,13 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-@RequestMapping("/employees")
+@RequestMapping("/Admin")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("create")
+    @GetMapping("/employees/create")
     public String showCreateForm(Model model) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -34,7 +34,7 @@ public class EmployeeController {
         return "employee/add-employee-form";
     }
     
-    @PostMapping("/delete")
+    @PostMapping("/employees/delete")
     public String deleteEmployees(@RequestParam("employeeIds") List<Integer> employeeIds,
                                  RedirectAttributes redirectAttributes) {
         try {
@@ -50,7 +50,7 @@ public class EmployeeController {
         return "redirect:/employees/list";
     }
 
-    @GetMapping("show-edit-employee/{id}")
+    @GetMapping("/employees/show-edit-employee/{id}")
     public String showEditEmployeeForm(@PathVariable Integer id, Model model) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -66,14 +66,14 @@ public class EmployeeController {
     }
 
 
-    @PostMapping("create")
+    @PostMapping("/employees/create")
     public String createEmployee(@ModelAttribute("employee") Employee employee) {
         employeeService.save(employee);
         return "redirect:/employees/list";
     }
 
     // Test (Phần của anh hiển)
-    @GetMapping("/list")
+    @GetMapping("/employees/list")
     public String listEmployees(Model model,
                                 @RequestParam(value = "fullName", required = false) String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
@@ -105,7 +105,7 @@ public class EmployeeController {
         return listEmployees(model, fullName, phone, role);
     }
 
-    @PostMapping("edit-employee")
+    @PostMapping("/employees/edit-employee")
     public String editEmployee(@ModelAttribute("employeeDto") EmployeeDto employeeDto,
 //                               BindingResult bindingResult,
                                RedirectAttributes redirectAttributes) {

@@ -288,12 +288,13 @@
                 </p>
               </div>
               <div class="col-auto">
+                <a th:href="@{Admin/employees/create}">
                 <button
                   class="btn btn-primary"
-                  onclick="window.location.href='/employees/create'"
                 >
                   <i class="fas fa-plus"></i> Thêm nhân viên
                 </button>
+                </a>
               </div>
             </div>
           </div>
@@ -329,7 +330,7 @@
 
           <!-- Search Section -->
           <div class="search-section">
-            <form th:action="@{/employees/list}" method="get">
+            <form th:action="@{Admin/employees/list}" method="get">
               <div class="row g-3">
                 <div class="col-md-4">
                   <div class="input-group">
