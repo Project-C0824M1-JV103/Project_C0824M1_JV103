@@ -504,7 +504,7 @@
                         </button>
                         <button
                           class="btn btn-sm btn-outline-warning edit-btn"
-                          th:onclick="'window.location.href=\'/employees/show-edit-employee/' + ${e.employeeId} + '\''"
+                          th:onclick="'window.location.href=\'/Admin/employees/show-edit-employee/' + ${e.employeeId} + '\''"
                           title="Chỉnh sửa"
                         >
                           <i class="fas fa-edit"></i>
@@ -845,7 +845,7 @@
           // Create form and submit
           const form = document.createElement("form");
           form.method = "POST";
-          form.action = "/employees/delete";
+          form.action = "/Admin/employees/delete";
 
           employeeIds.forEach((id) => {
             const input = document.createElement("input");
@@ -897,7 +897,7 @@
         document.getElementById("role").value = "";
 
         // Optionally submit the form to show all employees
-        window.location.href = "/employees/list";
+        window.location.href = "/Admin/employees/list";
       }
     </script>
   </body>

@@ -6,7 +6,6 @@ import com.example.project_c0824m1_jv103.service.employee.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,13 +16,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-@RequestMapping("/Admin/employees")
+@RequestMapping("/Admin")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("/create")
+    @GetMapping("/employees/create")
     public String showCreateForm(Model model) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -37,7 +36,7 @@ public class EmployeeController {
         return "employee/add-employee-form";
     }
     
-    @PostMapping("/delete")
+    @PostMapping("/employees/delete")
     public String deleteEmployees(@RequestParam("employeeIds") List<Integer> employeeIds,
                                  RedirectAttributes redirectAttributes) {
         try {
@@ -53,7 +52,7 @@ public class EmployeeController {
         return "redirect:/Admin/employees/list";
     }
 
-    @GetMapping("/show-edit-employee/{id}")
+    @GetMapping("/employees/show-edit-employee/{id}")
     public String showEditEmployeeForm(@PathVariable Integer id, Model model) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -68,7 +67,7 @@ public class EmployeeController {
         return "employee/edit-employee-form";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/employees/create")
     public String createEmployee(@Valid @ModelAttribute("employee") EmployeeDto employeeDto,
                                BindingResult bindingResult,
                                Model model) {
@@ -92,7 +91,7 @@ public class EmployeeController {
     }
 
     // Test (Phần của anh hiển)
-    @GetMapping("/list")
+    @GetMapping("/employees/list")
     public String listEmployees(Model model,
                                 @RequestParam(value = "fullName", required = false) String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
@@ -124,7 +123,7 @@ public class EmployeeController {
         return listEmployees(model, fullName, phone, role);
     }
 
-    @PostMapping("/edit-employee")
+    @PostMapping("/employees/edit-employee")
     public String editEmployee(@ModelAttribute("employeeDto") EmployeeDto employeeDto,
 //                               BindingResult bindingResult,
                                RedirectAttributes redirectAttributes) {
