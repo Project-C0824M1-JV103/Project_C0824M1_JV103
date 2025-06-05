@@ -1,6 +1,7 @@
 package com.example.project_c0824m1_jv103.controller;
 
-import com.example.project_c0824m1_jv103.dto.EmployeeDto;
+import com.example.project_c0824m1_jv103.dto.EmployeeCreateDto;
+import com.example.project_c0824m1_jv103.dto.EmployeeEditDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.service.employee.EmployeeService;
 import jakarta.validation.Valid;
@@ -60,15 +61,16 @@ public class EmployeeController {
                 .filter(role -> role != Employee.Role.Admin)
                 .toList();
         Employee employee = employeeService.findById(id);
-        EmployeeDto employeeDto = new EmployeeDto();
+        EmployeeCreateDto employeeDto = new EmployeeCreateDto();
         BeanUtils.copyProperties(employee, employeeDto);
+        employeeDto.setRole(employee.getRole().toString());
         model.addAttribute("employeeDto", employeeDto);
         model.addAttribute("roles", filteredRoles);
         return "employee/edit-employee-form";
     }
 
     @PostMapping("/employees/create")
-    public String createEmployee(@Valid @ModelAttribute("employee") EmployeeDto employeeDto,
+    public String createEmployee(@Valid @ModelAttribute("employee") EmployeeCreateDto employeeDto,
                                  BindingResult bindingResult,
                                  Model model) {
         if (bindingResult.hasErrors()) {
@@ -124,7 +126,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees/edit-employee")
-    public String editEmployee(@Valid @ModelAttribute("employeeDto") EmployeeDto employeeDto, BindingResult bindingResult,
+    public String editEmployee(@Valid @ModelAttribute("employeeDto") EmployeeEditDto employeeDto, BindingResult bindingResult,
                                Model model,
                                RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
