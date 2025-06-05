@@ -141,29 +141,21 @@
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>STT</th>
                                         <th>Tên khách hàng</th>
                                         <th>Số điện thoại</th>
                                         <th>Email</th>
-                                        <th>Địa chỉ</th>
-                                        <th>Ngày sinh</th>
                                         <th>Số đơn hàng</th>
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody th:if="${searchCustomer != null}">
-                                    <tr th:each="customer : ${searchCustomer}">
+                                    <tr th:each="customer: ${searchCustomer}">
                                         <td>
-                                            <span class="badge bg-primary" th:text="${customer.customerId}">001</span>
+                                            <span class="badge bg-primary" th:text="${customer.customerId}"></span>
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="avatar me-3">
-                                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                                         style="width: 40px; height: 40px;">
-                                                        <span th:text="${customer.customerName != null ? customer.customerName.substring(0,1).toUpperCase() : 'N'}">N</span>
-                                                    </div>
-                                                </div>
                                                 <div>
                                                     <div class="fw-bold" th:text="${customer.customerName}">Tên khách hàng</div>
                                                 </div>
@@ -210,18 +202,12 @@
                                     </tr>
                                 </tbody>
                                 <tbody th:if="${searchCustomer == null}">
-                                    <tr th:each="customer : ${customers}">
+                                    <tr th:each="customer,l : ${customers}">
                                         <td>
-                                            <span class="badge bg-primary" th:text="${customer.customerId}">001</span>
+                                            <span class="badge bg-primary" th:text="${l.count}"></span>
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="avatar me-3">
-                                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                                         style="width: 40px; height: 40px;">
-                                                        <span th:text="${customer.customerName != null ? customer.customerName.substring(0,1).toUpperCase() : 'N'}">N</span>
-                                                    </div>
-                                                </div>
                                                 <div>
                                                     <div class="fw-bold" th:text="${customer.customerName}">Tên khách hàng</div>
                                                 </div>
@@ -240,17 +226,7 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <span th:text="${customer.address ?: 'Chưa cập nhật'}" class="text-truncate" style="max-width: 200px;">
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span th:text="${customer.birthdayDate != null ? #temporals.format(customer.birthdayDate, 'dd/MM/yyyy') : 'Chưa cập nhật'}">
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info" th:text="${customer.sales != null ? #lists.size(customer.sales) : 0}">0</span>
+                                            <span style="align-items: center" th:text="${customer.sales != null ? #lists.size(customer.sales) : 0}">0</span>
                                         </td>
                                         <td>
                                             <div class="btn-actions">
