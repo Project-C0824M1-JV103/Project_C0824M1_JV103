@@ -1,0 +1,325 @@
+body {
+    background-color: #eaeaea;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.main-wrapper {
+    margin-left: 200px;
+    margin-right: 200px;
+    padding-top: 120px;
+}
+
+.header, footer {
+    width: 100%;
+}
+
+.image-container {
+    background-color: #0F2D6D;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+}
+
+.image-container img.banner {
+    width: 100%;
+    border-radius: 10px;
+    display: block;
+    margin-bottom: 30px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.product-card {
+    border-radius: 10px;
+    background-color: white;
+    padding: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.product-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+}
+
+.badge, .hot-deal {
+    position: absolute;
+    font-size: 12px;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 5px;
+}
+
+.badge {
+    top: 10px;
+    left: 10px;
+    background-color: #0066cc;
+}
+
+.hot-deal {
+    top: 10px;
+    right: 10px;
+    background-color: red;
+}
+
+.product-card h6 {
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.price {
+    color: red;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: gray;
+    font-size: 0.9rem;
+}
+
+.rating {
+    font-size: 0.85rem;
+    color: #f39c12;
+}
+
+.buy-btn {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 999px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+.buy-btn:hover {
+    background: #c0392b;
+}
+
+/* === BANNER SLIDER === */
+.banner-container {
+    position: relative;
+}
+
+#bannerTrack {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    gap: 0;
+}
+
+.banner-slide {
+    flex: 0 0 50%;
+    padding: 2.5px;
+}
+
+.banner-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin: 0;
+    padding: 0;
+}
+
+.custom-padding {
+    padding: 0 10px 8px;
+}
+
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #000;
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+    padding: 10px 15px;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.nav-left {
+    left: 10px;
+}
+
+.nav-right {
+    right: 10px;
+}
+
+/* === FILTER BAR === */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-bar button,
+.filter-bar .btn {
+    background-color: #e3e7ed;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* === CARD STYLE === */
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: white;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.card-title {
+    margin-top: 1rem;
+}
+
+.card-body {
+    padding: 20px 25px 10px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background-color: white;
+    border-radius: 10px 10px 0 0;
+    margin: 0;
+    padding: 30px 0;
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.card-img-top:hover {
+    transform: translateY(-10px);
+}
+
+.card-header-custom {
+    background: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 10px;
+    margin: 0;
+}
+
+.card-footer-custom {
+    background: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 0 20px 15px;
+    margin: 0;
+}
+
+.card .badge-top,
+.card .hot-deal {
+    position: absolute;
+    top: 10px;
+    padding: 2px 6px;
+    font-size: 12px;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.card .badge-top {
+    left: 10px;
+    background-color: #0066cc;
+}
+
+.card .hot-deal {
+    right: 10px;
+    background-color: red;
+    border-radius: 5px;
+}
+
+/* === FOOTER STYLE === */
+.custom-link {
+    text-decoration: none;
+    color: black;
+}
+
+.custom-link-phone {
+    text-decoration: none;
+    color: blue;
+}
+
+.custom-link:hover {
+    color: blue;
+}
+
+.social-icons a {
+    font-size: 1.5rem;
+}
+
+footer {
+    font-size: 13px;
+    padding: 20px 0;
+    background-color: #ffffff;
+    color: #333;
+}
+
+footer h5 {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+footer p {
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+footer .social-icons a {
+    font-size: 1.2rem;
+    margin-right: 8px;
+}
+
+footer .text-center {
+    font-size: 12px;
+    padding-top: 10px;
+}

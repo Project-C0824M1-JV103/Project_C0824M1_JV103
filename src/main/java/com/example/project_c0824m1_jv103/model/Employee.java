@@ -1,189 +1,135 @@
 package com.example.project_c0824m1_jv103.model;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "Employee")
 public class Employee {
+    
+    public enum Role {
+        Admin, Sales, Business, Warehouse
+    }
+    
+    public enum Status {
+        active, inactive
+    }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "employee_id")
     private Integer employeeId;
-
-    @Column(name = "fullName", nullable = false)
+    
+    @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
-
-    @Column(name = "username", nullable = false, unique = true)
-    private String username;
-
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "address")
-    private String address;
-
-    @ManyToOne
-    @JoinColumn(name = "roleId", nullable = false)
-    private Role role;
-
-    @Column(name = "birthDate")
-    private LocalDate birthDate;
-
-    @Column(name = "phoneNumber")
-    private String phoneNumber;
-
-    @Column(name = "email")
+    
+    @Column(name = "email", unique = true, length = 255)
     private String email;
-
+    
+    @Column(name = "password", nullable = false, length = 50)
+    private String password;
+    
+    @Column(name = "phone", length = 20)
+    private String phone;
+    
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private Status status = Status.INACTIVE; 
-
+    @Column(name = "role", nullable = false)
+    private Role role;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status = Status.active;
+    
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Sale> sales;
-
+    
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private List<Import> imports;
-
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private List<Export> exports;
-
-    public Employee() {
-    }
-
-    public Employee(Integer employeeId, String fullName, String username, String password, String address, Role role, LocalDate birthDate, String phoneNumber, String email, Status status, List<Sale> sales, List<Import> imports, List<Export> exports) {
-        this.employeeId = employeeId;
+    private List<Storage> storages;
+    
+    // Constructors
+    public Employee() {}
+    
+    public Employee(String fullName, String email, String password, String phone, Role role, Status status) {
         this.fullName = fullName;
-        this.username = username;
-        this.password = password;
-        this.address = address;
-        this.role = role;
-        this.birthDate = birthDate;
-        this.phoneNumber = phoneNumber;
         this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.role = role;
         this.status = status;
-        this.sales = sales;
-        this.imports = imports;
-        this.exports = exports;
     }
+    
 
+    
+    // Getters and Setters
     public Integer getEmployeeId() {
         return employeeId;
     }
-
+    
     public void setEmployeeId(Integer employeeId) {
         this.employeeId = employeeId;
     }
-
+    
     public String getFullName() {
         return fullName;
     }
-
+    
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
+    
     public String getEmail() {
         return email;
     }
-
+    
     public void setEmail(String email) {
         this.email = email;
     }
-
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    public String getPhone() {
+        return phone;
+    }
+    
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
+    public Role getRole() {
+        return role;
+    }
+    
+    public void setRole(Role role) {
+        this.role = role;
+    }
+    
     public Status getStatus() {
         return status;
     }
-
+    
     public void setStatus(Status status) {
         this.status = status;
     }
-
+    
     public List<Sale> getSales() {
         return sales;
     }
-
+    
     public void setSales(List<Sale> sales) {
         this.sales = sales;
     }
-
-    public List<Import> getImports() {
-        return imports;
+    
+    public List<Storage> getStorages() {
+        return storages;
     }
-
-    public void setImports(List<Import> imports) {
-        this.imports = imports;
+    
+    public void setStorages(List<Storage> storages) {
+        this.storages = storages;
     }
-
-    public List<Export> getExports() {
-        return exports;
-    }
-
-    public void setExports(List<Export> exports) {
-        this.exports = exports;
-    }
-    public enum Status {
-        ACTIVE("active"),
-        INACTIVE("inactive");
-        
-        private final String value;
-        
-        Status(String value) {
-            this.value = value;
-        }
-        
-        public String getValue() {
-            return value;
-        }
-    }
-}
+} 
