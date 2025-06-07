@@ -8,13 +8,16 @@
     <div th:if="${error}" style="color: red" th:text="${error}"></div>
     <form
       th:action="@{/product/add-product}"
-      th:object="${product}"
+      th:object="${productDTO}"
       method="post"
       enctype="multipart/form-data"
     >
       <div>
         <label>Tên sản phẩm:</label>
         <input type="text" th:field="*{productName}" required />
+      </div>
+      <div th:if="${#fields.hasErrors('productName')}" style="color: red">
+        <span th:errors="*{productName}"></span>
       </div>
       <div>
         <label>Kích thước:</label>
@@ -23,6 +26,9 @@
       <div>
         <label>Giá:</label>
         <input type="number" th:field="*{price}" step="0.01" required />
+      </div>
+      <div th:if="${#fields.hasErrors('price')}" style="color: red">
+        <span th:errors="*{price}"></span>
       </div>
       <div>
         <label>Camera trước:</label>

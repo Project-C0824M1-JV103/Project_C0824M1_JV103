@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chỉnh sửa thông tin hàng hóa</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .form-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        background-color: #f9f9f9;
+      }
+      .form-title {
+        background-color: #333;
+        color: white;
+        padding: 8px;
+        margin: -20px -20px 20px -20px;
+        text-align: center;
+        font-weight: bold;
+      }
+      .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+      .form-label {
+        width: 150px;
+        font-weight: bold;
+        margin-right: 10px;
+        text-align: right;
+      }
+      .form-control {
+        flex: 1;
+        padding: 5px;
+        border: 1px solid #ccc;
+      }
+      .form-control.large {
+        height: 80px;
+        resize: vertical;
+      }
+      .image-upload {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .image-preview {
+        width: 60px;
+        height: 60px;
+        border: 1px solid #ccc;
+        background-color: orange;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+      }
+      .upload-btn {
+        background-color: #666;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+      .form-buttons {
+        text-align: center;
+        margin-top: 20px;
+      }
+      .btn {
+        margin: 0 5px;
+        padding: 8px 20px;
+        border: 1px solid #333;
+        background-color: white;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background-color: #333;
+        color: white;
+      }
+      .error-message {
+        color: red;
+        font-size: 0.9em;
+        margin-left: 160px;
+      }
+      .currency {
+        margin-left: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <div class="form-title">6.5.2 Chỉnh sửa thông tin hàng hóa</div>
+
+      <!-- Hiển thị lỗi chung -->
+      <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+      </div>
+
+      <form
+        th:action="@{/product/update/{id}(id=${productDTO.productId})}"
+        th:object="${productDTO}"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <!-- Tên hàng -->
+        <div class="form-group">
+          <label class="form-label">Tên hàng</label>
+          <input type="text" th:field="*{productName}" class="form-control" />
+        </div>
+        <div th:if="${#fields.hasErrors('productName')}" class="error-message">
+          <span th:errors="*{productName}"></span>
+        </div>
+
+        <!-- Giá -->
+        <div class="form-group">
+          <label class="form-label">Giá</label>
+          <input
+            type="number"
+            th:field="*{price}"
+            class="form-control"
+            step="0.01"
+          />
+          <span class="currency">VNĐ</span>
+        </div>
+        <div th:if="${#fields.hasErrors('price')}" class="error-message">
+          <span th:errors="*{price}"></span>
+        </div>
+
+        <!-- Hình ảnh hàng hóa -->
+        <div class="form-group">
+          <label class="form-label">Hình ảnh hàng hóa</label>
+          <div class="image-upload">
+            <!-- Hiển thị ảnh hiện tại -->
+            <div
+              th:if="${productDTO.existingImageUrls != null and !productDTO.existingImageUrls.isEmpty()}"
+              class="existing-images"
+              style="display: flex; gap: 10px"
+            >
+              <div
+                th:each="imageUrl : ${productDTO.existingImageUrls}"
+                class="image-preview"
+              >
+                <img
+                  th:src="${imageUrl}"
+                  style="width: 100%; height: 100%; object-fit: cover"
+                />
+              </div>
+            </div>
+            <div
+              th:unless="${productDTO.existingImageUrls != null and !productDTO.existingImageUrls.isEmpty()}"
+              class="image-preview"
+            >
+              <span>No Image</span>
+            </div>
+            <input
+              type="file"
+              name="imageFiles"
+              multiple
+              accept="image/*"
+              class="upload-btn"
+            />
+          </div>
+        </div>
+
+        <!-- Kích thước màn hình -->
+        <div class="form-group">
+          <label class="form-label">Kích thước màn hình</label>
+          <input type="text" th:field="*{size}" class="form-control" />
+        </div>
+        <div th:if="${#fields.hasErrors('size')}" class="error-message">
+          <span th:errors="*{size}"></span>
+        </div>
+
+        <!-- Camera -->
+        <div class="form-group">
+          <label class="form-label">Camera</label>
+          <input type="text" th:field="*{cameraBack}" class="form-control" />
+        </div>
+        <div th:if="${#fields.hasErrors('cameraBack')}" class="error-message">
+          <span th:errors="*{cameraBack}"></span>
+        </div>
+
+        <!-- Selfie -->
+        <div class="form-group">
+          <label class="form-label">Selfie</label>
+          <input type="text" th:field="*{cameraFront}" class="form-control" />
+        </div>
+        <div th:if="${#fields.hasErrors('cameraFront')}" class="error-message">
+          <span th:errors="*{cameraFront}"></span>
+        </div>
+
+        <!-- CPU -->
+        <div class="form-group">
+          <label class="form-label">CPU</label>
+          <input type="text" th:field="*{cpu}" class="form-control" />
+        </div>
+        <div th:if="${#fields.hasErrors('cpu')}" class="error-message">
+          <span th:errors="*{cpu}"></span>
+        </div>
+
+        <!-- Lưu trữ -->
+        <div class="form-group">
+          <label class="form-label">Lưu trữ</label>
+          <input type="text" th:field="*{memory}" class="form-control" />
+        </div>
+        <div th:if="${#fields.hasErrors('memory')}" class="error-message">
+          <span th:errors="*{memory}"></span>
+        </div>
+
+        <!-- Mô tả thêm -->
+        <div class="form-group">
+          <label class="form-label">Mô tả thêm</label>
+          <textarea
+            th:field="*{description}"
+            class="form-control large"
+          ></textarea>
+        </div>
+        <div th:if="${#fields.hasErrors('description')}" class="error-message">
+          <span th:errors="*{description}"></span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="form-buttons">
+          <button type="submit" class="btn btn-primary">Cập nhật</button>
+          <a href="/product/list" class="btn">Hủy</a>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
