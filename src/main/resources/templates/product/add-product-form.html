@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thêm Sản Phẩm</title>
+</head>
+<body>
+<h1>Thêm Sản Phẩm Mới</h1>
+<div th:if="${error}" style="color: red;" th:text="${error}"></div>
+<form th:action="@{/product/add-product}" th:object="${product}" method="post" enctype="multipart/form-data">
+    <div>
+        <label>Tên sản phẩm:</label>
+        <input type="text" th:field="*{productName}" required />
+    </div>
+    <div>
+        <label>Kích thước:</label>
+        <input type="text" th:field="*{size}" />
+    </div>
+    <div>
+        <label>Giá:</label>
+        <input type="number" th:field="*{price}" step="0.01" required />
+    </div>
+    <div>
+        <label>Camera trước:</label>
+        <input type="text" th:field="*{cameraFront}" />
+    </div>
+    <div>
+        <label>Camera sau:</label>
+        <input type="text" th:field="*{cameraBack}" />
+    </div>
+    <div>
+        <label>Bộ nhớ:</label>
+        <input type="text" th:field="*{memory}" />
+    </div>
+    <div>
+        <label>CPU:</label>
+        <input type="text" th:field="*{cpu}" />
+    </div>
+    <div>
+        <label>Mô tả:</label>
+        <textarea th:field="*{description}"></textarea>
+    </div>
+    <div>
+        <label>Số lượng:</label>
+        <input type="number" th:field="*{quantity}" required />
+    </div>
+    <div>
+        <label>Hình ảnh:</label>
+        <input type="file" name="images" multiple accept="image/*" />
+    </div>
+    <div>
+        <label>Chú thích ảnh (tùy chọn):</label>
+        <input type="text" name="captions" placeholder="Chú thích cho ảnh 1" />
+        <input type="text" name="captions" placeholder="Chú thích cho ảnh 2" />
+        <!-- Thêm input cho các chú thích khác nếu cần -->
+    </div>
+    <button type="submit">Thêm Sản Phẩm</button>
+</form>
+</body>
+</html>

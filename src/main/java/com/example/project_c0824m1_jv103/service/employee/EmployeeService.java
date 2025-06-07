@@ -38,4 +38,9 @@ public class EmployeeService implements IEmployeeService {
         Employee.Role roleEnum = (role == null || role.isEmpty()) ? null : Employee.Role.valueOf(role);
         return employeeRepository.searchEmployees(fullName, phone, roleEnum);
     }
+
+    @Override
+    public Employee findByEmail(String email) {
+        return employeeRepository.findByEmail(email);
+    }
 }
