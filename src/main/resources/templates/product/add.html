@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Thêm sản phẩm</title>
+  <meta charset="UTF-8">
+  <style>
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+    }
+    input, select, textarea {
+      width: 300px;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .message {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<h2>Thêm sản phẩm mới</h2>
+
+<!-- Thông báo -->
+<div th:if="${message}" class="message" th:text="${message}"></div>
+<div th:if="${error}" class="error" th:text="${error}"></div>
+
+<!-- Form thêm sản phẩm -->
+<form th:action="@{/products/save}" th:object="${product}" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="productName">Tên sản phẩm:</label>
+    <input type="text" id="productName" th:field="*{productName}" required/>
+  </div>
+  <div class="form-group">
+    <label for="price">Giá:</label>
+    <input type="number" id="price" th:field="*{price}" step="0.01" required/>
+  </div>
+  <div class="form-group">
+    <label for="quantity">Số lượng:</label>
+    <input type="number" id="quantity" th:field="*{quantity}" required/>
+  </div>
+  <div class="form-group">
+    <label for="cameraBack">Camera sau:</label>
+    <input type="text" id="cameraBack" th:field="*{cameraBack}"/>
+  </div>
+  <div class="form-group">
+    <label for="cameraFront">Camera trước:</label>
+    <input type="text" id="cameraFront" th:field="*{cameraFront}"/>
+  </div>
+  <div class="form-group">
+    <label for="cpu">CPU:</label>
+    <input type="text" id="cpu" th:field="*{cpu}"/>
+  </div>
+  <div class="form-group">
+    <label for="memory">Bộ nhớ:</label>
+    <input type="text" id="memory" th:field="*{memory}"/>
+  </div>
+  <div class="form-group">
+    <label for="size">Kích thước:</label>
+    <input type="text" id="size" th:field="*{size}"/>
+  </div>
+  <div class="form-group">
+    <label for="description">Mô tả:</label>
+    <textarea id="description" th:field="*{description}"></textarea>
+  </div>
+  <div class="form-group">
+    <label for="category">Danh mục:</label>
+    <select id="category" th:field="*{category}">
+      <option value="">-- Chọn danh mục --</option>
+      <option th:each="category : ${categories}" th:value="${category.categoryId}" th:text="${category.categoryName}"/>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="supplier">Nhà cung cấp:</label>
+    <select id="supplier" th:field="*{supplier}">
+      <option value="">-- Chọn nhà cung cấp --</option>
+      <option th:each="supplier : ${suppliers}" th:value="${supplier.supplierId}" th:text="${supplier.supplierName}"/>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="images">Hình ảnh:</label>
+    <input type="file" id="images" name="images" multiple accept="image/*"/>
+  </div>
+  <button type="submit">Lưu</button>
+  <a th:href="@{/products/add}">Hủy</a>
+</form>
+</body>
+</html>

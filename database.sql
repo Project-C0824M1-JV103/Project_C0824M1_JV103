@@ -1,6 +1,6 @@
 -- Thêm dữ liệu vào bảng Employee
 INSERT INTO Employee (full_name, email, password, phone, role, status) VALUES
-('Nguyen Van A', 'nguyenvana@example.com', 'password123', '0901234567', 'Admin', 'active'),
+    ('Nguyen Van A', 'nguyenvana@example.com', 'password123', '0901234567', 'Admin', 'active'),
 ('Tran Thi B', 'tranthib@example.com', 'password456', '0912345678', 'Sales', 'active'),
 ('Le Van C', 'levanc@example.com', 'password789', '0923456789', 'Warehouse', 'active');
 
