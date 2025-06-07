@@ -23,8 +23,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" th:href="@{/admin-navbar.css}">
-    <link rel="stylesheet" th:href="@{/admin-common.css}">
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}" />
+    <link rel="stylesheet" th:href="@{/admin-common.css}" />
 
     <style>
       .main-content {
@@ -267,204 +267,197 @@
     </style>
   </head>
   <body>
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Include Admin Navbar -->
-      <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
-      
-      <!-- Main Content -->
-      <div class="col-md-9 col-lg-10">
-        <div class="main-content p-4">
-          <!-- Header Section -->
-          <div class="header-section">
-            <div class="row align-items-center">
-              <div class="col">
-                <h2 class="mb-1">
-                  <i class="fas fa-users text-primary"></i>
-                  Quản lý nhân viên
-                </h2>
-                <p class="text-muted mb-0">
-                  Danh sách tất cả nhân viên trong hệ thống
-                </p>
-              </div>
-              <div class="col-auto">
-                <button
-                  class="btn btn-primary"
-                  onclick="window.location.href='/employees/create'"
-                >
-                  <i class="fas fa-plus"></i> Thêm nhân viên
-                </button>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Include Admin Navbar -->
+        <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+          <div class="main-content p-4">
+            <!-- Header Section -->
+            <div class="header-section">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h2 class="mb-1">
+                    <i class="fas fa-users text-primary"></i>
+                    Quản lý nhân viên
+                  </h2>
+                  <p class="text-muted mb-0">
+                    Danh sách tất cả nhân viên trong hệ thống
+                  </p>
+                </div>
+                <div class="col-auto">
+                  <button
+                    class="btn btn-primary"
+                    onclick="window.location.href='/Admin/employees/create'"
+                  >
+                    <i class="fas fa-plus"></i> Thêm nhân viên
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Success/Error Messages -->
-          <div
-            th:if="${successMessage}"
-            class="alert alert-success alert-dismissible fade show"
-            role="alert"
-          >
-            <i class="bi bi-check-circle-fill"></i>
-            <span th:text="${successMessage}"></span>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="alert"
-            ></button>
-          </div>
+            <!-- Success/Error Messages -->
+            <div
+              th:if="${successMessage}"
+              class="alert alert-success alert-dismissible fade show"
+              role="alert"
+            >
+              <i class="bi bi-check-circle-fill"></i>
+              <span th:text="${successMessage}"></span>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+              ></button>
+            </div>
 
-          <div
-            th:if="${errorMessage}"
-            class="alert alert-danger alert-dismissible fade show"
-            role="alert"
-          >
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <span th:text="${errorMessage}"></span>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="alert"
-            ></button>
-          </div>
+            <div
+              th:if="${errorMessage}"
+              class="alert alert-danger alert-dismissible fade show"
+              role="alert"
+            >
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <span th:text="${errorMessage}"></span>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+              ></button>
+            </div>
 
-          <!-- Search Section -->
-          <div class="search-section">
-            <form th:action="@{/employees/list}" method="get">
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="fas fa-user"></i>
-                    </span>
-                    <input
-                      type="text"
-                      id="fullName"
-                      name="fullName"
-                      class="form-control"
-                      placeholder="Tìm kiếm theo tên nhân viên..."
-                      th:value="${param.fullName}"
-                    />
+            <!-- Search Section -->
+            <div class="search-section">
+              <form th:action="@{/Admin/employees/list}" method="get">
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-user"></i>
+                      </span>
+                      <input
+                        type="text"
+                        id="fullName"
+                        name="fullName"
+                        class="form-control"
+                        placeholder="Tìm kiếm theo tên nhân viên..."
+                        th:value="${param.fullName}"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div class="col-md-3">
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="fas fa-phone"></i>
-                    </span>
-                    <input
-                      type="text"
-                      id="phone"
-                      name="phone"
-                      class="form-control"
-                      placeholder="Số điện thoại..."
-                      th:value="${param.phone}"
-                    />
+                  <div class="col-md-3">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-phone"></i>
+                      </span>
+                      <input
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        class="form-control"
+                        placeholder="Số điện thoại..."
+                        th:value="${param.phone}"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div class="col-md-3">
-                  <select id="role" name="role" class="form-select">
-                    <option value="">-- Chọn phòng ban --</option>
-                    <option
-                      th:each="role : ${roles}"
-                      th:value="${role}"
-                      th:text="${role}"
-                      th:selected="${param.role == role}"
-                    />
-                  </select>
-                </div>
+                  <div class="col-md-3">
+                    <select id="role" name="role" class="form-select">
+                      <option value="">-- Chọn phòng ban --</option>
+                      <option
+                        th:each="role : ${roles}"
+                        th:value="${role}"
+                        th:text="${role}"
+                        th:selected="${param.role == role}"
+                      />
+                    </select>
+                  </div>
 
-                <div class="col-md-2">
-                  <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search"></i> Tìm kiếm
-                  </button>
-                </div>
-              </div>
-
-              <div class="row mt-3">
-                <div class="col-md-2">
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary w-100"
-                    onclick="clearSearch()"
-                  >
-                    <i class="fas fa-refresh"></i> Làm mới
-                  </button>
-                </div>
-                <div class="col-md-10">
-                  <div class="d-flex align-items-center gap-3">
-                    <button
-                      id="deleteSelectedBtn"
-                      type="button"
-                      class="btn btn-outline-danger"
-                      disabled
-                      data-bs-toggle="modal"
-                      data-bs-target="#deleteModal"
-                    >
-                      <i class="fas fa-trash"></i>
-                      Xóa nhân viên đã chọn
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                      <i class="fas fa-search"></i> Tìm kiếm
                     </button>
-                    <span id="selectedCount" class="selected-count"></span>
                   </div>
                 </div>
-              </div>
-            </form>
-          </div>
 
-          <!-- Employee Table -->
-          <div class="employee-table">
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead>
-                  <tr>
-                    <th class="checkbox-column">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          id="selectAll"
-                          onchange="toggleSelectAll()"
-                        />
-                      </div>
-                    </th>
-                    <th>ID</th>
-                    <th>Thông tin nhân viên</th>
-                    <th>Số điện thoại</th>
-                    <th>Chức vụ</th>
-                    <th>Trạng thái</th>
-                    <th class="action-column">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr th:each="e, iterStat : ${listEmployee}">
-                    <td class="checkbox-column">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input employee-checkbox"
-                          type="checkbox"
-                          th:value="${e.employeeId}"
-                          th:data-name="${e.fullName}"
-                          th:data-email="${e.email}"
-                          th:data-phone="${e.phone}"
-                          th:id="'check-' + ${e.employeeId}"
-                          onchange="updateDeleteButton()"
-                        />
-                      </div>
-                    </td>
-                    <td>
-                      <span class="badge bg-primary" th:text="${e.employeeId}"
-                        >001</span
+                <div class="row mt-3">
+                  <div class="col-md-2">
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary w-100"
+                      onclick="clearSearch()"
+                    >
+                      <i class="fas fa-refresh"></i> Làm mới
+                    </button>
+                  </div>
+                  <div class="col-md-10">
+                    <div class="d-flex align-items-center gap-3">
+                      <button
+                        id="deleteSelectedBtn"
+                        type="button"
+                        class="btn btn-outline-danger"
+                        disabled
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteModal"
                       >
-                    </td>
-                    <td>
-                      <div class="employee-info">
-                        <div class="employee-avatar">
-                          <span
-                            th:text="${e.fullName != null ? e.fullName.substring(0,1).toUpperCase() : 'N'}"
-                            >N</span
-                          >
+                        <i class="fas fa-trash"></i>
+                        Xóa nhân viên đã chọn
+                      </button>
+                      <span id="selectedCount" class="selected-count"></span>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Employee Table -->
+            <div class="employee-table">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th class="checkbox-column">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="selectAll"
+                            onchange="toggleSelectAll()"
+                          />
                         </div>
+                      </th>
+                      <th>STT</th>
+                      <th>Thông tin nhân viên</th>
+                      <th>Số điện thoại</th>
+                      <th>Chức vụ</th>
+                      <th>Trạng thái</th>
+                      <th class="action-column">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="e, l : ${listEmployee}">
+                      <td class="checkbox-column">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input employee-checkbox"
+                            type="checkbox"
+                            th:value="${l.count}"
+                            th:data-name="${e.fullName}"
+                            th:data-email="${e.email}"
+                            th:data-phone="${e.phone}"
+                            th:id="'check-' + ${e.employeeId}"
+                            onchange="updateDeleteButton()"
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge bg-primary" th:text="${l.count}"
+                          ></span
+                        >
+                      </td>
+                      <td>
                         <div class="employee-details">
                           <div class="employee-name" th:text="${e.fullName}">
                             Tên nhân viên
@@ -476,153 +469,157 @@
                             Email
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span th:text="${e.phone ?: 'Chưa cập nhật'}">
-                        <i class="fas fa-phone text-muted me-1"></i>
-                        Chưa cập nhật
-                      </span>
-                    </td>
-                    <td>
-                      <span class="badge role-badge" th:text="${e.role}">Role</span>
-                    </td>
-                    <td>
-                      <span
-                        th:class="${e.status.name() == 'active'} ? 'badge status-active' : 'badge status-inactive'"
-                        th:text="${e.status}"
-                        >Status</span
-                      >
-                    </td>
-                    <td class="action-column">
-                      <div class="btn-actions">
-                        <button
-                          class="btn btn-sm btn-outline-primary"
-                          title="Xem chi tiết"
+                      </td>
+                      <td>
+                        <span th:text="${e.phone ?: 'Chưa cập nhật'}">
+                          Chưa cập nhật
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge role-badge" th:text="${e.role}"
+                          >Role</span
                         >
-                          <i class="fas fa-eye"></i>
-                        </button>
-                        <button
-                          class="btn btn-sm btn-outline-warning edit-btn"
-                          th:onclick="'window.location.href=\'/employees/show-edit-employee/' + ${e.employeeId} + '\''"
-                          title="Chỉnh sửa"
+                      </td>
+                      <td>
+                        <span
+                          th:class="${e.status.name() == 'active'} ? 'badge status-active' : 'badge status-inactive'"
+                          th:text="${e.status}"
+                          >Status</span
                         >
-                          <i class="fas fa-edit"></i>
-                        </button>
-                        <button
-                          class="btn btn-sm btn-outline-danger delete-single-btn"
-                          th:attr="data-employee-id=${e.employeeId},data-employee-name=${e.fullName},data-employee-email=${e.email},data-employee-phone=${e.phone}"
-                          title="Xóa"
-                        >
-                          <i class="fas fa-trash"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                      </td>
+                      <td class="action-column">
+                        <div class="btn-actions">
+                          <button
+                            class="btn btn-sm btn-outline-primary"
+                            title="Xem chi tiết"
+                          >
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button
+                            class="btn btn-sm btn-outline-warning edit-btn"
+                            th:onclick="'window.location.href=\'/Admin/employees/show-edit-employee/' + ${e.employeeId} + '\''"
+                            title="Chỉnh sửa"
+                          >
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button
+                            class="btn btn-sm btn-outline-danger delete-single-btn"
+                            th:attr="data-employee-id=${e.employeeId},data-employee-name=${e.fullName},data-employee-email=${e.email},data-employee-phone=${e.phone}"
+                            title="Xóa"
+                          >
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pagination -->
+              <div
+                class="d-flex justify-content-between align-items-center p-3 border-top"
+              >
+                <div class="text-muted">
+                  Hiển thị
+                  <span th:text="${#lists.size(listEmployee)}">0</span> nhân
+                  viên
+                </div>
+                <nav>
+                  <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#">
+                        <i class="fas fa-chevron-left"></i>
+                      </a>
+                    </li>
+                    <li class="page-item active">
+                      <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">
+                        <i class="fas fa-chevron-right"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bootstrap Delete Modal -->
+      <div
+        class="modal fade"
+        id="deleteModal"
+        tabindex="-1"
+        aria-labelledby="deleteModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabel">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Xác nhận xóa nhân viên
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
             </div>
 
-            <!-- Pagination -->
-            <div
-              class="d-flex justify-content-between align-items-center p-3 border-top"
-            >
-              <div class="text-muted">
-                Hiển thị <span th:text="${#lists.size(listEmployee)}">0</span> nhân
-                viên
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-12">
+                  <h6 class="text-danger mb-3">
+                    <i class="bi bi-exclamation-circle"></i>
+                    Bạn có chắc chắn muốn xóa những nhân viên sau không?
+                  </h6>
+
+                  <div id="employeeList" class="mb-3">
+                    <!-- Employee info will be populated here -->
+                  </div>
+
+                  <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <strong>Lưu ý:</strong> Hành động này không thể hoàn tác sau
+                    khi thực hiện!
+                  </div>
+                </div>
               </div>
-              <nav>
-                <ul class="pagination pagination-sm mb-0">
-                  <li class="page-item disabled">
-                    <a class="page-link" href="#">
-                      <i class="fas fa-chevron-left"></i>
-                    </a>
-                  </li>
-                  <li class="page-item active">
-                    <a class="page-link" href="#">1</a>
-                  </li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">2</a>
-                  </li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">3</a>
-                  </li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">
-                      <i class="fas fa-chevron-right"></i>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                <i class="bi bi-x-circle"></i>
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                id="confirmDeleteBtn"
+              >
+                <i class="bi bi-trash3-fill"></i>
+                Xác nhận xóa
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Bootstrap Delete Modal -->
-    <div
-      class="modal fade"
-      id="deleteModal"
-      tabindex="-1"
-      aria-labelledby="deleteModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="deleteModalLabel">
-              <i class="bi bi-exclamation-triangle-fill"></i>
-              Xác nhận xóa nhân viên
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-12">
-                <h6 class="text-danger mb-3">
-                  <i class="bi bi-exclamation-circle"></i>
-                  Bạn có chắc chắn muốn xóa những nhân viên sau không?
-                </h6>
-
-                <div id="employeeList" class="mb-3">
-                  <!-- Employee info will be populated here -->
-                </div>
-
-                <div class="alert alert-warning" role="alert">
-                  <i class="bi bi-info-circle-fill"></i>
-                  <strong>Lưu ý:</strong> Hành động này không thể hoàn tác sau
-                  khi thực hiện!
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              <i class="bi bi-x-circle"></i>
-              Hủy bỏ
-            </button>
-            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
-              <i class="bi bi-trash3-fill"></i>
-              Xác nhận xóa
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-  </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -845,7 +842,7 @@
           // Create form and submit
           const form = document.createElement("form");
           form.method = "POST";
-          form.action = "/employees/delete";
+          form.action = "/Admin/employees/delete";
 
           employeeIds.forEach((id) => {
             const input = document.createElement("input");
@@ -897,7 +894,7 @@
         document.getElementById("role").value = "";
 
         // Optionally submit the form to show all employees
-        window.location.href = "/employees/list";
+        window.location.href = "/Admin/employees/list";
       }
     </script>
   </body>

@@ -37,7 +37,6 @@ public class HomeController {
         Employee employee = employeeService.findByEmail(userDetails.getUsername());
         BeanUtils.copyProperties(employee,dto);
         model.addAttribute("employee", dto);
-        model.addAttribute("employee", employee);
         return "homePage/personal_info";
     }
 
