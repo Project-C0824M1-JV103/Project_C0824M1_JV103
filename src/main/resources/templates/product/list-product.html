@@ -6,6 +6,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}">
+    <link rel="stylesheet" th:href="@{/admin-common.css}">
     <style>
         body { background-color: #f8f9fa; }
         .main-content { background-color: #f8f9fa; min-height: 100vh; }
@@ -25,7 +27,9 @@
 <body>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <!-- Include Admin Navbar -->
+        <div th:replace="navbar/admin-navbar :: admin-sidebar" class="col-md-3"></div>
+        <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
                 <!-- Header Section -->
                 <div class="header-section">
@@ -63,9 +67,9 @@
                     </form>
                 </div>
                 <!-- Product Table -->
-                <div class="product-table">
+                <div class="employee-table">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover mb-0" style="width: 100%;">
                             <thead>
                             <tr>
                                 <th>ID</th>
@@ -82,13 +86,16 @@
                                 <td th:text="${product.productId}"></td>
                                 <td>
                                     <img th:if="${product.productImages != null and #lists.size(product.productImages) > 0}"
-                                         th:src="${product.productImages[0].imageUrl}" class="product-image-thumb"/>
+                                         th:src="${product.productImages.get(0).imageUrl}" class="product-image-thumb" alt="Ảnh sản phẩm"/>
                                     <span th:if="${product.productImages == null or #lists.size(product.productImages) == 0}" class="text-muted">Không có ảnh</span>
                                 </td>
                                 <td th:text="${product.productName}"></td>
-                                <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' ₫'}"></td>
+                                <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
                                 <td th:text="${product.quantity}"></td>
-                                <td th:text="${product.category != null ? product.category.categoryName : 'Chưa phân loại'}"></td>
+                                <td>
+                                    <span th:if="${product.category != null}" th:text="${product.category.categoryName}"></span>
+                                    <span th:if="${product.category == null}">Chưa phân loại</span>
+                                </td>
                                 <td>
                                     <a th:href="@{'/product/edit/' + ${product.productId}}" class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></a>
                                     <a th:href="@{'/product/delete/' + ${product.productId}}" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
@@ -105,12 +112,12 @@
                         <ul class="pagination pagination-sm justify-content-center">
                             <li class="page-item" th:classappend="${productPage.first} ? 'disabled'">
                                 <a class="page-link"
-                                   th:href="@{'/product/list'(field=${field},keyword=${keyword},page=${productPage.number-1})}">
-                                    <i class="fas fa-chevron-left"></i>
+                                   th:href="@{'/product/list'(field=${field},keyword=${keyword},page=${(productPage.number - 1)})}">
+                                <i class="fas fa-chevron-left"></i>
                                 </a>
                             </li>
                             <li class="page-item"
-                                th:each="i : ${#numbers.sequence(0, productPage.totalPages-1)}"
+                                th:each="i : ${#numbers.sequence(0, (productPage.totalPages - 1))}"
                                 th:classappend="${i == productPage.number} ? 'active'">
                                 <a class="page-link"
                                    th:href="@{'/product/list'(field=${field},keyword=${keyword},page=${i})}"
