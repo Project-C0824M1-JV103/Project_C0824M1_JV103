@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý sản phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        body { background-color: #f8f9fa; }
+        .main-content { background-color: #f8f9fa; min-height: 100vh; }
+        .header-section, .search-section, .product-table { background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .header-section { padding: 20px; }
+        .search-section { padding: 20px; }
+        .product-table { padding: 20px; }
+        .table th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px; font-weight: 600; text-align: center; }
+        .table td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #eee; text-align: center; }
+        .table tbody tr:hover { background-color: #f8f9fa; transition: all 0.3s ease; }
+        .product-image-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #eee; }
+        .pagination { justify-content: center; }
+        .btn-search { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-search:hover { background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); color: white; }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-content p-4">
+                <!-- Header Section -->
+                <div class="header-section">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-1"><i class="fas fa-boxes text-primary"></i> Quản lý sản phẩm</h2>
+                            <p class="text-muted mb-0">Danh sách tất cả sản phẩm trong hệ thống</p>
+                        </div>
+                        <div class="col-auto">
+                            <a href="/product/add" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm sản phẩm</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Search Section -->
+                <div class="search-section">
+                    <form th:action="@{/product/list}" method="get">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3">
+                                <select class="form-select" name="field" th:value="${field}">
+                                    <option value="productName" th:selected="${field == 'productName'}">Tên hàng hóa</option>
+                                    <option value="price" th:selected="${field == 'price'}">Giá</option>
+                                    <option value="quantity" th:selected="${field == 'quantity'}">Số lượng</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="Nhập từ khóa tìm kiếm..." maxlength="100"/>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-search w-100"><i class="fas fa-search"></i> Tìm kiếm</button>
+                            </div>
+                            <div class="col-md-1">
+                                <a th:href="@{/product/list}" class="btn btn-outline-secondary w-100"><i class="fas fa-refresh"></i></a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- Product Table -->
+                <div class="product-table">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Danh mục</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="product : ${productPage.content}">
+                                <td th:text="${product.productId}"></td>
+                                <td>
+                                    <img th:if="${product.productImages != null and #lists.size(product.productImages) > 0}"
+                                         th:src="${product.productImages[0].imageUrl}" class="product-image-thumb"/>
+                                    <span th:if="${product.productImages == null or #lists.size(product.productImages) == 0}" class="text-muted">Không có ảnh</span>
+                                </td>
+                                <td th:text="${product.productName}"></td>
+                                <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' ₫'}"></td>
+                                <td th:text="${product.quantity}"></td>
+                                <td th:text="${product.category != null ? product.category.categoryName : 'Chưa phân loại'}"></td>
+                                <td>
+                                    <a th:href="@{'/product/edit/' + ${product.productId}}" class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></a>
+                                    <a th:href="@{'/product/delete/' + ${product.productId}}" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
+                            <tr th:if="${productPage.content.size() == 0}">
+                                <td colspan="7" class="text-center text-muted">Không có sản phẩm nào.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <nav th:if="${productPage.totalPages > 1}" class="mt-3">
+                        <ul class="pagination pagination-sm justify-content-center">
+                            <li class="page-item" th:classappend="${productPage.first} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{'/product/list'(field=${field},keyword=${keyword},page=${productPage.number-1})}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item"
+                                th:each="i : ${#numbers.sequence(0, productPage.totalPages-1)}"
+                                th:classappend="${i == productPage.number} ? 'active'">
+                                <a class="page-link"
+                                   th:href="@{'/product/list'(field=${field},keyword=${keyword},page=${i})}"
+                                   th:text="${i+1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${productPage.last} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{'/product/list'(field=${field},keyword=${keyword},page=${productPage.number+1})}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

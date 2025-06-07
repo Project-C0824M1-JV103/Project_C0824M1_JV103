@@ -3,6 +3,9 @@ package com.example.project_c0824m1_jv103.controller;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.service.product.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,27 @@ public class ProductController {
     private IProductService productService;
 
     @GetMapping("/list")
+    public String listProducts(
+            Model model,
+            @RequestParam(value = "field", required = false, defaultValue = "productName") String field,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page
+    ) {
+        int pageSize = 6;
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Product> productPage;
+        if (keyword != null && !keyword.isEmpty()) {
+            productPage = productService.searchProducts(keyword, field, pageable);
+        } else {
+            productPage = productService.findAll(pageable);
+        }
+        model.addAttribute("productPage", productPage);
+        model.addAttribute("field", field);
+        model.addAttribute("keyword", keyword);
+        return "product/list-product";
+    }
+
+    @GetMapping("/add")
     public String showCreateProductForm(Model model) {
         model.addAttribute("product", new Product());
         return "product/add-product-form";
