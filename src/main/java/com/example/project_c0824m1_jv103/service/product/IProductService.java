@@ -22,7 +22,7 @@ public interface IProductService {
     ProductDTO findById(Long id);
     
     // Cập nhật sản phẩm
-    ProductDTO updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> imageFiles, List<String> captions) throws IOException;
+    ProductDTO updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> imageFiles, List<String> captions, List<String> deletedImageUrls) throws IOException;
     
     // Xóa sản phẩm
     void deleteProduct(Long id);

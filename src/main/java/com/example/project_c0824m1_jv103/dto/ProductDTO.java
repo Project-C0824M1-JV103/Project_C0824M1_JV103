@@ -47,10 +47,7 @@ public class ProductDTO {
 
     private Integer categoryId;
     private Integer supplierId;
-    
-    // Category và Supplier names để hiển thị
-    private String categoryName;
-    private String supplierName;
+
     
     // Constructors
     public ProductDTO() {}
@@ -180,21 +177,6 @@ public class ProductDTO {
         this.supplierId = supplierId;
     }
 
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
-    public String getSupplierName() {
-        return supplierName;
-    }
-
-    public void setSupplierName(String supplierName) {
-        this.supplierName = supplierName;
-    }
 
     public String getFormattedPrice() {
         if (price == null) return "0 VNĐ";

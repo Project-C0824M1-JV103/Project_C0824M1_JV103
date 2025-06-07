@@ -1,234 +1,575 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <title>Chỉnh sửa thông tin hàng hóa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chỉnh sửa sản phẩm - Admin</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}" />
+    <link rel="stylesheet" th:href="@{/admin-common.css}" />
     <style>
-      .form-container {
-        max-width: 600px;
-        margin: 20px auto;
+      .main-content {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+      }
+
+      .header-section {
+        background: white;
         padding: 20px;
-        border: 2px solid #333;
-        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
       }
-      .form-title {
-        background-color: #333;
+
+      .form-section {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .form-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 8px;
-        margin: -20px -20px 20px -20px;
-        text-align: center;
-        font-weight: bold;
+        padding: 20px;
+        margin: 0;
       }
+
+      .form-body {
+        padding: 30px;
+      }
+
       .form-group {
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
+        margin-bottom: 20px;
       }
+
       .form-label {
-        width: 150px;
-        font-weight: bold;
-        margin-right: 10px;
-        text-align: right;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
       }
+
       .form-control {
-        flex: 1;
-        padding: 5px;
-        border: 1px solid #ccc;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
       }
-      .form-control.large {
-        height: 80px;
-        resize: vertical;
+
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
       }
-      .image-upload {
+
+      .image-upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+      }
+
+      .image-upload-area:hover {
+        border-color: #667eea;
+        background-color: #f0f2ff;
+      }
+
+      .existing-images {
         display: flex;
-        align-items: center;
-        gap: 10px;
+        gap: 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
       }
+
       .image-preview {
-        width: 60px;
-        height: 60px;
-        border: 1px solid #ccc;
-        background-color: orange;
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid #dee2e6;
+        position: relative;
+        display: inline-block;
+        margin: 5px;
+      }
+
+      .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .btn-delete {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #dc3545;
+        color: white;
+        border: none;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-weight: bold;
+        font-size: 10px;
       }
-      .upload-btn {
-        background-color: #666;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
+
+      .btn-delete:hover {
+        background: #c82333;
       }
-      .form-buttons {
-        text-align: center;
-        margin-top: 20px;
-      }
-      .btn {
-        margin: 0 5px;
-        padding: 8px 20px;
-        border: 1px solid #333;
-        background-color: white;
-        cursor: pointer;
-      }
+
       .btn-primary {
-        background-color: #333;
-        color: white;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
       }
-      .error-message {
-        color: red;
-        font-size: 0.9em;
-        margin-left: 160px;
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
       }
-      .currency {
-        margin-left: 5px;
+
+      .btn-secondary {
+        background: #6c757d;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+      }
+
+      .invalid-feedback {
+        display: block;
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 5px;
+      }
+
+      .currency-input {
+        position: relative;
+      }
+
+      .currency-symbol {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-weight: 600;
+      }
+
+      .required {
+        color: #dc3545;
       }
     </style>
   </head>
   <body>
-    <div class="form-container">
-      <div class="form-title">6.5.2 Chỉnh sửa thông tin hàng hóa</div>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Include Admin Navbar -->
+        <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
 
-      <!-- Hiển thị lỗi chung -->
-      <div th:if="${error}" class="alert alert-danger" role="alert">
-        <span th:text="${error}"></span>
-      </div>
-
-      <form
-        th:action="@{/product/update/{id}(id=${productDTO.productId})}"
-        th:object="${productDTO}"
-        method="post"
-        enctype="multipart/form-data"
-      >
-        <!-- Tên hàng -->
-        <div class="form-group">
-          <label class="form-label">Tên hàng</label>
-          <input type="text" th:field="*{productName}" class="form-control" />
-        </div>
-        <div th:if="${#fields.hasErrors('productName')}" class="error-message">
-          <span th:errors="*{productName}"></span>
-        </div>
-
-        <!-- Giá -->
-        <div class="form-group">
-          <label class="form-label">Giá</label>
-          <input
-            type="number"
-            th:field="*{price}"
-            class="form-control"
-            step="0.01"
-          />
-          <span class="currency">VNĐ</span>
-        </div>
-        <div th:if="${#fields.hasErrors('price')}" class="error-message">
-          <span th:errors="*{price}"></span>
-        </div>
-
-        <!-- Hình ảnh hàng hóa -->
-        <div class="form-group">
-          <label class="form-label">Hình ảnh hàng hóa</label>
-          <div class="image-upload">
-            <!-- Hiển thị ảnh hiện tại -->
-            <div
-              th:if="${productDTO.existingImageUrls != null and !productDTO.existingImageUrls.isEmpty()}"
-              class="existing-images"
-              style="display: flex; gap: 10px"
-            >
-              <div
-                th:each="imageUrl : ${productDTO.existingImageUrls}"
-                class="image-preview"
-              >
-                <img
-                  th:src="${imageUrl}"
-                  style="width: 100%; height: 100%; object-fit: cover"
-                />
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+          <div class="main-content p-4">
+            <!-- Header Section -->
+            <div class="header-section">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h2 class="mb-1">
+                    <i class="fas fa-edit text-primary"></i>
+                    Chỉnh sửa sản phẩm
+                  </h2>
+                  <p class="text-muted mb-0">
+                    Cập nhật thông tin sản phẩm trong hệ thống
+                  </p>
+                </div>
+                <div class="col-auto">
+                  <a href="/Admin/product" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                  </a>
+                </div>
               </div>
             </div>
-            <div
-              th:unless="${productDTO.existingImageUrls != null and !productDTO.existingImageUrls.isEmpty()}"
-              class="image-preview"
-            >
-              <span>No Image</span>
+
+            <!-- Form Section -->
+            <div class="form-section">
+              <div class="form-header">
+                <h4 class="mb-0">
+                  <i class="fas fa-box-open me-2"></i>
+                  Thông tin sản phẩm
+                </h4>
+              </div>
+
+              <div class="form-body">
+                <!-- Success/Error Messages -->
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  <span th:text="${error}"></span>
+                </div>
+
+                <form
+                  th:action="@{/Admin/product/update/{id}(id=${productDTO.productId})}"
+                  th:object="${productDTO}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  novalidate
+                >
+                  <div class="row">
+                    <!-- Tên sản phẩm -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">
+                          Tên sản phẩm <span class="required">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          th:field="*{productName}"
+                          class="form-control"
+                          th:classappend="${#fields.hasErrors('productName')} ? 'is-invalid'"
+                          placeholder="Nhập tên sản phẩm"
+                        />
+                        <div
+                          th:if="${#fields.hasErrors('productName')}"
+                          class="invalid-feedback"
+                        >
+                          <span th:errors="*{productName}"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Giá -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">
+                          Giá <span class="required">*</span>
+                        </label>
+                        <div class="currency-input">
+                          <input
+                            type="number"
+                            th:field="*{price}"
+                            class="form-control"
+                            th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'"
+                            step="1000"
+                            placeholder="0"
+                            style="padding-right: 50px"
+                          />
+                          <span class="currency-symbol">VNĐ</span>
+                        </div>
+                        <div
+                          th:if="${#fields.hasErrors('price')}"
+                          class="invalid-feedback"
+                        >
+                          <span th:errors="*{price}"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Kích thước màn hình -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">Kích thước màn hình</label>
+                        <input
+                          type="text"
+                          th:field="*{size}"
+                          class="form-control"
+                          th:classappend="${#fields.hasErrors('size')} ? 'is-invalid'"
+                          placeholder="Ví dụ: 6.1 inch"
+                        />
+                        <div
+                          th:if="${#fields.hasErrors('size')}"
+                          class="invalid-feedback"
+                        >
+                          <span th:errors="*{size}"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- CPU -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">CPU</label>
+                        <input
+                          type="text"
+                          th:field="*{cpu}"
+                          class="form-control"
+                          th:classappend="${#fields.hasErrors('cpu')} ? 'is-invalid'"
+                          placeholder="Ví dụ: A15 Bionic"
+                        />
+                        <div
+                          th:if="${#fields.hasErrors('cpu')}"
+                          class="invalid-feedback"
+                        >
+                          <span th:errors="*{cpu}"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Camera sau -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">Camera sau</label>
+                        <input
+                          type="text"
+                          th:field="*{cameraBack}"
+                          class="form-control"
+                          th:classappend="${#fields.hasErrors('cameraBack')} ? 'is-invalid'"
+                          placeholder="Ví dụ: 48MP"
+                        />
+                        <div
+                          th:if="${#fields.hasErrors('cameraBack')}"
+                          class="invalid-feedback"
+                        >
+                          <span th:errors="*{cameraBack}"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Camera trước -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">Camera trước</label>
+                        <input
+                          type="text"
+                          th:field="*{cameraFront}"
+                          class="form-control"
+                          th:classappend="${#fields.hasErrors('cameraFront')} ? 'is-invalid'"
+                          placeholder="Ví dụ: 12MP"
+                        />
+                        <div
+                          th:if="${#fields.hasErrors('cameraFront')}"
+                          class="invalid-feedback"
+                        >
+                          <span th:errors="*{cameraFront}"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Bộ nhớ -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">Bộ nhớ</label>
+                        <input
+                          type="text"
+                          th:field="*{memory}"
+                          class="form-control"
+                          th:classappend="${#fields.hasErrors('memory')} ? 'is-invalid'"
+                          placeholder="Ví dụ: 128GB"
+                        />
+                        <div
+                          th:if="${#fields.hasErrors('memory')}"
+                          class="invalid-feedback"
+                        >
+                          <span th:errors="*{memory}"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Số lượng -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">
+                          Số lượng <span class="required">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          th:field="*{quantity}"
+                          class="form-control"
+                          th:classappend="${#fields.hasErrors('quantity')} ? 'is-invalid'"
+                          min="0"
+                          placeholder="0"
+                        />
+                        <div
+                          th:if="${#fields.hasErrors('quantity')}"
+                          class="invalid-feedback"
+                        >
+                          <span th:errors="*{quantity}"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Mô tả -->
+                    <div class="col-12">
+                      <div class="form-group">
+                        <label class="form-label">Mô tả sản phẩm</label>
+                        <textarea
+                          th:field="*{description}"
+                          class="form-control"
+                          th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"
+                          rows="4"
+                          placeholder="Nhập mô tả chi tiết về sản phẩm..."
+                        ></textarea>
+                        <div
+                          th:if="${#fields.hasErrors('description')}"
+                          class="invalid-feedback"
+                        >
+                          <span th:errors="*{description}"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Hình ảnh -->
+                    <div class="col-12">
+                      <div class="form-group">
+                        <label class="form-label">Hình ảnh sản phẩm</label>
+
+                        <!-- Hiển thị ảnh hiện tại -->
+                        <div
+                          th:if="${productDTO.existingImageUrls != null and !productDTO.existingImageUrls.isEmpty()}"
+                          class="existing-images"
+                        >
+                          <div
+                            th:each="imageUrl : ${productDTO.existingImageUrls}"
+                            class="image-preview"
+                            th:data-image-url="${imageUrl}"
+                          >
+                            <img th:src="${imageUrl}" alt="Product Image" />
+                            <button
+                              type="button"
+                              class="btn-delete"
+                              onclick="deleteImage(this)"
+                              title="Xóa ảnh này"
+                            >
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
+                        </div>
+
+                        <!-- Hidden input để track ảnh bị xóa -->
+                        <input
+                          type="hidden"
+                          id="deletedImages"
+                          name="deletedImageUrls"
+                          value=""
+                        />
+
+                        <!-- Preview ảnh mới -->
+                        <div id="imagePreview"></div>
+
+                        <!-- Upload ảnh mới -->
+                        <div class="image-upload-area">
+                          <i
+                            class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"
+                          ></i>
+                          <p class="text-muted mb-2">
+                            Kéo thả file ảnh vào đây hoặc click để chọn
+                          </p>
+                          <input
+                            type="file"
+                            id="imageFiles"
+                            name="imageFiles"
+                            multiple
+                            accept="image/*"
+                            class="form-control"
+                            style="display: none"
+                          />
+                          <button
+                            type="button"
+                            class="btn btn-outline-primary btn-sm"
+                            onclick="document.getElementById('imageFiles').click()"
+                          >
+                            <i class="fas fa-plus me-1"></i>Chọn ảnh
+                          </button>
+                          <small class="text-muted d-block mt-2">
+                            Hỗ trợ: JPG, PNG, GIF. Tối đa 5MB mỗi file.
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="row mt-4">
+                    <div class="col-12">
+                      <div class="d-flex justify-content-end gap-3">
+                        <a href="/Admin/product" class="btn btn-secondary">
+                          <i class="fas fa-times me-1"></i>Hủy
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                          <i class="fas fa-save me-1"></i>Cập nhật sản phẩm
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
-            <input
-              type="file"
-              name="imageFiles"
-              multiple
-              accept="image/*"
-              class="upload-btn"
-            />
           </div>
         </div>
-
-        <!-- Kích thước màn hình -->
-        <div class="form-group">
-          <label class="form-label">Kích thước màn hình</label>
-          <input type="text" th:field="*{size}" class="form-control" />
-        </div>
-        <div th:if="${#fields.hasErrors('size')}" class="error-message">
-          <span th:errors="*{size}"></span>
-        </div>
-
-        <!-- Camera -->
-        <div class="form-group">
-          <label class="form-label">Camera</label>
-          <input type="text" th:field="*{cameraBack}" class="form-control" />
-        </div>
-        <div th:if="${#fields.hasErrors('cameraBack')}" class="error-message">
-          <span th:errors="*{cameraBack}"></span>
-        </div>
-
-        <!-- Selfie -->
-        <div class="form-group">
-          <label class="form-label">Selfie</label>
-          <input type="text" th:field="*{cameraFront}" class="form-control" />
-        </div>
-        <div th:if="${#fields.hasErrors('cameraFront')}" class="error-message">
-          <span th:errors="*{cameraFront}"></span>
-        </div>
-
-        <!-- CPU -->
-        <div class="form-group">
-          <label class="form-label">CPU</label>
-          <input type="text" th:field="*{cpu}" class="form-control" />
-        </div>
-        <div th:if="${#fields.hasErrors('cpu')}" class="error-message">
-          <span th:errors="*{cpu}"></span>
-        </div>
-
-        <!-- Lưu trữ -->
-        <div class="form-group">
-          <label class="form-label">Lưu trữ</label>
-          <input type="text" th:field="*{memory}" class="form-control" />
-        </div>
-        <div th:if="${#fields.hasErrors('memory')}" class="error-message">
-          <span th:errors="*{memory}"></span>
-        </div>
-
-        <!-- Mô tả thêm -->
-        <div class="form-group">
-          <label class="form-label">Mô tả thêm</label>
-          <textarea
-            th:field="*{description}"
-            class="form-control large"
-          ></textarea>
-        </div>
-        <div th:if="${#fields.hasErrors('description')}" class="error-message">
-          <span th:errors="*{description}"></span>
-        </div>
-
-        <!-- Buttons -->
-        <div class="form-buttons">
-          <button type="submit" class="btn btn-primary">Cập nhật</button>
-          <a href="/product/list" class="btn">Hủy</a>
-        </div>
-      </form>
+      </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      let deletedUrls = [];
+
+      // Xóa ảnh hiện tại
+      function deleteImage(button) {
+        if (confirm("Bạn có chắc chắn muốn xóa ảnh này không?")) {
+          const imageDiv = button.parentElement;
+          const imageUrl = imageDiv.getAttribute("data-image-url");
+
+          if (imageUrl) {
+            // Thêm vào danh sách xóa
+            deletedUrls.push(imageUrl);
+            document.getElementById("deletedImages").value =
+              deletedUrls.join(",");
+          }
+
+          // Ẩn ảnh
+          imageDiv.style.display = "none";
+        }
+      }
+
+      // Preview ảnh mới được chọn
+      document
+        .getElementById("imageFiles")
+        .addEventListener("change", function (e) {
+          const files = e.target.files;
+          const preview = document.getElementById("imagePreview");
+          preview.innerHTML = "";
+
+          if (files.length > 0) {
+            const title = document.createElement("h6");
+            title.textContent = "Ảnh mới đã chọn:";
+            title.style.marginTop = "15px";
+            preview.appendChild(title);
+
+            for (let i = 0; i < files.length; i++) {
+              const file = files[i];
+              const reader = new FileReader();
+
+              reader.onload = function (e) {
+                const imgDiv = document.createElement("div");
+                imgDiv.className = "image-preview";
+                imgDiv.innerHTML = `
+                <img src="${e.target.result}" alt="New Image" />
+                <button type="button" class="btn-delete" onclick="if(confirm('Xóa ảnh này?')) this.parentElement.remove()" title="Xóa ảnh này">
+                  <i class="fas fa-times"></i>
+                </button>
+              `;
+                preview.appendChild(imgDiv);
+              };
+
+              reader.readAsDataURL(file);
+            }
+
+            // Cập nhật text
+            const uploadArea = document.querySelector(".image-upload-area p");
+            uploadArea.textContent = `Đã chọn ${files.length} ảnh`;
+          }
+        });
+    </script>
   </body>
 </html>
