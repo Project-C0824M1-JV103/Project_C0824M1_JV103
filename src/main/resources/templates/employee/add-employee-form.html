@@ -120,63 +120,68 @@
                     </div>
                 </div>
 
-    <form
-      th:action="@{/Admin/employees/create}"
-      th:object="${employee}"
-      method="post"
-      class="mt-4"
-    >
-      <div class="form-inner">
-        <div class="mb-3">
-          <label>Họ và tên</label>
-          <input
-            type="text"
-            th:field="*{fullName}"
-            class="form-control"
-            required
-          />
-        </div>
+                <div class="search-section">
+                    <h4 class="section-title">Thêm mới nhân viên</h4>
+                    <form
+                            th:action="@{/Admin/employees/create}"
+                            th:object="${employee}"
+                            method="post"
+                            class="mt-4"
+                    >
+                        <div class="form-inner">
+                            <div class="mb-3">
+                                <label>Họ và tên</label>
+                                <input
+                                        type="text"
+                                        th:field="*{fullName}"
+                                        class="form-control"
+                                        required
+                                />
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                            <input type="text" th:field="*{phone}" class="form-control" />
-                            <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{phone}" class="form-control"/>
+                                <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Công việc <span class="text-danger">*</span></label>
-                            <select th:field="*{role}" class="form-select" required>
-                                <option th:each="role : ${roles}" th:if="${role.name() != 'Admin'}"
-                                        th:value="${role}"
-                                        th:text="${role.name() == 'Sales' ? 'Nhân viên bán hàng'
+                            <div class="mb-3">
+                                <label class="form-label">Công việc <span class="text-danger">*</span></label>
+                                <select th:field="*{role}" class="form-select" required>
+                                    <option th:each="role : ${roles}" th:if="${role.name() != 'Admin'}"
+                                            th:value="${role}"
+                                            th:text="${role.name() == 'Sales' ? 'Nhân viên bán hàng'
                                         : (role.name() == 'Business' ? 'Nhân viên kinh doanh'
                                         : (role.name() == 'Warehouse' ? 'Thủ kho' : role.name()))}">
-                                </option>
-                            </select>
-                            <div class="text-danger" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
-                        </div>
+                                    </option>
+                                </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Email (tên đăng nhập) <span class="text-danger">*</span></label>
-                            <input type="email" th:field="*{email}" class="form-control" required />
-                            <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email (tên đăng nhập) <span class="text-danger">*</span></label>
+                                <input type="email" th:field="*{email}" class="form-control" required/>
+                                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
-                            <input type="password" th:field="*{password}" class="form-control" required />
-                            <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                                <input type="password" th:field="*{password}" class="form-control" required/>
+                                <div class="text-danger" th:if="${#fields.hasErrors('password')}"
+                                     th:errors="*{password}"></div>
+                            </div>
 
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
-                            <a th:href="@{/employees}" class="btn btn-secondary">Quay lại</a>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
+                                <a th:href="@{/Admin/employees/list}" class="btn btn-secondary">Quay lại</a>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Bootstrap JS -->
