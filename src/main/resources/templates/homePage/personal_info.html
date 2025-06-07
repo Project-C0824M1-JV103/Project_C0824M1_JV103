@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Thông tin cá nhân</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Noto Sans', sans-serif;;
+            color: #333;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .form-section {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            padding: 30px 35px;
+            margin-bottom: 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 45px rgba(102, 126, 234, 0.4);
+        }
+
+        .card h5 {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #4b3ca7;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1.5px solid #ccc;
+            padding: 10px 14px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+            background-color: #fff;
+        }
+
+        .form-control[readonly] {
+            background-color: #f0f0f0;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .row {
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+            transition: background 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #5a6ddb, #5b3d8e);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 576px) {
+            .form-section {
+                padding: 0 10px;
+            }
+
+            .card {
+                padding: 20px 25px;
+            }
+
+            .btn-primary {
+                font-size: 1rem;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-section">
+
+    <!-- Thông tin cá nhân -->
+    <div class="card p-4">
+        <h5 class="mb-3 border-bottom pb-2">Thông tin cá nhân</h5>
+        <form id="personalForm" th:object="${employee}" th:action="@{/personal-info-update}" method="post">
+            <div class="mb-3">
+                <label class="form-label">Họ và tên</label>
+                <input type="text" id="fullName" class="form-control" placeholder="Nhập họ và tên" readonly th:field="*{fullName}">
+                <div class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" placeholder="Nhập email" readonly th:field="*{email}">
+                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Số điện thoại</label>
+                <input type="text" id="phone" class="form-control" placeholder="Nhập số điện thoại" readonly th:field="*{phone}">
+                <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Công việc</label>
+                <input type="text" class="form-control" id="role" readonly th:value="*{role}"/>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <button type="button" id="editBtn" class="btn btn-primary">Thay đổi</button>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <button type="submit" id="confirmBtn" class="btn btn-primary" disabled>Xác nhận</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Thay đổi mật khẩu -->
+    <div class="card p-4">
+        <h5 class="mb-3 border-bottom pb-2">Thay đổi mật khẩu</h5>
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Mật khẩu cũ</label>
+                <input type="password" class="form-control" placeholder="Nhập mật khẩu cũ" th:field="*{password}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Mật khẩu mới</label>
+                <input type="password" class="form-control" placeholder="Nhập mật khẩu mới">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Nhập lại mật khẩu mới</label>
+                <input type="password" class="form-control" placeholder="Xác nhận mật khẩu mới">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Lưu</button>
+        </form>
+    </div>
+</div>
+
+<!-- Script -->
+<script>
+    const fields = ["fullName", "email", "phone"];
+    const editBtn = document.getElementById("editBtn");
+    const confirmBtn = document.getElementById("confirmBtn");
+    let isEditing = false;
+
+    const originalValues = {};
+
+    window.addEventListener("DOMContentLoaded", () => {
+        fields.forEach(id => {
+            originalValues[id] = document.getElementById(id).value;
+        });
+    });
+
+    editBtn.addEventListener("click", () => {
+        isEditing = !isEditing;
+
+        fields.forEach(id => {
+            document.getElementById(id).readOnly = !isEditing;
+        });
+
+        editBtn.textContent = isEditing ? "Hủy" : "Thay đổi";
+        confirmBtn.disabled = !isEditing;
+
+        if (!isEditing) {
+            fields.forEach(id => {
+                document.getElementById(id).value = originalValues[id];
+            });
+        }
+    });
+
+    // document.getElementById("personalForm").addEventListener("submit", (e) => {
+    //     e.preventDefault();
+    //     alert("Thông tin đã được cập nhật!");
+    //
+    //     fields.forEach(id => {
+    //         originalValues[id] = document.getElementById(id).value;
+    //         document.getElementById(id).readOnly = true;
+    //     });
+    //
+    //     isEditing = false;
+    //     editBtn.textContent = "Thay đổi";
+    //     confirmBtn.disabled = true;
+    // });
+</script>
+
+</body>
+</html>

@@ -25,13 +25,13 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 targetUrl.contains("error") || targetUrl.startsWith("/.well-known") ||
                 targetUrl.endsWith(".css") || targetUrl.endsWith(".js") || targetUrl.endsWith(".json")) {
             if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+                targetUrl = "/Admin/Customer";
+            } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SALES"))) {
                 targetUrl = "/";
-//            } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SALES"))) {
-//                targetUrl = "/sales";
-//            } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_BUSINESS"))) {
-//                targetUrl = "/business";
-//            } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_WAREHOUSE"))) {
-//                targetUrl = "/warehouse";
+            } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_BUSINESS"))) {
+                targetUrl = "/";
+            } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_WAREHOUSE"))) {
+                targetUrl = "/";
             } else {
                 targetUrl = "/";
             }
