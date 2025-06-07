@@ -6,15 +6,18 @@ INSERT INTO Employee (full_name, email, password, phone, role, status) VALUES
 
 -- Thêm dữ liệu vào bảng Category (chỉ chứa các hãng điện thoại)
 INSERT INTO Category (category_name, image_url) VALUES
-('Samsung', 'https://example.com/images/samsung.jpg'),
-('Apple', 'https://example.com/images/apple.jpg'),
-('Xiaomi', 'https://example.com/images/xiaomi.jpg');
+('Samsung', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749194441/samsung-logo_myw0it.jpg'),
+('Apple', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749194441/apple-logo_gmffks.jpg'),
+('Xiaomi', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749194441/xiaomi-logo_mrogd1.jpg');
+('Huawei', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749194441/huawei-logo_euq7yo.jpg');
+('Oppo', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749194441/oppo-logo_t2zbbc.jpg');
 
 -- Thêm dữ liệu vào bảng Supplier
 INSERT INTO Supplier (suplier_name, address, phone_number, email, image_url) VALUES
-('Samsung Vietnam', 'Hanoi, Vietnam', '0241234567', 'samsung@example.com', 'https://example.com/images/samsung.jpg'),
-('Apple Distributor', 'Ho Chi Minh City, Vietnam', '0287654321', 'apple@example.com', 'https://example.com/images/apple.jpg'),
-('Xiaomi Supplier', 'Da Nang, Vietnam', '0236123456', 'xiaomi@example.com', 'https://example.com/images/xiaomi.jpg');
+('Digiworld', '350-352 Võ Văn Kiệt, Quận 1, TP. Hồ Chí Minh', '02439388568','digiworld@gmail.com', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749196044/digiworld_o9v4rm.png'),
+('FPT Trading', 'Tòa nhà FPT, 17 Duy Tân, Cầu Giấy, Hà Nội', '18006601', 'fpttrading@fpt.com', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749196044/FPT-Trading-logo_kxq9mm.gif'),
+('Viettel Imex', '1B Đường số 2, Khu chế xuất Tân Thuận, Quận 7, TP. Hồ Chí Minh', '0236123456', 'viettelimex@viettel.com', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749196044/viettel-imex-logo_w9gskz.png');
+('Thế Giới Di Động (MWG)', '128 Trần Quang Khải, Quận 1, TP. Hồ Chí Minh', '1900 232460', 'tgdd@gmail.com', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749196044/logo-the-gioi-di-dong_vh7rzd.jpg');
 
 -- Thêm dữ liệu vào bảng Product (chỉ chứa điện thoại)
 INSERT INTO Product (product_name, size, price, camera_front, camera_back, memory, cpu, description, category_id, suplier_id, quantity) VALUES
