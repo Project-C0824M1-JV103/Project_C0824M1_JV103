@@ -4,20 +4,22 @@ import com.example.project_c0824m1_jv103.model.Employee.Role;
 import com.example.project_c0824m1_jv103.model.Employee.Status;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class EmployeePersonalDto {
 
     private Integer employeeId;
 
-    @NotBlank(message = "Họ và tên không được để trống")
+    @NotBlank(message = "không được để trống.")
     private String fullName;
 
-    @Email(message = "Email không hợp lệ")
-    @NotBlank(message = "Email không được để trống")
+    @Email(message = "không hợp lệ.")
+    @NotBlank(message = "không được để trống.")
     private String email;
 
-
+    @NotBlank(message = "không được để trống.")
+    @Pattern(regexp = "\\d{10}", message = "phải đủ 10 chữ số và chỉ chứa số.")
     private String phone;
 
     private Role role;

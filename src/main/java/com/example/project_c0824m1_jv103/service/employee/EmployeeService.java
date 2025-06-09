@@ -47,25 +47,21 @@ public class EmployeeService implements IEmployeeService {
 
     @Override
     public Employee updateEmployeeInfo(EmployeePersonalDto employeePersonalDto) {
-        Employee existingEmployee = employeeRepository.findByEmail(employeePersonalDto.getEmail());
-        if (existingEmployee == null) {
-            throw new RuntimeException("Employee không tồn tại.");
-        }
+        Employee existingEmployee = employeeRepository.findById(employeePersonalDto.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee không tồn tại."));
 
-        if (!employeePersonalDto.getPhone().equals(existingEmployee.getPhone())) {
-            Employee phoneCheck = employeeRepository.findByPhone(employeePersonalDto.getPhone());
-            if (phoneCheck != null && !phoneCheck.getEmployeeId().equals(existingEmployee.getEmployeeId())) {
-                throw new RuntimeException("Số điện thoại đã tồn tại, vui lòng nhập số khác.");
-            }
-        }
 
         existingEmployee.setFullName(employeePersonalDto.getFullName());
+        existingEmployee.setEmail(employeePersonalDto.getEmail());
         existingEmployee.setPhone(employeePersonalDto.getPhone());
+
         return employeeRepository.save(existingEmployee);
     }
 
-
-
+    @Override
+    public Employee findByPhone(String phone) {
+        return employeeRepository.findByPhone(phone);
+    }
 
 
 }

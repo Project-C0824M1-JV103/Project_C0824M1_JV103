@@ -25,7 +25,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 targetUrl.contains("error") || targetUrl.startsWith("/.well-known") ||
                 targetUrl.endsWith(".css") || targetUrl.endsWith(".js") || targetUrl.endsWith(".json")) {
             if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-                targetUrl = "/Admin/Customer";
+                targetUrl = "/Admin/dashboard";
             } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SALES"))) {
                 targetUrl = "/";
             } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_BUSINESS"))) {
@@ -37,7 +37,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             }
 
         }
-            System.out.println("LOGOUT SUCCESS - USER: " + authentication.getName());
+            System.out.println("LOGIN SUCCESS - USER: " + authentication.getName());
 
         clearAuthenticationAttributes(request);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
