@@ -99,36 +99,28 @@
                                 </h2>
                                 <p class="text-muted mb-0">Danh sách tất cả khách hàng trong hệ thống</p>
                             </div>
-<!--                            <div class="col-auto">-->
-<!--                                <button class="btn btn-primary">-->
-<!--                                    <i class="fas fa-plus"></i> Thêm khách hàng-->
-<!--                                </button>-->
-<!--                            </div>-->
+                            <div class="col-auto">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Thêm khách hàng
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Search Section -->
                     <div class="search-section">
-                        <form th:action="@{/Admin/Customer}" method="get">
-                            <div class="row g-3">
-                                <div class="col-md-3">
+                        <form th:action="@{/Admin/Customer/search}" method="get">
+                            <div class="row">
+                                <div class="col-md-4">
                                     <div class="input-group">
                                         <span class="input-group-text">
-                                            <i class="fas fa-user"></i>
+                                            <i class="fas fa-search"></i>
                                         </span>
-                                        <input type="text" name="customerName" class="form-control" 
-                                               placeholder="Tìm kiếm theo tên khách hàng..." 
-                                               th:value="${customerName}">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-phone"></i>
-                                        </span>
-                                        <input type="text" name="phoneNumber" class="form-control" 
-                                               placeholder="Tìm kiếm theo số điện thoại..." 
-                                               th:value="${phoneNumber}">
+                                        <input type="text" name="keyword" class="form-control" 
+                                               placeholder="Tìm kiếm theo tên, SĐT..." 
+                                               th:value="${keyword}">
+                                        <input type="hidden" name="page" value="0">
+                                        <input type="hidden" name="size" th:value="${pageSize}">
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -141,20 +133,16 @@
                                         <i class="fas fa-refresh"></i> Làm mới
                                     </a>
                                 </div>
-<!--                                <div class="col-md-2">-->
-<!--                                    <div class="d-flex align-items-center justify-content-end">-->
-<!--                                        <small class="text-muted me-2">Hiển thị:</small>-->
-<!--                                        <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this.value)">-->
-<!--                                            <option value="4" th:selected="${pageSize == 4}">4 mục</option>-->
-<!--                                            <option value="6" th:selected="${pageSize == 6}">6 mục</option>-->
-<!--                                        </select>-->
-<!--                                    </div>-->
-<!--                                </div>-->
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <small class="text-muted me-2">Hiển thị:</small>
+                                        <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this.value)">
+                                            <option value="4" th:selected="${pageSize == 4}">4 mục</option>
+                                            <option value="6" th:selected="${pageSize == 6}">6 mục</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <!-- Hidden fields for pagination -->
-                            <input type="hidden" name="page" value="0">
-                            <input type="hidden" name="size" th:value="${pageSize}">
                         </form>
                     </div>
                     
@@ -172,8 +160,8 @@
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr th:each="customer,iterStat : ${customers}">
+                                <tbody th:if="${searchCustomer != null}">
+                                    <tr th:each="customer: ${searchCustomer}">
                                         <td>
                                             <span class="badge bg-primary" th:text="${customer.customerId}"></span>
                                         </td>
@@ -218,19 +206,50 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <!-- Empty state message -->
-                                    <tr th:if="${#lists.isEmpty(customers)}">
-                                        <td colspan="6" class="text-center py-4">
-                                            <div class="text-muted">
-                                                <i class="fas fa-users fa-2x mb-2"></i>
-                                                <div th:if="${isSearch}">
-                                                    <h6>Không tìm thấy khách hàng nào</h6>
-                                                    <p class="mb-0">Thử thay đổi điều kiện tìm kiếm</p>
+                                </tbody>
+                                <tbody th:if="${searchCustomer == null}">
+                                    <tr th:each="customer,l : ${customers}">
+                                        <td>
+                                            <span class="badge bg-primary" th:text="${l.count}"></span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <div class="fw-bold" th:text="${customer.customerName}">Tên khách hàng</div>
                                                 </div>
-                                                <div th:unless="${isSearch}">
-                                                    <h6>Chưa có khách hàng nào</h6>
-                                                    <p class="mb-0">Bắt đầu thêm khách hàng đầu tiên</p>
-                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span th:text="${customer.phoneNumber ?: 'Chưa cập nhật'}">
+                                                <i class="fas fa-phone text-muted me-1"></i>
+                                                Chưa cập nhật
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:text="${customer.email ?: 'Chưa cập nhật'}">
+                                                <i class="fas fa-envelope text-muted me-1"></i>
+                                                Chưa cập nhật
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style="align-items: center" th:text="${customer.sales != null ? #lists.size(customer.sales) : 0}">0</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-actions">
+                                                <button class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <a th:href="@{'/Admin/Customer/edit/' + ${customer.customerId}}" 
+                                                   class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+<!--                                                <button class="btn btn-sm btn-outline-danger" -->
+<!--                                                        title="Xóa"-->
+<!--                                                        onclick="confirmDelete(this)"-->
+<!--                                                        th:data-customer-id="${customer.customerId}"-->
+<!--                                                        th:data-customer-name="${customer.customerName}">-->
+<!--                                                    <i class="fas fa-trash"></i>-->
+<!--                                                </button>-->
                                             </div>
                                         </td>
                                     </tr>
@@ -243,12 +262,8 @@
                             <div class="text-muted">
                                 <span th:if="${isSearch}">
                                     Tìm thấy <span th:text="${totalElements}">0</span> khách hàng
-                                    <span th:if="${customerName != null && !customerName.isEmpty()}" class="text-primary">
-                                        với tên "<span th:text="${customerName}"></span>"
-                                    </span>
-                                    <span th:if="${phoneNumber != null && !phoneNumber.isEmpty()}" class="text-primary">
-                                        <span th:if="${customerName != null && !customerName.isEmpty()}"> và</span>
-                                        với SĐT "<span th:text="${phoneNumber}"></span>"
+                                    <span th:if="${keyword}" class="text-primary">
+                                        cho từ khóa "<span th:text="${keyword}"></span>"
                                     </span>
                                 </span>
                                 <span th:unless="${isSearch}">
@@ -266,7 +281,7 @@
                                     <li class="page-item" th:classappend="${pageNumber == 0} ? 'disabled'">
                                         <a class="page-link" 
                                            th:href="${isSearch} ? 
-                                                    @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber - 1}, size=${pageSize})} : 
+                                                    @{/Admin/Customer/search(keyword=${keyword}, page=${pageNumber - 1}, size=${pageSize})} : 
                                                     @{/Admin/Customer(page=${pageNumber - 1}, size=${pageSize})}"
                                            th:unless="${pageNumber == 0}">
                                             <i class="fas fa-chevron-left"></i>
@@ -283,7 +298,7 @@
                                         th:classappend="${i == pageNumber} ? 'active'">
                                         <a class="page-link" 
                                            th:href="${isSearch} ? 
-                                                    @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${i}, size=${pageSize})} : 
+                                                    @{/Admin/Customer/search(keyword=${keyword}, page=${i}, size=${pageSize})} : 
                                                     @{/Admin/Customer(page=${i}, size=${pageSize})}"
                                            th:text="${i + 1}"
                                            th:unless="${i == pageNumber}">1</a>
@@ -294,7 +309,7 @@
                                     <li class="page-item" th:classappend="${pageNumber >= totalPages - 1} ? 'disabled'">
                                         <a class="page-link" 
                                            th:href="${isSearch} ? 
-                                                    @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber + 1}, size=${pageSize})} : 
+                                                    @{/Admin/Customer/search(keyword=${keyword}, page=${pageNumber + 1}, size=${pageSize})} : 
                                                     @{/Admin/Customer(page=${pageNumber + 1}, size=${pageSize})}"
                                            th:unless="${pageNumber >= totalPages - 1}">
                                             <i class="fas fa-chevron-right"></i>
@@ -313,68 +328,56 @@
     </div>
     
     <!-- Delete Confirmation Modal -->
-<!--    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">-->
-<!--        <div class="modal-dialog">-->
-<!--            <div class="modal-content">-->
-<!--                <div class="modal-header">-->
-<!--                    <h5 class="modal-title" id="deleteModalLabel">-->
-<!--                        <i class="fas fa-exclamation-triangle text-warning"></i>-->
-<!--                        Xác nhận xóa-->
-<!--                    </h5>-->
-<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--                </div>-->
-<!--                <div class="modal-body">-->
-<!--                    <p>Bạn có chắc chắn muốn xóa khách hàng <strong id="customerNameToDelete"></strong>?</p>-->
-<!--                    <p class="text-muted">Hành động này không thể hoàn tác!</p>-->
-<!--                </div>-->
-<!--                <div class="modal-footer">-->
-<!--                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>-->
-<!--                    <form id="deleteForm" method="post" style="display: inline;">-->
-<!--                        <button type="submit" class="btn btn-danger">-->
-<!--                            <i class="fas fa-trash"></i> Xóa-->
-<!--                        </button>-->
-<!--                    </form>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                        Xác nhận xóa
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa khách hàng <strong id="customerNameToDelete"></strong>?</p>
+                    <p class="text-muted">Hành động này không thể hoàn tác!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form id="deleteForm" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Xóa
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // function confirmDelete(button) {
-        //     const customerId = button.getAttribute('data-customer-id');
-        //     const customerName = button.getAttribute('data-customer-name');
-        //
-        //     document.getElementById('customerNameToDelete').textContent = customerName;
-        //     document.getElementById('deleteForm').action = '/Admin/Customer/delete/' + customerId;
-        //
-        //     const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        //     deleteModal.show();
-        // }
-        //
-        // // function changePageSize(size) {
-        // //     const urlParams = new URLSearchParams(window.location.search);
-        // //     const customerName = urlParams.get('customerName');
-        // //     const phoneNumber = urlParams.get('phoneNumber');
-        // //     const isSearch = (customerName && customerName.trim() !== '') || (phoneNumber && phoneNumber.trim() !== '');
-        // //
-        // //     let url = `/Admin/Customer?page=0&size=${size}`;
-        // //
-        // //     if (isSearch) {
-        // //         const params = new URLSearchParams();
-        // //         if (customerName && customerName.trim() !== '') {
-        // //             params.append('customerName', customerName);
-        // //         }
-        // //         if (phoneNumber && phoneNumber.trim() !== '') {
-        // //             params.append('phoneNumber', phoneNumber);
-        // //         }
-        // //         params.append('page', '0');
-        // //         params.append('size', size);
-        // //         url = `/Admin/Customer?${params.toString()}`;
-        // //     }
-        // //
-        // //     window.location.href = url;
-        // // }
+        function confirmDelete(button) {
+            const customerId = button.getAttribute('data-customer-id');
+            const customerName = button.getAttribute('data-customer-name');
+            
+            document.getElementById('customerNameToDelete').textContent = customerName;
+            document.getElementById('deleteForm').action = '/Admin/Customer/delete/' + customerId;
+            
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+        
+        function changePageSize(size) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const keyword = urlParams.get('keyword');
+            const isSearch = keyword && keyword.trim() !== '';
+            
+            if (isSearch) {
+                window.location.href = `/Admin/Customer/search?keyword=${encodeURIComponent(keyword)}&page=0&size=${size}`;
+            } else {
+                window.location.href = `/Admin/Customer?page=0&size=${size}`;
+            }
+        }
     </script>
 </body>
 </html>
