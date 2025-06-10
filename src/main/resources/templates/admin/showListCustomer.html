@@ -117,13 +117,59 @@
       .table td:last-child {
         text-align: center;
       }
+
+      /* Additional styling for table text */
+      .table td {
+        color: #000 !important;
+      }
+      
+      .table .text-muted {
+        color: #000 !important;
+      }
+      
+      .stt-number {
+        color: #000;
+        font-weight: 500;
+      }
+
+      /* Pagination styling */
+      .pagination .page-link {
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        padding: 8px 12px;
+        transition: all 0.3s ease;
+      }
+
+      .pagination .page-link:hover {
+        background-color: #e9ecef;
+        border-color: #adb5bd;
+        color: #495057;
+      }
+
+      .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        font-weight: 600;
+      }
+
+      .pagination .page-item.disabled .page-link {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        color: #6c757d;
+      }
+
+      .pagination .page-link:focus {
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        border-color: #667eea;
+      }
     </style>
   </head>
   <body>
     <div class="container-fluid">
       <div class="row">
         <!-- Include Admin Navbar -->
-        <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
+        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
 
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
@@ -146,6 +192,35 @@
                 <!--                                </button>-->
                 <!--                            </div>-->
               </div>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div
+                th:if="${successMessage}"
+                class="alert alert-success alert-dismissible fade show"
+                role="alert"
+            >
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${successMessage}"></span>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
+            </div>
+
+            <div
+                th:if="${errorMessage}"
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+            >
+                <i class="fas fa-exclamation-triangle"></i>
+                <span th:text="${errorMessage}"></span>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
             </div>
 
             <!-- Search Section -->
@@ -228,7 +303,7 @@
                                                         <tr th:each="customer,l : ${customers}">
                                         <td style="border: none !important;">
                                             <span
-                                                class="badge bg-primary"
+                                                class="stt-number"
                                                 th:text="${l.count}"
                                             ></span>
                                         </td>
@@ -309,120 +384,94 @@
                 </table>
               </div>
 
-              <!-- Pagination -->
-              <div
-                class="d-flex justify-content-between align-items-center p-3 border-top"
+              <nav
+                      th:if="${totalPages > 1}"
+                      aria-label="Customer pagination"
+                      class="mt-4"
               >
-                <div class="text-muted">
-                  <span th:if="${isSearch}">
-                    Tìm thấy <span th:text="${totalElements}">0</span> khách
-                    hàng
-                    <span
-                      th:if="${customerName != null && !customerName.isEmpty()}"
-                      class="text-primary"
+                <ul class="pagination justify-content-center">
+                  <!-- First page -->
+                  <li
+                          class="page-item"
+                          th:classappend="${pageNumber == 0} ? 'disabled'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=0, size=${pageSize})} : @{/Admin/Customer(page=0, size=${pageSize})}"
                     >
-                      với tên "<span th:text="${customerName}"></span>"
-                    </span>
-                    <span
-                      th:if="${phoneNumber != null && !phoneNumber.isEmpty()}"
-                      class="text-primary"
+                      <i class="fas fa-angle-double-left"></i>
+                    </a>
+                  </li>
+
+                  <!-- Previous page -->
+                  <li
+                          class="page-item"
+                          th:classappend="${pageNumber == 0} ? 'disabled'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber - 1}, size=${pageSize})} : @{/Admin/Customer(page=${pageNumber - 1}, size=${pageSize})}"
                     >
-                      <span
-                        th:if="${customerName != null && !customerName.isEmpty()}"
-                      >
-                        và</span
-                      >
-                      với SĐT "<span th:text="${phoneNumber}"></span>"
-                    </span>
-                  </span>
-                  <span th:unless="${isSearch}">
-                    Hiển thị
-                    <span th:text="${#lists.size(customers)}">0</span> trên
-                    <span th:text="${totalElements}">0</span> khách hàng
-                  </span>
-                  <small class="text-muted ms-2">
-                    (Trang <span th:text="${pageNumber + 1}">1</span>/<span
-                      th:text="${totalPages}"
-                      >1</span
-                    >)
-                  </small>
+                      <i class="fas fa-angle-left"></i>
+                    </a>
+                  </li>
+
+                  <!-- Page numbers -->
+                  <li
+                          th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                          class="page-item"
+                          th:if="${pageNum >= pageNumber - 2 and pageNum <= pageNumber + 2}"
+                          th:classappend="${pageNum == pageNumber} ? 'active'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNum}, size=${pageSize})} : @{/Admin/Customer(page=${pageNum}, size=${pageSize})}"
+                            th:text="${pageNum + 1}"
+                    ></a>
+                  </li>
+
+                  <!-- Next page -->
+                  <li
+                          class="page-item"
+                          th:classappend="${pageNumber >= totalPages - 1} ? 'disabled'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber + 1}, size=${pageSize})} : @{/Admin/Customer(page=${pageNumber + 1}, size=${pageSize})}"
+                    >
+                      <i class="fas fa-angle-right"></i>
+                    </a>
+                  </li>
+
+                  <!-- Last page -->
+                  <li
+                          class="page-item"
+                          th:classappend="${pageNumber >= totalPages - 1} ? 'disabled'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${totalPages - 1}, size=${pageSize})} : @{/Admin/Customer(page=${totalPages - 1}, size=${pageSize})}"
+                    >
+                      <i class="fas fa-angle-double-right"></i>
+                    </a>
+                  </li>
+                </ul>
+
+                <!-- Page info -->
+                <div class="text-center text-muted mt-2">
+                  Trang <span th:text="${pageNumber + 1}"></span> trong
+                  tổng số <span th:text="${totalPages}"></span> trang
+                  (<span th:text="${totalElements}"></span>
+                  khách hàng)
                 </div>
-
-                <!-- Pagination Controls -->
-                <nav th:if="${totalPages > 1}">
-                  <ul class="pagination pagination-sm mb-0">
-                    <!-- Previous Button -->
-                    <li
-                      class="page-item"
-                      th:classappend="${pageNumber == 0} ? 'disabled'"
-                    >
-                      <a
-                        class="page-link"
-                        th:href="${isSearch} ? 
-                                                    @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber - 1}, size=${pageSize})} : 
-                                                    @{/Admin/Customer(page=${pageNumber - 1}, size=${pageSize})}"
-                        th:unless="${pageNumber == 0}"
-                      >
-                        <i class="fas fa-chevron-left"></i>
-                      </a>
-                      <span class="page-link" th:if="${pageNumber == 0}">
-                        <i class="fas fa-chevron-left"></i>
-                      </span>
-                    </li>
-
-                    <!-- Page Numbers -->
-                    <li
-                      class="page-item"
-                      th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                      th:if="${i >= pageNumber - 2 && i <= pageNumber + 2}"
-                      th:classappend="${i == pageNumber} ? 'active'"
-                    >
-                      <a
-                        class="page-link"
-                        th:href="${isSearch} ? 
-                                                    @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${i}, size=${pageSize})} : 
-                                                    @{/Admin/Customer(page=${i}, size=${pageSize})}"
-                        th:text="${i + 1}"
-                        th:unless="${i == pageNumber}"
-                        >1</a
-                      >
-                      <span
-                        class="page-link"
-                        th:if="${i == pageNumber}"
-                        th:text="${i + 1}"
-                        >1</span
-                      >
-                    </li>
-
-                    <!-- Next Button -->
-                    <li
-                      class="page-item"
-                      th:classappend="${pageNumber >= totalPages - 1} ? 'disabled'"
-                    >
-                      <a
-                        class="page-link"
-                        th:href="${isSearch} ? 
-                                                    @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber + 1}, size=${pageSize})} : 
-                                                    @{/Admin/Customer(page=${pageNumber + 1}, size=${pageSize})}"
-                        th:unless="${pageNumber >= totalPages - 1}"
-                      >
-                        <i class="fas fa-chevron-right"></i>
-                      </a>
-                      <span
-                        class="page-link"
-                        th:if="${pageNumber >= totalPages - 1}"
-                      >
-                        <i class="fas fa-chevron-right"></i>
-                      </span>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+              </nav>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+
+
 
     <!-- Delete Confirmation Modal -->
     <!--    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">-->

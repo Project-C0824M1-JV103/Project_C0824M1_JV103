@@ -2,11 +2,15 @@ package com.example.project_c0824m1_jv103.service.product;
 
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
 import com.example.project_c0824m1_jv103.mapper.ProductMapper;
+import com.example.project_c0824m1_jv103.model.Category;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.ProductImages;
+import com.example.project_c0824m1_jv103.model.Supplier;
+import com.example.project_c0824m1_jv103.repository.ICategoryRepository;
 import com.example.project_c0824m1_jv103.repository.IProductImagesRepository;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
 //import com.example.project_c0824m1_jv103.service.CloudinaryService;
+import com.example.project_c0824m1_jv103.repository.ISupplierRepository;
 import com.example.project_c0824m1_jv103.service.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,6 +46,12 @@ public class ProductService implements IProductService {
      @Autowired
      private CloudinaryService cloudinaryService;
 
+    @Autowired
+    private ICategoryRepository categoryRepository;
+
+    @Autowired
+    private ISupplierRepository supplierRepository;
+
 //    // Phương thức để lưu ảnh local
 //    private String saveImageLocally(MultipartFile file) throws IOException {
 //        // Tạo thư mục uploads nếu chưa tồn tại
@@ -64,6 +74,10 @@ public class ProductService implements IProductService {
 //        return "/uploads/products/" + uniqueFilename;
 //    }
 
+
+;
+
+
     @Override
     public ProductDTO createProduct(ProductDTO productDTO, List<MultipartFile> imageFiles, List<String> captions) throws IOException {
         System.out.println("=== DEBUG CREATE PRODUCT ===");
@@ -72,6 +86,21 @@ public class ProductService implements IProductService {
         
         // Convert DTO to Entity
         Product product = productMapper.toEntity(productDTO);
+        
+        // Set Category và Supplier từ ID
+        if (productDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(productDTO.getCategoryId()).orElse(null);
+            if (category != null) {
+                product.setCategory(category);
+            }
+        }
+        
+        if (productDTO.getSupplierId() != null) {
+            Supplier supplier = supplierRepository.findById(productDTO.getSupplierId()).orElse(null);
+            if (supplier != null) {
+                product.setSupplier(supplier);
+            }
+        }
         
         // Lưu sản phẩm trước
         Product savedProduct = productRepository.save(product);
@@ -180,6 +209,17 @@ public class ProductService implements IProductService {
 
         // Cập nhật thông tin từ DTO
         productMapper.updateEntityFromDTO(productDTO, existingProduct);
+        
+        // Cập nhật Category và Supplier từ ID
+        if (productDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(productDTO.getCategoryId()).orElse(null);
+            existingProduct.setCategory(category);
+        }
+        
+        if (productDTO.getSupplierId() != null) {
+            Supplier supplier = supplierRepository.findById(productDTO.getSupplierId()).orElse(null);
+            existingProduct.setSupplier(supplier);
+        }
 
         // Xử lý xóa ảnh cũ TRƯỚC
         if (deletedImageUrls != null && !deletedImageUrls.isEmpty()) {
@@ -283,5 +323,14 @@ public class ProductService implements IProductService {
         return products.stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+    @Override
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
+    }
+
+    @Override
+    public List<Supplier> getAllSuppliers() {
+        return supplierRepository.findAll();
     }
 }
