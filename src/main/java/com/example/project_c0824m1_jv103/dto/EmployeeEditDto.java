@@ -2,6 +2,7 @@ package com.example.project_c0824m1_jv103.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class EmployeeEditDto {
@@ -16,6 +17,7 @@ public class EmployeeEditDto {
     private String email;
 
     @NotBlank(message = "Nhập số điện thoại!")
+    @Pattern(regexp = "^[0-9]{10,11}$", message = "Số điện thoại phải có 10 hoặc 11 chữ số!")
     @Size(max = 15, message = "Nhập lại số điện thoại!")
     private String phone;
 

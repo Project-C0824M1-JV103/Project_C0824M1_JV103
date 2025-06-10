@@ -68,6 +68,7 @@ public class ProductController extends BaseAdminController {
             BindingResult bindingResult,
             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> images,
             @RequestParam(value = "captions", required = false) List<String> captions,
+            @RequestParam(value = "deletedImageUrls", required = false) String deletedImageUrls,
             Model model,
             RedirectAttributes redirectAttributes) {
         
@@ -77,8 +78,13 @@ public class ProductController extends BaseAdminController {
             model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         }
-        
+
         try {
+            // Chuyển string thành list
+            List<String> deletedUrls = new ArrayList<>();
+            if (deletedImageUrls != null && !deletedImageUrls.trim().isEmpty()) {
+                deletedUrls = Arrays.asList(deletedImageUrls.split(","));
+            }
             productService.createProduct(productDTO, 
                 images != null ? images : new ArrayList<>(), 
                 captions != null ? captions : new ArrayList<>());

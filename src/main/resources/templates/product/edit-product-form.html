@@ -71,6 +71,20 @@
         box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
       }
 
+      .image-section {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      .image-preview-section {
+        flex: 1;
+      }
+
+      .image-upload-section {
+        flex: 1;
+      }
+
       .image-upload-area {
         border: 2px dashed #dee2e6;
         border-radius: 8px;
@@ -78,6 +92,10 @@
         text-align: center;
         background-color: #f8f9fa;
         transition: all 0.3s ease;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
 
       .image-upload-area:hover {
@@ -93,8 +111,8 @@
       }
 
       .image-preview {
-        width: 80px;
-        height: 80px;
+        width: 120px;
+        height: 120px;
         border-radius: 8px;
         overflow: hidden;
         border: 2px solid #dee2e6;
@@ -106,7 +124,8 @@
       .image-preview img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
+        background-color: #f8f9fa;
       }
 
       .btn-delete {
@@ -492,30 +511,81 @@
                       </div>
                     </div>
 
-                    <!-- Hình ảnh -->
+                                        <!-- Hình ảnh -->
                     <div class="col-12">
                       <div class="form-group">
                         <label class="form-label">Hình ảnh sản phẩm</label>
 
-                        <!-- Hiển thị ảnh hiện tại -->
-                        <div
-                          th:if="${productDTO.existingImageUrls != null and !productDTO.existingImageUrls.isEmpty()}"
-                          class="existing-images"
-                        >
-                          <div
-                            th:each="imageUrl : ${productDTO.existingImageUrls}"
-                            class="image-preview"
-                            th:data-image-url="${imageUrl}"
-                          >
-                            <img th:src="${imageUrl}" alt="Product Image" />
-                            <button
-                              type="button"
-                              class="btn-delete"
-                              onclick="deleteImage(this)"
-                              title="Xóa ảnh này"
+                        <!-- Image Section with Two Columns -->
+                        <div class="image-section">
+                          <!-- Image Preview Section (Left) -->
+                          <div class="image-preview-section">
+                            <h6 class="mb-3 text-muted">
+                              <i class="fas fa-images me-2"></i>Preview ảnh sản phẩm
+                            </h6>
+                            
+                            <!-- Hiển thị ảnh hiện tại -->
+                            <div
+                              th:if="${productDTO.existingImageUrls != null and !productDTO.existingImageUrls.isEmpty()}"
+                              class="existing-images"
                             >
-                              <i class="fas fa-times"></i>
-                            </button>
+                              <div
+                                th:each="imageUrl : ${productDTO.existingImageUrls}"
+                                class="image-preview"
+                                th:data-image-url="${imageUrl}"
+                              >
+                                <img th:src="${imageUrl}" alt="Product Image" />
+                                <button
+                                  type="button"
+                                  class="btn-delete"
+                                  onclick="deleteImage(this)"
+                                  title="Xóa ảnh này"
+                                >
+                                  <i class="fas fa-times"></i>
+                                </button>
+                              </div>
+                            </div>
+
+                            <!-- Preview ảnh mới -->
+                            <div id="imagePreview"></div>
+                          </div>
+
+                          <!-- Image Upload Section (Right) -->
+                          <div class="image-upload-section">
+                            <h6 class="mb-3 text-muted">
+                              <i class="fas fa-cloud-upload-alt me-2"></i>Upload ảnh mới
+                            </h6>
+                            
+                            <div class="image-upload-area">
+                              <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                              <h6 class="text-muted mb-2">Thêm ảnh sản phẩm</h6>
+                              <p class="text-muted mb-3">
+                                Kéo thả file ảnh vào đây<br/>hoặc click để chọn
+                              </p>
+                              <input
+                                type="file"
+                                id="imageFiles"
+                                name="imageFiles"
+                                multiple
+                                accept="image/*"
+                                class="form-control"
+                                style="display: none"
+                              />
+                              <button
+                                type="button"
+                                class="btn btn-primary btn-sm mb-3"
+                                onclick="document.getElementById('imageFiles').click()"
+                              >
+                                <i class="fas fa-plus me-2"></i>Chọn ảnh
+                              </button>
+                              <div class="text-center">
+                                <small class="text-muted">
+                                  <i class="fas fa-info-circle me-1"></i>
+                                  Hỗ trợ: JPG, PNG, GIF<br/>
+                                  Tối đa 5MB mỗi file
+                                </small>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
@@ -526,38 +596,6 @@
                           name="deletedImageUrls"
                           value=""
                         />
-
-                        <!-- Preview ảnh mới -->
-                        <div id="imagePreview"></div>
-
-                        <!-- Upload ảnh mới -->
-                        <div class="image-upload-area">
-                          <i
-                            class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"
-                          ></i>
-                          <p class="text-muted mb-2">
-                            Kéo thả file ảnh vào đây hoặc click để chọn
-                          </p>
-                          <input
-                            type="file"
-                            id="imageFiles"
-                            name="imageFiles"
-                            multiple
-                            accept="image/*"
-                            class="form-control"
-                            style="display: none"
-                          />
-                          <button
-                            type="button"
-                            class="btn btn-outline-primary btn-sm"
-                            onclick="document.getElementById('imageFiles').click()"
-                          >
-                            <i class="fas fa-plus me-1"></i>Chọn ảnh
-                          </button>
-                          <small class="text-muted d-block mt-2">
-                            Hỗ trợ: JPG, PNG, GIF. Tối đa 5MB mỗi file.
-                          </small>
-                        </div>
                       </div>
                     </div>
                   </div>
