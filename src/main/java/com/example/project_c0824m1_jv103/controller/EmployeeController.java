@@ -22,13 +22,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-@RequestMapping("/Admin")
+@RequestMapping("/employees")
 public class EmployeeController extends BaseAdminController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("/employees/create")
+    @GetMapping("/create")
     public String showCreateForm(Model model, Principal principal) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -43,7 +43,7 @@ public class EmployeeController extends BaseAdminController {
         return "employee/add-employee-form";
     }
 
-    @PostMapping("/employees/delete")
+    @PostMapping("/delete")
     public String deleteEmployees(@RequestParam("employeeIds") List<Integer> employeeIds,
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
@@ -57,10 +57,10 @@ public class EmployeeController extends BaseAdminController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi vô hiệu hóa nhân viên: " + e.getMessage());
         }
-        return "redirect:/Admin/employees";
+        return "redirect:/employees";
     }
 
-    @GetMapping("/employees/show-edit-employee/{id}")
+    @GetMapping("/show-edit-employee/{id}")
     public String showEditEmployeeForm(@PathVariable Integer id, Model model, Principal principal) {
         List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -77,7 +77,7 @@ public class EmployeeController extends BaseAdminController {
         return "employee/edit-employee-form";
     }
 
-    @PostMapping("/employees/create")
+    @PostMapping("/create")
     public String createEmployee(@Valid @ModelAttribute("employee") EmployeeCreateDto employeeDto,
                                  BindingResult bindingResult,
                                  Model model,
@@ -109,10 +109,10 @@ public class EmployeeController extends BaseAdminController {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm nhân viên: " + e.getMessage());
         }
         
-        return "redirect:/Admin/employees";
+        return "redirect:/employees";
     }
 
-    @GetMapping("/employees")
+    @GetMapping()
     public String listEmployees(Model model,
                                 @RequestParam(value = "fullName", required = false) String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
@@ -171,7 +171,7 @@ public class EmployeeController extends BaseAdminController {
         return listEmployees(model, fullName, phone, role, page, size, principal);
     }
 
-    @PostMapping("/employees/edit-employee")
+    @PostMapping("/edit-employee")
     public String editEmployee(@ModelAttribute("employeeDto") EmployeeEditDto employeeDto,
                                BindingResult bindingResult,
                                Model model,
@@ -194,7 +194,7 @@ public class EmployeeController extends BaseAdminController {
         employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
         employeeService.save(employee);
         redirectAttributes.addFlashAttribute("successMessage", "Thay đổi thông tin nhân viên " + employee.getFullName() + " thành công!");
-        return "redirect:/Admin/employees";
+        return "redirect:/employees";
     }
 }
 

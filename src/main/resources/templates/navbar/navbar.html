@@ -75,7 +75,7 @@
               <li><h6 class="dropdown-header">Xin chào!</h6></li>
               <li><span class="dropdown-item-text small text-muted" sec:authentication="name">user@email.com</span></li>
               <li><hr class="dropdown-divider"></li>
-              <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" href="/Admin/Customer"><i class="bi bi-gear me-2"></i>Quản trị</a></li>
+              <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" href="/dashboard"><i class="bi bi-gear me-2"></i>Quản trị</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form th:action="@{/logout}" method="post" style="display: inline; width: 100%;">

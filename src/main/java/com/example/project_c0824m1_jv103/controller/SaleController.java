@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/Admin/Sale")
+@RequestMapping("/Sale")
 public class SaleController extends BaseAdminController {
 
     @Autowired
