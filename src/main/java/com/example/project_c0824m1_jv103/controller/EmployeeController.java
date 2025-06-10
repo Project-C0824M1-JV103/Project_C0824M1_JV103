@@ -18,7 +18,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/Admin")
-public class EmployeeController {
+public class    EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;

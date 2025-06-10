@@ -190,14 +190,14 @@
 
                 <div class="form-group">
                   <label class="form-label">Số lượng <span class="text-danger">*</span></label>
-                  <input type="number" th:field="*{quantity}" class="form-control" required/>
+                  <input type="number" th:field="*{quantity}" class="form-control" />
                   <div class="text-danger" th:if="${#fields.hasErrors('quantity')}"
                        th:errors="*{quantity}"></div>
                 </div>
 
                 <div class="form-group">
                   <label class="form-label">Danh mục <span class="text-danger">*</span></label>
-                  <select th:field="*{category}" class="form-select" required>
+                  <select th:field="*{category}" class="form-select" >
                     <option value="">-- Chọn danh mục --</option>
                     <option th:each="category : ${categories}"
                             th:value="${category.categoryId}"
@@ -211,7 +211,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label class="form-label">Nhà cung cấp <span class="text-danger">*</span></label>
-                  <select th:field="*{supplier}" class="form-select" required>
+                  <select th:field="*{supplier}" class="form-select" >
                     <option value="">-- Chọn nhà cung cấp --</option>
                     <option th:each="supplier : ${suppliers}"
                             th:value="${supplier.supplierId}"
