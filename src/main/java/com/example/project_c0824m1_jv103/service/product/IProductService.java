@@ -15,8 +15,14 @@ public interface IProductService {
     // Lấy danh sách sản phẩm với phân trang
     Page<ProductDTO> findAll(Pageable pageable);
     
-    // Tìm kiếm sản phẩm
-    Page<ProductDTO> searchProducts(String keyword, String field, Pageable pageable);
+    // Tìm kiếm sản phẩm với nhiều điều kiện
+    Page<ProductDTO> searchProducts(
+            String productName,
+            Double minPrice,
+            Double maxPrice,
+            Integer minQuantity,
+            Integer maxQuantity,
+            Pageable pageable);
     
     // Tìm sản phẩm theo ID
     ProductDTO findById(Long id);

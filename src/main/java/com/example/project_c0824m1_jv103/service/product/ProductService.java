@@ -124,36 +124,35 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Page<ProductDTO> searchProducts(String keyword, String field, Pageable pageable) {
-        Page<Product> productPage;
+    public Page<ProductDTO> searchProducts(
+            String productName,
+            Double minPrice,
+            Double maxPrice,
+            Integer minQuantity,
+            Integer maxQuantity,
+            Pageable pageable) {
         
-        if (keyword == null || keyword.isEmpty()) {
-            productPage = productRepository.findAll(pageable);
-        } else {
-            switch (field) {
-                case "productName":
-                    productPage = productRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
-                    break;
-                case "price":
-                    try {
-                        Double price = Double.parseDouble(keyword);
-                        productPage = productRepository.findByPriceLessThanEqual(price, pageable);
-                    } catch (NumberFormatException e) {
-                        return Page.empty();
-                    }
-                    break;
-                case "quantity":
-                    try {
-                        Integer quantity = Integer.parseInt(keyword);
-                        productPage = productRepository.findByQuantityLessThanEqual(quantity, pageable);
-                    } catch (NumberFormatException e) {
-                        return Page.empty();
-                    }
-                    break;
-                default:
-                    productPage = productRepository.findAll(pageable);
-            }
+        // Xử lý các giá trị null
+        if (minPrice == null) minPrice = 0.0;
+        if (maxPrice == null) maxPrice = Double.MAX_VALUE;
+        if (minQuantity == null) minQuantity = 0;
+        if (maxQuantity == null) maxQuantity = Integer.MAX_VALUE;
+        
+        // Nếu không có điều kiện tìm kiếm nào được chỉ định
+        if (productName == null && minPrice == 0.0 && maxPrice == Double.MAX_VALUE 
+            && minQuantity == 0 && maxQuantity == Integer.MAX_VALUE) {
+            return findAll(pageable);
         }
+        
+        // Thực hiện tìm kiếm với tất cả các điều kiện
+        Page<Product> productPage = productRepository.searchProducts(
+            productName,
+            minPrice,
+            maxPrice,
+            minQuantity,
+            maxQuantity,
+            pageable
+        );
         
         return productPage.map(productMapper::toDTO);
     }

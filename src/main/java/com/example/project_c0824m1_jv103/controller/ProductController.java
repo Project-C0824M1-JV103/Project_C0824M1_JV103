@@ -32,24 +32,49 @@ public class ProductController extends BaseAdminController {
     public String listProducts(
             Model model,
             Principal principal,
-            @RequestParam(value = "field", required = false, defaultValue = "productName") String field,
-            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "productName", required = false) String productName,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "minQuantity", required = false) Integer minQuantity,
+            @RequestParam(value = "maxQuantity", required = false) Integer maxQuantity,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page
     ) {
         int pageSize = 6;
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<ProductDTO> productPage;
         
-        if (keyword != null && !keyword.isEmpty()) {
-            productPage = productService.searchProducts(keyword, field, pageable);
+        // Kiểm tra xem có điều kiện tìm kiếm nào không
+        boolean hasSearchCriteria = productName != null || minPrice != null || maxPrice != null 
+                                || minQuantity != null || maxQuantity != null;
+        
+        if (hasSearchCriteria) {
+            productPage = productService.searchProducts(
+                productName,
+                minPrice,
+                maxPrice,
+                minQuantity,
+                maxQuantity,
+                pageable
+            );
         } else {
             productPage = productService.findAll(pageable);
         }
         
+        // Thêm các thuộc tính vào model
         model.addAttribute("productPage", productPage);
-        model.addAttribute("field", field);
-        model.addAttribute("keyword", keyword);
+        model.addAttribute("productName", productName);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("minQuantity", minQuantity);
+        model.addAttribute("maxQuantity", maxQuantity);
         model.addAttribute("currentPage", "product");
+        
+        // Thêm thông tin tìm kiếm
+        if (hasSearchCriteria) {
+            model.addAttribute("searchResultsCount", productPage.getTotalElements());
+            model.addAttribute("hasResults", productPage.getTotalElements() > 0);
+        }
+        
         return "product/list-product";
     }
 
