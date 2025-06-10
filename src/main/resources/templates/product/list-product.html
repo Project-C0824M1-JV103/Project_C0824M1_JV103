@@ -116,6 +116,24 @@
       .table td:last-child {
         text-align: center;
       }
+
+      /* Additional styling for table text */
+      .table td {
+        color: #000 !important;
+      }
+      
+      .table .text-muted {
+        color: #000 !important;
+      }
+      
+      .table .text-success {
+        color: #000 !important;
+      }
+      
+      .stt-number {
+        color: #000;
+        font-weight: 500;
+      }
     </style>
   </head>
   <body>
@@ -222,7 +240,7 @@
                     <tr>
                       <th style="border: none !important;">STT</th>
                       <th style="border: none !important;">Tên Sản Phẩm</th>
-                      <th style="border: none !important;">Giá</th>
+                      <th style="border: none !important;">Giá (VNĐ)</th>
                       <th style="border: none !important;">CPU</th>
                       <th style="border: none !important;">Lưu trữ</th>
                       <th style="border: none !important;">Số Lượng</th>
@@ -232,27 +250,26 @@
                   <tbody>
                     <tr th:each="product,l : ${productPage.content}">
                       <td style="border: none !important;">
-                        <span class="badge bg-primary" th:text="${l.count}"></span>
+                        <span class="stt-number" th:text="${l.count}"></span>
                       </td>
                       <td style="border: none !important;">
                         <div class="d-flex align-items-center">
                           <div>
                             <div class="fw-bold" th:text="${product.productName}">Tên sản phẩm</div>
-                            <small class="text-muted" 
-                                   th:if="${product.description != null and !product.description.isEmpty()}"
-                                   th:text="${#strings.abbreviate(product.description, 50)}"></small>
+<!--                            <small th:if="${product.description != null and !product.description.isEmpty()}"-->
+<!--                                   th:text="${#strings.abbreviate(product.description, 50)}"></small>-->
                           </div>
                         </div>
                       </td>
                       <td style="border: none !important;">
-                        <span class="fw-bold text-success"
-                              th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                        <span class="fw-bold"
+                              th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} "></span>
                       </td>
                       <td style="border: none !important;">
-                        <span th:text="${product.cpu ?: 'N/A'}" class="text-muted"></span>
+                        <span th:text="${product.cpu ?: 'N/A'}"></span>
                       </td>
                       <td style="border: none !important;">
-                        <span th:text="${product.memory ?: 'N/A'}" class="text-muted"></span>
+                        <span th:text="${product.memory ?: 'N/A'}"></span>
                       </td>
                       <td >
                         <span th:text="${product.quantity}"></span>
@@ -262,7 +279,7 @@
                           <button class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
                             <i class="fas fa-eye"></i>
                           </button>
-                          <a th:href="@{'/Admin/product/edit/' + ${product.productId}}" 
+                          <a th:href="@{'/Admin/product/edit/' + ${product.productId}}"
                              class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
                             <i class="fas fa-edit"></i>
                           </a>
@@ -288,121 +305,7 @@
                   </tbody>
                 </table>
               </div>
-              
-              <!-- Pagination -->
-              <div class="d-flex justify-content-between align-items-center p-3 border-top">
-                <div class="text-muted">
-                  <span th:if="${keyword != null && !keyword.isEmpty()}">
-                    Tìm thấy <span th:text="${productPage.totalElements}">0</span> sản phẩm
-                    với từ khóa "<span th:text="${keyword}" class="text-primary"></span>"
-                  </span>
-                  <span th:unless="${keyword != null && !keyword.isEmpty()}">
-                    Hiển thị <span th:text="${#lists.size(productPage.content)}">0</span> trên <span th:text="${productPage.totalElements}">0</span> sản phẩm
-                  </span>
-                  <small class="text-muted ms-2">
-                    (Trang <span th:text="${productPage.number + 1}">1</span>/<span th:text="${productPage.totalPages}">1</span>)
-                  </small>
-                </div>
-                
-                <!-- Pagination Controls -->
-                <nav th:if="${productPage.totalPages > 1}">
-                  <ul class="pagination pagination-sm mb-0">
-                  <table
-                    class="table table-hover mb-0"
-                    style="border-collapse: collapse; border: none"
-                  >
-                    <thead class="table-dark">
-                      <tr>
-                        <th scope="col" style="border: none !important">ID</th>
-                        <th scope="col" style="border: none !important">
-                          Tên Sản Phẩm
-                        </th>
-                        <th scope="col" style="border: none !important">Giá</th>
-                        <th scope="col" style="border: none !important">CPU</th>
-                        <th scope="col" style="border: none !important">
-                          Lưu trữ
-                        </th>
-                        <th scope="col" style="border: none !important">
-                          Số Lượng
-                        </th>
-                        <th scope="col" style="border: none !important">
-                          Thao tác
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr th:each="product : ${productPage.content}">
-                        <td style="border: none !important">
-                          <span
-                            class="badge bg-secondary"
-                            th:text="${product.productId}"
-                          ></span>
-                        </td>
-                        <td style="border: none !important">
-                          <div class="d-flex align-items-center">
-                            <div>
-                              <div
-                                class="fw-bold"
-                                th:text="${product.productName}"
-                              ></div>
-                              <small
-                                class="text-muted"
-                                th:if="${product.description != null and !product.description.isEmpty()}"
-                                th:text="${#strings.abbreviate(product.description, 50)}"
-                              ></small>
-                            </div>
-                          </div>
-                        </td>
-                        <td style="border: none !important">
-                          <span
-                            class="fw-bold text-success"
-                            th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
-                          ></span>
-                        </td>
-                        <td style="border: none !important">
-                          <span
-                            th:text="${product.cpu ?: 'N/A'}"
-                            class="text-muted"
-                          ></span>
-                        </td>
 
-                        <td style="border: none !important">
-                          <span
-                            th:text="${product.memory ?: 'N/A'}"
-                            class="text-muted"
-                          ></span>
-                        </td>
-
-                        <td style="border: none !important">
-                          <span
-                            th:text="${product.quantity}"
-                            th:class="${product.quantity > 0 ? 'badge bg-secondary' : 'badge bg-warning text-dark'}"
-                          ></span>
-                        </td>
-
-                        <td style="border: none !important">
-                          <div class="btn-actions">
-                            <a
-                              th:href="@{'/Admin/product/edit/' + ${product.productId}}"
-                              class="btn btn-sm btn-outline-warning"
-                              title="Chỉnh sửa"
-                            >
-                              <i class="fas fa-edit"></i>
-                            </a>
-                            <button
-                              class="btn btn-sm btn-outline-primary"
-                              title="Xem chi tiết"
-                            >
-                              <i class="fas fa-eye"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
 
             <!-- Pagination -->
             <nav

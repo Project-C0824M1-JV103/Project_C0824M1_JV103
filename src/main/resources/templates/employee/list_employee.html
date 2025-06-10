@@ -69,6 +69,7 @@
         vertical-align: middle;
         border-bottom: 1px solid #eee;
         text-align: center;
+        color: #000 !important;
       }
 
       .table tbody tr:hover {
@@ -261,8 +262,21 @@
       }
 
       .role-badge {
-
         color: black;
+      }
+
+      /* Additional styling for table text */
+      .table .text-muted {
+        color: #000 !important;
+      }
+      
+      .table .employee-email {
+        color: #000 !important;
+      }
+      
+      .stt-number {
+        color: #000;
+        font-weight: 500;
       }
     </style>
   </head>
@@ -453,7 +467,7 @@
                         </div>
                       </td>
                       <td>
-                        <span class="badge bg-primary" th:text="${l.count}"
+                        <span class="stt-number" th:text="${l.count}"
                           ></span
                         >
                       </td>
@@ -463,7 +477,6 @@
                             Tên nhân viên
                           </div>
                           <div
-                            class="employee-email"
                             th:text="${e.email ?: 'Chưa cập nhật'}"
                           >
                             Email

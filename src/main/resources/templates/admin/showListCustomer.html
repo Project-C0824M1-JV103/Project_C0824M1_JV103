@@ -117,6 +117,20 @@
       .table td:last-child {
         text-align: center;
       }
+
+      /* Additional styling for table text */
+      .table td {
+        color: #000 !important;
+      }
+      
+      .table .text-muted {
+        color: #000 !important;
+      }
+      
+      .stt-number {
+        color: #000;
+        font-weight: 500;
+      }
     </style>
   </head>
   <body>
@@ -228,7 +242,7 @@
                                                         <tr th:each="customer,l : ${customers}">
                                         <td style="border: none !important;">
                                             <span
-                                                class="badge bg-primary"
+                                                class="stt-number"
                                                 th:text="${l.count}"
                                             ></span>
                                         </td>

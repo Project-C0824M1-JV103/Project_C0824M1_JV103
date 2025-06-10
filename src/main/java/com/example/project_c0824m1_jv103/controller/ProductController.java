@@ -56,6 +56,8 @@ public class ProductController extends BaseAdminController {
     @GetMapping("/add")
     public String showCreateProductForm(Model model, Principal principal) {
         model.addAttribute("productDTO", new ProductDTO());
+        model.addAttribute("categories", productService.getAllCategories());
+        model.addAttribute("suppliers", productService.getAllSuppliers());
         model.addAttribute("currentPage", "product");
         return "product/add-product-form";
     }
@@ -71,6 +73,8 @@ public class ProductController extends BaseAdminController {
         
         if (bindingResult.hasErrors()) {
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         }
         
@@ -84,10 +88,14 @@ public class ProductController extends BaseAdminController {
         } catch (IOException e) {
             model.addAttribute("error", "Lỗi khi upload ảnh: " + e.getMessage());
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi thêm sản phẩm: " + e.getMessage());
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         }
     }
@@ -98,6 +106,8 @@ public class ProductController extends BaseAdminController {
             ProductDTO productDTO = productService.findById(id);
             if (productDTO != null) {
                 model.addAttribute("productDTO", productDTO);
+                model.addAttribute("categories", productService.getAllCategories());
+                model.addAttribute("suppliers", productService.getAllSuppliers());
                 model.addAttribute("currentPage", "product");
                 return "product/edit-product-form";
             } else {
@@ -124,6 +134,8 @@ public class ProductController extends BaseAdminController {
         if (bindingResult.hasErrors()) {
             productDTO.setProductId(id.intValue());
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/edit-product-form";
         }
         
@@ -145,6 +157,8 @@ public class ProductController extends BaseAdminController {
             model.addAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
             productDTO.setProductId(id.intValue());
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/edit-product-form";
         }
     }
