@@ -131,7 +131,7 @@
                             <p class="text-muted mb-0">Cập nhật thông tin chi tiết khách hàng</p>
                         </div>
                         <div class="col-auto">
-                            <a href="/Admin/Customer" class="btn btn-outline-secondary">
+                            <a href="/Customer" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left"></i> Quay lại
                             </a>
                         </div>
@@ -169,7 +169,7 @@
 
                 <!-- Edit Form -->
                 <div class="form-section">
-                    <form th:action="@{'/Admin/Customer/edit/' + ${customer.customerId}}"
+                    <form th:action="@{'/Customer/edit/' + ${customer.customerId}}"
                           th:object="${customer}"
                           method="post">
 
@@ -255,7 +255,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="d-flex justify-content-end gap-2">
-                                    <a href="/Admin/Customer" class="btn btn-outline-secondary">
+                                    <a href="/Customer" class="btn btn-outline-secondary">
                                         <i class="fas fa-times"></i> Hủy
                                     </a>
                                     <button type="submit" class="btn btn-primary">

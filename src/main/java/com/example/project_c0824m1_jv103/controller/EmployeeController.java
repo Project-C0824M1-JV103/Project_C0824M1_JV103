@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +28,8 @@ public class EmployeeController extends BaseAdminController {
 
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/create")
     public String showCreateForm(Model model, Principal principal) {
@@ -98,11 +101,13 @@ public class EmployeeController extends BaseAdminController {
         }
         Employee employee = new Employee();
         org.springframework.beans.BeanUtils.copyProperties(employeeDto, employee);
+        employee.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
         if (employeeDto.getRole() != null) {
             employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
         }
         
         try {
+
             employeeService.save(employee);
             redirectAttributes.addFlashAttribute("successMessage", "Thêm nhân viên " + employee.getFullName() + " thành công!");
         } catch (Exception e) {
@@ -118,7 +123,7 @@ public class EmployeeController extends BaseAdminController {
                                 @RequestParam(value = "phone", required = false) String phone,
                                 @RequestParam(value = "role", required = false) String role,
                                 @RequestParam(value = "page", defaultValue = "0") int page,
-                                @RequestParam(value = "size", defaultValue = "2") int size,
+                                @RequestParam(value = "size", defaultValue = "6") int size,
                                 Principal principal) {
         
         List<String> roles = Arrays.stream(Employee.Role.values())
@@ -160,16 +165,16 @@ public class EmployeeController extends BaseAdminController {
     }
 
     // Add main listing endpoint
-    @GetMapping({"", "/"})
-    public String mainListEmployees(Model model,
-                                    @RequestParam(value = "fullName", required = false) String fullName,
-                                    @RequestParam(value = "phone", required = false) String phone,
-                                    @RequestParam(value = "role", required = false) String role,
-                                    @RequestParam(value = "page", defaultValue = "0") int page,
-                                    @RequestParam(value = "size", defaultValue = "6") int size,
-                                    Principal principal) {
-        return listEmployees(model, fullName, phone, role, page, size, principal);
-    }
+//    @GetMapping({"", "/"})
+//    public String mainListEmployees(Model model,
+//                                    @RequestParam(value = "fullName", required = false) String fullName,
+//                                    @RequestParam(value = "phone", required = false) String phone,
+//                                    @RequestParam(value = "role", required = false) String role,
+//                                    @RequestParam(value = "page", defaultValue = "0") int page,
+//                                    @RequestParam(value = "size", defaultValue = "6") int size,
+//                                    Principal principal) {
+//        return listEmployees(model, fullName, phone, role, page, size, principal);
+//    }
 
     @PostMapping("/edit-employee")
     public String editEmployee(@ModelAttribute("employeeDto") EmployeeEditDto employeeDto,
