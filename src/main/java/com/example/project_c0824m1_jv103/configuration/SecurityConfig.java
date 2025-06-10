@@ -58,8 +58,9 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/*.css", "/css/**", "/js/**", "/favicon.ico").permitAll() // Các đường dẫn không cần login
                         .requestMatchers("/Admin/**", "/employees/**").hasRole("ADMIN")
                         .requestMatchers("/Sales/**").hasAnyRole("SALES", "ADMIN")
-                        .requestMatchers("/Business/**").hasAnyRole("BUSINESS", "ADMIN")
+                        .requestMatchers("/Business/**", "/Admin/Customer/**").hasAnyRole("BUSINESS", "ADMIN")
                         .requestMatchers("/Warehouse/**").hasAnyRole("WAREHOUSE", "ADMIN")
+                        .requestMatchers("/Admin/product/**").hasAnyRole("ADMIN", "BUSINESS", "SALES")
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
