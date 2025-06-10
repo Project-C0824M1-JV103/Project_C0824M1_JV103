@@ -9,30 +9,49 @@
     <!-- Admin Navbar Fragment -->
     <div th:fragment="admin-sidebar" class="col-md-3 col-lg-2 px-0">
         <div class="admin-sidebar d-flex flex-column">
-            <div class="p-3 text-center border-bottom">
+            <!-- User Info Section -->
+            <div class="p-3 text-center border-bottom user-info-section" th:if="${currentUser}">
+                <div class="user-avatar mb-2">
+                    <i class="fas fa-user-circle fa-3x text-white"></i>
+                </div>
+                <h6 class="text-white mb-1" th:text="${currentUser.fullName}">Admin User</h6>
+                <small class="text-light opacity-75" th:text="${currentUser.email}">admin@email.com</small>
+                <div class="mt-2">
+                    <span class="badge bg-light text-dark px-2 py-1" th:text="${currentUser.role}">ADMIN</span>
+                </div>
+            </div>
+            
+            <!-- Fallback header when no user info -->
+            <div class="p-3 text-center border-bottom" th:unless="${currentUser}">
                 <h4 class="text-white mb-0">
                     <i class="fas fa-user-shield"></i> Admin Panel
                 </h4>
             </div>
             
             <nav class="nav flex-column p-3">
-                <a href="/Admin/dashboard" class="nav-link" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
+
+                <div class="nav-divider my-2"></div>
+                <a href="/" class="nav-link home-link" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
+                    <i class="fas fa-home"></i>
+                    Về trang chủ
+                </a>
+                <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
                     <i class="fas fa-tachometer-alt"></i>
                     Dashboard
                 </a>
-                <a href="/Admin/Customer" class="nav-link" th:classappend="${currentPage == 'customer'} ? 'active' : ''">
+                <a th:href="@{/Customer}" class="nav-link" th:classappend="${currentPage == 'customer'} ? 'active' : ''">
                     <i class="fas fa-users"></i>
                     Quản lý khách hàng
                 </a>
-                <a href="/Admin/Product" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
+                <a th:href="@{/product}" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
                     <i class="fas fa-box"></i>
                     Quản lý sản phẩm
                 </a>
-                <a href="/Admin/Sale" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
+                <a th:href="@{/Sale}" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
                     <i class="fas fa-chart-line"></i>
                     Quản lý bán hàng
                 </a>
-                <a th:href="@{/Admin/employees/list}" class="nav-link" th:classappend="${currentPage == 'employee'} ? 'active' : ''">
+                <a th:href="@{/employees}" class="nav-link" th:classappend="${currentPage == 'employee'} ? 'active' : ''">
                     <i class="fas fa-user-tie"></i>
                     Quản lý nhân viên
                 </a>
@@ -59,7 +78,7 @@
             </nav>
             
             <div class="mt-auto p-3 border-top">
-                <a href="/logout" class="nav-link text-center logout-btn">
+                <a th:href="@{/logout}" class="nav-link text-center logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                     Đăng xuất
                 </a>

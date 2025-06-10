@@ -1,37 +1,29 @@
 package com.example.project_c0824m1_jv103.controller.Admin;
 
-
 import com.example.project_c0824m1_jv103.model.Customer;
 import com.example.project_c0824m1_jv103.service.customer.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
-@RequestMapping("/Admin")
-public class AdminDashboard {
-    @Autowired
-    private ICustomerService iCustomerService;
-
-    @GetMapping("/Customer")
-    public String showListCustomer(Model model){
-        List<Customer> customers = iCustomerService.findAll();
-        model.addAttribute("customers",customers);
-        model.addAttribute("currentPage", "customer");
-        return "admin/showListCustomer";
+@RequestMapping()
+public class AdminDashboard extends BaseAdminController {
+    
+    @GetMapping("/dashboard")
+    public String dashboardAdmin(){
+        return "admin/dashboard";
     }
 
-    @PostMapping("/Customer")
-    public String searchByNameOrPhone(@RequestParam("keyword") String keyword,Model model){
-        List<Customer> searchCustomer = iCustomerService.searchByNameAndPhone(keyword);
-        List<Customer> customers = iCustomerService.findAll();
-        model.addAttribute("searchCustomer",searchCustomer);
-        model.addAttribute("customers",customers);
-        model.addAttribute("currentPage", "customer");
-        model.addAttribute("keyword", keyword);
-        return "admin/showListCustomer";
-    }
 }

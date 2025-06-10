@@ -24,8 +24,6 @@ public class SaleDetails {
     
     @Column(name = "unique_price", nullable = false)
     private Double uniquePrice;
-    
-    // Constructors
     public SaleDetails() {}
     
     public SaleDetails(Product product, Sale sale, Integer quantity, Double uniquePrice) {
@@ -34,8 +32,7 @@ public class SaleDetails {
         this.quantity = quantity;
         this.uniquePrice = uniquePrice;
     }
-    
-    // Getters and Setters
+
     public Integer getSaledetailsId() {
         return saledetailsId;
     }
@@ -75,9 +72,4 @@ public class SaleDetails {
     public void setUniquePrice(Double uniquePrice) {
         this.uniquePrice = uniquePrice;
     }
-    
-
-    // public Double getTotalPrice() {
-    //     return quantity != null && uniquePrice != null ? quantity * uniquePrice : 0.0;
-    // }
 } 

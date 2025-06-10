@@ -1,39 +1,30 @@
 package com.example.project_c0824m1_jv103.dto;
 
+import com.example.project_c0824m1_jv103.model.Employee.Role;
+import com.example.project_c0824m1_jv103.model.Employee.Status;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class EmployeeEditDto {
+public class EmployeePersonalDto {
+
     private Integer employeeId;
 
-    @NotBlank(message = "Nhập tên đầy đủ!")
-    @Size(max = 50, message = "Tên không được vượt quá 50 ký tự")
+    @NotBlank(message = "không được để trống.")
     private String fullName;
 
-    @Email(message = "Email không hợp lệ")
-    @Size(max = 50, message = "Email không được vượt quá 50 ký tự")
+    @Email(message = "không hợp lệ.")
+    @NotBlank(message = "không được để trống.")
     private String email;
 
-    @NotBlank(message = "Nhập số điện thoại!")
-    @Pattern(regexp = "^[0-9]{10,11}$", message = "Số điện thoại phải có 10 hoặc 11 chữ số!")
-    @Size(max = 15, message = "Nhập lại số điện thoại!")
+    @NotBlank(message = "không được để trống.")
+    @Pattern(regexp = "\\d{10}", message = "phải đủ 10 chữ số và chỉ chứa số.")
     private String phone;
 
-    @NotBlank(message = "Chọn vị trí")
-    private String role;
+    private Role role;
 
-    public EmployeeEditDto() {}
-
-    public EmployeeEditDto(Integer employeeId, String fullName, String email, String phone, String role) {
-        this.employeeId = employeeId;
-        this.fullName = fullName;
-        this.email = email;
-        this.phone = phone;
-        this.role = role;
-    }
-
+    // Getters & Setters
     public Integer getEmployeeId() {
         return employeeId;
     }
@@ -66,11 +57,12 @@ public class EmployeeEditDto {
         this.phone = phone;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
+
 }

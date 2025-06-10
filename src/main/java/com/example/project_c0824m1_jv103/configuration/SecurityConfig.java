@@ -56,10 +56,12 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/*.css", "/css/**", "/js/**", "/favicon.ico").permitAll() // Các đường dẫn không cần login
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/sales/**").hasRole("SALES")
-                        .requestMatchers("/business/**").hasRole("BUSINESS")
-                        .requestMatchers("/warehouse/**").hasRole("WAREHOUSE")
+                        .requestMatchers("/Customer/**").hasAnyRole("ADMIN","SALES")
+                        .requestMatchers("/employees/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/product/**").hasAnyRole("ADMIN","SALES","BUSINESS")
+                        .requestMatchers("/sales/**").hasAnyRole("SALES","ADMIN")
+//                        .requestMatchers("/business/**").hasRole("BUSINESS")
+//                        .requestMatchers("/Admin/warehouse/**").hasRole("WAREHOUSE")
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

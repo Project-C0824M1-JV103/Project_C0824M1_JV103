@@ -1,327 +1,541 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý khách hàng - Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/admin-navbar.css}">
-    <link rel="stylesheet" th:href="@{/admin-common.css}">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}" />
+    <link rel="stylesheet" th:href="@{/admin-common.css}" />
     <style>
-        .main-content {
-            background-color: #f8f9fa;
-            min-height: 100vh;
-        }
-        
-        .header-section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .customer-table {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px;
-            font-weight: 600;
-        }
-        
-        .table td {
-            padding: 15px;
-            vertical-align: middle;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-actions {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 12px;
-        }
-        
-        .badge {
-            font-size: 0.8em;
-        }
-        
-        .search-section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .table td {
-            text-align: left;
-        }
-        
-        .table td:first-child,
-        .table td:last-child {
-            text-align: center;
-        }
+      .main-content {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+      }
+
+      .header-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .customer-table {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .table th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none !important;
+        border-right: none !important;
+        border-left: none !important;
+        padding: 15px;
+        font-weight: 600;
+      }
+
+      .table td {
+        padding: 15px;
+        vertical-align: middle;
+        border: none !important;
+        border-right: none !important;
+        border-left: none !important;
+        background-color: white;
+      }
+
+      .table {
+        border-collapse: collapse;
+        border: none !important;
+      }
+
+      .table thead th {
+        border-bottom: none !important;
+      }
+
+      /* Override Bootstrap table borders completely */
+      .table > :not(caption) > * > * {
+        border-width: 0 !important;
+      }
+
+      .table-hover > tbody > tr:hover > * {
+        border-color: transparent !important;
+      }
+
+      .customer-table .table th,
+      .customer-table .table td {
+        border: 0 !important;
+        border-width: 0 !important;
+        border-style: none !important;
+      }
+
+      .table tbody tr {
+        background-color: white;
+      }
+
+      .table tbody tr:hover {
+        background-color: white;
+      }
+
+      .btn-actions {
+        display: flex;
+        gap: 5px;
+      }
+
+      .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      .badge {
+        font-size: 0.8em;
+      }
+
+      .search-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .table td {
+        text-align: left;
+      }
+
+      .table td:first-child,
+      .table td:last-child {
+        text-align: center;
+      }
+
+      /* Additional styling for table text */
+      .table td {
+        color: #000 !important;
+      }
+      
+      .table .text-muted {
+        color: #000 !important;
+      }
+      
+      .stt-number {
+        color: #000;
+        font-weight: 500;
+      }
+
+      /* Pagination styling */
+      .pagination .page-link {
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        padding: 8px 12px;
+        transition: all 0.3s ease;
+      }
+
+      .pagination .page-link:hover {
+        background-color: #e9ecef;
+        border-color: #adb5bd;
+        color: #495057;
+      }
+
+      .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        font-weight: 600;
+      }
+
+      .pagination .page-item.disabled .page-link {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        color: #6c757d;
+      }
+
+      .pagination .page-link:focus {
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        border-color: #667eea;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container-fluid">
-        <div class="row">
-            <!-- Include Admin Navbar -->
-            <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
-            
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10">
-                <div class="main-content p-4">
-                    <!-- Header Section -->
-                    <div class="header-section">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <h2 class="mb-1">
-                                    <i class="fas fa-users text-primary"></i>
-                                    Quản lý khách hàng
-                                </h2>
-                                <p class="text-muted mb-0">Danh sách tất cả khách hàng trong hệ thống</p>
-                            </div>
-                            <div class="col-auto">
-                                <button class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Thêm khách hàng
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Search Section -->
-                    <div class="search-section">
-                        <form th:action="@{/Admin/Customer}" method="post">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-search"></i>
-                                        </span>
-                                        <input type="text" name="keyword" class="form-control" 
-                                               placeholder="Tìm kiếm theo tên, SĐT..." 
-                                               th:value="${param.keyword}">
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        <i class="fas fa-search"></i> Tìm kiếm
-                                    </button>
-                                </div>
-                                <div class="col-md-2">
-                                    <a th:href="@{/Admin/Customer}" class="btn btn-outline-secondary w-100">
-                                        <i class="fas fa-refresh"></i> Làm mới
-                                    </a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    
-                    <!-- Customer Table -->
-                    <div class="customer-table">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Tên khách hàng</th>
-                                        <th>Số điện thoại</th>
-                                        <th>Email</th>
-                                        <th>Địa chỉ</th>
-                                        <th>Ngày sinh</th>
-                                        <th>Số đơn hàng</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody th:if="${searchCustomer != null}">
-                                    <tr th:each="customer : ${searchCustomer}">
-                                        <td>
-                                            <span class="badge bg-primary" th:text="${customer.customerId}">001</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar me-3">
-                                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                                         style="width: 40px; height: 40px;">
-                                                        <span th:text="${customer.customerName != null ? customer.customerName.substring(0,1).toUpperCase() : 'N'}">N</span>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="fw-bold" th:text="${customer.customerName}">Tên khách hàng</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span th:text="${customer.phoneNumber ?: 'Chưa cập nhật'}">
-                                                <i class="fas fa-phone text-muted me-1"></i>
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span th:text="${customer.email ?: 'Chưa cập nhật'}">
-                                                <i class="fas fa-envelope text-muted me-1"></i>
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span th:text="${customer.address ?: 'Chưa cập nhật'}" class="text-truncate" style="max-width: 200px;">
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span th:text="${customer.birthdayDate != null ? #temporals.format(customer.birthdayDate, 'dd/MM/yyyy') : 'Chưa cập nhật'}">
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info" th:text="${customer.sales != null ? #lists.size(customer.sales) : 0}">0</span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-actions">
-                                                <button class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" title="Xóa">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tbody th:if="${searchCustomer == null}">
-                                    <tr th:each="customer : ${customers}">
-                                        <td>
-                                            <span class="badge bg-primary" th:text="${customer.customerId}">001</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar me-3">
-                                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                                         style="width: 40px; height: 40px;">
-                                                        <span th:text="${customer.customerName != null ? customer.customerName.substring(0,1).toUpperCase() : 'N'}">N</span>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="fw-bold" th:text="${customer.customerName}">Tên khách hàng</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span th:text="${customer.phoneNumber ?: 'Chưa cập nhật'}">
-                                                <i class="fas fa-phone text-muted me-1"></i>
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span th:text="${customer.email ?: 'Chưa cập nhật'}">
-                                                <i class="fas fa-envelope text-muted me-1"></i>
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span th:text="${customer.address ?: 'Chưa cập nhật'}" class="text-truncate" style="max-width: 200px;">
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span th:text="${customer.birthdayDate != null ? #temporals.format(customer.birthdayDate, 'dd/MM/yyyy') : 'Chưa cập nhật'}">
-                                                Chưa cập nhật
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info" th:text="${customer.sales != null ? #lists.size(customer.sales) : 0}">0</span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-actions">
-                                                <button class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" title="Xóa">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <!-- Pagination -->
-                        <div class="d-flex justify-content-between align-items-center p-3 border-top">
-                            <div class="text-muted">
-                                <span th:if="${searchCustomer != null}">
-                                    Tìm thấy <span th:text="${#lists.size(searchCustomer)}">0</span> khách hàng
-                                    <span th:if="${param.keyword}" class="text-primary">
-                                        cho từ khóa "<span th:text="${param.keyword}"></span>"
-                                    </span>
-                                </span>
-                                <span th:if="${searchCustomer == null}">
-                                    Hiển thị <span th:text="${#lists.size(customers)}">0</span> khách hàng
-                                </span>
-                            </div>
-                            <nav>
-                                <ul class="pagination pagination-sm mb-0">
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="#">
-                                            <i class="fas fa-chevron-left"></i>
-                                        </a>
-                                    </li>
-                                    <li class="page-item active">
-                                        <a class="page-link" href="#">1</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">2</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">3</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">
-                                            <i class="fas fa-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
+      <div class="row">
+        <!-- Include Admin Navbar -->
+        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+          <div class="main-content p-4">
+            <!-- Header Section -->
+            <div class="header-section">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h2 class="mb-1">
+                    <i class="fas fa-users text-primary"></i>
+                    Quản lý khách hàng
+                  </h2>
+                  <p class="text-muted mb-0">
+                    Danh sách tất cả khách hàng trong hệ thống
+                  </p>
                 </div>
+                <!--                            <div class="col-auto">-->
+                <!--                                <button class="btn btn-primary">-->
+                <!--                                    <i class="fas fa-plus"></i> Thêm khách hàng-->
+                <!--                                </button>-->
+                <!--                            </div>-->
+              </div>
             </div>
+
+            <!-- Success/Error Messages -->
+            <div
+                th:if="${successMessage}"
+                class="alert alert-success alert-dismissible fade show"
+                role="alert"
+            >
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${successMessage}"></span>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
+            </div>
+
+            <div
+                th:if="${errorMessage}"
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+            >
+                <i class="fas fa-exclamation-triangle"></i>
+                <span th:text="${errorMessage}"></span>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+              <form th:action="@{/Customer}" method="get">
+                <div class="row g-3">
+                  <div class="col-md-3">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-user"></i>
+                      </span>
+                      <input
+                        type="text"
+                        name="customerName"
+                        class="form-control"
+                        placeholder="Tìm kiếm theo tên khách hàng..."
+                        th:value="${customerName}"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-phone"></i>
+                      </span>
+                      <input
+                        type="text"
+                        name="phoneNumber"
+                        class="form-control"
+                        placeholder="Tìm kiếm theo số điện thoại..."
+                        th:value="${phoneNumber}"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                       Tìm kiếm
+                    </button>
+                  </div>
+                  <div class="col-md-2">
+                    <a
+                      th:href="@{/Customer}"
+                      class="btn btn-outline-secondary w-100"
+                    >
+                      <i class="fas fa-refresh"></i> Làm mới
+                    </a>
+                  </div>
+                  <!--                                <div class="col-md-2">-->
+                  <!--                                    <div class="d-flex align-items-center justify-content-end">-->
+                  <!--                                        <small class="text-muted me-2">Hiển thị:</small>-->
+                  <!--                                        <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this.value)">-->
+                  <!--                                            <option value="4" th:selected="${pageSize == 4}">4 mục</option>-->
+                  <!--                                            <option value="6" th:selected="${pageSize == 6}">6 mục</option>-->
+                  <!--                                        </select>-->
+                  <!--                                    </div>-->
+                  <!--                                </div>-->
+                </div>
+
+                <!-- Hidden fields for pagination -->
+                <input type="hidden" name="page" value="0" />
+                <input type="hidden" name="size" th:value="${pageSize}" />
+              </form>
+            </div>
+
+            <!-- Customer Table -->
+            <div class="customer-table">
+              <div class="table-responsive">
+                                            <table class="table table-hover mb-0" style="border-collapse: collapse; border: none;"
+                  <thead>
+                                                        <tr>
+                                        <th style="border: none !important;">STT</th>
+                                        <th style="border: none !important;">Tên khách hàng</th>
+                                        <th style="border: none !important;">Số điện thoại</th>
+                                        <th style="border: none !important;">Email</th>
+                                        <th style="border: none !important;">Số đơn hàng</th>
+                                        <th style="border: none !important;">Thao tác</th>
+                                    </tr>
+                  </thead>
+                  <tbody>
+                                                        <tr th:each="customer,l : ${customers}">
+                                        <td style="border: none !important;">
+                                            <span
+                                                class="stt-number"
+                                                th:text="${l.count}"
+                                            ></span>
+                                        </td>
+                                        <td style="border: none !important;">
+                        <div class="d-flex align-items-center">
+                          <div>
+                            <div
+                              class="fw-bold"
+                              th:text="${customer.customerName}"
+                            >
+                              Tên khách hàng
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td style="border: none !important;">
+                        <span
+                          th:text="${customer.phoneNumber ?: 'Chưa cập nhật'}"
+                        >
+                          <i class="fas fa-phone text-muted me-1"></i>
+                          Chưa cập nhật
+                        </span>
+                      </td>
+                      <td style="border: none !important;">
+                        <span th:text="${customer.email ?: 'Chưa cập nhật'}">
+                          <i class="fas fa-envelope text-muted me-1"></i>
+                          Chưa cập nhật
+                        </span>
+                      </td>
+                      <td style="border: none !important;">
+                        <span
+                          th:text="${customer.sales != null ? #lists.size(customer.sales) : 0}"
+                          >0</span
+                        >
+                      </td>
+                      <td style="border: none !important;">
+                        <div class="btn-actions">
+                          <button
+                            class="btn btn-sm btn-outline-primary"
+                            title="Xem chi tiết"
+                          >
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <a
+                            th:href="@{'/Customer/edit/' + ${customer.customerId}}"
+                            class="btn btn-sm btn-outline-warning"
+                            title="Chỉnh sửa"
+                          >
+                            <i class="fas fa-edit"></i>
+                          </a>
+                          <!--                                                <button class="btn btn-sm btn-outline-danger" -->
+                          <!--                                                        title="Xóa"-->
+                          <!--                                                        onclick="confirmDelete(this)"-->
+                          <!--                                                        th:data-customer-id="${customer.customerId}"-->
+                          <!--                                                        th:data-customer-name="${customer.customerName}">-->
+                          <!--                                                    <i class="fas fa-trash"></i>-->
+                          <!--                                                </button>-->
+                        </div>
+                      </td>
+                    </tr>
+                    <!-- Empty state message -->
+                    <tr th:if="${#lists.isEmpty(customers)}">
+                      <td colspan="6" class="text-center py-4">
+                        <div class="text-muted">
+                          <i class="fas fa-users fa-2x mb-2"></i>
+                          <div th:if="${isSearch}">
+                            <h6>Không tìm thấy khách hàng nào</h6>
+                            <p class="mb-0">Thử thay đổi điều kiện tìm kiếm</p>
+                          </div>
+                          <div th:unless="${isSearch}">
+                            <h6>Chưa có khách hàng nào</h6>
+                            <p class="mb-0">Bắt đầu thêm khách hàng đầu tiên</p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <nav
+                      th:if="${totalPages > 1}"
+                      aria-label="Customer pagination"
+                      class="mt-4"
+              >
+                <ul class="pagination justify-content-center">
+                  <!-- First page -->
+                  <li
+                          class="page-item"
+                          th:classappend="${pageNumber == 0} ? 'disabled'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=0, size=${pageSize})} : @{/Customer(page=0, size=${pageSize})}"
+                    >
+                      <i class="fas fa-angle-double-left"></i>
+                    </a>
+                  </li>
+
+                  <!-- Previous page -->
+                  <li
+                          class="page-item"
+                          th:classappend="${pageNumber == 0} ? 'disabled'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber - 1}, size=${pageSize})} : @{/Customer(page=${pageNumber - 1}, size=${pageSize})}"
+                    >
+                      <i class="fas fa-angle-left"></i>
+                    </a>
+                  </li>
+
+                  <!-- Page numbers -->
+                  <li
+                          th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                          class="page-item"
+                          th:if="${pageNum >= pageNumber - 2 and pageNum <= pageNumber + 2}"
+                          th:classappend="${pageNum == pageNumber} ? 'active'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNum}, size=${pageSize})} : @{/Customer(page=${pageNum}, size=${pageSize})}"
+                            th:text="${pageNum + 1}"
+                    ></a>
+                  </li>
+
+                  <!-- Next page -->
+                  <li
+                          class="page-item"
+                          th:classappend="${pageNumber >= totalPages - 1} ? 'disabled'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber + 1}, size=${pageSize})} : @{/Customer(page=${pageNumber + 1}, size=${pageSize})}"
+                    >
+                      <i class="fas fa-angle-right"></i>
+                    </a>
+                  </li>
+
+                  <!-- Last page -->
+                  <li
+                          class="page-item"
+                          th:classappend="${pageNumber >= totalPages - 1} ? 'disabled'"
+                  >
+                    <a
+                            class="page-link"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${totalPages - 1}, size=${pageSize})} : @{/Customer(page=${totalPages - 1}, size=${pageSize})}"
+                    >
+                      <i class="fas fa-angle-double-right"></i>
+                    </a>
+                  </li>
+                </ul>
+
+                <!-- Page info -->
+                <div class="text-center text-muted mt-2">
+                  Trang <span th:text="${pageNumber + 1}"></span> trong
+                  tổng số <span th:text="${totalPages}"></span> trang
+                  (<span th:text="${totalElements}"></span>
+                  khách hàng)
+                </div>
+              </nav>
+            </div>
+          </div>
         </div>
-    </div>
-    
+      </div>
+
+
+
+
+    <!-- Delete Confirmation Modal -->
+    <!--    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">-->
+    <!--        <div class="modal-dialog">-->
+    <!--            <div class="modal-content">-->
+    <!--                <div class="modal-header">-->
+    <!--                    <h5 class="modal-title" id="deleteModalLabel">-->
+    <!--                        <i class="fas fa-exclamation-triangle text-warning"></i>-->
+    <!--                        Xác nhận xóa-->
+    <!--                    </h5>-->
+    <!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+    <!--                </div>-->
+    <!--                <div class="modal-body">-->
+    <!--                    <p>Bạn có chắc chắn muốn xóa khách hàng <strong id="customerNameToDelete"></strong>?</p>-->
+    <!--                    <p class="text-muted">Hành động này không thể hoàn tác!</p>-->
+    <!--                </div>-->
+    <!--                <div class="modal-footer">-->
+    <!--                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>-->
+    <!--                    <form id="deleteForm" method="post" style="display: inline;">-->
+    <!--                        <button type="submit" class="btn btn-danger">-->
+    <!--                            <i class="fas fa-trash"></i> Xóa-->
+    <!--                        </button>-->
+    <!--                    </form>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.querySelectorAll('.btn-outline-danger').forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (confirm('Bạn có chắc chắn muốn xóa khách hàng này?')) {
-                    console.log('Xóa khách hàng');
-                }
-            });
-        });
+      // function confirmDelete(button) {
+      //     const customerId = button.getAttribute('data-customer-id');
+      //     const customerName = button.getAttribute('data-customer-name');
+      //
+      //     document.getElementById('customerNameToDelete').textContent = customerName;
+      //     document.getElementById('deleteForm').action = '/Admin/Customer/delete/' + customerId;
+      //
+      //     const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+      //     deleteModal.show();
+      // }
+      //
+      // // function changePageSize(size) {
+      // //     const urlParams = new URLSearchParams(window.location.search);
+      // //     const customerName = urlParams.get('customerName');
+      // //     const phoneNumber = urlParams.get('phoneNumber');
+      // //     const isSearch = (customerName && customerName.trim() !== '') || (phoneNumber && phoneNumber.trim() !== '');
+      // //
+      // //     let url = `/Admin/Customer?page=0&size=${size}`;
+      // //
+      // //     if (isSearch) {
+      // //         const params = new URLSearchParams();
+      // //         if (customerName && customerName.trim() !== '') {
+      // //             params.append('customerName', customerName);
+      // //         }
+      // //         if (phoneNumber && phoneNumber.trim() !== '') {
+      // //             params.append('phoneNumber', phoneNumber);
+      // //         }
+      // //         params.append('page', '0');
+      // //         params.append('size', size);
+      // //         url = `/Admin/Customer?${params.toString()}`;
+      // //     }
+      // //
+      // //     window.location.href = url;
+      // // }
     </script>
-</body>
+  </body>
 </html>
