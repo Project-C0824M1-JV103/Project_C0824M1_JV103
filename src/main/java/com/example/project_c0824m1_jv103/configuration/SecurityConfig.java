@@ -56,7 +56,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/*.css", "/css/**", "/js/**", "/favicon.ico").permitAll() // Các đường dẫn không cần login
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/Admin/**").hasRole("ADMIN")
                         .requestMatchers("/sales/**").hasRole("SALES")
                         .requestMatchers("/business/**").hasRole("BUSINESS")
                         .requestMatchers("/Admin/warehouse/**").hasRole("WAREHOUSE")
