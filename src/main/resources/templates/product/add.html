@@ -1,0 +1,305 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8"/>-->
+<!--  <title>Thêm sản phẩm</title>-->
+
+<!--  &lt;!&ndash; Bootstrap CSS &ndash;&gt;-->
+<!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>-->
+<!--  &lt;!&ndash; Bootstrap Icons &ndash;&gt;-->
+<!--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>-->
+<!--  &lt;!&ndash; Font Awesome &ndash;&gt;-->
+<!--  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>-->
+<!--  <link rel="stylesheet" th:href="@{/admin-navbar.css}">-->
+<!--  <link rel="stylesheet" th:href="@{/admin-common.css}">-->
+
+<!--  <style>-->
+<!--    .main-content {-->
+<!--      background-color: #f8f9fa;-->
+<!--      min-height: 100vh;-->
+<!--    }-->
+
+<!--    .header-section {-->
+<!--      background: white;-->
+<!--      padding: 20px;-->
+<!--      border-radius: 10px;-->
+<!--      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);-->
+<!--      margin-bottom: 20px;-->
+<!--    }-->
+
+<!--    .form-section {-->
+<!--      background: white;-->
+<!--      padding: 30px;-->
+<!--      border-radius: 10px;-->
+<!--      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);-->
+<!--      margin-bottom: 20px;-->
+<!--    }-->
+
+<!--    .section-title {-->
+<!--      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--      color: white;-->
+<!--      border: none;-->
+<!--      padding: 15px;-->
+<!--      font-weight: 600;-->
+<!--      text-align: center;-->
+<!--      border-radius: 0.5rem;-->
+<!--      margin-bottom: 30px;-->
+<!--    }-->
+
+<!--    .form-label {-->
+<!--      font-weight: 500;-->
+<!--      margin-bottom: 8px;-->
+<!--    }-->
+
+<!--    .form-control,-->
+<!--    .form-select {-->
+<!--      border-radius: 0.5rem;-->
+<!--      padding: 10px 12px;-->
+<!--      border: 1px solid #ced4da;-->
+<!--      transition: border-color 0.3s ease-in-out, box-shadow 0.3s;-->
+<!--    }-->
+
+<!--    .form-control:focus,-->
+<!--    .form-select:focus {-->
+<!--      border-color: #86b7fe;-->
+<!--      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);-->
+<!--    }-->
+
+<!--    .btn {-->
+<!--      padding: 10px 20px;-->
+<!--      font-weight: 500;-->
+<!--      border-radius: 0.5rem;-->
+<!--      transition: 0.3s ease;-->
+<!--    }-->
+
+<!--    .btn:hover {-->
+<!--      transform: translateY(-1px);-->
+<!--      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);-->
+<!--    }-->
+
+<!--    .btn-primary {-->
+<!--      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--      border: none;-->
+<!--    }-->
+
+<!--    .btn-primary:hover {-->
+<!--      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);-->
+<!--    }-->
+
+<!--    .btn-secondary {-->
+<!--      background: #6c757d;-->
+<!--      border: none;-->
+<!--    }-->
+
+<!--    .btn-secondary:hover {-->
+<!--      background: #5a6268;-->
+<!--    }-->
+
+<!--    .text-danger {-->
+<!--      font-size: 0.85em;-->
+<!--      margin-top: 4px;-->
+<!--    }-->
+
+<!--    .alert {-->
+<!--      max-width: 600px;-->
+<!--      margin: 0 auto 20px auto;-->
+<!--    }-->
+
+<!--    .form-group {-->
+<!--      margin-bottom: 20px;-->
+<!--    }-->
+
+<!--    .form-row {-->
+<!--      display: flex;-->
+<!--      flex-wrap: wrap;-->
+<!--      margin-right: -15px;-->
+<!--      margin-left: -15px;-->
+<!--    }-->
+
+<!--    .col-md-6 {-->
+<!--      flex: 0 0 50%;-->
+<!--      max-width: 50%;-->
+<!--      padding-right: 15px;-->
+<!--      padding-left: 15px;-->
+<!--    }-->
+
+<!--    .preview-image {-->
+<!--      max-width: 100px;-->
+<!--      max-height: 100px;-->
+<!--      margin-right: 10px;-->
+<!--      margin-bottom: 10px;-->
+<!--      border: 1px solid #ddd;-->
+<!--      border-radius: 4px;-->
+<!--      padding: 5px;-->
+<!--    }-->
+
+<!--    .image-preview-container {-->
+<!--      display: flex;-->
+<!--      flex-wrap: wrap;-->
+<!--      margin-top: 10px;-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container-fluid">-->
+<!--  <div class="row">-->
+<!--    &lt;!&ndash; Include Admin Navbar &ndash;&gt;-->
+<!--    <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>-->
+
+<!--    &lt;!&ndash; Main Content &ndash;&gt;-->
+<!--    <div class="col-md-9 col-lg-10">-->
+<!--      <div class="main-content p-4">-->
+<!--        &lt;!&ndash; Header Section &ndash;&gt;-->
+<!--        <div class="header-section">-->
+<!--          <div class="row align-items-center">-->
+<!--            <div class="col">-->
+<!--              <h2 class="mb-1">-->
+<!--                <i class="fas fa-boxes text-primary"></i>-->
+<!--                Quản lý sản phẩm-->
+<!--              </h2>-->
+<!--              <p class="text-muted mb-0">-->
+<!--                Thêm sản phẩm mới-->
+<!--              </p>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Thông báo &ndash;&gt;-->
+<!--        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>-->
+<!--        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>-->
+
+<!--        &lt;!&ndash; Form thêm sản phẩm &ndash;&gt;-->
+<!--        <div class="form-section">-->
+<!--          <h4 class="section-title">Thông tin sản phẩm</h4>-->
+<!--          <form th:action="@{/products/save}" th:object="${product}" method="post" enctype="multipart/form-data">-->
+<!--            <div class="form-row">-->
+<!--              <div class="col-md-6">-->
+<!--                <div class="form-group">-->
+<!--                  <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>-->
+<!--                  <input type="text" th:field="*{productName}" class="form-control" required/>-->
+<!--                  <div class="text-danger" th:if="${#fields.hasErrors('productName')}"-->
+<!--                       th:errors="*{productName}"></div>-->
+<!--                </div>-->
+
+<!--                <div class="form-group">-->
+<!--                  <label class="form-label">Giá <span class="text-danger">*</span></label>-->
+<!--                  <input type="number" th:field="*{price}" class="form-control" step="0.01" required/>-->
+<!--                  <div class="text-danger" th:if="${#fields.hasErrors('price')}"-->
+<!--                       th:errors="*{price}"></div>-->
+<!--                </div>-->
+
+<!--                <div class="form-group">-->
+<!--                  <label class="form-label">Số lượng <span class="text-danger">*</span></label>-->
+<!--                  <input type="number" th:field="*{quantity}" class="form-control" required/>-->
+<!--                  <div class="text-danger" th:if="${#fields.hasErrors('quantity')}"-->
+<!--                       th:errors="*{quantity}"></div>-->
+<!--                </div>-->
+
+<!--                <div class="form-group">-->
+<!--                  <label class="form-label">Danh mục <span class="text-danger">*</span></label>-->
+<!--                  <select th:field="*{category}" class="form-select" required>-->
+<!--                    <option value="">&#45;&#45; Chọn danh mục &#45;&#45;</option>-->
+<!--                    <option th:each="category : ${categories}"-->
+<!--                            th:value="${category.categoryId}"-->
+<!--                            th:text="${category.categoryName}"/>-->
+<!--                  </select>-->
+<!--                  <div class="text-danger" th:if="${#fields.hasErrors('category')}"-->
+<!--                       th:errors="*{category}"></div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div class="col-md-6">-->
+<!--                <div class="form-group">-->
+<!--                  <label class="form-label">Nhà cung cấp <span class="text-danger">*</span></label>-->
+<!--                  <select th:field="*{supplier}" class="form-select" required>-->
+<!--                    <option value="">&#45;&#45; Chọn nhà cung cấp &#45;&#45;</option>-->
+<!--                    <option th:each="supplier : ${suppliers}"-->
+<!--                            th:value="${supplier.supplierId}"-->
+<!--                            th:text="${supplier.supplierName}"/>-->
+<!--                  </select>-->
+<!--                  <div class="text-danger" th:if="${#fields.hasErrors('supplier')}"-->
+<!--                       th:errors="*{supplier}"></div>-->
+<!--                </div>-->
+
+<!--                <div class="form-group">-->
+<!--                  <label class="form-label">CPU</label>-->
+<!--                  <input type="text" th:field="*{cpu}" class="form-control"/>-->
+<!--                </div>-->
+
+<!--                <div class="form-group">-->
+<!--                  <label class="form-label">Bộ nhớ</label>-->
+<!--                  <input type="text" th:field="*{memory}" class="form-control"/>-->
+<!--                </div>-->
+
+<!--                <div class="form-group">-->
+<!--                  <label class="form-label">Camera sau</label>-->
+<!--                  <input type="text" th:field="*{cameraBack}" class="form-control"/>-->
+<!--                </div>-->
+
+<!--                <div class="form-group">-->
+<!--                  <label class="form-label">Camera trước</label>-->
+<!--                  <input type="text" th:field="*{cameraFront}" class="form-control"/>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div class="form-group">-->
+<!--              <label class="form-label">Kích thước</label>-->
+<!--              <input type="text" th:field="*{size}" class="form-control"/>-->
+<!--            </div>-->
+
+<!--            <div class="form-group">-->
+<!--              <label class="form-label">Mô tả</label>-->
+<!--              <textarea th:field="*{description}" class="form-control" rows="4"></textarea>-->
+<!--            </div>-->
+
+<!--            <div class="form-group">-->
+<!--              <label class="form-label">Hình ảnh sản phẩm</label>-->
+<!--              <input type="file" id="images" name="images" class="form-control" multiple accept="image/*"/>-->
+<!--              <div class="image-preview-container" id="imagePreview"></div>-->
+<!--            </div>-->
+
+<!--            <div class="text-center mt-4">-->
+<!--              <button type="submit" class="btn btn-primary">-->
+<!--                <i class="fas fa-save"></i> Lưu sản phẩm-->
+<!--              </button>-->
+<!--              <a th:href="@{/products/list}" class="btn btn-secondary">-->
+<!--                <i class="fas fa-arrow-left"></i> Quay lại-->
+<!--              </a>-->
+<!--            </div>-->
+<!--          </form>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Bootstrap JS &ndash;&gt;-->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+
+<!--&lt;!&ndash; Script xem trước hình ảnh &ndash;&gt;-->
+<!--<script>-->
+<!--  document.getElementById('images').addEventListener('change', function(event) {-->
+<!--    const previewContainer = document.getElementById('imagePreview');-->
+<!--    previewContainer.innerHTML = '';-->
+
+<!--    const files = event.target.files;-->
+<!--    for (let i = 0; i < files.length; i++) {-->
+<!--      const file = files[i];-->
+<!--      if (file.type.match('image.*')) {-->
+<!--        const reader = new FileReader();-->
+
+<!--        reader.onload = function(e) {-->
+<!--          const img = document.createElement('img');-->
+<!--          img.src = e.target.result;-->
+<!--          img.classList.add('preview-image');-->
+<!--          previewContainer.appendChild(img);-->
+<!--        }-->
+
+<!--        reader.readAsDataURL(file);-->
+<!--      }-->
+<!--    }-->
+<!--  });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
