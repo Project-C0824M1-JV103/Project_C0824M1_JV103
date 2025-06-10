@@ -101,7 +101,7 @@ public class EmployeeController extends BaseAdminController {
     }
 
     // Test (Phần của anh hiển)
-    @GetMapping("/employees/list")
+    @GetMapping("/employees")
     public String listEmployees(Model model,
                                 @RequestParam(value = "fullName", required = false) String fullName,
                                 @RequestParam(value = "phone", required = false) String phone,
