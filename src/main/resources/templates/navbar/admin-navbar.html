@@ -35,23 +35,23 @@
                     <i class="fas fa-home"></i>
                     Về trang chủ
                 </a>
-                <a href="/Admin/dashboard" class="nav-link" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
+                <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
                     <i class="fas fa-tachometer-alt"></i>
                     Dashboard
                 </a>
-                <a href="/Admin/Customer" class="nav-link" th:classappend="${currentPage == 'customer'} ? 'active' : ''">
+                <a th:href="@{/Customer}" class="nav-link" th:classappend="${currentPage == 'customer'} ? 'active' : ''">
                     <i class="fas fa-users"></i>
                     Quản lý khách hàng
                 </a>
-                <a th:href="@{/Admin/product}" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
+                <a th:href="@{/product}" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
                     <i class="fas fa-box"></i>
                     Quản lý sản phẩm
                 </a>
-                <a href="/Admin/Sale" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
+                <a th:href="@{/Sale}" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
                     <i class="fas fa-chart-line"></i>
                     Quản lý bán hàng
                 </a>
-                <a th:href="@{/Admin/employees}" class="nav-link" th:classappend="${currentPage == 'employee'} ? 'active' : ''">
+                <a th:href="@{/employees}" class="nav-link" th:classappend="${currentPage == 'employee'} ? 'active' : ''">
                     <i class="fas fa-user-tie"></i>
                     Quản lý nhân viên
                 </a>

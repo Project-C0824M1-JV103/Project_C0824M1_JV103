@@ -3,10 +3,17 @@ package com.example.project_c0824m1_jv103.controller;
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.dto.CustomerSaleDto;
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
+import com.example.project_c0824m1_jv103.dto.SaleDetailsDto;
 import com.example.project_c0824m1_jv103.dto.SaleDto;
 import com.example.project_c0824m1_jv103.model.Customer;
+import com.example.project_c0824m1_jv103.model.Employee;
+import com.example.project_c0824m1_jv103.model.Sale;
+import com.example.project_c0824m1_jv103.model.SaleDetails;
+import com.example.project_c0824m1_jv103.service.VNPayService;
 import com.example.project_c0824m1_jv103.service.customer.ICustomerService;
+import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
 import com.example.project_c0824m1_jv103.service.product.IProductService;
+import com.example.project_c0824m1_jv103.service.sale.ISaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,18 +22,32 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/Admin/Sale")
+@RequestMapping("/Sale")
 public class SaleController extends BaseAdminController {
+    @Autowired
+    private IEmployeeService employeeService;
 
     @Autowired
     private ICustomerService customerService;
 
     @Autowired
     private IProductService productService;
+
+    @Autowired
+    private ISaleService saleService;
+
+    @Autowired
+    private VNPayService vnPayService;
 
     @GetMapping("")
     public String showSalePage(Model model) {
@@ -127,9 +148,73 @@ public class SaleController extends BaseAdminController {
                 .orElse(null);
     }
 
-    @PostMapping("/create")
-    public String createSale(@ModelAttribute("saleDto") SaleDto saleDto) {
-        return "redirect:/Admin/Sale";
+    @GetMapping("/confirmation/{saleId}")
+    public String showConfirmation(@PathVariable Integer saleId, Model model) {
+        Sale sale = saleService.findById(saleId)
+                .orElseThrow(() -> new RuntimeException("Sale not found"));
+        
+        model.addAttribute("sale", sale);
+        return "sale/sale-confirmation";
     }
 
+    @PostMapping("/create")
+    public String createSale(@ModelAttribute("saleDto") SaleDto saleDto) {
+        try {
+            Sale sale = new Sale();
+
+            Employee employee = employeeService.findByEmail(saleDto.getEmployeeName());
+
+            Customer customer = customerService.findByPhone(saleDto.getPhoneNumber())
+                    .orElseGet(() -> {
+                        Customer newCustomer = new Customer();
+                        newCustomer.setCustomerName(saleDto.getCustomerName());
+                        newCustomer.setPhoneNumber(saleDto.getPhoneNumber());
+                        newCustomer.setAddress(saleDto.getAddress());
+                        newCustomer.setEmail(saleDto.getEmail());
+                        newCustomer.setBirthdayDate(LocalDate.parse(saleDto.getBirthdayDate()));
+                        return customerService.save(newCustomer);
+                    });
+
+            sale.setEmployee(employee);
+            sale.setCustomer(customer);
+            sale.setSaleDate(LocalDateTime.now());
+            sale.setAmount(saleDto.getAmount());
+            sale.setPaymentMethod(saleDto.getPaymentMethod());
+
+            // Tạo danh sách SaleDetails
+            List<SaleDetails> saleDetailsList = new ArrayList<>();
+            if (saleDto.getSaleDetails() != null) {
+                for (SaleDetailsDto detailDto : saleDto.getSaleDetails()) {
+                    SaleDetails detail = new SaleDetails();
+                    detail.setProduct(productService.findProductById(Long.valueOf(detailDto.getProductId())));
+                    detail.setQuantity(detailDto.getQuantity());
+                    detail.setUniquePrice(detailDto.getUniquePrice());
+                    detail.setSale(sale);
+                    saleDetailsList.add(detail);
+                }
+            }
+            sale.setSaleDetails(saleDetailsList);
+
+            // Lưu Sale vào database
+            Sale savedSale = saleService.createSale(sale);
+
+            // Nếu thanh toán bằng VNPay, tạo URL thanh toán
+            if ("VNPAY".equals(saleDto.getPaymentMethod())) {
+                String paymentUrl = vnPayService.createPaymentUrl(
+                    "ORDER_" + savedSale.getSaleId(),
+                    savedSale.getAmount().longValue()
+                );
+                return "redirect:" + paymentUrl;
+            }
+
+            // Nếu thanh toán tiền mặt, chuyển hướng đến trang xác nhận
+            return "redirect:/Sale/confirmation/" + savedSale.getSaleId();
+        } catch (UnsupportedEncodingException e) {
+            // Xử lý lỗi khi tạo URL thanh toán VNPay
+            return "redirect:/Sale?error=payment_error";
+        } catch (Exception e) {
+            // Xử lý các lỗi khác
+            return "redirect:/Sale?error=system_error";
+        }
+    }
 }

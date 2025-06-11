@@ -194,6 +194,11 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Product findProductById(Long id) {
+        return productRepository.findById(id.intValue()).orElse(null);
+    }
+
+    @Override
     @Transactional
     public ProductDTO updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> imageFiles, List<String> captions, List<String> deletedImageUrls) throws IOException {
         System.out.println("=== DEBUG UPDATE PRODUCT ===");

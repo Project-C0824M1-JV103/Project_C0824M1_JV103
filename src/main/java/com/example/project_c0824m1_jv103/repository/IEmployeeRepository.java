@@ -19,15 +19,16 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> searchEmployees(@Param("fullName") String fullName,
                                    @Param("phone") String phone,
                                    @Param("role") Employee.Role role);
-                                   
+
     @Query("SELECT e FROM Employee e WHERE " +
             "(:fullName IS NULL OR e.fullName LIKE %:fullName%) AND " +
             "(:phone IS NULL OR e.phone LIKE %:phone%) AND " +
             "(:role IS NULL OR e.role = :role)")
     Page<Employee> searchEmployeesWithPaging(@Param("fullName") String fullName,
-                                            @Param("phone") String phone,
-                                            @Param("role") Employee.Role role,
-                                            Pageable pageable);
-                                   
+                                             @Param("phone") String phone,
+                                             @Param("role") Employee.Role role,
+                                             Pageable pageable);
+
     Employee findByEmail(String email);
+    Employee findByPhone(String phone);
 }

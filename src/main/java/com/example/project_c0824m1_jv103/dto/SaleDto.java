@@ -6,6 +6,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class SaleDto {
+    private Integer saleId;
+
+    private String employeeName;
+
     @NotBlank(message = "Nhập tên khách hàng")
     private String customerName;
 
@@ -21,8 +25,6 @@ public class SaleDto {
     
     @Email(message = "Email không hợp lệ")
     private String email;
-
-    private Integer saleId;
     
     @NotNull(message = "Phương thức thanh toán không được để trống")
     private String paymentMethod;
@@ -101,5 +103,13 @@ public class SaleDto {
     
     public void setSaleDetails(List<SaleDetailsDto> saleDetails) {
         this.saleDetails = saleDetails;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
     }
 }

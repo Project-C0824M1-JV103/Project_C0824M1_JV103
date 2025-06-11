@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-@RequestMapping("/Admin/product")
+@RequestMapping("/product")
 public class ProductController extends BaseAdminController {
 
     @Autowired
@@ -36,7 +36,7 @@ public class ProductController extends BaseAdminController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page
     ) {
-        int pageSize = 6;
+        int pageSize = 5;
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<ProductDTO> productPage;
         
@@ -90,7 +90,7 @@ public class ProductController extends BaseAdminController {
                 captions != null ? captions : new ArrayList<>());
             
             redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
-            return "redirect:/Admin/product";
+            return "redirect:/product";
         } catch (IOException e) {
             model.addAttribute("error", "Lỗi khi upload ảnh: " + e.getMessage());
             model.addAttribute("productDTO", productDTO);
@@ -118,11 +118,11 @@ public class ProductController extends BaseAdminController {
                 return "product/edit-product-form";
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy sản phẩm!");
-                return "redirect:/Admin/product";
+                return "redirect:/product";
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi tải thông tin sản phẩm: " + e.getMessage());
-            return "redirect:/Admin/product";
+            return "redirect:/product";
         }
     }
 
@@ -158,7 +158,7 @@ public class ProductController extends BaseAdminController {
                 deletedUrls);
             
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm thành công!");
-            return "redirect:/Admin/product";
+            return "redirect:/product";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
             productDTO.setProductId(id.intValue());

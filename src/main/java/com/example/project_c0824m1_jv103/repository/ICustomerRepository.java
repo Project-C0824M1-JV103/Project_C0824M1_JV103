@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ICustomerRepository extends JpaRepository<Customer, Integer> {
@@ -35,4 +36,6 @@ public interface ICustomerRepository extends JpaRepository<Customer, Integer> {
     
     @Query("SELECT c FROM Customer c WHERE c.phoneNumber LIKE CONCAT('%', :phone, '%')")
     Page<Customer> findByPhoneNumberContaining(@Param("phone") String phone, Pageable pageable);
+
+    Optional<Customer> findByPhoneNumber(String phoneNumber);
 }

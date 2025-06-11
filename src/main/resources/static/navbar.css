@@ -150,3 +150,18 @@ body {
         font-size: 14px;
     }
 }
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    min-width: unset !important; /* Gỡ min-width mặc định Bootstrap */
+    width: 100% !important;      /* Chiều rộng bằng phần tử cha (login-btn) */
+}
+
+.dropdown .login-btn {
+    display: inline-block;
+    width: 100%;
+}
