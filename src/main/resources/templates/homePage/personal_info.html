@@ -111,6 +111,37 @@
             margin-bottom: 20px;
         }
 
+        .back-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: #6c757d;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            background: #5c636a;
+            transform: translateY(-2px);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-footer .btn {
+            min-width: 100px;
+        }
+
         @media (max-width: 576px) {
             .form-section {
                 padding: 0 10px;
@@ -124,8 +155,20 @@
                 font-size: 1rem;
                 padding: 12px;
             }
-        }
 
+            .back-button {
+                bottom: 20px;
+                right: 20px;
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .modal-footer .btn {
+                min-width: 80px;
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -133,14 +176,12 @@
 <div class="form-section">
 
     <!-- Thông tin cá nhân -->
-    <div id="formCard" class="card p-4" data-is-editing="${isEditing}" data-has-error="${hasError}">
+    <div id="formCard" class="card p-4" th:attr="data-is-editing=${isEditing},data-has-error=${hasError}">
         <h5 class="mb-3 border-bottom pb-2">Thông tin cá nhân</h5>
-
-        <div th:if="${message}" class="alert alert-success text-center" id="serverSuccessAlert" role="alert"
-             th:text="${message}"></div>
-
-        <div id="jsSuccessAlertContainer"></div>
-
+        <div id="jsSuccessAlertContainer" class="success-alert-container"></div>
+<!--        thẻ mềm-->
+<!--        <div th:if="${personalInfoMessage}" th:classappend="'alert alert-' + ${messageType} + ' text-center'" th:text="${personalInfoMessage}"></div>-->
+<!--        thẻ cứng-->
         <form id="personalForm" th:object="${employee}" th:action="@{/personal-info-update}" method="post">
             <input type="hidden" th:field="*{employeeId}"/>
 
@@ -155,7 +196,7 @@
 
             <div class="mb-3">
                 <div class="d-flex align-items-center mb-1">
-                    <label class="form-label me-2 mb-0">Email(Thay đổi thì phải đăng nhập lại)</label>
+                    <label class="form-label me-2 mb-0">Email (Thay đổi thì phải đăng nhập lại)</label>
                     <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{email}"></div>
                 </div>
                 <input type="email" id="email" class="form-control" placeholder="Nhập email"
@@ -185,13 +226,17 @@
                 </div>
             </div>
         </form>
-
     </div>
 
     <!-- Thay đổi mật khẩu -->
     <div class="card p-4">
         <h5 class="mb-3 border-bottom pb-2">Thay đổi mật khẩu</h5>
-        <form th:action="@{/personal-info/change-password}" method="post" th:object="${passwordDto}">
+<!--        <div id="jsPasswordAlertContainer" class="success-alert-container"></div> thẻ mềm -->
+            <div>
+                <div th:if="${passwordMessage}" th:classappend="'alert alert-' + ${messageType} + ' text-center'" th:text="${passwordMessage}"></div>
+                <!-- thẻ cứng -->
+            </div>
+        <form id="passwordForm" th:action="@{/personal-info/change-password}" method="post" th:object="${passwordDto}">
             <div class="mb-3 input-group">
                 <div class="d-flex align-items-center mb-1 w-100">
                     <label class="form-label me-2 mb-0">Mật khẩu cũ</label>
@@ -211,12 +256,12 @@
                     <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{newPassword}"></div>
                 </div>
                 <input type="password" th:field="*{newPassword}" id="newPassword"
-                       class="form-control border-end-0 rounded-start" placeholder="Nhập mật khẩu mới" required />
-                <span class="input-group-text" onclick="togglePassword('newPassword', 'iconNew')" style="cursor: pointer">
+                       class="form-control border-end-0 rounded-start" placeholder="Nhập mật khẩu mới" required/>
+                <span class="input-group-text" onclick="togglePassword('newPassword', 'iconNew')"
+                      style="cursor: pointer">
                     <i class="bi bi-eye-slash" id="iconNew"></i>
                 </span>
             </div>
-
 
             <div class="mb-4 input-group">
                 <div class="d-flex align-items-center mb-1 w-100">
@@ -224,101 +269,225 @@
                     <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{confirmPassword}"></div>
                 </div>
                 <input type="password" th:field="*{confirmPassword}" id="confirmPassword"
-                       class="form-control border-end-0 rounded-start" placeholder="Xác nhận mật khẩu mới" required />
-                <span class="input-group-text" onclick="togglePassword('confirmPassword', 'iconConfirm')" style="cursor: pointer">
+                       class="form-control border-end-0 rounded-start" placeholder="Xác nhận mật khẩu mới" required/>
+                <span class="input-group-text" onclick="togglePassword('confirmPassword', 'iconConfirm')"
+                      style="cursor: pointer">
                     <i class="bi bi-eye-slash" id="iconConfirm"></i>
                 </span>
             </div>
-            <button type="submit" class="btn btn-primary">Lưu</button>
+            <button type="submit" class="btn btn-primary" id="savePasswordBtn"></i>Lưu</button>
         </form>
     </div>
 
 </div>
 
-<!-- Script -->
-<script>
+<!-- Back Button -->
+<button class="back-button" onclick="window.location.href='/'">
+    <i class="bi bi-arrow-left me-1"></i>Quay lại
+</button>
+
+<!-- Personal Info Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered flex-nowrap">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Xác nhận thay đổi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Bạn có muốn thay đổi không?</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success me-2" id="modalConfirmBtn">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Change Confirmation Modal -->
+<div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered flex-nowrap">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordConfirmModalLabel">Xác nhận thay đổi mật khẩu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="passwordConfirmMessage">Bạn có muốn lưu mật khẩu mới không?</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success me-2" id="modalPasswordConfirmBtn">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
     const fields = ["fullName", "email", "phone"];
     const editBtn = document.getElementById("editBtn");
     const confirmBtn = document.getElementById("confirmBtn");
     const formCard = document.getElementById("formCard");
+    const personalForm = document.getElementById("personalForm");
+    const passwordForm = document.getElementById("passwordForm");
+    const savePasswordBtn = document.getElementById("savePasswordBtn");
+    const confirmModal = new bootstrap.Modal(document.getElementById("confirmModal"));
+    const passwordConfirmModal = new bootstrap.Modal(document.getElementById("passwordConfirmModal"));
+    const modalConfirmBtn = document.getElementById("modalConfirmBtn");
+    const modalPasswordConfirmBtn = document.getElementById("modalPasswordConfirmBtn");
+    const confirmMessage = document.getElementById("confirmMessage");
+    const passwordConfirmMessage = document.getElementById("passwordConfirmMessage");
 
     let isEditing = formCard.dataset.isEditing === 'true';
     let hasError = formCard.dataset.hasError === 'true';
 
     const originalValues = {};
+
     window.addEventListener("DOMContentLoaded", () => {
+        // Cấu hình trạng thái input
         fields.forEach(id => {
             const input = document.getElementById(id);
-            originalValues[id] = input.value;
-            input.readOnly = !(isEditing || hasError);
+            if (input) {
+                originalValues[id] = input.value;
+                input.readOnly = !(isEditing || hasError);
+            }
         });
 
-        confirmBtn.disabled = !(isEditing || hasError);
-        editBtn.textContent = (isEditing || hasError) ? "Hủy" : "Thay đổi";
+        if (confirmBtn) {
+            confirmBtn.disabled = !(isEditing || hasError);
+        }
+        if (editBtn) {
+            editBtn.textContent = (isEditing || hasError) ? "Hủy" : "Thay đổi";
+        }
 
-        // Ẩn alert server nếu có sau 3s
-        const serverAlert = document.getElementById('serverSuccessAlert');
-        if (serverAlert) {
+        // Hiển thị thông báo từ server
+        const personalMessage = /*[[${personalInfoMessage}]]*/ null;
+        const passwordMessage = /*[[${passwordMessage}]]*/ null;
+        const messageType = /*[[${messageType}]]*/ 'success';
+
+        if (personalMessage) {
+            showAlert(personalMessage, messageType, 'jsSuccessAlertContainer');
+        }
+        if (passwordMessage) {
+            showAlert(passwordMessage, messageType, 'jsPasswordAlertContainer');
+        }
+
+        // Hiển thị thông báo lỗi nếu có lỗi validation
+        if (hasError) {
+            showAlert('Có lỗi trong thông tin bạn nhập. Vui lòng kiểm tra lại.', 'danger', 'jsSuccessAlertContainer');
+        }
+    });
+
+    if (editBtn) {
+        editBtn.addEventListener("click", () => {
+            if (isEditing || hasError) {
+                // Khôi phục giá trị ban đầu
+                fields.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.value = originalValues[id];
+                        input.readOnly = true;
+                    }
+                });
+                isEditing = false;
+                hasError = false;
+                if (confirmBtn) {
+                    confirmBtn.disabled = true;
+                }
+                editBtn.textContent = "Thay đổi";
+                formCard.dataset.isEditing = 'false';
+                formCard.dataset.hasError = 'false';
+                return;
+            }
+
+            isEditing = true;
+            fields.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.readOnly = false;
+                }
+            });
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+            }
+            editBtn.textContent = "Hủy";
+            formCard.dataset.isEditing = 'true';
+        });
+    }
+
+    if (personalForm) {
+        personalForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const emailInput = document.getElementById('email');
+            const originalEmail = originalValues['email'];
+            let message = 'Bạn có muốn thay đổi không?';
+            if (emailInput && emailInput.value !== originalEmail) {
+                message += '\nLưu ý: Thay đổi email sẽ yêu cầu đăng nhập lại.';
+            }
+            if (confirmMessage) {
+                confirmMessage.textContent = message;
+            }
+            confirmModal.show();
+        });
+    }
+
+    if (modalConfirmBtn) {
+        modalConfirmBtn.addEventListener('click', function () {
+            confirmModal.hide();
+            if (personalForm) {
+                personalForm.submit();
+            }
+        });
+    }
+
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            if (passwordConfirmMessage) {
+                passwordConfirmMessage.textContent = 'Bạn có muốn lưu mật khẩu mới không?';
+            }
+            passwordConfirmModal.show();
+        });
+    }
+
+    if (modalPasswordConfirmBtn) {
+        modalPasswordConfirmBtn.addEventListener('click', function () {
+            passwordConfirmModal.hide();
+            if (passwordForm) {
+                passwordForm.submit();
+            }
+        });
+    }
+
+    function showAlert(message, type = 'success', containerId = 'jsSuccessAlertContainer') {
+        const alertContainer = document.getElementById(containerId);
+        if (alertContainer) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} text-center`;
+            alertDiv.setAttribute('role', 'alert');
+            alertDiv.textContent = message;
+            alertContainer.appendChild(alertDiv);
+
             setTimeout(() => {
-                serverAlert.style.transition = "opacity 0.5s ease";
-                serverAlert.style.opacity = '0';
-                setTimeout(() => serverAlert.remove(), 500);
+                alertDiv.style.transition = "opacity 0.5s ease";
+                alertDiv.style.opacity = '0';
+                setTimeout(() => alertDiv.remove(), 500);
             }, 3000);
         }
-
-        // Hiển thị alert JS nếu URL có param success=true
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success') === 'true') {
-            showSuccessAlert('Cập nhật thông tin thành công!');
-        }
-    });
-
-    editBtn.addEventListener("click", () => {
-        if (isEditing || hasError) {
-            window.location.href = "/personal-info";
-            return;
-        }
-
-        isEditing = true;
-        fields.forEach(id => {
-            document.getElementById(id).readOnly = false;
-        });
-
-        confirmBtn.disabled = false;
-        editBtn.textContent = "Hủy";
-    });
-
-    document.getElementById('personalForm').addEventListener('submit', function (event) {
-        const confirmed = confirm('Bạn có chắc chắn muốn cập nhật thông tin?');
-        if (!confirmed) {
-            event.preventDefault();
-        }
-    });
-
-    function showSuccessAlert(message) {
-        const alertContainer = document.getElementById('jsSuccessAlertContainer');
-        const alertDiv = document.createElement('div');
-        alertDiv.className = 'alert alert-success text-center';
-        alertDiv.setAttribute('role', 'alert');
-        alertDiv.textContent = message;
-        alertContainer.appendChild(alertDiv);
-
-        setTimeout(() => {
-            alertDiv.style.transition = "opacity 0.5s ease";
-            alertDiv.style.opacity = '0';
-            setTimeout(() => alertDiv.remove(), 500);
-        }, 3000);
     }
 
     function togglePassword(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);
-        const isPassword = input.type === "password";
-        input.type = isPassword ? "text" : "password";
-        icon.classList.toggle("bi-eye");
-        icon.classList.toggle("bi-eye-slash");
+        if (input && icon) {
+            const isPassword = input.type === "password";
+            input.type = isPassword ? "text" : "password";
+            icon.classList.toggle("bi-eye");
+            icon.classList.toggle("bi-eye-slash");
+        }
     }
 </script>
-
 </body>
 </html>

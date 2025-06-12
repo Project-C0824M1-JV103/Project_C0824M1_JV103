@@ -19,4 +19,5 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
                                    @Param("role") Employee.Role role);
     Employee findByEmail(String email);
     Employee findByPhone(String phone);
+    List<Employee> findByRole (Employee.Role role);
 }
