@@ -36,7 +36,7 @@ public class ProductController extends BaseAdminController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page
     ) {
-        int pageSize = 6;
+        int pageSize = 5;
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<ProductDTO> productPage;
         
