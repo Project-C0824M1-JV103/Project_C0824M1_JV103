@@ -30,16 +30,16 @@ public class HomeController {
     IEmployeeService employeeService;
 
     @GetMapping("")
-    public String showHome(){
+    public String showHome() {
         return "homePage/homePage";
     }
 
     @GetMapping("personal-info")
     public String showPersonalInfo(Model model,
-                                   @AuthenticationPrincipal UserDetails userDetails){
+                                   @AuthenticationPrincipal UserDetails userDetails) {
         EmployeePersonalDto dto = new EmployeePersonalDto();
         Employee employee = employeeService.findByEmail(userDetails.getUsername());
-        BeanUtils.copyProperties(employee,dto);
+        BeanUtils.copyProperties(employee, dto);
         model.addAttribute("employee", dto);
         if (!model.containsAttribute("passwordDto")) {
             model.addAttribute("passwordDto", new EmployeePersonalPasswordDto());
@@ -91,65 +91,28 @@ public class HomeController {
     }
 
 
-//    @PostMapping("/personal-info/change-password")
-//    public String changePassword(@AuthenticationPrincipal UserDetails userDetails,
-//                                 @ModelAttribute("passwordDto") @Valid EmployeePersonalPasswordDto passwordDto,
-//                                 BindingResult bindingResult,
-//                                 RedirectAttributes redirectAttributes) {
-//
-//        Employee employee = employeeService.findByEmail(userDetails.getUsername());
-//
-//        if (!EncryptPasswordUtils.ParseEncrypt(passwordDto.getOldPassword(), employee.getPassword())) {
-//            bindingResult.rejectValue("oldPassword", "error.passwordDto", "Mật khẩu hiện tại không đúng.");
-//        }
-//
-//        if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
-//            bindingResult.rejectValue("confirmPassword", "error.passwordDto", "Mật khẩu xác nhận không khớp.");
-//        }
-//
-//        if (bindingResult.hasErrors()) {
-//            redirectAttributes.addFlashAttribute("passwordError", true);
-//            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.passwordDto", bindingResult);
-//            redirectAttributes.addFlashAttribute("passwordDto", passwordDto);
-//            return "redirect:/personal-info";
-//        }
-//
-//        String encodedNewPassword = EncryptPasswordUtils.EncryptPasswordUtils(passwordDto.getNewPassword());
-//        employee.setPassword(encodedNewPassword);
-//
-//        employeeService.save(employee);
-//
-//        redirectAttributes.addFlashAttribute("message", "Đổi mật khẩu thành công!");
-//        return "redirect:/personal-info";
-//    }
-
     @PostMapping("/personal-info/change-password")
     public String changePassword(@AuthenticationPrincipal UserDetails userDetails,
-                                 @ModelAttribute("passwordDto") @Valid EmployeePersonalPasswordDto passwordDto,
-                                 BindingResult bindingResult,
+                                 @ModelAttribute("passwordDto") EmployeePersonalPasswordDto passwordDto,
                                  RedirectAttributes redirectAttributes) {
+
         Employee employee = employeeService.findByEmail(userDetails.getUsername());
 
-        if (!passwordDto.getOldPassword().equals(employee.getPassword())) {
-            bindingResult.rejectValue("oldPassword", "error.passwordDto", "Mật khẩu hiện tại không đúng.");
-        }
-
-        if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
-            bindingResult.rejectValue("confirmPassword", "error.passwordDto", "Mật khẩu xác nhận không khớp.");
-        }
-
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("passwordError", true);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.passwordDto", bindingResult);
-            redirectAttributes.addFlashAttribute("passwordDto", passwordDto);
+        if (!EncryptPasswordUtils.ParseEncrypt(passwordDto.getOldPassword(), employee.getPassword())) {
+            redirectAttributes.addFlashAttribute("message", "Mật khẩu hiện tại không đúng!");
             return "redirect:/personal-info";
         }
 
-        employee.setPassword(passwordDto.getNewPassword());
+        if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
+            redirectAttributes.addFlashAttribute("message", "Mật khẩu xác nhận không khớp!");
+            return "redirect:/personal-info";
+        }
+
+        String encodedNewPassword = EncryptPasswordUtils.EncryptPasswordUtils(passwordDto.getNewPassword());
+        employee.setPassword(encodedNewPassword);
         employeeService.save(employee);
 
         redirectAttributes.addFlashAttribute("message", "Đổi mật khẩu thành công!");
         return "redirect:/personal-info";
     }
-
 }
