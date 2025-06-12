@@ -895,8 +895,10 @@ function selectProduct(productId) {
         .then(product => {
             document.getElementById('selectedProductName').value = product.productName;
             document.getElementById('selectedProductPrice').value = product.price;
-            document.getElementById('selectedProductQuantity').value = 1; // hoặc để trống, tuỳ ý
+            document.getElementById('selectedProductQuantity').value = 1; // Set default quantity to 1
 
+            // Calculate and update total amount
+            calculateTotalAmount();
 
             // Đóng modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
@@ -910,10 +912,27 @@ function selectProduct(productId) {
         });
 }
 
-// Add event listener for search form
+// Add function to calculate total amount
+function calculateTotalAmount() {
+    const price = parseFloat(document.getElementById('selectedProductPrice').value) || 0;
+    const quantity = parseInt(document.getElementById('selectedProductQuantity').value) || 0;
+    const totalAmount = price * quantity;
+    
+    // Update the amount input with formatted value
+    const amountInput = document.querySelector('input[name="amount"]');
+    amountInput.value = new Intl.NumberFormat('vi-VN').format(totalAmount);
+}
+
+// Add event listeners when document is loaded
 document.addEventListener('DOMContentLoaded', function() {
     attachSelectCustomerEvents();
     attachSelectProductEvents();
+    
+    // Add event listener for quantity input
+    const quantityInput = document.getElementById('selectedProductQuantity');
+    if (quantityInput) {
+        quantityInput.addEventListener('input', calculateTotalAmount);
+    }
     
     // Add event listener for customer search form
     const customerSearchForm = document.getElementById('customerSearchForm');
