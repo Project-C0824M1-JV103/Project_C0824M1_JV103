@@ -25,13 +25,34 @@ public class SaleDto {
     
     @Email(message = "Email không hợp lệ")
     private String email;
+
+    private String productName;
+
+    @NotNull(message = "Số lượng không được để trống")
+    @Min(value = 1, message = "Số lượng phải lớn hơn 0")
+    private Integer quantity;
+
+//    @NotNull(message = "Đơn giá không được để trống")
+//    @Min(value = 0, message = "Đơn giá không được âm")
+    private Double uniquePrice;
     
     @NotNull(message = "Phương thức thanh toán không được để trống")
     private String paymentMethod;
 
+    private boolean printPDF;
+
     private BigDecimal amount;
 
-    private List<SaleDetailsDto> saleDetails;
+//    private List<SaleDetailsDto> saleDetails;
+
+
+    public boolean isPrintPDF() {
+        return printPDF;
+    }
+
+    public void setPrintPDF(boolean printPDF) {
+        this.printPDF = printPDF;
+    }
 
     public String getCustomerName() {
         return customerName;
@@ -97,13 +118,13 @@ public class SaleDto {
         this.amount = amount;
     }
     
-    public List<SaleDetailsDto> getSaleDetails() {
-        return saleDetails;
-    }
-    
-    public void setSaleDetails(List<SaleDetailsDto> saleDetails) {
-        this.saleDetails = saleDetails;
-    }
+//    public List<SaleDetailsDto> getSaleDetails() {
+//        return saleDetails;
+//    }
+//
+//    public void setSaleDetails(List<SaleDetailsDto> saleDetails) {
+//        this.saleDetails = saleDetails;
+//    }
 
     public String getEmployeeName() {
         return employeeName;
@@ -111,5 +132,29 @@ public class SaleDto {
 
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public @NotNull(message = "Số lượng không được để trống") @Min(value = 1, message = "Số lượng phải lớn hơn 0") Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(@NotNull(message = "Số lượng không được để trống") @Min(value = 1, message = "Số lượng phải lớn hơn 0") Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public @NotNull(message = "Đơn giá không được để trống") @Min(value = 0, message = "Đơn giá không được âm") Double getUniquePrice() {
+        return uniquePrice;
+    }
+
+    public void setUniquePrice(@NotNull(message = "Đơn giá không được để trống") @Min(value = 0, message = "Đơn giá không được âm") Double uniquePrice) {
+        this.uniquePrice = uniquePrice;
     }
 }

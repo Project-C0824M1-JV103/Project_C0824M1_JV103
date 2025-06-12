@@ -3,27 +3,33 @@ package com.example.project_c0824m1_jv103.controller;
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.dto.CustomerSaleDto;
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
-import com.example.project_c0824m1_jv103.dto.SaleDetailsDto;
 import com.example.project_c0824m1_jv103.dto.SaleDto;
 import com.example.project_c0824m1_jv103.model.Customer;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.model.Sale;
 import com.example.project_c0824m1_jv103.model.SaleDetails;
+import com.example.project_c0824m1_jv103.service.PDFService;
 import com.example.project_c0824m1_jv103.service.VNPayService;
 import com.example.project_c0824m1_jv103.service.customer.ICustomerService;
 import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
 import com.example.project_c0824m1_jv103.service.product.IProductService;
 import com.example.project_c0824m1_jv103.service.sale.ISaleService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,6 +54,9 @@ public class SaleController extends BaseAdminController {
 
     @Autowired
     private VNPayService vnPayService;
+
+    @Autowired
+    private PDFService pdfService;
 
     @GetMapping("")
     public String showSalePage(Model model) {
@@ -193,13 +202,46 @@ public class SaleController extends BaseAdminController {
         return "sale/sale-confirmation";
     }
 
+    @GetMapping("/invoice/{saleId}")
+    public ResponseEntity<byte[]> downloadInvoice(@PathVariable Integer saleId) {
+        Sale sale = saleService.findById(saleId)
+                .orElseThrow(() -> new RuntimeException("Sale not found"));
+
+        byte[] pdfBytes = pdfService.generateInvoicePDF(sale);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "invoice_" + saleId + ".pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
+
     @PostMapping("/create")
-    public String createSale(@ModelAttribute("saleDto") SaleDto saleDto) {
+    public String createSale(@Valid @ModelAttribute("saleDto") SaleDto saleDto,
+                             BindingResult bindingResult,
+                             Model model) {
+        if(bindingResult.hasErrors()) {
+            Page<Customer> customers = customerService.findAll(PageRequest.of(0, 6));
+            Page<ProductDTO> products = productService.findAll(PageRequest.of(0, 6));
+
+            model.addAttribute("customers", customers.getContent());
+            model.addAttribute("products", products);
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "sale/sale-page";
+        }
         try {
             Sale sale = new Sale();
+            System.out.println("nhân viên hiện tại " +saleDto.getEmployeeName());
 
+            // Tìm nhân viên
             Employee employee = employeeService.findByEmail(saleDto.getEmployeeName());
+            if (employee == null) {
+                return "redirect:/Sale?error=employee_not_found";
+            }
 
+            // Tìm hoặc tạo mới khách hàng
             Customer customer = customerService.findByPhone(saleDto.getPhoneNumber())
                     .orElseGet(() -> {
                         Customer newCustomer = new Customer();
@@ -207,49 +249,55 @@ public class SaleController extends BaseAdminController {
                         newCustomer.setPhoneNumber(saleDto.getPhoneNumber());
                         newCustomer.setAddress(saleDto.getAddress());
                         newCustomer.setEmail(saleDto.getEmail());
-                        newCustomer.setBirthdayDate(LocalDate.parse(saleDto.getBirthdayDate()));
+                        if (saleDto.getBirthdayDate() != null && !saleDto.getBirthdayDate().isEmpty()) {
+                            newCustomer.setBirthdayDate(LocalDate.parse(saleDto.getBirthdayDate()));
+                        }
                         return customerService.save(newCustomer);
                     });
 
+            // Thiết lập thông tin cơ bản của đơn hàng
             sale.setEmployee(employee);
             sale.setCustomer(customer);
             sale.setSaleDate(LocalDateTime.now());
             sale.setAmount(saleDto.getAmount());
             sale.setPaymentMethod(saleDto.getPaymentMethod());
 
-            // Tạo danh sách SaleDetails
+            // Tạo danh sách chi tiết đơn hàng
             List<SaleDetails> saleDetailsList = new ArrayList<>();
-            if (saleDto.getSaleDetails() != null) {
-                for (SaleDetailsDto detailDto : saleDto.getSaleDetails()) {
-                    SaleDetails detail = new SaleDetails();
-                    detail.setProduct(productService.findProductById(Long.valueOf(detailDto.getProductId())));
-                    detail.setQuantity(detailDto.getQuantity());
-                    detail.setUniquePrice(detailDto.getUniquePrice());
-                    detail.setSale(sale);
-                    saleDetailsList.add(detail);
-                }
-            }
+            SaleDetails saleDetails = new SaleDetails();
+            saleDetails.setProduct(productService.findProductByName(saleDto.getProductName()));
+            saleDetails.setUniquePrice(saleDto.getUniquePrice());
+            saleDetails.setQuantity(saleDto.getQuantity());
+            saleDetails.setSale(sale);
+
+            saleDetailsList.add(saleDetails);
             sale.setSaleDetails(saleDetailsList);
 
-            // Lưu Sale vào database
+            // Lưu đơn hàng vào database
             Sale savedSale = saleService.createSale(sale);
 
-            // Nếu thanh toán bằng VNPay, tạo URL thanh toán
+            // Xử lý thanh toán dựa trên phương thức
             if ("VNPAY".equals(saleDto.getPaymentMethod())) {
-                String paymentUrl = vnPayService.createPaymentUrl(
-                    "ORDER_" + savedSale.getSaleId(),
-                    savedSale.getAmount().longValue()
-                );
-                return "redirect:" + paymentUrl;
+                try {
+                    String paymentUrl = vnPayService.createPaymentUrl(
+                        "ORDER_" + savedSale.getSaleId(),
+                        savedSale.getAmount().longValue()
+                    );
+                    return "redirect:" + paymentUrl;
+
+                } catch (UnsupportedEncodingException e) {
+                    return "redirect:/Sale?error=vnpay_error";
+                }
             }
 
             // Nếu thanh toán tiền mặt, chuyển hướng đến trang xác nhận
-            return "redirect:/Sale/confirmation/" + savedSale.getSaleId();
-        } catch (UnsupportedEncodingException e) {
-            // Xử lý lỗi khi tạo URL thanh toán VNPay
-            return "redirect:/Sale?error=payment_error";
+            String redirectUrl = "redirect:/Sale/confirmation/" + savedSale.getSaleId();
+            if (saleDto.isPrintPDF()) {
+                redirectUrl += "?printPdf=true";
+            }
+            return redirectUrl;
         } catch (Exception e) {
-            // Xử lý các lỗi khác
+            e.printStackTrace();
             return "redirect:/Sale?error=system_error";
         }
     }
