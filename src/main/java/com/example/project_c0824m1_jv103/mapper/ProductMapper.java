@@ -34,6 +34,7 @@ public class ProductMapper {
         // Map category và supplier
         if (product.getCategory() != null) {
             dto.setCategoryId(product.getCategory().getCategoryId());
+            dto.setCategoryName(product.getCategory().getCategoryName());
         }
         
         if (product.getSupplier() != null) {

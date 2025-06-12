@@ -57,7 +57,26 @@ public class ProductDTO {
     @NotNull(message = "Nhà cung cấp không được để trống")
     private Integer supplierId;
 
+    private String imageUrl;
     
+    private String categoryName;
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     // Constructors
     public ProductDTO() {}
     

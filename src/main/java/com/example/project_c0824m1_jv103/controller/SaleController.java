@@ -148,6 +148,42 @@ public class SaleController extends BaseAdminController {
                 .orElse(null);
     }
 
+    @GetMapping("/products/data")
+    @ResponseBody
+    public Map<String, Object> getProductsData(
+            @RequestParam(required = false) String productName,
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductDTO> products;
+        boolean isSearch = false;
+
+        if ((productName != null && !productName.isEmpty())) {
+            products = productService.searchProducts(productName, "productName", pageable);
+            isSearch = true;
+        } else {
+            products = productService.findAll(pageable);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("products", products.getContent());
+        response.put("pageNumber", page);
+        response.put("pageSize", size);
+        response.put("totalPages", products.getTotalPages());
+        response.put("totalElements", products.getTotalElements());
+        response.put("isSearch", isSearch);
+
+        return response;
+    }
+
+    @GetMapping("/products/{id}")
+    @ResponseBody
+    public ProductDTO getProduct(@PathVariable Long id) {
+        return productService.findById(id);
+    }
+
     @GetMapping("/confirmation/{saleId}")
     public String showConfirmation(@PathVariable Integer saleId, Model model) {
         Sale sale = saleService.findById(saleId)

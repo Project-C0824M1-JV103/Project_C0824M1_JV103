@@ -131,7 +131,7 @@
 <div class="container-fluid">
     <div class="row">
         <!-- Include Admin Navbar -->
-        <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
+                        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
 
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
@@ -154,7 +154,7 @@
                 <div class="search-section">
                     <h4 class="section-title">Bán hàng</h4>
                     <form th:action="@{/Sale/create}" th:object="${saleDto}" method="post">
-                        <input type="hidden" th:field="*{employeeName}" th:value="${principal.username}">
+                        <input type="hidden" th:field="*{employeeName}" th:value="${currentUser != null ? currentUser.email : ''}">
                         <!-- Thông tin khách hàng -->
                         <fieldset class="mb-4 p-3 border rounded">
                             <legend class="w-auto px-2">Thông tin khách hàng</legend>
@@ -209,15 +209,15 @@
                             <div class="row g-2 mb-2">
                                 <div class="col-md-6">
                                     <label class="form-label mb-1">Tên sản phẩm</label>
-                                    <input type="text" class="form-control" />
+                                    <input type="text" class="form-control" id="selectedProductName" />
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label mb-1">Đơn giá (VND)</label>
-                                    <input type="number" class="form-control" min="0" />
+                                    <input type="number" class="form-control" min="0" id="selectedProductPrice" />
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label mb-1">Số lượng</label>
-                                    <input type="number" class="form-control" min="1" />
+                                    <input type="number" class="form-control" min="1" id="selectedProductQuantity" />
                                 </div>
 
 <!--                                Thêm hình ảnh không ????-->
@@ -297,7 +297,7 @@
           <!-- Form tìm kiếm -->
           <form id="customerSearchForm" class="mb-4">
               <div class="row g-3">
-                  <div class="col-md-5">
+                  <div class="col-md-4">
                       <div class="input-group">
                 <span class="input-group-text">
                   <i class="fas fa-user"></i>
@@ -307,7 +307,7 @@
                                  th:value="${customerName}" />
                       </div>
                   </div>
-                  <div class="col-md-5">
+                  <div class="col-md-4">
                       <div class="input-group">
                 <span class="input-group-text">
                   <i class="fas fa-phone"></i>
@@ -320,6 +320,11 @@
                   <div class="col-md-2">
                       <button type="button" class="btn btn-primary w-100" onclick="searchCustomers()">
                           <i class="fas fa-search"></i> Tìm kiếm
+                      </button>
+                  </div>
+                  <div class="col-md-2">
+                      <button type="button" class="btn btn-outline-secondary w-100" onclick="refreshCustomerList()" title="Làm mới">
+                          <i class="fas fa-sync-alt"></i> Làm mới
                       </button>
                   </div>
               </div>
@@ -453,17 +458,130 @@
 
 <!-- Modal chọn sản phẩm -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="productModalLabel">Chọn sản phẩm</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
       </div>
       <div class="modal-body">
-        <!-- Danh sách sản phẩm sẽ được load ở đây -->
-        <div id="product-list">
-          <!-- TODO: Load danh sách sản phẩm bằng Thymeleaf fragment hoặc AJAX -->
-          <div class="text-center text-muted">Đang tải danh sách sản phẩm...</div>
+          <!-- Form tìm kiếm sản phẩm -->
+          <form id="productSearchForm" class="mb-4">
+              <div class="row g-3">
+                  <div class="col-md-6">
+                      <div class="input-group">
+                          <span class="input-group-text">
+                              <i class="fas fa-mobile-alt"></i>
+                          </span>
+                          <input type="text" name="productName" class="form-control"
+                                 placeholder="Tìm kiếm theo tên sản phẩm..."
+                                 th:value="${productName}" />
+                      </div>
+                  </div>
+
+                  <div class="col-md-3">
+                      <button type="button" class="btn btn-primary w-100" onclick="searchProducts()">
+                          <i class="fas fa-search"></i> Tìm kiếm
+                      </button>
+                  </div>
+                  <div class="col-md-3">
+                      <button type="button" class="btn btn-outline-secondary w-100" onclick="refreshProductList()" title="Làm mới">
+                          <i class="fas fa-sync-alt"></i> Làm mới
+                      </button>
+                  </div>
+              </div>
+              <!-- Hidden fields for pagination -->
+              <input type="hidden" name="page" value="0" />
+              <input type="hidden" name="size" value="6" />
+          </form>
+
+          <!-- Danh sách sản phẩm -->
+          <div id="productTableContainer">
+              <div class="table-responsive" th:if="${products != null and !#lists.isEmpty(products.content)}">
+                  <table class="table table-hover">
+                      <thead>
+                          <tr>
+                              <th>Tên sản phẩm</th>
+                              <th>Danh mục</th>
+                              <th>Giá</th>
+                              <th>Số lượng</th>
+                              <th>Thao tác</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr th:each="product : ${products.content}">
+                              <td th:text="${product.productName}">Tên sản phẩm</td>
+                              <td th:text="${product.categoryName}">Danh mục</td>
+                              <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">0 VNĐ</td>
+                              <td th:text="${product.quantity}">0</td>
+                              <td>
+                                  <button class="btn btn-sm btn-outline-primary btn-select-product"
+                                          th:attr="data-product-id=${product.productId}"
+                                          th:disabled="${product.quantity <= 0}">
+                                      <i class="fas fa-plus"></i> 
+                                      <span th:text="${product.quantity > 0 ? 'Chọn' : 'Hết hàng'}">Chọn</span>
+                                  </button>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+
+              <!-- Empty state -->
+              <div class="text-center py-4" th:if="${products == null or #lists.isEmpty(products.content)}">
+                  <i class="fas fa-box fa-2x text-muted mb-3"></i>
+                  <h6 class="text-muted">Không tìm thấy sản phẩm nào</h6>
+                  <p class="text-muted mb-0">Thử thay đổi điều kiện tìm kiếm</p>
+              </div>
+
+              <!-- Pagination -->
+              <div class="d-flex justify-content-between align-items-center p-3 border-top mt-3" th:if="${products != null and products.totalPages > 1}">
+                  <div class="text-muted">
+                      Hiển thị <span th:text="${#lists.size(products.content)}">0</span> trên
+                      <span th:text="${products.totalElements}">0</span> sản phẩm
+                  </div>
+
+                  <!-- Pagination Controls -->
+                  <nav>
+                      <ul class="pagination pagination-sm mb-0">
+                          <!-- Previous Button -->
+                          <li class="page-item" th:classappend="${products.number == 0} ? 'disabled'">
+                              <a class="page-link" href="javascript:void(0)"
+                                 th:onclick="'changeProductPage(' + ${products.number - 1} + ')'"
+                                 th:unless="${products.number == 0}">
+                                  <i class="fas fa-chevron-left"></i>
+                              </a>
+                              <span class="page-link" th:if="${products.number == 0}">
+                                  <i class="fas fa-chevron-left"></i>
+                              </span>
+                          </li>
+
+                          <!-- Page Numbers -->
+                          <li class="page-item" 
+                              th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
+                              th:if="${i >= products.number - 2 && i <= products.number + 2}"
+                              th:classappend="${i == products.number} ? 'active'">
+                              <a class="page-link" href="javascript:void(0)"
+                                 th:onclick="'changeProductPage(' + ${i} + ')'"
+                                 th:text="${i + 1}"
+                                 th:unless="${i == products.number}">1</a>
+                              <span class="page-link" th:if="${i == products.number}" th:text="${i + 1}">1</span>
+                          </li>
+
+                          <!-- Next Button -->
+                          <li class="page-item" th:classappend="${products.number >= products.totalPages - 1} ? 'disabled'">
+                              <a class="page-link" href="javascript:void(0)"
+                                 th:onclick="'changeProductPage(' + ${products.number + 1} + ')'"
+                                 th:unless="${products.number >= products.totalPages - 1}">
+                                  <i class="fas fa-chevron-right"></i>
+                              </a>
+                              <span class="page-link" th:if="${products.number >= products.totalPages - 1}">
+                                  <i class="fas fa-chevron-right"></i>
+                              </span>
+                          </li>
+                      </ul>
+                  </nav>
+              </div>
         </div>
       </div>
     </div>
@@ -604,16 +722,214 @@ function changePage(page) {
         });
 }
 
+function refreshCustomerList() {
+    // Reset form search
+    const form = document.getElementById('customerSearchForm');
+    form.reset();
+    
+    // Load lại danh sách khách hàng ban đầu (trang 1, không có filter)
+    fetch('/Sale/customers/data?page=0&size=6')
+        .then(response => response.json())
+        .then(data => {
+            updateCustomerTable(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi làm mới danh sách khách hàng!');
+        });
+}
+
+// Product Modal Functions
+function updateProductTable(data) {
+    const container = document.querySelector('#productTableContainer');
+    
+    let content = '';
+    if (data.products.length === 0) {
+        content = `
+            <div class="text-center py-4">
+                <i class="fas fa-box fa-2x text-muted mb-3"></i>
+                <h6 class="text-muted">Không tìm thấy sản phẩm nào</h6>
+                <p class="text-muted mb-0">Thử thay đổi điều kiện tìm kiếm</p>
+            </div>`;
+    } else {
+        content = `
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>Danh mục</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+        
+        data.products.forEach(product => {
+            content += `
+                <tr>
+                    <td>${product.productName}</td>
+                    <td>${product.categoryName || 'N/A'}</td>
+                    <td>${new Intl.NumberFormat('vi-VN').format(product.price)} VNĐ</td>
+                    <td>${product.quantity}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary btn-select-product"
+                                data-product-id="${product.productId}"
+                                ${product.quantity <= 0 ? 'disabled' : ''}>
+                            <i class="fas fa-plus"></i> 
+                            ${product.quantity > 0 ? 'Chọn' : 'Hết hàng'}
+                        </button>
+                    </td>
+                </tr>`;
+        });
+        
+        content += `
+                    </tbody>
+                </table>
+            </div>`;
+    }
+
+// Thêm phần pagination
+    if (data.totalPages > 1) {
+        content += `
+                <div class="d-flex justify-content-between align-items-center p-3 border-top mt-3">
+                    <div class="text-muted">
+                        Hiển thị ${data.products.length} trên ${data.totalElements} sản phẩm
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item ${data.pageNumber == 0 ? 'disabled' : ''}">
+                                <a class="page-link" href="javascript:void(0)"
+                                   onclick="changeProductPage(${data.pageNumber - 1})"
+                                   ${data.pageNumber == 0 ? 'style="pointer-events:none"' : ''}>
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>`;
+        for (let i = 0; i < data.totalPages; i++) {
+            if (i >= data.pageNumber - 2 && i <= data.pageNumber + 2) {
+                content += `
+                        <li class="page-item ${i == data.pageNumber ? 'active' : ''}">
+                            <a class="page-link" href="javascript:void(0)"
+                               onclick="changeProductPage(${i})"
+                               ${i == data.pageNumber ? 'style="pointer-events:none"' : ''}>
+                                ${i + 1}
+                            </a>
+                        </li>`;
+            }
+        }
+        content += `
+                            <li class="page-item ${data.pageNumber >= data.totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" href="javascript:void(0)"
+                                   onclick="changeProductPage(${data.pageNumber + 1})"
+                                   ${data.pageNumber >= data.totalPages - 1 ? 'style="pointer-events:none"' : ''}>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>`;
+    }
+
+
+    
+    container.innerHTML = content;
+    attachSelectProductEvents();
+}
+
+function searchProducts() {
+    const form = document.getElementById('productSearchForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData);
+    params.set('page', '0');
+    
+    fetch(`/Sale/products/data?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => updateProductTable(data))
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tìm kiếm sản phẩm!');
+        });
+}
+
+function changeProductPage(page) {
+    const form = document.getElementById('productSearchForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData);
+    params.set('page', page);
+    
+    fetch(`/Sale/products/data?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => updateProductTable(data))
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi chuyển trang!');
+        });
+}
+
+function refreshProductList() {
+    const form = document.getElementById('productSearchForm');
+    form.reset();
+    
+    fetch('/Sale/products/data?page=0&size=6')
+        .then(response => response.json())
+        .then(data => updateProductTable(data))
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi làm mới danh sách sản phẩm!');
+        });
+}
+
+function attachSelectProductEvents() {
+    document.querySelectorAll('.btn-select-product').forEach(btn => {
+        btn.onclick = function() {
+            const productId = btn.getAttribute('data-product-id');
+            selectProduct(productId);
+        }
+    });
+}
+
+function selectProduct(productId) {
+    fetch(`/Sale/products/${productId}`)
+        .then(response => response.json())
+        .then(product => {
+            document.getElementById('selectedProductName').value = product.productName;
+            document.getElementById('selectedProductPrice').value = product.price;
+            document.getElementById('selectedProductQuantity').value = 1; // hoặc để trống, tuỳ ý
+
+
+            // Đóng modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+            modal.hide();
+            
+            alert(`Đã chọn sản phẩm: ${product.productName}`);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi lấy thông tin sản phẩm!');
+        });
+}
+
 // Add event listener for search form
 document.addEventListener('DOMContentLoaded', function() {
     attachSelectCustomerEvents();
+    attachSelectProductEvents();
     
-    // Add event listener for search form
-    const searchForm = document.getElementById('customerSearchForm');
-    if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
+    // Add event listener for customer search form
+    const customerSearchForm = document.getElementById('customerSearchForm');
+    if (customerSearchForm) {
+        customerSearchForm.addEventListener('submit', function(e) {
             e.preventDefault();
             searchCustomers();
+        });
+    }
+    
+    // Add event listener for product search form
+    const productSearchForm = document.getElementById('productSearchForm');
+    if (productSearchForm) {
+        productSearchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            searchProducts();
         });
     }
 });

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -123,6 +124,9 @@ public class HomeController {
 //        return "redirect:/personal-info";
 //    }
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/personal-info/change-password")
     public String changePassword(@AuthenticationPrincipal UserDetails userDetails,
                                  @ModelAttribute("passwordDto") @Valid EmployeePersonalPasswordDto passwordDto,
@@ -130,7 +134,8 @@ public class HomeController {
                                  RedirectAttributes redirectAttributes) {
         Employee employee = employeeService.findByEmail(userDetails.getUsername());
 
-        if (!passwordDto.getOldPassword().equals(employee.getPassword())) {
+        // Sử dụng BCrypt để kiểm tra mật khẩu cũ
+        if (!passwordEncoder.matches(passwordDto.getOldPassword(), employee.getPassword())) {
             bindingResult.rejectValue("oldPassword", "error.passwordDto", "Mật khẩu hiện tại không đúng.");
         }
 
@@ -145,7 +150,9 @@ public class HomeController {
             return "redirect:/personal-info";
         }
 
-        employee.setPassword(passwordDto.getNewPassword());
+        // Mã hóa mật khẩu mới trước khi lưu
+        String encodedPassword = passwordEncoder.encode(passwordDto.getNewPassword());
+        employee.setPassword(encodedPassword);
         employeeService.save(employee);
 
         redirectAttributes.addFlashAttribute("message", "Đổi mật khẩu thành công!");
