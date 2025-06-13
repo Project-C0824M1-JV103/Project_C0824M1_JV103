@@ -32,8 +32,6 @@ public class SaleDto {
     @Min(value = 1, message = "Số lượng phải lớn hơn 0")
     private Integer quantity;
 
-//    @NotNull(message = "Đơn giá không được để trống")
-//    @Min(value = 0, message = "Đơn giá không được âm")
     private Double uniquePrice;
     
     @NotNull(message = "Phương thức thanh toán không được để trống")
@@ -42,9 +40,6 @@ public class SaleDto {
     private boolean printPDF;
 
     private BigDecimal amount;
-
-//    private List<SaleDetailsDto> saleDetails;
-
 
     public boolean isPrintPDF() {
         return printPDF;
@@ -117,14 +112,6 @@ public class SaleDto {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-    
-//    public List<SaleDetailsDto> getSaleDetails() {
-//        return saleDetails;
-//    }
-//
-//    public void setSaleDetails(List<SaleDetailsDto> saleDetails) {
-//        this.saleDetails = saleDetails;
-//    }
 
     public String getEmployeeName() {
         return employeeName;
@@ -142,19 +129,19 @@ public class SaleDto {
         this.productName = productName;
     }
 
-    public @NotNull(message = "Số lượng không được để trống") @Min(value = 1, message = "Số lượng phải lớn hơn 0") Integer getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(@NotNull(message = "Số lượng không được để trống") @Min(value = 1, message = "Số lượng phải lớn hơn 0") Integer quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
-    public @NotNull(message = "Đơn giá không được để trống") @Min(value = 0, message = "Đơn giá không được âm") Double getUniquePrice() {
+    public Double getUniquePrice() {
         return uniquePrice;
     }
 
-    public void setUniquePrice(@NotNull(message = "Đơn giá không được để trống") @Min(value = 0, message = "Đơn giá không được âm") Double uniquePrice) {
+    public void setUniquePrice(Double uniquePrice) {
         this.uniquePrice = uniquePrice;
     }
 }

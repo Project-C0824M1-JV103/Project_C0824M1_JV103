@@ -129,8 +129,20 @@ public class SaleController extends BaseAdminController {
             customers = customerService.findAll(pageable);
         }
 
+        // Chuyển đổi sang DTO để tránh lỗi lặp vô hạn khi trả JSON
+        List<CustomerSaleDto> customerDtos = customers.getContent().stream().map(customer -> {
+            CustomerSaleDto dto = new CustomerSaleDto();
+            dto.setCustomerId(customer.getCustomerId());
+            dto.setCustomerName(customer.getCustomerName());
+            dto.setPhoneNumber(customer.getPhoneNumber());
+            dto.setAddress(customer.getAddress());
+            dto.setBirthdayDate(customer.getBirthdayDate() != null ? customer.getBirthdayDate().toString() : null);
+            dto.setEmail(customer.getEmail());
+            return dto;
+        }).toList();
+
         Map<String, Object> response = new HashMap<>();
-        response.put("customers", customers.getContent());
+        response.put("customers", customerDtos);
         response.put("pageNumber", page);
         response.put("pageSize", size);
         response.put("totalPages", customers.getTotalPages());
@@ -281,7 +293,8 @@ public class SaleController extends BaseAdminController {
                 try {
                     String paymentUrl = vnPayService.createPaymentUrl(
                         "ORDER_" + savedSale.getSaleId(),
-                        savedSale.getAmount().longValue()
+                        savedSale.getAmount().longValue(),
+                        saleDto.isPrintPDF()
                     );
                     return "redirect:" + paymentUrl;
 

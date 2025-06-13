@@ -177,7 +177,7 @@ public class EmployeeController extends BaseAdminController {
 //    }
 
     @PostMapping("/edit-employee")
-    public String editEmployee(@ModelAttribute("employeeDto") EmployeeEditDto employeeDto,
+    public String editEmployee(@Valid @ModelAttribute("employeeDto") EmployeeEditDto employeeDto,
                                BindingResult bindingResult,
                                Model model,
                                RedirectAttributes redirectAttributes,

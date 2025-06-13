@@ -12,13 +12,12 @@ public class EmployeeEditDto {
     @Size(max = 50, message = "Tên không được vượt quá 50 ký tự")
     private String fullName;
 
+    @NotBlank(message = "Nhập email đầy đủ!")
     @Email(message = "Email không hợp lệ")
     @Size(max = 50, message = "Email không được vượt quá 50 ký tự")
     private String email;
 
-    @NotBlank(message = "Nhập số điện thoại!")
     @Pattern(regexp = "^[0-9]{10,11}$", message = "Số điện thoại phải có 10 hoặc 11 chữ số!")
-    @Size(max = 15, message = "Nhập lại số điện thoại!")
     private String phone;
 
     @NotBlank(message = "Chọn vị trí")

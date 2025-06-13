@@ -170,11 +170,8 @@
                         <fieldset class="mb-4 p-3 border rounded">
                             <legend class="w-auto px-2">Thông tin khách hàng</legend>
                             <div class="row mb-3 g-2">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <button type="button" class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#customerModal">Chọn khách hàng cũ</button>
-                                </div>
-                                <div class="col-md-6">
-                                    <button type="button" class="btn btn-outline-secondary w-100">Quét mã QR</button>
                                 </div>
                             </div>
                             <div class="row g-2 mb-2">
@@ -613,7 +610,7 @@ function attachSelectCustomerEvents() {
 
 function updateCustomerTable(data) {
     const tbody = document.querySelector('#customerTableContainer tbody');
-    const paginationInfo = document.querySelector('#customerTableContainer .d-flex.justify-content-between');
+    const paginationInfo = document.querySelector('#customerTableContainer .d-flex.justify-content-between.align-items-center');
 
     // Update table content
     let tableContent = '';
@@ -658,11 +655,11 @@ function updateCustomerTable(data) {
     // Update pagination info
     const infoContent = `
         <div class="text-muted">
-            <span>${data.isSearch ? 
-                `Tìm thấy ${data.totalElements} khách hàng` : 
-                `Hiển thị ${data.customers.length} trên ${data.totalElements} khách hàng`}</span>
+            <span>
+                Hiển thị ${data.customers.length} trên ${(data.totalElements !== undefined && data.totalElements !== null) ? data.totalElements : 0} khách hàng
+            </span>
         </div>
-        <nav ${data.totalPages > 1 ? '' : 'style="display:none"'}">
+        <nav ${data.totalPages > 1 ? '' : 'style="display:none"'}>
             <ul class="pagination pagination-sm mb-0">
                 <li class="page-item ${data.pageNumber == 0 ? 'disabled' : ''}">
                     <a class="page-link" href="javascript:void(0)" 
