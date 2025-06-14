@@ -272,9 +272,38 @@
                     </div>
                 </div>
 
+                <!-- Success/Error Messages -->
+                <div
+                    th:if="${successMessage}"
+                    class="alert alert-success alert-dismissible fade show"
+                    role="alert"
+                >
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span th:text="${successMessage}"></span>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                    ></button>
+                </div>
+
+                <div
+                    th:if="${errorMessage}"
+                    class="alert alert-danger alert-dismissible fade show"
+                    role="alert"
+                >
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span th:text="${errorMessage}"></span>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                    ></button>
+                </div>
+
                 <div class="search-section">
                     <h4 class="section-title">Chỉnh sửa thông tin nhân viên</h4>
-                    <form th:action="@{/Admin/employees/edit-employee}" th:object="${employeeDto}" method="post" class="mt-4">
+                    <form th:action="@{/employees/edit-employee}" th:object="${employeeDto}" method="post" class="mt-4">
                         <input type="hidden" th:field="*{employeeId}">
 
                         <div class="mb-3">
@@ -309,7 +338,7 @@
 
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-warning">Xác nhận</button>
-                            <a th:href="@{/Admin/employees/list}" class="btn btn-secondary">Quay lại</a>
+                            <a th:href="@{/employees}" class="btn btn-secondary">Quay lại</a>
                         </div>
                     </form>
                 </div>

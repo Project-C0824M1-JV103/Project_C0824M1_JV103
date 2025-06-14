@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/Admin")
+@RequestMapping("/Customer")
 public class CustomerController extends BaseAdminController  {
     @Autowired
     private ICustomerService iCustomerService;
 
-    @GetMapping("/Customer")
+    @GetMapping()
     public String showListCustomer(Model model,
                                    Principal principal,
                                    @RequestParam(defaultValue = "0") int page,
@@ -75,7 +75,7 @@ public class CustomerController extends BaseAdminController  {
         return "admin/showListCustomer";
     }
 
-    @GetMapping("/Customer/edit/{id}")
+    @GetMapping("/edit/{id}")
     public String showEditCustomerForm(@PathVariable("id") Integer id, Model model, Principal principal) {
         Optional<Customer> customer = iCustomerService.findById(id);
         if (customer.isPresent()) {
@@ -83,11 +83,11 @@ public class CustomerController extends BaseAdminController  {
             model.addAttribute("currentPage", "customer");
             return "admin/editCustomer";
         } else {
-            return "redirect:/Admin/Customer?error=notfound";
+            return "redirect:/Customer?error=notfound";
         }
     }
 
-    @PostMapping("/Customer/edit/{id}")
+    @PostMapping("/edit/{id}")
     public String updateCustomer(@PathVariable("id") Integer id,
                                  @ModelAttribute Customer customer,
                                  RedirectAttributes redirectAttributes,
@@ -99,10 +99,10 @@ public class CustomerController extends BaseAdminController  {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật thông tin khách hàng!");
         }
-        return "redirect:/Admin/Customer";
+        return "redirect:/Customer";
     }
 
-    @PostMapping("/Customer/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteCustomer(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes, Principal principal) {
         try {
             iCustomerService.deleteById(id);
@@ -110,6 +110,6 @@ public class CustomerController extends BaseAdminController  {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa khách hàng này!");
         }
-        return "redirect:/Admin/Customer";
+        return "redirect:/Customer";
     }
     }

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Thông tin cá nhân</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Noto Sans', sans-serif;
+            color: #333;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .form-section {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            padding: 30px 35px;
+            margin-bottom: 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 45px rgba(102, 126, 234, 0.4);
+        }
+
+        .card h5 {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #4b3ca7;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1.5px solid #ccc;
+            padding: 12px 16px;
+            font-size: 1.05rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+            background-color: #fff;
+        }
+
+        .form-control[readonly] {
+            background-color: #f0f0f0;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .mb-3 {
+            margin-bottom: 2.4rem !important;
+        }
+
+        .row {
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+            transition: background 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #5a6ddb, #5b3d8e);
+            transform: translateY(-2px);
+        }
+
+        .text-danger {
+            min-height: 1.5em;
+            font-size: 0.95rem;
+        }
+
+        .success-alert-container {
+            min-height: 60px;
+            margin-top: -20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 576px) {
+            .form-section {
+                padding: 0 10px;
+            }
+
+            .card {
+                padding: 20px 25px;
+            }
+
+            .btn-primary {
+                font-size: 1rem;
+                padding: 12px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="form-section">
+
+    <!-- Thông tin cá nhân -->
+    <div id="formCard" class="card p-4" data-is-editing="${isEditing}" data-has-error="${hasError}">
+        <h5 class="mb-3 border-bottom pb-2">Thông tin cá nhân</h5>
+
+        <div th:if="${message}" class="alert alert-success text-center" id="serverSuccessAlert" role="alert"
+             th:text="${message}"></div>
+
+        <div id="jsSuccessAlertContainer"></div>
+
+        <form id="personalForm" th:object="${employee}" th:action="@{/personal-info-update}" method="post">
+            <input type="hidden" th:field="*{employeeId}"/>
+
+            <div class="mb-3">
+                <div class="d-flex align-items-center mb-1">
+                    <label class="form-label me-2 mb-0">Họ và tên</label>
+                    <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{fullName}"></div>
+                </div>
+                <input type="text" id="fullName" class="form-control" placeholder="Nhập họ và tên"
+                       th:field="*{fullName}" th:readonly="${!isEditing}"/>
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex align-items-center mb-1">
+                    <label class="form-label me-2 mb-0">Email(Thay đổi thì phải đăng nhập lại)</label>
+                    <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{email}"></div>
+                </div>
+                <input type="email" id="email" class="form-control" placeholder="Nhập email"
+                       th:field="*{email}" th:readonly="${!isEditing}"/>
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex align-items-center mb-1">
+                    <label class="form-label me-2 mb-0">Số điện thoại</label>
+                    <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{phone}"></div>
+                </div>
+                <input type="text" id="phone" class="form-control" placeholder="Nhập số điện thoại"
+                       th:field="*{phone}" th:readonly="${!isEditing}"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Công việc</label>
+                <input type="text" class="form-control" id="role" readonly th:field="*{role}"/>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <button type="button" id="editBtn" class="btn btn-primary">Thay đổi</button>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <button type="submit" id="confirmBtn" class="btn btn-primary" disabled>Xác nhận</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Thay đổi mật khẩu -->
+    <div class="card p-4">
+        <h5 class="mb-3 border-bottom pb-2">Thay đổi mật khẩu</h5>
+        <form th:action="@{/personal-info/change-password}" method="post" th:object="${passwordDto}">
+            <div class="mb-3 input-group">
+                <div class="d-flex align-items-center mb-1 w-100">
+                    <label class="form-label me-2 mb-0">Mật khẩu cũ</label>
+                    <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{oldPassword}"></div>
+                </div>
+                <input type="password" th:field="*{oldPassword}" id="oldPassword"
+                       class="form-control border-end-0 rounded-start" placeholder="Nhập mật khẩu cũ" required/>
+                <span class="input-group-text" onclick="togglePassword('oldPassword', 'iconOld')"
+                      style="cursor: pointer">
+                    <i class="bi bi-eye-slash" id="iconOld"></i>
+                </span>
+            </div>
+
+            <div class="mb-3 input-group">
+                <div class="d-flex align-items-center mb-1 w-100">
+                    <label class="form-label me-2 mb-0">Mật khẩu mới</label>
+                    <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{newPassword}"></div>
+                </div>
+                <input type="password" th:field="*{newPassword}" id="newPassword"
+                       class="form-control border-end-0 rounded-start" placeholder="Nhập mật khẩu mới" required />
+                <span class="input-group-text" onclick="togglePassword('newPassword', 'iconNew')" style="cursor: pointer">
+                    <i class="bi bi-eye-slash" id="iconNew"></i>
+                </span>
+            </div>
+
+
+            <div class="mb-4 input-group">
+                <div class="d-flex align-items-center mb-1 w-100">
+                    <label class="form-label me-2 mb-0">Xác nhận mật khẩu</label>
+                    <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{confirmPassword}"></div>
+                </div>
+                <input type="password" th:field="*{confirmPassword}" id="confirmPassword"
+                       class="form-control border-end-0 rounded-start" placeholder="Xác nhận mật khẩu mới" required />
+                <span class="input-group-text" onclick="togglePassword('confirmPassword', 'iconConfirm')" style="cursor: pointer">
+                    <i class="bi bi-eye-slash" id="iconConfirm"></i>
+                </span>
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- Script -->
+<script>
+    const fields = ["fullName", "email", "phone"];
+    const editBtn = document.getElementById("editBtn");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const formCard = document.getElementById("formCard");
+
+    let isEditing = formCard.dataset.isEditing === 'true';
+    let hasError = formCard.dataset.hasError === 'true';
+
+    const originalValues = {};
+    window.addEventListener("DOMContentLoaded", () => {
+        fields.forEach(id => {
+            const input = document.getElementById(id);
+            originalValues[id] = input.value;
+            input.readOnly = !(isEditing || hasError);
+        });
+
+        confirmBtn.disabled = !(isEditing || hasError);
+        editBtn.textContent = (isEditing || hasError) ? "Hủy" : "Thay đổi";
+
+        // Ẩn alert server nếu có sau 3s
+        const serverAlert = document.getElementById('serverSuccessAlert');
+        if (serverAlert) {
+            setTimeout(() => {
+                serverAlert.style.transition = "opacity 0.5s ease";
+                serverAlert.style.opacity = '0';
+                setTimeout(() => serverAlert.remove(), 500);
+            }, 3000);
+        }
+
+        // Hiển thị alert JS nếu URL có param success=true
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            showSuccessAlert('Cập nhật thông tin thành công!');
+        }
+    });
+
+    editBtn.addEventListener("click", () => {
+        if (isEditing || hasError) {
+            window.location.href = "/personal-info";
+            return;
+        }
+
+        isEditing = true;
+        fields.forEach(id => {
+            document.getElementById(id).readOnly = false;
+        });
+
+        confirmBtn.disabled = false;
+        editBtn.textContent = "Hủy";
+    });
+
+    document.getElementById('personalForm').addEventListener('submit', function (event) {
+        const confirmed = confirm('Bạn có chắc chắn muốn cập nhật thông tin?');
+        if (!confirmed) {
+            event.preventDefault();
+        }
+    });
+
+    function showSuccessAlert(message) {
+        const alertContainer = document.getElementById('jsSuccessAlertContainer');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success text-center';
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.textContent = message;
+        alertContainer.appendChild(alertDiv);
+
+        setTimeout(() => {
+            alertDiv.style.transition = "opacity 0.5s ease";
+            alertDiv.style.opacity = '0';
+            setTimeout(() => alertDiv.remove(), 500);
+        }, 3000);
+    }
+
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        icon.classList.toggle("bi-eye");
+        icon.classList.toggle("bi-eye-slash");
+    }
+</script>
+
+</body>
+</html>

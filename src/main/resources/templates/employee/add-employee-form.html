@@ -100,7 +100,7 @@
 <div class="container-fluid">
     <div class="row">
         <!-- Include Admin Navbar -->
-        <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
+                    <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
 
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
@@ -123,7 +123,7 @@
                 <div class="search-section">
                     <h4 class="section-title">Thêm mới nhân viên</h4>
                     <form
-                            th:action="@{/Admin/employees/create}"
+                            th:action="@{/employees/create}"
                             th:object="${employee}"
                             method="post"
                             class="mt-4"
@@ -173,7 +173,7 @@
 
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
-                                <a th:href="@{/Admin/employees}" class="btn btn-secondary">Quay lại</a>
+                                <a th:href="@{/employees}" class="btn btn-secondary">Quay lại</a>
                             </div>
                         </div>
                     </form>
