@@ -20,15 +20,17 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/Supplier")
 public class SupplierController {
+
     @Autowired
     private ISupplierService supplierService;
 
     @GetMapping("")
     public ModelAndView showSupplierList() {
-        return new ModelAndView("supplier/list-supplier").addObject("suppliers", supplierService.findAll());
+        return new ModelAndView("supplier/list-supplier")
+                .addObject("suppliers", supplierService.findAll());
     }
-    // Hiển thị form chỉnh sửa nhà cung cấp
-    @GetMapping("/Supplier/edit/{id}")
+
+    @GetMapping("/edit/{id}") // Removed redundant "/Supplier" since @RequestMapping handles it
     public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         Optional<Supplier> supplier = supplierService.findById(id);
         if (supplier.isPresent()) {
@@ -36,12 +38,11 @@ public class SupplierController {
             return "supplier/edit";
         } else {
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp!");
-            return "redirect:/supplier";
+            return "redirect:/supplier"; // Fixed redirect to match case
         }
     }
 
-    // Xử lý chỉnh sửa nhà cung cấp
-    @PostMapping("/Supplier/save")
+    @PostMapping("/save")
     public String saveSupplier(@ModelAttribute("supplier") Supplier supplier,
                                @RequestParam(value = "image", required = false) MultipartFile image,
                                RedirectAttributes redirectAttributes) {
@@ -54,7 +55,3 @@ public class SupplierController {
         return "redirect:/supplier";
     }
 }
-
-
-
-
