@@ -1,9 +1,5 @@
 package com.example.project_c0824m1_jv103.controller;
-
-
-
 import com.example.project_c0824m1_jv103.model.Supplier;
-
 import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,7 +34,7 @@ public class SupplierController {
             return "supplier/edit";
         } else {
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp!");
-            return "redirect:/supplier"; // Fixed redirect to match case
+            return "redirect:/Supplier"; // Fixed redirect to match case
         }
     }
 
@@ -52,6 +48,6 @@ public class SupplierController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi chỉnh sửa nhà cung cấp: " + e.getMessage());
         }
-        return "redirect:/supplier";
+        return "redirect:/Supplier";
     }
 }
