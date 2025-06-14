@@ -2,6 +2,7 @@ package com.example.project_c0824m1_jv103.controller;
 
 
 
+import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.model.Supplier;
 
 import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/supplier")
-public class SupplierController {
+public class SupplierController extends BaseAdminController {
 
     @Autowired
     private ISupplierService supplierService;
