@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 @Table(name = "Sale")
 public class Sale {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sale_id")
@@ -30,16 +30,23 @@ public class Sale {
     
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
     private List<SaleDetails> saleDetails;
+
+    @Column(name = "method", nullable = false)
+    private String paymentMethod;
     
     // Constructors
     public Sale() {}
-    
-    public Sale(Customer customer, Employee employee, BigDecimal amount) {
+
+    public Sale(Integer saleId, Customer customer, Employee employee, LocalDateTime saleDate, BigDecimal amount, List<SaleDetails> saleDetails, String paymentMethod) {
+        this.saleId = saleId;
         this.customer = customer;
         this.employee = employee;
+        this.saleDate = saleDate;
         this.amount = amount;
+        this.saleDetails = saleDetails;
+        this.paymentMethod = paymentMethod;
     }
-    
+
     // Getters and Setters
     public Integer getSaleId() {
         return saleId;
@@ -88,4 +95,12 @@ public class Sale {
     public void setSaleDetails(List<SaleDetails> saleDetails) {
         this.saleDetails = saleDetails;
     }
-} 
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+}

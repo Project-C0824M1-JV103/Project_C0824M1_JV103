@@ -57,7 +57,9 @@ public class HomeController {
                                      BindingResult bindingResult,
                                      Model model,
                                      @AuthenticationPrincipal UserDetails userDetails,
-                                     RedirectAttributes redirectAttributes) {
+                                     RedirectAttributes redirectAttributes,
+                                     HttpServletRequest request,
+                                     HttpServletResponse response) {
 
         Employee currentEmployee = employeeService.findByEmail(userDetails.getUsername());
 
@@ -84,6 +86,7 @@ public class HomeController {
             employeeService.updateEmployeeInfo(dto);
             if (!dto.getEmail().equalsIgnoreCase(oldEmail)) {
                 SecurityContextHolder.clearContext();
+                new SecurityContextLogoutHandler().logout(request, response, null);
                 redirectAttributes.addFlashAttribute("passwordMessage", "Email đã thay đổi. Vui lòng đăng nhập lại.");
                 redirectAttributes.addFlashAttribute("messageType", "info");
                 return "redirect:/login";

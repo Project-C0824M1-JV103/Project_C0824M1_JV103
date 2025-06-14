@@ -4,6 +4,8 @@ import com.example.project_c0824m1_jv103.dto.EmployeePersonalDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.repository.IEmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,12 +13,16 @@ import java.util.List;
 @Service
 
 public class EmployeeService implements IEmployeeService {
-    @Autowired
+   @Autowired
     private IEmployeeRepository employeeRepository;
 
     @Override
     public void deleteEmployeesByIds(List<Integer> employeeIds) {
-        employeeRepository.deleteAllById(employeeIds);
+        List<Employee> employees = employeeRepository.findAllById(employeeIds);
+        for (Employee employee : employees) {
+            employee.setStatus(Employee.Status.inactive);
+        }
+        employeeRepository.saveAll(employees);
     }
 
     @Override
@@ -43,6 +49,17 @@ public class EmployeeService implements IEmployeeService {
     @Override
     public Employee findByEmail(String email) {
         return employeeRepository.findByEmail(email);
+    }
+
+    @Override
+    public Page<Employee> findAllWithPaging(Pageable pageable) {
+        return employeeRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Employee> searchEmployeesWithPaging(String fullName, String phone, String role, Pageable pageable) {
+        Employee.Role roleEnum = (role == null || role.isEmpty()) ? null : Employee.Role.valueOf(role);
+        return employeeRepository.searchEmployeesWithPaging(fullName, phone, roleEnum, pageable);
     }
 
     @Override

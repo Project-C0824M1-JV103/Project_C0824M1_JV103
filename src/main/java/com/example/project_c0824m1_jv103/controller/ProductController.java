@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-@RequestMapping("/Admin/product")
+@RequestMapping("/product")
 public class ProductController extends BaseAdminController {
 
     @Autowired
@@ -36,7 +36,7 @@ public class ProductController extends BaseAdminController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page
     ) {
-        int pageSize = 6;
+        int pageSize = 5;
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<ProductDTO> productPage;
         
@@ -56,6 +56,8 @@ public class ProductController extends BaseAdminController {
     @GetMapping("/add")
     public String showCreateProductForm(Model model, Principal principal) {
         model.addAttribute("productDTO", new ProductDTO());
+        model.addAttribute("categories", productService.getAllCategories());
+        model.addAttribute("suppliers", productService.getAllSuppliers());
         model.addAttribute("currentPage", "product");
         return "product/add-product-form";
     }
@@ -66,28 +68,40 @@ public class ProductController extends BaseAdminController {
             BindingResult bindingResult,
             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> images,
             @RequestParam(value = "captions", required = false) List<String> captions,
+            @RequestParam(value = "deletedImageUrls", required = false) String deletedImageUrls,
             Model model,
             RedirectAttributes redirectAttributes) {
         
         if (bindingResult.hasErrors()) {
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         }
-        
+
         try {
+            // Chuyển string thành list
+            List<String> deletedUrls = new ArrayList<>();
+            if (deletedImageUrls != null && !deletedImageUrls.trim().isEmpty()) {
+                deletedUrls = Arrays.asList(deletedImageUrls.split(","));
+            }
             productService.createProduct(productDTO, 
                 images != null ? images : new ArrayList<>(), 
                 captions != null ? captions : new ArrayList<>());
             
             redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
-            return "redirect:/Admin/product";
+            return "redirect:/product";
         } catch (IOException e) {
             model.addAttribute("error", "Lỗi khi upload ảnh: " + e.getMessage());
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi thêm sản phẩm: " + e.getMessage());
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         }
     }
@@ -98,15 +112,17 @@ public class ProductController extends BaseAdminController {
             ProductDTO productDTO = productService.findById(id);
             if (productDTO != null) {
                 model.addAttribute("productDTO", productDTO);
+                model.addAttribute("categories", productService.getAllCategories());
+                model.addAttribute("suppliers", productService.getAllSuppliers());
                 model.addAttribute("currentPage", "product");
                 return "product/edit-product-form";
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy sản phẩm!");
-                return "redirect:/Admin/product";
+                return "redirect:/product";
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi tải thông tin sản phẩm: " + e.getMessage());
-            return "redirect:/Admin/product";
+            return "redirect:/product";
         }
     }
 
@@ -124,6 +140,8 @@ public class ProductController extends BaseAdminController {
         if (bindingResult.hasErrors()) {
             productDTO.setProductId(id.intValue());
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/edit-product-form";
         }
         
@@ -140,11 +158,13 @@ public class ProductController extends BaseAdminController {
                 deletedUrls);
             
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm thành công!");
-            return "redirect:/Admin/product";
+            return "redirect:/product";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
             productDTO.setProductId(id.intValue());
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/edit-product-form";
         }
     }

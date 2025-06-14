@@ -31,9 +31,15 @@ public class ProductMapper {
         dto.setDescription(product.getDescription());
         dto.setQuantity(product.getQuantity());
         
-
+        // Map category và supplier
+        if (product.getCategory() != null) {
+            dto.setCategoryId(product.getCategory().getCategoryId());
+            dto.setCategoryName(product.getCategory().getCategoryName());
+        }
         
-
+        if (product.getSupplier() != null) {
+            dto.setSupplierId(product.getSupplier().getSuplierId());
+        }
         
         // Map images
         if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {
@@ -67,7 +73,8 @@ public class ProductMapper {
         product.setDescription(dto.getDescription());
         product.setQuantity(dto.getQuantity());
         
-        // Category và Supplier sẽ được set trong service
+        // Category và Supplier sẽ được set riêng trong service layer
+        // vì cần lookup từ repository bằng ID
         return product;
     }
     
@@ -89,6 +96,7 @@ public class ProductMapper {
         product.setDescription(dto.getDescription());
         product.setQuantity(dto.getQuantity());
         
-        // Category và Supplier sẽ được update trong service nếu cần
+        // Category và Supplier sẽ được update riêng trong service layer  
+        // vì cần lookup từ repository bằng categoryId và supplierId
     }
 } 
