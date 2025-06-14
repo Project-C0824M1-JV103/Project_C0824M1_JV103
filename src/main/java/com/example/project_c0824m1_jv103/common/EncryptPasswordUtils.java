@@ -10,6 +10,6 @@ public class EncryptPasswordUtils {
 
     public static Boolean ParseEncrypt(String password, String encodedPassword) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.matches(encodedPassword, password);
+        return encoder.matches(password, encodedPassword);
     }
 }

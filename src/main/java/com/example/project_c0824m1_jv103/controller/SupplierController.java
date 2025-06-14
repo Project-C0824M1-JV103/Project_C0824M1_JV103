@@ -1,10 +1,15 @@
 package com.example.project_c0824m1_jv103.controller;
 
 
+
 import com.example.project_c0824m1_jv103.model.Supplier;
-import com.example.project_c0824m1_jv103.service.supplier.SupplierService;
+
+import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,19 +18,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Optional;
 
 @Controller
-
+@RequestMapping("/Supplier")
 public class SupplierController {
-
     @Autowired
-    private SupplierService supplierService;
-    // Hiển thị danh sách nhà cung cấp
-    @GetMapping("/supplier")
-    public String listSuppliers(Model model) {
-        model.addAttribute("suppliers", supplierService.findAll());
-        return "supplier/list";
+    private ISupplierService supplierService;
+
+    @GetMapping("")
+    public ModelAndView showSupplierList() {
+        return new ModelAndView("supplier/list-supplier").addObject("suppliers", supplierService.findAll());
     }
     // Hiển thị form chỉnh sửa nhà cung cấp
-    @GetMapping("/supplier/edit/{id}")
+    @GetMapping("/Supplier/edit/{id}")
     public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         Optional<Supplier> supplier = supplierService.findById(id);
         if (supplier.isPresent()) {
@@ -38,7 +41,7 @@ public class SupplierController {
     }
 
     // Xử lý chỉnh sửa nhà cung cấp
-    @PostMapping("/supplier/save")
+    @PostMapping("/Supplier/save")
     public String saveSupplier(@ModelAttribute("supplier") Supplier supplier,
                                @RequestParam(value = "image", required = false) MultipartFile image,
                                RedirectAttributes redirectAttributes) {
@@ -51,3 +54,7 @@ public class SupplierController {
         return "redirect:/supplier";
     }
 }
+
+
+
+

@@ -59,7 +59,7 @@ public class ProductController extends BaseAdminController {
         model.addAttribute("categories", productService.getAllCategories());
         model.addAttribute("suppliers", productService.getAllSuppliers());
         model.addAttribute("currentPage", "product");
-        return "product/add-product-form";
+        return "product/add";
     }
 
     @PostMapping("/add-product")

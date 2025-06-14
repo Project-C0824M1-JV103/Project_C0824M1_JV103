@@ -20,4 +20,7 @@ public interface ICustomerService {
     
     // Separate search for name and phone
     Page<Customer> searchByNameAndPhone(String customerName, String phoneNumber, Pageable pageable);
+
+    // Find customer by phone number
+    Optional<Customer> findByPhone(String phoneNumber);
 }

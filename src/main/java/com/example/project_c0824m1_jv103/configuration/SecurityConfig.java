@@ -60,9 +60,9 @@ public class SecurityConfig {
                         .requestMatchers("/Customer/**").hasAnyRole("ADMIN","SALES")
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN")
                         .requestMatchers("/product/**").hasAnyRole("ADMIN","SALES","BUSINESS")
-                        .requestMatchers("/sales/**").hasAnyRole("SALES","ADMIN")
-//                        .requestMatchers("/business/**").hasRole("BUSINESS")
-//                        .requestMatchers("/Admin/warehouse/**").hasRole("WAREHOUSE")
+                        .requestMatchers("/Sale/**").hasAnyRole("SALES","ADMIN")
+                        .requestMatchers("/Warehouse/**").hasAnyRole("WAREHOUSE","ADMIN")
+                        .requestMatchers("/Supplier/**").hasAnyRole("ADMIN", "BUSINESS", "WAREHOUSE")
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
@@ -90,6 +90,7 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedPage("/error/403") // đường dẫn khi sử dụng chức năng ngoài phạm vi của role
                 )
                 .requestCache(RequestCacheConfigurer::disable
                 );

@@ -56,4 +56,9 @@ public class CustomerService implements ICustomerService {
     public Page<Customer> searchByNameAndPhone(String customerName, String phoneNumber, Pageable pageable) {
         return iCustomerRepository.searchByNameAndPhone(customerName, phoneNumber, pageable);
     }
+
+    @Override
+    public Optional<Customer> findByPhone(String phoneNumber) {
+        return iCustomerRepository.findByPhoneNumber(phoneNumber);
+    }
 }
