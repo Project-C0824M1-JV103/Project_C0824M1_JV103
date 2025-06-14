@@ -105,7 +105,7 @@ public class EmployeeController extends BaseAdminController {
         if (employeeDto.getRole() != null) {
             employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
         }
-        
+
         try {
 
             employeeService.save(employee);
@@ -113,7 +113,7 @@ public class EmployeeController extends BaseAdminController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm nhân viên: " + e.getMessage());
         }
-        
+
         return "redirect:/employees";
     }
 
@@ -125,7 +125,7 @@ public class EmployeeController extends BaseAdminController {
                                 @RequestParam(value = "page", defaultValue = "0") int page,
                                 @RequestParam(value = "size", defaultValue = "6") int size,
                                 Principal principal) {
-        
+
         List<String> roles = Arrays.stream(Employee.Role.values())
                 .map(Enum::name)
                 .toList();
@@ -133,7 +133,7 @@ public class EmployeeController extends BaseAdminController {
 
         // Create pageable without sorting
         Pageable pageable = PageRequest.of(page, size);
-        
+
         Page<Employee> employeePage;
         boolean isSearch = (fullName != null && !fullName.isEmpty()) ||
                           (phone != null && !phone.isEmpty()) ||
@@ -148,19 +148,19 @@ public class EmployeeController extends BaseAdminController {
         model.addAttribute("employeePage", employeePage);
         model.addAttribute("listEmployee", employeePage.getContent());
         model.addAttribute("currentPage", "employee");
-        
+
         // Add pagination attributes
         model.addAttribute("pageNumber", page);
         model.addAttribute("pageSize", size);
         model.addAttribute("totalPages", employeePage.getTotalPages());
         model.addAttribute("totalElements", employeePage.getTotalElements());
         model.addAttribute("isSearch", isSearch);
-        
+
         // Add search parameters for pagination links
         model.addAttribute("fullName", fullName);
         model.addAttribute("phone", phone);
         model.addAttribute("roleParam", role);
-        
+
         return "/employee/list_employee";
     }
 

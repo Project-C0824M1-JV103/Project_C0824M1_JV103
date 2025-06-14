@@ -413,8 +413,9 @@
                                         <button class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <a class="btn btn-sm btn-outline-warning" title="Chỉnh sửa"
-                                        >
+                                        <a th:href="@{'/Supplier/edit/' + ${s.suplierId}}"
+                                           class="btn btn-sm btn-outline-warning"
+                                           title="Chỉnh sửa">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     </div>
