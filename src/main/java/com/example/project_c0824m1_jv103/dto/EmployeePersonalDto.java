@@ -12,6 +12,7 @@ public class EmployeePersonalDto {
     private Integer employeeId;
 
     @NotBlank(message = "không được để trống.")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s\\p{L}]*$", message = "không được chứa ký tự đặc biệt.")
     private String fullName;
 
     @Email(message = "không hợp lệ.")
