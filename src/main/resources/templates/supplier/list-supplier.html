@@ -387,8 +387,8 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="s : ${suppliers}">
-                                <td><span class="stt-number" th:text="${s.suplierId}"></span></td>
+                            <tr th:each="s,l : ${suppliers}">
+                                <td><span class="stt-number" th:text="${l.count}"></span></td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="supplier-details">
@@ -413,7 +413,7 @@
                                         <button class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <a th:href="@{'/Supplier/edit/' + ${s.suplierId}}"
+                                        <a th:href="@{'/supplier/edit/' + ${s.suplierId}}"
                                            class="btn btn-sm btn-outline-warning"
                                            title="Chỉnh sửa">
                                             <i class="fas fa-edit"></i>
