@@ -15,7 +15,7 @@ public class VNPayService {
     @Autowired
     private VNPayConfig vnPayConfig;
 
-    public String createPaymentUrl(String orderId, long amount) throws UnsupportedEncodingException {
+    public String createPaymentUrl(String orderId, long amount, boolean printPdf) throws UnsupportedEncodingException {
         String vnp_TmnCode = vnPayConfig.getVnp_TmnCode();
         String vnp_HashSecret = vnPayConfig.getVnp_HashSecret();
         String vnp_Url = vnPayConfig.getVnp_Url();
@@ -29,7 +29,7 @@ public class VNPayService {
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_BankCode", "VNBANK");
         vnp_Params.put("vnp_TxnRef", orderId);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang: " + orderId);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang: " + orderId + (printPdf ? " printPdf=true" : ""));
         vnp_Params.put("vnp_OrderType", "other");
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl);

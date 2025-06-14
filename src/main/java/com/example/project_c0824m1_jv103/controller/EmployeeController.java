@@ -177,11 +177,23 @@ public class EmployeeController extends BaseAdminController {
 //    }
 
     @PostMapping("/edit-employee")
-    public String editEmployee(@ModelAttribute("employeeDto") EmployeeEditDto employeeDto,
+    public String editEmployee(@Valid @ModelAttribute("employeeDto") EmployeeEditDto employeeDto,
                                BindingResult bindingResult,
                                Model model,
                                RedirectAttributes redirectAttributes,
                                Principal principal) {
+        Employee employee = employeeService.findById(employeeDto.getEmployeeId());
+
+        Employee emailCheck = employeeService.findByEmail(employeeDto.getEmail());
+        if (emailCheck != null && !emailCheck.getEmployeeId().equals(employee.getEmployeeId())) {
+            bindingResult.rejectValue("email", "errorMessage", "Email đã được sử dụng.");
+        }
+
+        Employee phoneCheck = employeeService.findByPhone(employeeDto.getPhone());
+        if (phoneCheck != null && !phoneCheck.getEmployeeId().equals(employee.getEmployeeId())) {
+            bindingResult.rejectValue("phone", "errorMessage", "Số điện thoại đã được sử dụng.");
+        }
+
         if (bindingResult.hasErrors()) {
             List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -194,7 +206,7 @@ public class EmployeeController extends BaseAdminController {
             return "employee/edit-employee-form";
         }
 
-        Employee employee = employeeService.findById(employeeDto.getEmployeeId());
+
         BeanUtils.copyProperties(employeeDto, employee);
         employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
         employeeService.save(employee);

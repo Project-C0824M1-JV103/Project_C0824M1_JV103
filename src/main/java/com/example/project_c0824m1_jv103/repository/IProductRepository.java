@@ -9,4 +9,5 @@ public interface IProductRepository extends JpaRepository<Product, Integer> {
     Page<Product> findByProductNameContainingIgnoreCase(String name, Pageable pageable);
     Page<Product> findByPriceLessThanEqual(Double price, Pageable pageable);
     Page<Product> findByQuantityLessThanEqual(Integer quantity, Pageable pageable);
+    Product findByProductName(String name);
 }
