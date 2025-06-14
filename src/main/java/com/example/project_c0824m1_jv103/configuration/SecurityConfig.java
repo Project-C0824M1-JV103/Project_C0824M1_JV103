@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -56,14 +55,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/*.css", "/css/**", "/js/**", "/favicon.ico").permitAll() // Các đường dẫn không cần login
-                        .requestMatchers("/Customer/**").hasAnyRole("ADMIN","SALES")
-                        .requestMatchers("/employees/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/product/**").hasAnyRole("ADMIN","SALES","BUSINESS")
-                        .requestMatchers("/Sale/**").hasAnyRole("SALES","ADMIN")
+                                .requestMatchers("/", "/login", "/*.css", "/css/**", "/js/**", "/favicon.ico").permitAll() // Các đường dẫn không cần login
+                                .requestMatchers("/Customer/**").hasAnyRole("ADMIN", "SALES")
+                                .requestMatchers("/employees/**").hasAnyRole("ADMIN")
+                                .requestMatchers("/product/**").hasAnyRole("ADMIN", "SALES", "BUSINESS")
+                                .requestMatchers("/Sale/**").hasAnyRole("SALES", "ADMIN")
+                                .requestMatchers("/Supplier/**").hasAnyRole("ADMIN", "BUSINESS", "WAREHOUSE")
 //                        .requestMatchers("/business/**").hasRole("BUSINESS")
 //                        .requestMatchers("/Admin/warehouse/**").hasRole("WAREHOUSE")
-                        .anyRequest().authenticated()
+                                .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form
