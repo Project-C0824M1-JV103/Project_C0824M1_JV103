@@ -31,4 +31,5 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
 
     Employee findByEmail(String email);
     Employee findByPhone(String phone);
+    List<Employee> findByRole (Employee.Role role);
 }
