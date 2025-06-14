@@ -125,6 +125,17 @@
             border-radius: 0.5rem;
             margin-bottom: 20px;
         }
+
+        .form-control[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .form-control[readonly]:focus {
+            box-shadow: none;
+            border-color: #ced4da;
+        }
     </style>
 </head>
 <body>
@@ -154,47 +165,52 @@
                 <div class="search-section">
                     <h4 class="section-title">Bán hàng</h4>
                     <form th:action="@{/Sale/create}" th:object="${saleDto}" method="post">
-                        <input type="hidden" th:field="*{employeeName}" th:value="${currentUser != null ? currentUser.email : ''}">
+                        <input type="hidden" name="employeeName" th:value="${currentUser != null ? currentUser.email : ''}">
                         <!-- Thông tin khách hàng -->
                         <fieldset class="mb-4 p-3 border rounded">
                             <legend class="w-auto px-2">Thông tin khách hàng</legend>
                             <div class="row mb-3 g-2">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <button type="button" class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#customerModal">Chọn khách hàng cũ</button>
-                                </div>
-                                <div class="col-md-6">
-                                    <button type="button" class="btn btn-outline-secondary w-100">Quét mã QR</button>
                                 </div>
                             </div>
                             <div class="row g-2 mb-2">
                                 <div class="col-md-6">
                                     <label class="form-label mb-1">Họ và tên</label>
-                                    <input type="text" class="form-control" name="customerName" th:field="*{customerName}"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}"></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label mb-1">Địa chỉ</label>
-                                    <input type="text" class="form-control" name="address" th:field="*{address}"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
-                                </div>
-                            </div>
-                            <div class="row g-2 mb-2">
-                                <div class="col-md-4">
-                                    <label class="form-label mb-1">Số điện thoại</label>
-                                    <input type="text" class="form-control" name="phoneNumber" th:field="*{phoneNumber}"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label mb-1">E-mail</label>
-                                    <input type="email" class="form-control" name="email" th:field="*{email}"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label mb-1">Ngày sinh</label>
-                                    <input type="date" class="form-control" name="birthdayDate" th:field="*{birthdayDate}"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('birthdayDate')}" th:errors="*{birthdayDate}"></div>
+                                    <input type="text" class="form-control customer-input" name="customerName" th:field="*{customerName}" th:classappend="${#fields.hasErrors('customerName')} ? 'is-invalid'"/>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}"></div>
                                 </div>
 
+                                <div class="col-md-6">
+                                    <label class="form-label mb-1">Địa chỉ</label>
+                                    <input type="text" class="form-control customer-input" name="address" th:field="*{address}" th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'"/>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label mb-1">Số điện thoại</label>
+                                    <input type="text" class="form-control customer-input" name="phoneNumber" th:field="*{phoneNumber}" th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"/>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label mb-1">E-mail</label>
+                                    <input type="email" class="form-control customer-input" name="email" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"/>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label mb-1">Ngày sinh</label>
+                                    <input type="date" class="form-control customer-input" name="birthdayDate" th:field="*{birthdayDate}" th:classappend="${#fields.hasErrors('birthdayDate')} ? 'is-invalid'"/>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('birthdayDate')}" th:errors="*{birthdayDate}"></div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-danger" id="resetCustomerBtn" style="display: none;">
+                                        <i class="fas fa-undo"></i> Nhập lại thông tin khách hàng
+                                    </button>
+                                </div>
                             </div>
                         </fieldset>
                         <!-- Thông tin sản phẩm -->
@@ -209,15 +225,15 @@
                             <div class="row g-2 mb-2">
                                 <div class="col-md-6">
                                     <label class="form-label mb-1">Tên sản phẩm</label>
-                                    <input type="text" class="form-control" id="selectedProductName" />
+                                    <input type="text" class="form-control" id="selectedProductName" th:field="*{productName}" readonly/>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label mb-1">Đơn giá (VND)</label>
-                                    <input type="number" class="form-control" min="0" id="selectedProductPrice" />
+                                    <input type="number" class="form-control" min="0" id="selectedProductPrice" th:field="*{uniquePrice}" readonly/>
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label mb-1">Số lượng</label>
-                                    <input type="number" class="form-control" min="1" id="selectedProductQuantity" />
+                                    <input type="number" class="form-control" min="1" id="selectedProductQuantity" th:field="*{quantity}"/>
                                 </div>
 
 <!--                                Thêm hình ảnh không ????-->
@@ -236,8 +252,7 @@
                                 <label class="form-label mb-1">Thành tiền</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" th:field="*{amount}" readonly 
-                                       th:value="${saleDto.amount != null ? #numbers.formatDecimal(saleDto.amount, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : '0 VNĐ'}" />
+                                <input type="text" class="form-control" th:field="*{amount}" readonly/>
                             </div>
                             <div class="col-md-2 d-flex align-items-end">VND</div>
                         </div>
@@ -252,23 +267,18 @@
                                         <img src="https://stcd02206177151.cloud.edgevnpay.vn/assets/images/logo-icon/logo-primary.svg" alt="VNPay" style="height:24px;width:auto;object-fit:contain;margin-right:6px;">
                                     </label>
                                 </div>
-<!--                                <div class="form-check me-3 d-flex align-items-center">-->
-<!--                                    <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" th:field="*{paymentMethod}" value="PAYPAL" />-->
-<!--                                    <label class="form-check-label d-flex align-items-center ms-2" for="paypal">-->
-<!--                                        PayPal <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" style="height:24px;width:auto;object-fit:contain;margin-right:6px;">-->
-<!--                                    </label>-->
-<!--                                </div>-->
+
                                 <div class="form-check d-flex align-items-center">
                                     <input class="form-check-input" type="radio" name="paymentMethod" id="cash" th:field="*{paymentMethod}" value="CASH" />
                                     <label class="form-check-label d-flex align-items-center ms-2" for="cash">
                                         Tiền mặt  <i class="fa-solid fa-money-bill-wave fa-lg me-1" style="color:#28a745;"></i>
                                     </label>
                                 </div>
-                                <div class="text-danger" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}"></div>
+                                <p class="text-danger" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}"></p>
                             </div>
                         </div>
                         <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="invoice" checked />
+                            <input class="form-check-input" type="checkbox" id="invoice" th:field="*{printPDF}" checked />
                             <label class="form-check-label" for="invoice">In hóa đơn</label>
                         </div>
                         <div class="text-center mt-4">
@@ -600,7 +610,7 @@ function attachSelectCustomerEvents() {
 
 function updateCustomerTable(data) {
     const tbody = document.querySelector('#customerTableContainer tbody');
-    const paginationInfo = document.querySelector('#customerTableContainer .d-flex.justify-content-between');
+    const paginationInfo = document.querySelector('#customerTableContainer .d-flex.justify-content-between.align-items-center');
 
     // Update table content
     let tableContent = '';
@@ -645,11 +655,11 @@ function updateCustomerTable(data) {
     // Update pagination info
     const infoContent = `
         <div class="text-muted">
-            <span>${data.isSearch ? 
-                `Tìm thấy ${data.totalElements} khách hàng` : 
-                `Hiển thị ${data.customers.length} trên ${data.totalElements} khách hàng`}</span>
+            <span>
+                Hiển thị ${data.customers.length} trên ${(data.totalElements !== undefined && data.totalElements !== null) ? data.totalElements : 0} khách hàng
+            </span>
         </div>
-        <nav ${data.totalPages > 1 ? '' : 'style="display:none"'}">
+        <nav ${data.totalPages > 1 ? '' : 'style="display:none"'}>
             <ul class="pagination pagination-sm mb-0">
                 <li class="page-item ${data.pageNumber == 0 ? 'disabled' : ''}">
                     <a class="page-link" href="javascript:void(0)" 
@@ -895,14 +905,15 @@ function selectProduct(productId) {
         .then(product => {
             document.getElementById('selectedProductName').value = product.productName;
             document.getElementById('selectedProductPrice').value = product.price;
-            document.getElementById('selectedProductQuantity').value = 1; // hoặc để trống, tuỳ ý
+            document.getElementById('selectedProductQuantity').value = 1; // Set default quantity to 1
 
+            // Calculate and update total amount
+            calculateTotalAmount();
 
             // Đóng modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
             modal.hide();
-            
-            alert(`Đã chọn sản phẩm: ${product.productName}`);
+
         })
         .catch(error => {
             console.error('Error:', error);
@@ -910,10 +921,28 @@ function selectProduct(productId) {
         });
 }
 
-// Add event listener for search form
+// Add function to calculate total amount
+function calculateTotalAmount() {
+    const price = parseFloat(document.getElementById('selectedProductPrice').value) || 0;
+    const quantity = parseInt(document.getElementById('selectedProductQuantity').value) || 0;
+    const totalAmount = price * quantity;
+    
+    // Update the amount input with formatted value
+    const amountInput = document.querySelector('input[name="amount"]');
+    // amountInput.value = new Intl.NumberFormat('vi-VN').format(totalAmount);
+    amountInput.value = totalAmount;
+}
+
+// Add event listeners when document is loaded
 document.addEventListener('DOMContentLoaded', function() {
     attachSelectCustomerEvents();
     attachSelectProductEvents();
+    
+    // Add event listener for quantity input
+    const quantityInput = document.getElementById('selectedProductQuantity');
+    if (quantityInput) {
+        quantityInput.addEventListener('input', calculateTotalAmount);
+    }
     
     // Add event listener for customer search form
     const customerSearchForm = document.getElementById('customerSearchForm');
@@ -946,6 +975,14 @@ function selectCustomer(customerId) {
             document.querySelector('input[name="birthdayDate"]').value = customer.birthdayDate || '';
             document.querySelector('input[name="email"]').value = customer.email || '';
 
+            // Disable tất cả các input field
+            document.querySelectorAll('.customer-input').forEach(input => {
+                input.setAttribute('readonly', true);
+            });
+
+            // Hiển thị nút reset
+            document.getElementById('resetCustomerBtn').style.display = 'block';
+
             // Đóng modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('customerModal'));
             modal.hide();
@@ -956,20 +993,50 @@ function selectCustomer(customerId) {
         });
 }
 
+// Thêm event listener cho nút reset
+document.getElementById('resetCustomerBtn').addEventListener('click', function() {
+    // Xóa giá trị của tất cả các input
+    document.querySelectorAll('.customer-input').forEach(input => {
+        input.value = '';
+        input.removeAttribute('readonly');
+    });
+
+    // Ẩn nút reset
+    this.style.display = 'none';
+});
+
 // Cập nhật xử lý form submit
 document.querySelector('form').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-    const orderId = 'ORDER_' + new Date().getTime(); // Tạo mã đơn hàng
-    const amount = document.querySelector('input[name="totalAmount"]').value;
+    // Kiểm tra thông tin khách hàng
+    const customerName = document.querySelector('input[name="customerName"]').value;
+    const phoneNumber = document.querySelector('input[name="phoneNumber"]').value;
     
-    if (paymentMethod === 'VNPAY') {
-        handleVNPayPayment(orderId, amount);
-    } else {
-        // Xử lý các phương thức thanh toán khác
-        this.submit();
+    if (!customerName || !phoneNumber) {
+        alert('Vui lòng nhập đầy đủ thông tin khách hàng!');
+        return;
     }
+    
+    // Kiểm tra sản phẩm đã chọn
+    const productName = document.getElementById('selectedProductName').value;
+    const productPrice = document.getElementById('selectedProductPrice').value;
+    const productQuantity = document.getElementById('selectedProductQuantity').value;
+    
+    if (!productName || !productPrice || !productQuantity) {
+        alert('Vui lòng chọn sản phẩm và số lượng!');
+        return;
+    }
+    
+    // Kiểm tra phương thức thanh toán
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+    if (!paymentMethod) {
+        alert('Vui lòng chọn phương thức thanh toán!');
+        return;
+    }
+    
+    // Nếu tất cả thông tin hợp lệ, submit form
+    this.submit();
 });
 
 // Thêm hàm xử lý thanh toán VNPay

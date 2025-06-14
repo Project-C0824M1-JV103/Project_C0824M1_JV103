@@ -25,13 +25,29 @@ public class SaleDto {
     
     @Email(message = "Email không hợp lệ")
     private String email;
+
+    private String productName;
+
+    @NotNull(message = "Số lượng không được để trống")
+    @Min(value = 1, message = "Số lượng phải lớn hơn 0")
+    private Integer quantity;
+
+    private Double uniquePrice;
     
     @NotNull(message = "Phương thức thanh toán không được để trống")
     private String paymentMethod;
 
+    private boolean printPDF;
+
     private BigDecimal amount;
 
-    private List<SaleDetailsDto> saleDetails;
+    public boolean isPrintPDF() {
+        return printPDF;
+    }
+
+    public void setPrintPDF(boolean printPDF) {
+        this.printPDF = printPDF;
+    }
 
     public String getCustomerName() {
         return customerName;
@@ -96,14 +112,6 @@ public class SaleDto {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-    
-    public List<SaleDetailsDto> getSaleDetails() {
-        return saleDetails;
-    }
-    
-    public void setSaleDetails(List<SaleDetailsDto> saleDetails) {
-        this.saleDetails = saleDetails;
-    }
 
     public String getEmployeeName() {
         return employeeName;
@@ -111,5 +119,29 @@ public class SaleDto {
 
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Double getUniquePrice() {
+        return uniquePrice;
+    }
+
+    public void setUniquePrice(Double uniquePrice) {
+        this.uniquePrice = uniquePrice;
     }
 }
