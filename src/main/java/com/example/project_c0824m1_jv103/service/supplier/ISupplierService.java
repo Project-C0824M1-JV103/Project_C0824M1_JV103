@@ -12,4 +12,5 @@ public interface ISupplierService {
     Page<Supplier> findAll(Pageable pageable);
     Optional<Supplier> findById(Integer id);
     void saveSupplier(Supplier supplier, MultipartFile image);
+    Page<Supplier> findByCriteria(String suplierName, String phoneNumber, String email, Pageable pageable);
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Quản lý nhà cung cấp</title>
@@ -9,9 +9,11 @@
     <link rel="stylesheet" th:href="@{/admin-navbar.css}"/>
     <link rel="stylesheet" th:href="@{/admin-common.css}"/>
     <style>
+
         .main-content {
             background-color: #f8f9fa;
             min-height: 100vh;
+            padding: 20px;
         }
 
         .header-section {
@@ -22,12 +24,32 @@
             margin-bottom: 20px;
         }
 
+        .header-section .row {
+            align-items: center;
+            width: 100%;
+        }
+
         .search-section {
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+        }
+
+        .search-section .row {
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-section .input-group {
+            width: 100%;
+        }
+
+        .search-section .col-md-3, .search-section .col-md-2 {
+            display: flex;
+            align-items: center;
+            padding: 5px;
         }
 
         .employee-table {
@@ -37,6 +59,11 @@
             overflow: hidden;
         }
 
+        .table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
         .table th {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -44,7 +71,7 @@
             padding: 15px;
             font-weight: 600;
             text-align: center;
-            white-space: nowrap; /* Prevent text wrapping */
+            white-space: nowrap;
         }
 
         .table td {
@@ -53,11 +80,41 @@
             border-bottom: 1px solid #eee;
             text-align: center;
             color: #000 !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .table tbody tr:hover {
             background-color: #f8f9fa;
             transition: all 0.3s ease;
+        }
+
+        .table th:nth-child(1), .table td:nth-child(1) {
+            width: 60px;
+        }
+
+        .table th:nth-child(2), .table td:nth-child(2) {
+            width: 250px;
+            min-width: 200px;
+            max-width: 250px;
+        }
+
+        .table th:nth-child(3), .table td:nth-child(3) {
+            width: 200px;
+            min-width: 150px;
+            max-width: 200px;
+        }
+
+        .table th:nth-child(4), .table td:nth-child(4) {
+            width: 120px;
+        }
+
+        .table th:nth-child(5), .table td:nth-child(5) {
+            width: 80px;
+        }
+
+        .table th:nth-child(6), .table td:nth-child(6) {
+            width: 120px;
         }
 
         .btn-actions {
@@ -71,191 +128,23 @@
             font-size: 12px;
         }
 
-        .badge {
-            font-size: 0.8em;
-        }
-
-        .checkbox-column {
-            width: 60px;
-            text-align: center;
-        }
-
-        .action-column {
-            width: 120px;
-            text-align: center;
-        }
-
-        .employee-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            margin: 0 auto;
-        }
-
-        .employee-details {
+        .supplier-details {
             text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .employee-name {
+        .supplier-name {
             font-weight: bold;
             margin-bottom: 5px;
         }
 
-        .employee-email {
+        .supplier-email {
             color: #6c757d;
             font-size: 0.9em;
         }
 
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1055;
-            outline: 0;
-        }
-
-        .modal.show {
-            display: block !important;
-        }
-
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1050;
-            width: 100vw;
-            height: 100vh;
-            background-color: #000;
-            opacity: 0.5;
-        }
-
-        body.modal-open {
-            overflow: hidden;
-            padding-right: 0;
-        }
-
-        .modal-dialog {
-            position: relative;
-            width: auto;
-            margin: 1.75rem;
-            pointer-events: none;
-        }
-
-        .modal.show .modal-dialog {
-            transform: none;
-        }
-
-        .modal-content {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            pointer-events: auto;
-            background-color: #fff;
-            background-clip: padding-box;
-            border: 1px solid rgba(0, 0, 0, 0.125);
-            border-radius: 0.375rem;
-            outline: 0;
-        }
-
-        /* Animation */
-        .fade {
-            transition: opacity 0.15s linear;
-        }
-
-        .fade:not(.show) {
-            opacity: 0;
-        }
-
-        .modal.fade .modal-dialog {
-            transition: transform 0.3s ease-out;
-            transform: translate(0, -50px);
-        }
-
-        .modal.show .modal-dialog {
-            transform: none;
-        }
-
-        /* Responsive */
-        @media (min-width: 576px) {
-            .modal-dialog {
-                max-width: 500px;
-                margin: 1.75rem auto;
-            }
-        }
-
-        @media (min-width: 992px) {
-            .modal-lg {
-                max-width: 800px;
-            }
-        }
-
-        /* Button hover effects */
-        .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .delete-single-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .employee-info-card {
-            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
-            border: 1px solid #fc8181;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            border-left: 4px solid #e53e3e;
-        }
-
-        .modal-header .btn-close {
-            filter: invert(1);
-        }
-
-        .selected-count {
-            font-weight: 500;
-            color: #718096;
-        }
-
-        .status-active {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-        }
-
-        .status-inactive {
-            background: linear-gradient(135deg, #6c757d, #495057);
-            color: white;
-        }
-
-        .role-badge {
-            color: black;
-        }
-
-        .table .text-muted {
-            color: #000 !important;
-        }
-
-        .table .employee-email {
-            color: #000 !important;
-        }
-
-        .stt-number {
-            color: #000;
-            font-weight: 500;
-        }
-
-        /* Pagination styling */
+        /* Phân trang căn giữa */
         .pagination .page-link {
             color: #6c757d;
             border: 1px solid #dee2e6;
@@ -287,35 +176,45 @@
             border-color: #667eea;
         }
 
-        /* Ensure supplier name and email stack vertically */
-        .supplier-details {
-            text-align: left;
-        }
-
-        .supplier-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .supplier-email {
-            color: #6c757d;
-            font-size: 0.9em;
+        @media (max-width: 768px) {
+            .search-section .col-md-3, .search-section .col-md-2 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin-bottom: 10px;
+            }
+            .header-section .row {
+                flex-direction: column;
+                text-align: center;
+            }
+            .table {
+                table-layout: auto;
+            }
+            .table th, .table td {
+                font-size: 0.85em;
+                padding: 10px;
+            }
+            .table th:nth-child(2), .table td:nth-child(2) {
+                min-width: 120px;
+            }
+            .table th:nth-child(3), .table td:nth-child(3) {
+                min-width: 100px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container-fluid">
     <div class="row">
-            <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
 
-        <!-- Main Content -->
+        <!-- Nội dung chính -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
                 <div class="header-section">
                     <div class="row align-items-center">
                         <div class="col">
                             <h2 class="mb-1">
-                                <i class="fas fa-building text-primary"></i>
+                                <i class="fas fa-truck text-primary"></i>
                                 Quản lý nhà cung cấp
                             </h2>
                             <p class="text-muted mb-0">
@@ -330,7 +229,7 @@
                     </div>
                 </div>
 
-                <!-- Search Section -->
+                <!-- Phần tìm kiếm -->
                 <div class="search-section">
                     <form th:action="@{/supplier}" method="get">
                         <div class="row g-3">
@@ -339,20 +238,26 @@
                                     <span class="input-group-text">
                                         <i class="fas fa-building"></i>
                                     </span>
-                                    <select name="field" class="form-select">
-                                        <option value="suplierName">Tên nhà cung cấp</option>
-                                        <option value="phoneNumber">Số điện thoại</option>
-                                        <option value="email">Email</option>
-                                    </select>
+                                    <input type="text" name="suplierName" class="form-control"
+                                           placeholder="Tên nhà cung cấp..." th:value="${param.suplierName}"/>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i class="fas fa-search"></i>
+                                        <i class="fas fa-phone"></i>
                                     </span>
-                                    <input type="text" name="keyword" class="form-control"
-                                           placeholder="Tìm kiếm nhà cung cấp..." th:value="${keyword}"/>
+                                    <input type="text" name="phoneNumber" class="form-control"
+                                           placeholder="Số điện thoại..." th:value="${param.phoneNumber}"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="text" name="email" class="form-control"
+                                           placeholder="Email..." th:value="${param.email}"/>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -361,18 +266,18 @@
                                 </button>
                             </div>
                             <div class="col-md-2">
-                                <a href="/supplier" class="btn btn-outline-secondary w-100">
+                                <a th:href="@{/supplier}" class="btn btn-outline-secondary w-100">
                                     <i class="fas fa-refresh"></i> Làm mới
                                 </a>
                             </div>
                         </div>
-                        <!-- Hidden fields for pagination -->
+                        <!-- Trường ẩn cho phân trang -->
                         <input type="hidden" name="page" value="0"/>
-                        <input type="hidden" name="size" value="6"/>
+                        <input type="hidden" name="size" value="2"/>
                     </form>
                 </div>
 
-                <!-- Supplier Table -->
+                <!-- Bảng nhà cung cấp -->
                 <div class="employee-table">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
@@ -403,7 +308,7 @@
                                     <img
                                             th:if="${s.imageUrl != null}"
                                             th:src="${s.imageUrl}"
-                                            alt="Supplier Image"
+                                            alt="Hình ảnh nhà cung cấp"
                                             style="width: 50px; height: auto;"
                                     />
                                     <span th:if="${s.imageUrl == null}" class="text-muted">N/A</span>
@@ -421,7 +326,6 @@
                                     </div>
                                 </td>
                             </tr>
-                            <!-- Empty state -->
                             <tr th:if="${#lists.isEmpty(suppliers)}">
                                 <td colspan="6" class="text-center py-4">
                                     <div class="text-muted">
@@ -438,38 +342,45 @@
                     </div>
                 </div>
 
-                <!-- Pagination -->
-                <nav aria-label="Supplier pagination" class="mt-4">
+                <!-- Phân trang -->
+                <nav aria-label="Phân trang nhà cung cấp" class="mt-4">
                     <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link">
+                        <li class="page-item">
+                            <a class="page-link"
+                               th:href="@{/supplier(pageSupplier=0)}"
+                               th:classappend="${suppliers.number == 0} ? 'disabled' : ''">
                                 <i class="fas fa-angle-double-left"></i>
                             </a>
                         </li>
-                        <li class="page-item disabled">
-                            <a class="page-link">
+                        <li class="page-item">
+                            <a class="page-link"
+                               th:href="@{/supplier(pageSupplier=${suppliers.number - 1})}"
+                               th:classappend="${!suppliers.hasPrevious()} ? 'disabled' : ''">
                                 <i class="fas fa-angle-left"></i>
                             </a>
                         </li>
-                        <li class="page-item active">
-                            <a class="page-link" href="#">1</a>
-                        </li>
+                        <th:block th:each="page, iterStat : ${#numbers.sequence(0, suppliers.totalPages - 1)}">
+                            <li class="page-item" th:classappend="${page == suppliers.number} ? 'active' : ''">
+                                <a class="page-link" th:href="@{/supplier(pageSupplier=${page})}" th:text="${page + 1}"></a>
+                            </li>
+                        </th:block>
                         <li class="page-item">
-                            <a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link">
+                            <a class="page-link"
+                               th:href="@{/supplier(pageSupplier=${suppliers.number + 1})}"
+                               th:classappend="${!suppliers.hasNext()} ? 'disabled' : ''">
                                 <i class="fas fa-angle-right"></i>
                             </a>
                         </li>
                         <li class="page-item">
-                            <a class="page-link">
+                            <a class="page-link"
+                               th:href="@{/supplier(pageSupplier=${suppliers.totalPages - 1})}"
+                               th:classappend="${suppliers.number == suppliers.totalPages - 1} ? 'disabled' : ''">
                                 <i class="fas fa-angle-double-right"></i>
                             </a>
                         </li>
                     </ul>
                     <div class="text-center text-muted mt-2">
-                        Trang 1 trong tổng số 2 trang (10 nhà cung cấp)
+                        Trang <span th:text="${suppliers.number + 1}"></span> trong tổng số <span th:text="${suppliers.totalPages}"></span> trang (<span th:text="${suppliers.totalElements}"></span> nhà cung cấp)
                     </div>
                 </nav>
             </div>

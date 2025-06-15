@@ -29,9 +29,18 @@ public class SupplierController extends BaseAdminController {
     private ISupplierService supplierService;
 
     @GetMapping("")
-    public ModelAndView showSupplierList(@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+    public ModelAndView showSupplierList(
+            @RequestParam(name = "pageSupplier", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "suplierName", required = false) String suplierName,
+            @RequestParam(name = "phoneNumber", required = false) String phoneNumber,
+            @RequestParam(name = "email", required = false) String email) {
         Pageable pageable = PageRequest.of(page, 3);
-        return new ModelAndView("supplier/list-supplier").addObject("suppliers", supplierService.findAll(pageable));
+        ModelAndView modelAndView = new ModelAndView("supplier/list-supplier");
+        modelAndView.addObject("suppliers", supplierService.findByCriteria(suplierName, phoneNumber, email, pageable));
+        modelAndView.addObject("suplierName", suplierName);
+        modelAndView.addObject("phoneNumber", phoneNumber);
+        modelAndView.addObject("email", email);
+        return modelAndView;
     }
 
     @GetMapping("/edit/{id}") // Removed redundant "/Supplier" since @RequestMapping handles it

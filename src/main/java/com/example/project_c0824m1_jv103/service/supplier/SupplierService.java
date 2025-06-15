@@ -48,6 +48,12 @@ public class SupplierService implements ISupplierService {
         supplierRepository.save(supplier);
 
     }
+
+    @Override
+    public Page<Supplier> findByCriteria(String suplierName, String phoneNumber, String email, Pageable pageable) {
+        return supplierRepository.findByCriteria(suplierName,phoneNumber, email, pageable);
+    }
+
     @Override
     public Page<Supplier> findAll(Pageable pageable) {
         return supplierRepository.findAll(pageable);
