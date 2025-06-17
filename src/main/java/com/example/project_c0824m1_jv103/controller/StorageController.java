@@ -45,7 +45,7 @@ public class StorageController extends BaseAdminController {
         Page<ProductDTO> products = productService.searchProducts(keyword, "productName", PageRequest.of(page, size));
         model.addAttribute("products", products.getContent());
         model.addAttribute("keyword", keyword);
-        model.addAttribute("currentPage", page);
+        model.addAttribute("page", page);
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("currentPage", "export");
         return "storage/product-selection";
