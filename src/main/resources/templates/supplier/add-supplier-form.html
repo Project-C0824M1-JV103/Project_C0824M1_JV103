@@ -614,6 +614,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     const emailInput = document.querySelector('input[name="email"]');
     const phoneInput = document.querySelector('input[name="phoneNumber"]');
+    const form = document.querySelector('form');
     
     if (emailInput) {
       emailInput.addEventListener('input', validateEmailFormat);
@@ -624,14 +625,16 @@
       phoneInput.addEventListener('input', validatePhoneNumberFormat);
       phoneInput.addEventListener('blur', validatePhoneNumber);
     }
-  });
-
-  // Form submission validation
-  document.querySelector('form').addEventListener('submit', function(e) {
-    const hasClientErrors = document.querySelectorAll('.client-validation-feedback').length > 0;
-    if (hasClientErrors) {
-      e.preventDefault();
-      alert('Vui lòng sửa các lỗi validation trước khi submit form');
+    
+    // Form submission validation
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const hasClientErrors = document.querySelectorAll('.client-validation-feedback').length > 0;
+        if (hasClientErrors) {
+          e.preventDefault();
+          alert('Vui lòng sửa các lỗi validation trước khi submit form');
+        }
+      });
     }
   });
 </script>
