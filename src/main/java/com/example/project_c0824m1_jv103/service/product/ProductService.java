@@ -165,7 +165,12 @@ public class ProductService implements IProductService {
 
     @Override
     public Product findProductByName(String name) {
-        return productRepository.findByProductName(name);
+        // Sử dụng findAll và lọc theo tên vì findByProductName chưa có trong repository
+        List<Product> products = productRepository.findAll();
+        return products.stream()
+                .filter(product -> name.equals(product.getProductName()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -287,5 +292,12 @@ public class ProductService implements IProductService {
         return products.stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    public Page<ProductDTO> searchProducts(String productName, String searchType, Pageable pageable) {
+        // Tìm kiếm sản phẩm chỉ theo tên
+        Page<Product> productPage = productRepository.findByProductNameContainingIgnoreCase(productName, pageable);
+        return productPage.map(productMapper::toDTO);
     }
 }

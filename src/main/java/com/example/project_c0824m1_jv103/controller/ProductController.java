@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,7 +41,9 @@ public class ProductController extends BaseAdminController {
             @RequestParam(value = "page", required = false, defaultValue = "0") int page
     ) {
         int pageSize = 5;
-        Pageable pageable = PageRequest.of(page, pageSize);
+        // Sắp xếp theo productId giảm dần để sản phẩm mới lên đầu
+        Sort sort = Sort.by(Sort.Direction.DESC, "productId");
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
         Page<ProductDTO> productPage;
         
         // Kiểm tra xem có điều kiện tìm kiếm nào không

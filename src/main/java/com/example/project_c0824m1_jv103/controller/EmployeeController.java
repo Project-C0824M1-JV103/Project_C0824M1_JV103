@@ -145,15 +145,7 @@ public class EmployeeController extends BaseAdminController {
         return "/employee/list_employee";
     }
 
-    // Add main listing endpoint
-    @GetMapping({"", "/"})
-    public String mainListEmployees(Model model,
-                                    @RequestParam(value = "fullName", required = false) String fullName,
-                                    @RequestParam(value = "phone", required = false) String phone,
-                                    @RequestParam(value = "role", required = false) String role,
-                                    Principal principal) {
-        return listEmployees(model, fullName, phone, role, principal);
-    }
+
 
     @PostMapping("/edit-employee")
     public String editEmployee(@Valid @ModelAttribute("employeeDto") EmployeeEditDto employeeDto,

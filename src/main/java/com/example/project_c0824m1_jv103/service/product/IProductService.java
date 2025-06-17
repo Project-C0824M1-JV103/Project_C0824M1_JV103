@@ -26,6 +26,9 @@ public interface IProductService {
             Integer minQuantity,
             Integer maxQuantity,
             Pageable pageable);
+    
+    // Tìm kiếm sản phẩm theo tên (overload method)
+    Page<ProductDTO> searchProducts(String productName, String searchType, Pageable pageable);
 
     // Tìm sản phẩm theo ID
     ProductDTO findById(Long id);
