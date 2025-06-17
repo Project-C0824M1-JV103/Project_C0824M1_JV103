@@ -25,17 +25,17 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
-//        if (employeeRepository.findByEmail("admin@example.com") == null) {
-//            Employee admin = new Employee(
-//                    "Admin Name",
-//                    "admin@example.com",
-//                    EncryptPasswordUtils.EncryptPasswordUtils("123456"),
-//                    "0123456789",
-//                    Employee.Role.Admin,
-//                    Employee.Status.active
-//            );
-//            employeeRepository.save(admin);
-//        }
+        if (employeeRepository.findByEmail("admin@example.com") == null) {
+            Employee admin = new Employee(
+                    "Admin Name",
+                    "admin@example.com",
+                    EncryptPasswordUtils.EncryptPasswordUtils("123456"),
+                    "0123456789",
+                    Employee.Role.Admin,
+                    Employee.Status.active
+            );
+            employeeRepository.save(admin);
+        }
 //
 //        if (employeeRepository.findByEmail("sales@example.com") == null) {
 //            Employee sales = new Employee(
