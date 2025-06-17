@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Quản lý nhà cung cấp</title>
@@ -9,11 +9,9 @@
     <link rel="stylesheet" th:href="@{/admin-navbar.css}"/>
     <link rel="stylesheet" th:href="@{/admin-common.css}"/>
     <style>
-
         .main-content {
             background-color: #f8f9fa;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .header-section {
@@ -71,7 +69,7 @@
             padding: 15px;
             font-weight: 600;
             text-align: center;
-            white-space: nowrap;
+            white-space: nowrap; /* Prevent text wrapping */
         }
 
         .table td {
@@ -205,9 +203,12 @@
 <body>
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+        <!-- Admin Sidebar -->
+        <div class="col-md-3 col-lg-2">
+            <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+        </div>
 
-        <!-- Nội dung chính -->
+        <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
                 <div class="header-section">
@@ -222,16 +223,16 @@
                             </p>
                         </div>
                         <div class="col-auto">
-                            <a class="btn btn-primary">
+                            <a th:href="@{/Supplier/add}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Thêm nhà cung cấp
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Phần tìm kiếm -->
+                <!-- Search Section -->
                 <div class="search-section">
-                    <form th:action="@{/supplier}" method="get">
+                    <form th:action="@{/Supplier}" method="get">
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="input-group">
@@ -266,18 +267,18 @@
                                 </button>
                             </div>
                             <div class="col-md-2">
-                                <a th:href="@{/supplier}" class="btn btn-outline-secondary w-100">
+                                <a th:href="@{/Supplier}" class="btn btn-outline-secondary w-100">
                                     <i class="fas fa-refresh"></i> Làm mới
                                 </a>
                             </div>
                         </div>
-                        <!-- Trường ẩn cho phân trang -->
+                        <!-- Hidden fields for pagination -->
                         <input type="hidden" name="page" value="0"/>
-                        <input type="hidden" name="size" value="2"/>
+                        <input type="hidden" name="size" value="6"/>
                     </form>
                 </div>
 
-                <!-- Bảng nhà cung cấp -->
+                <!-- Supplier Table -->
                 <div class="employee-table">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
@@ -318,14 +319,17 @@
                                         <button class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <a th:href="@{'/supplier/edit/' + ${s.suplierId}}"
+                                        <a th:href="@{'/Supplier/edit/' + ${s.suplierId}}"
                                            class="btn btn-sm btn-outline-warning"
                                            title="Chỉnh sửa">
                                             <i class="fas fa-edit"></i>
                                         </a>
+
                                     </div>
+
                                 </td>
                             </tr>
+                            <!-- Empty state -->
                             <tr th:if="${#lists.isEmpty(suppliers)}">
                                 <td colspan="6" class="text-center py-4">
                                     <div class="text-muted">
@@ -347,33 +351,33 @@
                     <ul class="pagination justify-content-center">
                         <li class="page-item">
                             <a class="page-link"
-                               th:href="@{/supplier(pageSupplier=0)}"
+                               th:href="@{/Supplier(pageSupplier=0)}"
                                th:classappend="${suppliers.number == 0} ? 'disabled' : ''">
                                 <i class="fas fa-angle-double-left"></i>
                             </a>
                         </li>
                         <li class="page-item">
                             <a class="page-link"
-                               th:href="@{/supplier(pageSupplier=${suppliers.number - 1})}"
+                               th:href="@{/Supplier(pageSupplier=${suppliers.number - 1})}"
                                th:classappend="${!suppliers.hasPrevious()} ? 'disabled' : ''">
                                 <i class="fas fa-angle-left"></i>
                             </a>
                         </li>
                         <th:block th:each="page, iterStat : ${#numbers.sequence(0, suppliers.totalPages - 1)}">
                             <li class="page-item" th:classappend="${page == suppliers.number} ? 'active' : ''">
-                                <a class="page-link" th:href="@{/supplier(pageSupplier=${page})}" th:text="${page + 1}"></a>
+                                <a class="page-link" th:href="@{/Supplier(pageSupplier=${page})}" th:text="${page + 1}"></a>
                             </li>
                         </th:block>
                         <li class="page-item">
                             <a class="page-link"
-                               th:href="@{/supplier(pageSupplier=${suppliers.number + 1})}"
+                               th:href="@{/Supplier(pageSupplier=${suppliers.number + 1})}"
                                th:classappend="${!suppliers.hasNext()} ? 'disabled' : ''">
                                 <i class="fas fa-angle-right"></i>
                             </a>
                         </li>
                         <li class="page-item">
                             <a class="page-link"
-                               th:href="@{/supplier(pageSupplier=${suppliers.totalPages - 1})}"
+                               th:href="@{/Supplier(pageSupplier=${suppliers.totalPages - 1})}"
                                th:classappend="${suppliers.number == suppliers.totalPages - 1} ? 'disabled' : ''">
                                 <i class="fas fa-angle-double-right"></i>
                             </a>

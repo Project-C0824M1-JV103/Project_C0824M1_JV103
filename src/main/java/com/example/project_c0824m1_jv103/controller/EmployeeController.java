@@ -126,18 +126,20 @@ public class EmployeeController extends BaseAdminController {
                                 @RequestParam(value = "size", defaultValue = "6") int size,
                                 Principal principal) {
 
+        // Lấy danh sách roles trừ Admin
         List<String> roles = Arrays.stream(Employee.Role.values())
+                .filter(r -> r != Employee.Role.Admin)
                 .map(Enum::name)
                 .toList();
         model.addAttribute("roles", roles);
 
-        // Create pageable without sorting
+        // Tạo pageable
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Employee> employeePage;
         boolean isSearch = (fullName != null && !fullName.isEmpty()) ||
-                          (phone != null && !phone.isEmpty()) ||
-                          (role != null && !role.isEmpty());
+                (phone != null && !phone.isEmpty()) ||
+                (role != null && !role.isEmpty());
 
         if (!isSearch) {
             employeePage = employeeService.findAllWithPaging(pageable);
@@ -149,14 +151,14 @@ public class EmployeeController extends BaseAdminController {
         model.addAttribute("listEmployee", employeePage.getContent());
         model.addAttribute("currentPage", "employee");
 
-        // Add pagination attributes
+        // Thêm các thuộc tính phân trang
         model.addAttribute("pageNumber", page);
         model.addAttribute("pageSize", size);
         model.addAttribute("totalPages", employeePage.getTotalPages());
         model.addAttribute("totalElements", employeePage.getTotalElements());
         model.addAttribute("isSearch", isSearch);
 
-        // Add search parameters for pagination links
+        // Thêm tham số tìm kiếm cho liên kết phân trang
         model.addAttribute("fullName", fullName);
         model.addAttribute("phone", phone);
         model.addAttribute("roleParam", role);

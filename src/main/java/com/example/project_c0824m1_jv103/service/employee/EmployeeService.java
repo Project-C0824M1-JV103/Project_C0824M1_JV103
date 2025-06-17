@@ -50,11 +50,18 @@ public class EmployeeService implements IEmployeeService {
     public Employee findByEmail(String email) {
         return employeeRepository.findByEmail(email);
     }
-
     @Override
     public Page<Employee> findAllWithPaging(Pageable pageable) {
-        return employeeRepository.findAll(pageable);
+        return employeeRepository.findAllNonAdminWithPaging(pageable);
     }
+    @Override
+    public Page<Employee> findAllNonAdminWithPaging(Pageable pageable) {
+        return employeeRepository.findAllNonAdminWithPaging(pageable);
+    }
+//    @Override
+//    public Page<Employee> findAllWithPaging(Pageable pageable) {
+//        return employeeRepository.findAll(pageable);
+//    }
 
     @Override
     public Page<Employee> searchEmployeesWithPaging(String fullName, String phone, String role, Pageable pageable) {

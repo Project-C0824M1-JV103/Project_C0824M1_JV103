@@ -1,10 +1,7 @@
 package com.example.project_c0824m1_jv103.controller;
 
-
-
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.model.Supplier;
-
 import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/supplier")
+@RequestMapping("/Supplier")
 public class SupplierController extends BaseAdminController {
 
     @Autowired
@@ -44,7 +41,7 @@ public class SupplierController extends BaseAdminController {
         return modelAndView;
     }
 
-    @GetMapping("/edit/{id}") // Removed redundant "/Supplier" since @RequestMapping handles it
+    @GetMapping("/edit/{id}")
     public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         Optional<Supplier> supplier = supplierService.findById(id);
         if (supplier.isPresent()) {
@@ -52,7 +49,7 @@ public class SupplierController extends BaseAdminController {
             return "supplier/edit";
         } else {
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp!");
-            return "redirect:/supplier"; // Fixed redirect to match case
+            return "redirect:/Supplier"; // Fixed redirect to match case
         }
     }
 
@@ -66,6 +63,6 @@ public class SupplierController extends BaseAdminController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi chỉnh sửa nhà cung cấp: " + e.getMessage());
         }
-        return "redirect:/supplier";
+        return "redirect:/Supplier";
     }
 }
