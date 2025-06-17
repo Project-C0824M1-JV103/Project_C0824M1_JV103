@@ -36,7 +36,7 @@ public class SecurityConfig {
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/Sale/**").hasAnyRole("SALES","ADMIN")
                         .requestMatchers("/Warehouse/**").hasAnyRole("WAREHOUSE","ADMIN")
                         .requestMatchers("/Supplier/**").hasAnyRole("ADMIN", "BUSINESS", "WAREHOUSE")
+                        .requestMatchers("/storage/**").hasAnyRole("ADMIN", "WAREHOUSE")
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

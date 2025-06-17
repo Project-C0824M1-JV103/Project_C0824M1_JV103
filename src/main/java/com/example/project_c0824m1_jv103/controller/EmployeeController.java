@@ -113,7 +113,7 @@ public class EmployeeController extends BaseAdminController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm nhân viên: " + e.getMessage());
         }
-
+        
         return "redirect:/employees";
     }
 
@@ -127,25 +127,55 @@ public class EmployeeController extends BaseAdminController {
                                 Principal principal) {
         
         List<String> roles = Arrays.stream(Employee.Role.values())
+                .filter(r -> r != Employee.Role.Admin)
                 .map(Enum::name)
                 .toList();
         model.addAttribute("roles", roles);
 
-        List<Employee> employees;
-        if ((fullName == null || fullName.isEmpty()) &&
-                (phone == null || phone.isEmpty()) &&
-                (role == null || role.isEmpty())) {
-            employees = employeeService.findAll();
+        // Tạo pageable
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Employee> employeePage;
+        boolean isSearch = (fullName != null && !fullName.isEmpty()) ||
+                (phone != null && !phone.isEmpty()) ||
+                (role != null && !role.isEmpty());
+
+        if (!isSearch) {
+            employeePage = employeeService.findAllWithPaging(pageable);
         } else {
-            employees = employeeService.searchEmployees(fullName, phone, role);
+            employeePage = employeeService.searchEmployeesWithPaging(fullName, phone, role, pageable);
         }
 
-        model.addAttribute("listEmployee", employees);
+        model.addAttribute("employeePage", employeePage);
+        model.addAttribute("listEmployee", employeePage.getContent());
         model.addAttribute("currentPage", "employee");
+
+        // Thêm các thuộc tính phân trang
+        model.addAttribute("pageNumber", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", employeePage.getTotalPages());
+        model.addAttribute("totalElements", employeePage.getTotalElements());
+        model.addAttribute("isSearch", isSearch);
+
+        // Thêm tham số tìm kiếm cho liên kết phân trang
+        model.addAttribute("fullName", fullName);
+        model.addAttribute("phone", phone);
+        model.addAttribute("roleParam", role);
+
         return "/employee/list_employee";
     }
 
-
+    // Add main listing endpoint
+//    @GetMapping({"", "/"})
+//    public String mainListEmployees(Model model,
+//                                    @RequestParam(value = "fullName", required = false) String fullName,
+//                                    @RequestParam(value = "phone", required = false) String phone,
+//                                    @RequestParam(value = "role", required = false) String role,
+//                                    @RequestParam(value = "page", defaultValue = "0") int page,
+//                                    @RequestParam(value = "size", defaultValue = "6") int size,
+//                                    Principal principal) {
+//        return listEmployees(model, fullName, phone, role, page, size, principal);
+//    }
 
     @PostMapping("/edit-employee")
     public String editEmployee(@Valid @ModelAttribute("employeeDto") EmployeeEditDto employeeDto,

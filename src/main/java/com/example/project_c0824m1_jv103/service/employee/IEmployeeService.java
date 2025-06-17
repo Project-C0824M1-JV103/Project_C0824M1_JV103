@@ -22,4 +22,6 @@ public interface IEmployeeService {
     Page<Employee> searchEmployeesWithPaging(String fullName, String phone, String role, Pageable pageable);
     Employee updateEmployeeInfo(EmployeePersonalDto employeePersonalDto);
     Employee findByPhone(String phone);
+
+    Page<Employee> findAllNonAdminWithPaging(Pageable pageable); // Thêm phương thức mới
 }
