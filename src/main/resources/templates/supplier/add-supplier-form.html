@@ -220,6 +220,12 @@
           <i class="fas fa-exclamation-triangle me-2"></i>
           <span th:text="${error}"></span>
         </div>
+        
+        <!-- Client Validation Error Message -->
+        <div id="clientValidationAlert" class="alert alert-danger" role="alert" style="display: none;">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <span>Vui lòng kiểm tra lại thông tin đã nhập</span>
+        </div>
 
         <!-- Form Section -->
         <div class="form-section">
@@ -482,14 +488,36 @@
   let emailValidationTimeout;
   let phoneValidationTimeout;
 
-  // Validate email
-  function validateEmail() {
+  // Validate email format
+  function validateEmailFormat() {
     const emailInput = document.querySelector('input[name="email"]');
     const emailValue = emailInput.value.trim();
     
     // Remove existing validation message
     removeValidationMessage(emailInput);
     
+    if (emailValue.length > 0) {
+      // Check if email has valid format
+      if (!isValidEmail(emailValue)) {
+        showValidationError(emailInput, 'Email phải có định dạng hợp lệ (ví dụ: example@domain.com)');
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Validate email (format + duplicate check)
+  function validateEmail() {
+    const emailInput = document.querySelector('input[name="email"]');
+    const emailValue = emailInput.value.trim();
+    
+    // First validate format
+    if (!validateEmailFormat()) {
+      return;
+    }
+    
+    // Then check for duplicates if format is valid
     if (emailValue.length > 0 && isValidEmail(emailValue)) {
       clearTimeout(emailValidationTimeout);
       emailValidationTimeout = setTimeout(() => {
@@ -507,8 +535,8 @@
     }
   }
 
-  // Validate phone number
-  function validatePhoneNumber() {
+  // Validate phone number format
+  function validatePhoneNumberFormat() {
     const phoneInput = document.querySelector('input[name="phoneNumber"]');
     const phoneValue = phoneInput.value.trim();
     
@@ -516,6 +544,34 @@
     removeValidationMessage(phoneInput);
     
     if (phoneValue.length > 0) {
+      // Check if phone number contains only digits
+      if (!/^\d+$/.test(phoneValue)) {
+        showValidationError(phoneInput, 'Số điện thoại chỉ được chứa các chữ số');
+        return false;
+      }
+      
+      // Check phone number length (10-11 digits)
+      if (phoneValue.length < 10 || phoneValue.length > 11) {
+        showValidationError(phoneInput, 'Số điện thoại phải có từ 10-11 chữ số');
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Validate phone number (format + duplicate check)
+  function validatePhoneNumber() {
+    const phoneInput = document.querySelector('input[name="phoneNumber"]');
+    const phoneValue = phoneInput.value.trim();
+    
+    // First validate format
+    if (!validatePhoneNumberFormat()) {
+      return;
+    }
+    
+    // Then check for duplicates if format is valid
+    if (phoneValue.length >= 10 && phoneValue.length <= 11) {
       clearTimeout(phoneValidationTimeout);
       phoneValidationTimeout = setTimeout(() => {
         fetch('/Supplier/check-phone?phoneNumber=' + encodeURIComponent(phoneValue))
@@ -564,24 +620,39 @@
   document.addEventListener('DOMContentLoaded', function() {
     const emailInput = document.querySelector('input[name="email"]');
     const phoneInput = document.querySelector('input[name="phoneNumber"]');
+    const form = document.querySelector('form');
     
     if (emailInput) {
-      emailInput.addEventListener('input', validateEmail);
+      emailInput.addEventListener('input', validateEmailFormat);
       emailInput.addEventListener('blur', validateEmail);
     }
     
     if (phoneInput) {
-      phoneInput.addEventListener('input', validatePhoneNumber);
+      phoneInput.addEventListener('input', validatePhoneNumberFormat);
       phoneInput.addEventListener('blur', validatePhoneNumber);
     }
-  });
-
-  // Form submission validation
-  document.querySelector('form').addEventListener('submit', function(e) {
-    const hasClientErrors = document.querySelectorAll('.client-validation-feedback').length > 0;
-    if (hasClientErrors) {
-      e.preventDefault();
-      alert('Vui lòng sửa các lỗi validation trước khi submit form');
+    
+    // Form submission validation
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const hasClientErrors = document.querySelectorAll('.client-validation-feedback').length > 0;
+        const alertDiv = document.getElementById('clientValidationAlert');
+        
+        if (hasClientErrors) {
+          e.preventDefault();
+          // Show error alert
+          alertDiv.style.display = 'block';
+          // Scroll to top to show the alert
+          window.scrollTo({top: 0, behavior: 'smooth'});
+          // Hide alert after 5 seconds
+          setTimeout(() => {
+            alertDiv.style.display = 'none';
+          }, 5000);
+        } else {
+          // Hide alert if no errors
+          alertDiv.style.display = 'none';
+        }
+      });
     }
   });
 </script>
