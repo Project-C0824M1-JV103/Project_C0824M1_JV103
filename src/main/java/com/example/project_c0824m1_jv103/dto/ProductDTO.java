@@ -47,6 +47,7 @@ public class ProductDTO {
     private Integer quantity;
     
     // Cho upload ảnh
+    @NotNull(message = "Ảnh không được để trống")
     private List<MultipartFile> imageFiles;
     private List<String> existingImageUrls;
     

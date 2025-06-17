@@ -13,6 +13,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
   <link rel="stylesheet" th:href="@{/admin-navbar.css}">
   <link rel="stylesheet" th:href="@{/admin-common.css}">
+  <link rel="stylesheet" th:href="@{/css/image-validation.css}">
   
   <!-- CKEditor 5 -->
   <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
@@ -543,7 +544,8 @@
                             <small class="text-muted">
                               <i class="fas fa-info-circle me-1"></i>
                               Hỗ trợ: JPG, PNG, GIF<br/>
-                              Tối đa 5MB mỗi file
+                              Tối đa 4 ảnh, 5MB mỗi file<br/>
+                              Không chọn ảnh trùng tên
                             </small>
                           </div>
                         </div>
@@ -580,11 +582,20 @@
 <!-- Script xem trước hình ảnh -->
 <script>
   let selectedFiles = []; // Track selected files
+  const MAX_IMAGES = 4;
 
   // Preview ảnh được chọn
   document.getElementById('imageFiles').addEventListener('change', function(e) {
     const files = e.target.files;
     const preview = document.getElementById('imagePreview');
+    
+    // Validate before adding files
+    const validationResult = validateNewImages(files);
+    if (validationResult.error) {
+      alert(validationResult.error);
+      e.target.value = ''; // Clear input
+      return;
+    }
     
     // Add new files to selectedFiles array
     for (let i = 0; i < files.length; i++) {
@@ -629,7 +640,7 @@
 
       // Cập nhật text
       const uploadArea = document.querySelector('.image-upload-area p');
-      uploadArea.textContent = `Đã chọn ${selectedFiles.length} ảnh`;
+      uploadArea.textContent = `Đã chọn ${selectedFiles.length}/${MAX_IMAGES} ảnh`;
     } else {
       // Reset upload area text
       const uploadArea = document.querySelector('.image-upload-area p');
@@ -642,6 +653,61 @@
       selectedFiles.splice(index, 1); // Remove file from array
       updatePreview(); // Refresh preview
     }
+  }
+
+  // Validate new images before adding
+  function validateNewImages(newFiles) {
+    const currentCount = selectedFiles.length;
+    const newCount = newFiles.length;
+    const totalCount = currentCount + newCount;
+    
+    // Check total count limit
+    if (totalCount > MAX_IMAGES) {
+      return {
+        error: `Chỉ được chọn tối đa ${MAX_IMAGES} ảnh. Hiện tại đã có ${currentCount} ảnh, bạn đang chọn thêm ${newCount} ảnh.`
+      };
+    }
+    
+    // Check for duplicate files
+    const existingFileNames = selectedFiles.map(file => file.name.toLowerCase());
+    const newFileNames = [];
+    
+    for (let i = 0; i < newFiles.length; i++) {
+      const fileName = newFiles[i].name.toLowerCase();
+      
+      // Check if already selected
+      if (existingFileNames.includes(fileName)) {
+        return {
+          error: `Ảnh "${newFiles[i].name}" đã được chọn trước đó.`
+        };
+      }
+      
+      // Check for duplicates in new files
+      if (newFileNames.includes(fileName)) {
+        return {
+          error: `Bạn đang chọn ảnh "${newFiles[i].name}" nhiều lần.`
+        };
+      }
+      
+      newFileNames.push(fileName);
+      
+      // Check file size (5MB max)
+      if (newFiles[i].size > 5 * 1024 * 1024) {
+        return {
+          error: `Ảnh "${newFiles[i].name}" có kích thước quá lớn (tối đa 5MB).`
+        };
+      }
+      
+      // Check file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(newFiles[i].type)) {
+        return {
+          error: `Ảnh "${newFiles[i].name}" không đúng định dạng. Chỉ chấp nhận JPG, PNG, GIF.`
+        };
+      }
+    }
+    
+    return { error: null }; // Valid
   }
 
   // Before form submit, create new FormData with selected files
@@ -679,6 +745,13 @@
     this.style.borderColor = '#dee2e6';
     
     const files = e.dataTransfer.files;
+    
+    // Validate before adding files
+    const validationResult = validateNewImages(files);
+    if (validationResult.error) {
+      alert(validationResult.error);
+      return;
+    }
     
     // Add dropped files to selectedFiles array
     for (let i = 0; i < files.length; i++) {
