@@ -40,6 +40,7 @@ public class SupplierController extends BaseAdminController {
         modelAndView.addObject("suplierName", suplierName);
         modelAndView.addObject("phoneNumber", phoneNumber);
         modelAndView.addObject("email", email);
+        modelAndView.addObject("currentPage", "supplier");
         return modelAndView;
     }
 

@@ -32,6 +32,7 @@ public class StorageController extends BaseAdminController {
     @GetMapping("/export")
     public String showExportForm(Model model) {
         model.addAttribute("exportDTO", new StorageExportDTO());
+        model.addAttribute("currentPage", "export");
         return "storage/export-form";
     }
 
@@ -46,6 +47,7 @@ public class StorageController extends BaseAdminController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", products.getTotalPages());
+        model.addAttribute("currentPage", "export");
         return "storage/product-selection";
     }
 
@@ -87,6 +89,7 @@ public class StorageController extends BaseAdminController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", exportRecords.getTotalPages());
         model.addAttribute("totalElements", exportRecords.getTotalElements());
+        model.addAttribute("currentPage", "export");
         return "storage/export-history";
     }
 } 

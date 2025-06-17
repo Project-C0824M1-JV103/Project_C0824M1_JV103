@@ -32,12 +32,12 @@ public class CustomerController extends BaseAdminController  {
     public String showListCustomer(Model model,
                                    Principal principal,
                                    @RequestParam(defaultValue = "0") int page,
-                                   @RequestParam(defaultValue = "2") int size,
+                                   @RequestParam(defaultValue = "6") int size,
                                    @RequestParam(required = false) String customerName,
                                    @RequestParam(required = false) String phoneNumber) {
 
         if (page < 0) page = 0;
-        if (size <= 0) size = 2;
+        if (size <= 0) size = 6;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("customerId").descending());
         Page<Customer> customerPage;
