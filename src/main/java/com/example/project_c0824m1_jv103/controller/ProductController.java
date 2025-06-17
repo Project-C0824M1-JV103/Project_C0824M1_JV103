@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,32 +33,57 @@ public class ProductController extends BaseAdminController {
     public String listProducts(
             Model model,
             Principal principal,
-            @RequestParam(value = "field", required = false, defaultValue = "productName") String field,
-            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "productName", required = false) String productName,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "minQuantity", required = false) Integer minQuantity,
+            @RequestParam(value = "maxQuantity", required = false) Integer maxQuantity,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page
     ) {
         int pageSize = 5;
-        Pageable pageable = PageRequest.of(page, pageSize);
+        // Sắp xếp theo productId giảm dần để sản phẩm mới lên đầu
+        Sort sort = Sort.by(Sort.Direction.DESC, "productId");
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
         Page<ProductDTO> productPage;
         
-        if (keyword != null && !keyword.isEmpty()) {
-            productPage = productService.searchProducts(keyword, field, pageable);
+        // Kiểm tra xem có điều kiện tìm kiếm nào không
+        boolean hasSearchCriteria = productName != null || minPrice != null || maxPrice != null 
+                                || minQuantity != null || maxQuantity != null;
+        
+        if (hasSearchCriteria) {
+            productPage = productService.searchProducts(
+                productName,
+                minPrice,
+                maxPrice,
+                minQuantity,
+                maxQuantity,
+                pageable
+            );
         } else {
             productPage = productService.findAll(pageable);
         }
         
+        // Thêm các thuộc tính vào model
         model.addAttribute("productPage", productPage);
-        model.addAttribute("field", field);
-        model.addAttribute("keyword", keyword);
+        model.addAttribute("productName", productName);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("minQuantity", minQuantity);
+        model.addAttribute("maxQuantity", maxQuantity);
         model.addAttribute("currentPage", "product");
+        
+        // Thêm thông tin tìm kiếm
+        if (hasSearchCriteria) {
+            model.addAttribute("searchResultsCount", productPage.getTotalElements());
+            model.addAttribute("hasResults", productPage.getTotalElements() > 0);
+        }
+        
         return "product/list-product";
     }
 
     @GetMapping("/add")
     public String showCreateProductForm(Model model, Principal principal) {
         model.addAttribute("productDTO", new ProductDTO());
-        model.addAttribute("categories", productService.getAllCategories());
-        model.addAttribute("suppliers", productService.getAllSuppliers());
         model.addAttribute("currentPage", "product");
         return "product/add-product-form";
     }
@@ -68,23 +94,15 @@ public class ProductController extends BaseAdminController {
             BindingResult bindingResult,
             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> images,
             @RequestParam(value = "captions", required = false) List<String> captions,
-            @RequestParam(value = "deletedImageUrls", required = false) String deletedImageUrls,
             Model model,
             RedirectAttributes redirectAttributes) {
         
         if (bindingResult.hasErrors()) {
             model.addAttribute("productDTO", productDTO);
-            model.addAttribute("categories", productService.getAllCategories());
-            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         }
-
+        
         try {
-            // Chuyển string thành list
-            List<String> deletedUrls = new ArrayList<>();
-            if (deletedImageUrls != null && !deletedImageUrls.trim().isEmpty()) {
-                deletedUrls = Arrays.asList(deletedImageUrls.split(","));
-            }
             productService.createProduct(productDTO, 
                 images != null ? images : new ArrayList<>(), 
                 captions != null ? captions : new ArrayList<>());
@@ -94,14 +112,10 @@ public class ProductController extends BaseAdminController {
         } catch (IOException e) {
             model.addAttribute("error", "Lỗi khi upload ảnh: " + e.getMessage());
             model.addAttribute("productDTO", productDTO);
-            model.addAttribute("categories", productService.getAllCategories());
-            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi khi thêm sản phẩm: " + e.getMessage());
             model.addAttribute("productDTO", productDTO);
-            model.addAttribute("categories", productService.getAllCategories());
-            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/add-product-form";
         }
     }
@@ -112,8 +126,6 @@ public class ProductController extends BaseAdminController {
             ProductDTO productDTO = productService.findById(id);
             if (productDTO != null) {
                 model.addAttribute("productDTO", productDTO);
-                model.addAttribute("categories", productService.getAllCategories());
-                model.addAttribute("suppliers", productService.getAllSuppliers());
                 model.addAttribute("currentPage", "product");
                 return "product/edit-product-form";
             } else {
@@ -140,8 +152,6 @@ public class ProductController extends BaseAdminController {
         if (bindingResult.hasErrors()) {
             productDTO.setProductId(id.intValue());
             model.addAttribute("productDTO", productDTO);
-            model.addAttribute("categories", productService.getAllCategories());
-            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/edit-product-form";
         }
         
@@ -163,8 +173,6 @@ public class ProductController extends BaseAdminController {
             model.addAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
             productDTO.setProductId(id.intValue());
             model.addAttribute("productDTO", productDTO);
-            model.addAttribute("categories", productService.getAllCategories());
-            model.addAttribute("suppliers", productService.getAllSuppliers());
             return "product/edit-product-form";
         }
     }

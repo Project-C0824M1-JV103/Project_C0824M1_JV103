@@ -1,8 +1,6 @@
 package com.example.project_c0824m1_jv103.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 public class EmployeeCreateDto {
 
@@ -12,14 +10,12 @@ public class EmployeeCreateDto {
     private String fullName;
 
     @NotBlank(message = "Nhập email người dùng!")
-    @Email(message = "Email không đúng định dạng!")
     private String email;
 
     @NotBlank(message = "Nhập mật khẩu!")
     private String password;
 
     @NotBlank(message = "Nhập số điện thoại!")
-    @Pattern(regexp = "^[0-9]{10,11}$", message = "Số điện thoại phải có 10 hoặc 11 chữ số!")
     private String phone;
 
     @NotBlank(message = "Chọn vị trí")

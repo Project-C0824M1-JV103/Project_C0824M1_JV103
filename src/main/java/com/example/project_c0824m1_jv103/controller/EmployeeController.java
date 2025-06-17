@@ -105,7 +105,7 @@ public class EmployeeController extends BaseAdminController {
         if (employeeDto.getRole() != null) {
             employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
         }
-
+        
         try {
 
             employeeService.save(employee);
@@ -113,7 +113,7 @@ public class EmployeeController extends BaseAdminController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm nhân viên: " + e.getMessage());
         }
-
+        
         return "redirect:/employees";
     }
 
@@ -125,8 +125,7 @@ public class EmployeeController extends BaseAdminController {
                                 @RequestParam(value = "page", defaultValue = "0") int page,
                                 @RequestParam(value = "size", defaultValue = "6") int size,
                                 Principal principal) {
-
-        // Lấy danh sách roles trừ Admin
+        
         List<String> roles = Arrays.stream(Employee.Role.values())
                 .filter(r -> r != Employee.Role.Admin)
                 .map(Enum::name)
