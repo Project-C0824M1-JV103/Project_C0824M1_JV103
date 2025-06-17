@@ -1,5 +1,6 @@
 package com.example.project_c0824m1_jv103.service.employee;
 
+import com.example.project_c0824m1_jv103.dto.EmployeePersonalDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.repository.IEmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,15 +50,42 @@ public class EmployeeService implements IEmployeeService {
     public Employee findByEmail(String email) {
         return employeeRepository.findByEmail(email);
     }
-    
     @Override
     public Page<Employee> findAllWithPaging(Pageable pageable) {
-        return employeeRepository.findAll(pageable);
+        return employeeRepository.findAllNonAdminWithPaging(pageable);
     }
-    
+    @Override
+    public Page<Employee> findAllNonAdminWithPaging(Pageable pageable) {
+        return employeeRepository.findAllNonAdminWithPaging(pageable);
+    }
+//    @Override
+//    public Page<Employee> findAllWithPaging(Pageable pageable) {
+//        return employeeRepository.findAll(pageable);
+//    }
+
     @Override
     public Page<Employee> searchEmployeesWithPaging(String fullName, String phone, String role, Pageable pageable) {
         Employee.Role roleEnum = (role == null || role.isEmpty()) ? null : Employee.Role.valueOf(role);
         return employeeRepository.searchEmployeesWithPaging(fullName, phone, roleEnum, pageable);
     }
+
+    @Override
+    public Employee updateEmployeeInfo(EmployeePersonalDto employeePersonalDto) {
+        Employee existingEmployee = employeeRepository.findById(employeePersonalDto.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee không tồn tại."));
+
+
+        existingEmployee.setFullName(employeePersonalDto.getFullName());
+        existingEmployee.setEmail(employeePersonalDto.getEmail());
+        existingEmployee.setPhone(employeePersonalDto.getPhone());
+
+        return employeeRepository.save(existingEmployee);
+    }
+
+    @Override
+    public Employee findByPhone(String phone) {
+        return employeeRepository.findByPhone(phone);
+    }
+
+
 }

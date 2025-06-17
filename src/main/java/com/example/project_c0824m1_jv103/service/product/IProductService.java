@@ -24,6 +24,8 @@ public interface IProductService {
     // Tìm sản phẩm theo ID
     ProductDTO findById(Long id);
 
+    Product findProductByName(String name);
+
     // Cập nhật sản phẩm
     ProductDTO updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> imageFiles, List<String> captions, List<String> deletedImageUrls) throws IOException;
 

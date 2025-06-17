@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,7 +36,7 @@ public class SecurityConfig {
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -56,10 +57,12 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/*.css", "/css/**", "/js/**", "/favicon.ico").permitAll() // Các đường dẫn không cần login
-                        .requestMatchers("/Admin/**").hasRole("ADMIN")
-                        .requestMatchers("/sales/**").hasRole("SALES")
-                        .requestMatchers("/business/**").hasRole("BUSINESS")
-                        .requestMatchers("/Admin/warehouse/**").hasRole("WAREHOUSE")
+                        .requestMatchers("/Customer/**").hasAnyRole("ADMIN","SALES")
+                        .requestMatchers("/employees/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/product/**").hasAnyRole("ADMIN","SALES","BUSINESS")
+                        .requestMatchers("/Sale/**").hasAnyRole("SALES","ADMIN")
+                        .requestMatchers("/Warehouse/**").hasAnyRole("WAREHOUSE","ADMIN")
+                        .requestMatchers("/Supplier/**").hasAnyRole("ADMIN", "BUSINESS", "WAREHOUSE")
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
@@ -87,6 +90,7 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedPage("/error/403") // đường dẫn khi sử dụng chức năng ngoài phạm vi của role
                 )
                 .requestCache(RequestCacheConfigurer::disable
                 );

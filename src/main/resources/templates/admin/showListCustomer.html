@@ -225,7 +225,7 @@
 
             <!-- Search Section -->
             <div class="search-section">
-              <form th:action="@{/Admin/Customer}" method="get">
+              <form th:action="@{/Customer}" method="get">
                 <div class="row g-3">
                   <div class="col-md-3">
                     <div class="input-group">
@@ -262,7 +262,7 @@
                   </div>
                   <div class="col-md-2">
                     <a
-                      th:href="@{/Admin/Customer}"
+                      th:href="@{/Customer}"
                       class="btn btn-outline-secondary w-100"
                     >
                       <i class="fas fa-refresh"></i> Làm mới
@@ -348,7 +348,7 @@
                             <i class="fas fa-eye"></i>
                           </button>
                           <a
-                            th:href="@{'/Admin/Customer/edit/' + ${customer.customerId}}"
+                            th:href="@{'/Customer/edit/' + ${customer.customerId}}"
                             class="btn btn-sm btn-outline-warning"
                             title="Chỉnh sửa"
                           >
@@ -397,7 +397,7 @@
                   >
                     <a
                             class="page-link"
-                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=0, size=${pageSize})} : @{/Admin/Customer(page=0, size=${pageSize})}"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=0, size=${pageSize})} : @{/Customer(page=0, size=${pageSize})}"
                     >
                       <i class="fas fa-angle-double-left"></i>
                     </a>
@@ -410,7 +410,7 @@
                   >
                     <a
                             class="page-link"
-                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber - 1}, size=${pageSize})} : @{/Admin/Customer(page=${pageNumber - 1}, size=${pageSize})}"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber - 1}, size=${pageSize})} : @{/Customer(page=${pageNumber - 1}, size=${pageSize})}"
                     >
                       <i class="fas fa-angle-left"></i>
                     </a>
@@ -425,7 +425,7 @@
                   >
                     <a
                             class="page-link"
-                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNum}, size=${pageSize})} : @{/Admin/Customer(page=${pageNum}, size=${pageSize})}"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNum}, size=${pageSize})} : @{/Customer(page=${pageNum}, size=${pageSize})}"
                             th:text="${pageNum + 1}"
                     ></a>
                   </li>
@@ -437,7 +437,7 @@
                   >
                     <a
                             class="page-link"
-                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber + 1}, size=${pageSize})} : @{/Admin/Customer(page=${pageNumber + 1}, size=${pageSize})}"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${pageNumber + 1}, size=${pageSize})} : @{/Customer(page=${pageNumber + 1}, size=${pageSize})}"
                     >
                       <i class="fas fa-angle-right"></i>
                     </a>
@@ -450,7 +450,7 @@
                   >
                     <a
                             class="page-link"
-                            th:href="${isSearch} ? @{/Admin/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${totalPages - 1}, size=${pageSize})} : @{/Admin/Customer(page=${totalPages - 1}, size=${pageSize})}"
+                            th:href="${isSearch} ? @{/Customer(customerName=${customerName}, phoneNumber=${phoneNumber}, page=${totalPages - 1}, size=${pageSize})} : @{/Customer(page=${totalPages - 1}, size=${pageSize})}"
                     >
                       <i class="fas fa-angle-double-right"></i>
                     </a>

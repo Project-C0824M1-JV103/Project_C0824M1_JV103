@@ -23,21 +23,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/Admin")
+@RequestMapping("/Customer")
 public class CustomerController extends BaseAdminController  {
     @Autowired
     private ICustomerService iCustomerService;
 
-    @GetMapping("/Customer")
+    @GetMapping()
     public String showListCustomer(Model model,
                                    Principal principal,
                                    @RequestParam(defaultValue = "0") int page,
-                                   @RequestParam(defaultValue = "2") int size,
+                                   @RequestParam(defaultValue = "6") int size,
                                    @RequestParam(required = false) String customerName,
                                    @RequestParam(required = false) String phoneNumber) {
 
         if (page < 0) page = 0;
-        if (size <= 0) size = 2;
+        if (size <= 0) size = 6;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("customerId").descending());
         Page<Customer> customerPage;
@@ -79,7 +79,7 @@ public class CustomerController extends BaseAdminController  {
         return "admin/showListCustomer";
     }
 
-    @GetMapping("/Customer/edit/{id}")
+    @GetMapping("/edit/{id}")
     public String showEditCustomerForm(@PathVariable("id") Integer id, Model model, Principal principal) {
         Optional<Customer> customer = iCustomerService.findById(id);
         if (customer.isPresent()) {
@@ -100,11 +100,11 @@ public class CustomerController extends BaseAdminController  {
             model.addAttribute("currentPage", "customer");
             return "admin/editCustomer";
         } else {
-            return "redirect:/Admin/Customer?error=notfound";
+            return "redirect:/Customer?error=notfound";
         }
     }
 
-    @PostMapping("/Customer/edit/{id}")
+    @PostMapping("/edit/{id}")
     public String updateCustomer(@PathVariable("id") Integer id,
                                  @Valid @ModelAttribute("customer") CustomerSaleDto customerDto,
                                  BindingResult bindingResult,
@@ -140,10 +140,10 @@ public class CustomerController extends BaseAdminController  {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật thông tin khách hàng!");
         }
-        return "redirect:/Admin/Customer";
+        return "redirect:/Customer";
     }
 
-    @PostMapping("/Customer/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteCustomer(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes, Principal principal) {
         try {
             iCustomerService.deleteById(id);
@@ -151,6 +151,6 @@ public class CustomerController extends BaseAdminController  {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa khách hàng này!");
         }
-        return "redirect:/Admin/Customer";
+        return "redirect:/Customer";
     }
     }

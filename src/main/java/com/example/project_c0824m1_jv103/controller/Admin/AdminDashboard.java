@@ -18,11 +18,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/Admin")
+@RequestMapping()
 public class AdminDashboard extends BaseAdminController {
     
     @GetMapping("/dashboard")
-    public String dashboardAdmin(){
+    public String dashboardAdmin(Model model) {
+        model.addAttribute("currentPage", "dashboard");
         return "admin/dashboard";
     }
 
