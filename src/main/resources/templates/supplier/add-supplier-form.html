@@ -220,6 +220,12 @@
           <i class="fas fa-exclamation-triangle me-2"></i>
           <span th:text="${error}"></span>
         </div>
+        
+        <!-- Client Validation Error Message -->
+        <div id="clientValidationAlert" class="alert alert-danger" role="alert" style="display: none;">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <span>Vui lòng kiểm tra lại thông tin đã nhập</span>
+        </div>
 
         <!-- Form Section -->
         <div class="form-section">
@@ -630,9 +636,21 @@
     if (form) {
       form.addEventListener('submit', function(e) {
         const hasClientErrors = document.querySelectorAll('.client-validation-feedback').length > 0;
+        const alertDiv = document.getElementById('clientValidationAlert');
+        
         if (hasClientErrors) {
           e.preventDefault();
-          alert('Vui lòng sửa các lỗi validation trước khi submit form');
+          // Show error alert
+          alertDiv.style.display = 'block';
+          // Scroll to top to show the alert
+          window.scrollTo({top: 0, behavior: 'smooth'});
+          // Hide alert after 5 seconds
+          setTimeout(() => {
+            alertDiv.style.display = 'none';
+          }, 5000);
+        } else {
+          // Hide alert if no errors
+          alertDiv.style.display = 'none';
         }
       });
     }
