@@ -1,5 +1,6 @@
 package com.example.project_c0824m1_jv103.controller;
 
+import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
 import com.example.project_c0824m1_jv103.model.Product;
@@ -17,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/storage")
-public class StorageController {
+public class StorageController extends BaseAdminController {
 
     @Autowired
     private IStorageService storageService;
