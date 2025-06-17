@@ -127,17 +127,18 @@ public class EmployeeController extends BaseAdminController {
                                 Principal principal) {
         
         List<String> roles = Arrays.stream(Employee.Role.values())
+                .filter(r -> r != Employee.Role.Admin)
                 .map(Enum::name)
                 .toList();
         model.addAttribute("roles", roles);
 
-        // Create pageable without sorting
+        // Tạo pageable
         Pageable pageable = PageRequest.of(page, size);
-        
+
         Page<Employee> employeePage;
         boolean isSearch = (fullName != null && !fullName.isEmpty()) ||
-                          (phone != null && !phone.isEmpty()) ||
-                          (role != null && !role.isEmpty());
+                (phone != null && !phone.isEmpty()) ||
+                (role != null && !role.isEmpty());
 
         if (!isSearch) {
             employeePage = employeeService.findAllWithPaging(pageable);
@@ -148,19 +149,19 @@ public class EmployeeController extends BaseAdminController {
         model.addAttribute("employeePage", employeePage);
         model.addAttribute("listEmployee", employeePage.getContent());
         model.addAttribute("currentPage", "employee");
-        
-        // Add pagination attributes
+
+        // Thêm các thuộc tính phân trang
         model.addAttribute("pageNumber", page);
         model.addAttribute("pageSize", size);
         model.addAttribute("totalPages", employeePage.getTotalPages());
         model.addAttribute("totalElements", employeePage.getTotalElements());
         model.addAttribute("isSearch", isSearch);
-        
-        // Add search parameters for pagination links
+
+        // Thêm tham số tìm kiếm cho liên kết phân trang
         model.addAttribute("fullName", fullName);
         model.addAttribute("phone", phone);
         model.addAttribute("roleParam", role);
-        
+
         return "/employee/list_employee";
     }
 
@@ -182,6 +183,18 @@ public class EmployeeController extends BaseAdminController {
                                Model model,
                                RedirectAttributes redirectAttributes,
                                Principal principal) {
+        Employee employee = employeeService.findById(employeeDto.getEmployeeId());
+
+        Employee emailCheck = employeeService.findByEmail(employeeDto.getEmail());
+        if (emailCheck != null && !emailCheck.getEmployeeId().equals(employee.getEmployeeId())) {
+            bindingResult.rejectValue("email", "errorMessage", "Email đã được sử dụng.");
+        }
+
+        Employee phoneCheck = employeeService.findByPhone(employeeDto.getPhone());
+        if (phoneCheck != null && !phoneCheck.getEmployeeId().equals(employee.getEmployeeId())) {
+            bindingResult.rejectValue("phone", "errorMessage", "Số điện thoại đã được sử dụng.");
+        }
+
         if (bindingResult.hasErrors()) {
             List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
 
@@ -194,7 +207,7 @@ public class EmployeeController extends BaseAdminController {
             return "employee/edit-employee-form";
         }
 
-        Employee employee = employeeService.findById(employeeDto.getEmployeeId());
+
         BeanUtils.copyProperties(employeeDto, employee);
         employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
         employeeService.save(employee);

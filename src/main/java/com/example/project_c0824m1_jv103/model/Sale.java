@@ -13,27 +13,27 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sale_id")
     private Integer saleId;
-    
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
-    
+
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
-    
+
     @Column(name = "sale_date", nullable = false)
     private LocalDateTime saleDate = LocalDateTime.now();
-    
+
     @Column(name = "amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
-    
+
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
     private List<SaleDetails> saleDetails;
 
     @Column(name = "method", nullable = false)
     private String paymentMethod;
-    
+
     // Constructors
     public Sale() {}
 
@@ -51,47 +51,47 @@ public class Sale {
     public Integer getSaleId() {
         return saleId;
     }
-    
+
     public void setSaleId(Integer saleId) {
         this.saleId = saleId;
     }
-    
+
     public Customer getCustomer() {
         return customer;
     }
-    
+
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
-    
+
     public Employee getEmployee() {
         return employee;
     }
-    
+
     public void setEmployee(Employee employee) {
         this.employee = employee;
     }
-    
+
     public LocalDateTime getSaleDate() {
         return saleDate;
     }
-    
+
     public void setSaleDate(LocalDateTime saleDate) {
         this.saleDate = saleDate;
     }
-    
+
     public BigDecimal getAmount() {
         return amount;
     }
-    
+
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-    
+
     public List<SaleDetails> getSaleDetails() {
         return saleDetails;
     }
-    
+
     public void setSaleDetails(List<SaleDetails> saleDetails) {
         this.saleDetails = saleDetails;
     }
