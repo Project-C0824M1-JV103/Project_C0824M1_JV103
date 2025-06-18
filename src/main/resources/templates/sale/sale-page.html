@@ -163,7 +163,8 @@
                 </div>
 
                 <div class="search-section">
-                    <h4 class="section-title">Bán hàng</h4>
+                    <h4 class="section-title">
+                        <i class="fas fa-shopping-cart"></i> Bán hàng</h4>
                     <form th:action="@{/Sale/create}" th:object="${saleDto}" method="post">
                         <input type="hidden" name="employeeName" th:value="${currentUser != null ? currentUser.email : ''}">
                         <!-- Thông tin khách hàng -->

@@ -44,7 +44,7 @@ public class SupplierController extends BaseAdminController {
             @RequestParam(name = "suplierName", required = false) String suplierName,
             @RequestParam(name = "phoneNumber", required = false) String phoneNumber,
             @RequestParam(name = "email", required = false) String email) {
-        Pageable pageable = PageRequest.of(page, 3);
+        Pageable pageable = PageRequest.of(page, 6);
         ModelAndView modelAndView = new ModelAndView("supplier/list-supplier");
         modelAndView.addObject("suppliers", supplierService.findByCriteria(suplierName, phoneNumber, email, pageable));
         modelAndView.addObject("suplierName", suplierName);

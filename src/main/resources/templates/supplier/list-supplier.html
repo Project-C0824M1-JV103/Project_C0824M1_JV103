@@ -219,7 +219,7 @@
                                 Quản lý nhà cung cấp
                             </h2>
                             <p class="text-muted mb-0">
-                                Danh sách tất cả nhà cung cấp trong hệ thống
+                                Danh sách nhà cung cấp
                             </p>
                         </div>
                         <div class="col-auto">
@@ -246,7 +246,7 @@
                 <div class="search-section">
                     <form th:action="@{/Supplier}" method="get">
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="input-group">
                                     <span class="input-group-text">
                                         <i class="fas fa-building"></i>
@@ -255,6 +255,7 @@
                                            placeholder="Tên nhà cung cấp..." th:value="${param.suplierName}"/>
                                 </div>
                             </div>
+
                             <div class="col-md-3">
                                 <div class="input-group">
                                     <span class="input-group-text">
@@ -264,6 +265,7 @@
                                            placeholder="Số điện thoại..." th:value="${param.phoneNumber}"/>
                                 </div>
                             </div>
+
                             <div class="col-md-3">
                                 <div class="input-group">
                                     <span class="input-group-text">
@@ -275,7 +277,7 @@
                             </div>
                             <div class="col-md-2">
                                 <button type="submit" class="btn btn-primary w-100">
-                                    Tìm kiếm
+                                    <i class="fas fa-search"></i> Tìm kiếm
                                 </button>
                             </div>
                             <div class="col-md-2">
@@ -297,10 +299,10 @@
                             <thead>
                             <tr>
                                 <th>STT</th>
-                                <th>Tên Nhà Cung Cấp</th>
-                                <th>Địa Chỉ</th>
-                                <th>Số Điện Thoại</th>
-                                <th>Hình Ảnh</th>
+                                <th>Thông tin nhà cung cấp</th>
+                                <th>Địa chỉ</th>
+                                <th>Số điện thoại</th>
+                                <th>Hình ảnh</th>
                                 <th>Thao tác</th>
                             </tr>
                             </thead>
@@ -315,7 +317,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td th:text="${s.address ?: 'N/A'}"></td>
+                                <td style="text-align: left" th:text="${s.address ?: 'N/A'}"></td>
                                 <td th:text="${s.phoneNumber ?: 'N/A'}"></td>
                                 <td>
                                     <img
@@ -342,13 +344,17 @@
                                 </td>
                             </tr>
                             <!-- Empty state -->
-                            <tr th:if="${#lists.isEmpty(suppliers)}">
+                            <tr th:if="${suppliers.totalElements == 0}">
                                 <td colspan="6" class="text-center py-4">
                                     <div class="text-muted">
-                                        <i class="fas fa-building fa-2x mb-2"></i>
                                         <div>
-                                            <h6>Chưa có nhà cung cấp nào</h6>
-                                            <p class="mb-0">Bắt đầu thêm nhà cung cấp đầu tiên</p>
+                                            <i class="fas fa-truck text-primary"></i>
+                                            <h6>
+                                                Không có kết quả tìm kiếm phù hợp
+                                            </h6>
+                                            <p class="mb-0">
+                                                Vui lòng thử lại với từ khóa khác
+                                            </p>
                                         </div>
                                     </div>
                                 </td>
@@ -357,36 +363,38 @@
                         </table>
                         <nav aria-label="Phân trang nhà cung cấp" class="mt-4">
                             <ul class="pagination justify-content-center">
-                                <li class="page-item">
+                                <li class="page-item" th:classappend="${suppliers.totalElements == 0 || suppliers.number == 0} ? 'disabled' : ''">
                                     <a class="page-link"
                                        th:href="@{/Supplier(pageSupplier=0)}"
-                                       th:classappend="${suppliers.number == 0} ? 'disabled' : ''">
+                                       tabindex="-1">
                                         <i class="fas fa-angle-double-left"></i>
                                     </a>
                                 </li>
-                                <li class="page-item">
+                                <li class="page-item" th:classappend="${suppliers.totalElements == 0 || !suppliers.hasPrevious()} ? 'disabled' : ''">
                                     <a class="page-link"
                                        th:href="@{/Supplier(pageSupplier=${suppliers.number - 1})}"
-                                       th:classappend="${!suppliers.hasPrevious()} ? 'disabled' : ''">
+                                       tabindex="-1">
                                         <i class="fas fa-angle-left"></i>
                                     </a>
                                 </li>
-                                <th:block th:each="page, iterStat : ${#numbers.sequence(0, suppliers.totalPages - 1)}">
-                                    <li class="page-item" th:classappend="${page == suppliers.number} ? 'active' : ''">
-                                        <a class="page-link" th:href="@{/Supplier(pageSupplier=${page})}" th:text="${page + 1}"></a>
-                                    </li>
+                                <th:block th:if="${suppliers.totalElements > 0}">
+                                    <th:block th:each="page, iterStat : ${#numbers.sequence(0, suppliers.totalPages - 1)}">
+                                        <li class="page-item" th:classappend="${page == suppliers.number} ? 'active' : ''">
+                                            <a class="page-link" th:href="@{/Supplier(pageSupplier=${page})}" th:text="${page + 1}"></a>
+                                        </li>
+                                    </th:block>
                                 </th:block>
-                                <li class="page-item">
+                                <li class="page-item" th:classappend="${suppliers.totalElements == 0 || !suppliers.hasNext()} ? 'disabled' : ''">
                                     <a class="page-link"
                                        th:href="@{/Supplier(pageSupplier=${suppliers.number + 1})}"
-                                       th:classappend="${!suppliers.hasNext()} ? 'disabled' : ''">
+                                       tabindex="-1">
                                         <i class="fas fa-angle-right"></i>
                                     </a>
                                 </li>
-                                <li class="page-item">
+                                <li class="page-item" th:classappend="${suppliers.totalElements == 0 || suppliers.number == suppliers.totalPages - 1} ? 'disabled' : ''">
                                     <a class="page-link"
                                        th:href="@{/Supplier(pageSupplier=${suppliers.totalPages - 1})}"
-                                       th:classappend="${suppliers.number == suppliers.totalPages - 1} ? 'disabled' : ''">
+                                       tabindex="-1">
                                         <i class="fas fa-angle-double-right"></i>
                                     </a>
                                 </li>
