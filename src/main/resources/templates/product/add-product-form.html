@@ -203,6 +203,11 @@
     .ck.ck-editor {
       width: 100%;
     }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
   </style>
 </head>
 <body>
@@ -714,6 +719,26 @@
           .catch(error => {
             console.error('Error initializing CKEditor:', error);
           });
+
+  // Hiển thị popup loading khi submit form
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.querySelector('form');
+    if(form) {
+      form.addEventListener('submit', function() {
+        document.getElementById('loading-overlay').style.display = 'flex';
+      });
+    }
+  });
 </script>
+
+<!-- Loading Popup (Đẹp & đồng bộ admin) -->
+<div class="admin-loading-overlay" id="loading-overlay">
+  <div class="admin-loading-box">
+    <div class="admin-spinner">
+      <i class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+    <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
+  </div>
+</div>
 </body>
 </html>

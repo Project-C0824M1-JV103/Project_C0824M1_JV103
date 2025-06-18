@@ -651,5 +651,24 @@
     }
   });
 </script>
+
+<div class="admin-loading-overlay" id="loading-overlay">
+  <div class="admin-loading-box">
+    <div class="admin-spinner">
+      <i class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+    <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.querySelector('form');
+    if(form) {
+      form.addEventListener('submit', function() {
+        document.getElementById('loading-overlay').style.display = 'flex';
+      });
+    }
+  });
+</script>
 </body>
 </html>
