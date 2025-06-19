@@ -303,7 +303,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">Email</label>
+                                    <label class="form-label">Email <span class="text-danger">*</span></label>
                                     <input type="email" th:field="*{email}" class="form-control"/>
                                     <div class="text-danger" th:if="${#fields.hasErrors('email')}"
                                          th:errors="*{email}"></div>
@@ -312,7 +312,7 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="form-label">Số điện thoại</label>
+                                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                                     <input type="text" th:field="*{phoneNumber}" class="form-control"/>
                                     <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}"
                                          th:errors="*{phoneNumber}"></div>
@@ -321,12 +321,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Địa chỉ</label>
+                            <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
                             <textarea th:field="*{address}" class="form-control form-textarea" rows="3"></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Hình ảnh nhà cung cấp</label>
+                            <label class="form-label">Hình ảnh nhà cung cấp <span class="text-danger">*</span></label>
                             <div class="image-section">
                               <div class="image-preview-section">
                                 <h6 class="mb-3 text-muted">
