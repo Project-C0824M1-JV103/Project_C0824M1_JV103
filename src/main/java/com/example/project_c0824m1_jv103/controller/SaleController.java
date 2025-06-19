@@ -3,9 +3,11 @@ package com.example.project_c0824m1_jv103.controller;
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.dto.CustomerSaleDto;
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
+import com.example.project_c0824m1_jv103.dto.SaleDetailsDto;
 import com.example.project_c0824m1_jv103.dto.SaleDto;
 import com.example.project_c0824m1_jv103.model.Customer;
 import com.example.project_c0824m1_jv103.model.Employee;
+import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.Sale;
 import com.example.project_c0824m1_jv103.model.SaleDetails;
 import com.example.project_c0824m1_jv103.service.PDFService;
@@ -247,7 +249,6 @@ public class SaleController extends BaseAdminController {
         }
         try {
             Sale sale = new Sale();
-            System.out.println("nhân viên hiện tại " +saleDto.getEmployeeName());
 
             // Tìm nhân viên
             Employee employee = employeeService.findByEmail(saleDto.getEmployeeName());
@@ -273,18 +274,25 @@ public class SaleController extends BaseAdminController {
             sale.setEmployee(employee);
             sale.setCustomer(customer);
             sale.setSaleDate(LocalDateTime.now());
-            sale.setAmount(saleDto.getAmount());
+            sale.setAmount(BigDecimal.valueOf(saleDto.getAmount()));
             sale.setPaymentMethod(saleDto.getPaymentMethod());
 
-            // Tạo danh sách chi tiết đơn hàng
+            // Tạo danh sách chi tiết đơn hàng cho nhiều sản phẩm
             List<SaleDetails> saleDetailsList = new ArrayList<>();
-            SaleDetails saleDetails = new SaleDetails();
-            saleDetails.setProduct(productService.findProductByName(saleDto.getProductName()));
-            saleDetails.setUniquePrice(saleDto.getUniquePrice());
-            saleDetails.setQuantity(saleDto.getQuantity());
-            saleDetails.setSale(sale);
+            
+            for (SaleDetailsDto productInfo : saleDto.getProducts()) {
+                SaleDetails saleDetails = new SaleDetails();
+                Product product = productService.findProductByName(productInfo.getProductName());
+                if (product == null) {
+                    return "redirect:/Sale?error=product_not_found";
+                }
+                saleDetails.setProduct(product);
+                saleDetails.setUniquePrice(productInfo.getPrice());
+                saleDetails.setQuantity(productInfo.getQuantity());
+                saleDetails.setSale(sale);
+                saleDetailsList.add(saleDetails);
+            }
 
-            saleDetailsList.add(saleDetails);
             sale.setSaleDetails(saleDetailsList);
 
             // Lưu đơn hàng vào database
