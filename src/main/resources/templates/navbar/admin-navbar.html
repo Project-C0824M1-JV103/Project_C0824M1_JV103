@@ -31,7 +31,7 @@
             <nav class="nav flex-column p-3">
 
                 <div class="nav-divider my-2"></div>
-                <a href="/" class="nav-link home-link" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
+                <a href="/" class="nav-link home-link">
                     <i class="fas fa-home"></i>
                     Về trang chủ
                 </a>
@@ -55,17 +55,21 @@
                     <i class="fas fa-user-tie"></i>
                     Quản lý nhân viên
                 </a>
-                <a th:href="@{/storage}" class="nav-link" th:classappend="${currentPage == 'storage'} ? 'active' : ''">
+                <a th:href="@{/storage/export}" class="nav-link" th:classappend="${currentPage == 'export'} ? 'active' : ''">
                     <i class="fas fa-dolly"></i>
-                    Kho hàng
+                    Xuất sản phẩm
                 </a>
-                <a th:href="@{/supplier}" class="nav-link" th:classappend="${currentPage == 'supplier'} ? 'active' : ''">
+                <a  th:href="@{/Supplier}" class="nav-link" th:classappend="${currentPage == 'supplier'} ? 'active' : ''">
                     <i class="fas fa-truck"></i>
                     Nhà cung cấp
                 </a>
-<!--                <a th:href="@{/category}" class="nav-link" th:classappend="${currentPage == 'category'} ? 'active' : ''">-->
+<!--                <a href="/Admin/Category" class="nav-link" th:classappend="${currentPage == 'category'} ? 'active' : ''">-->
 <!--                    <i class="fas fa-tags"></i>-->
 <!--                    Danh mục-->
+<!--                </a>-->
+<!--                <a href="/Admin/Storage" class="nav-link" th:classappend="${currentPage == 'storage'} ? 'active' : ''">-->
+<!--                    <i class="fas fa-warehouse"></i>-->
+<!--                    Kho hàng-->
 <!--                </a>-->
 <!--                <a href="/Admin/Reports" class="nav-link" th:classappend="${currentPage == 'reports'} ? 'active' : ''">-->
 <!--                    <i class="fas fa-chart-bar"></i>-->

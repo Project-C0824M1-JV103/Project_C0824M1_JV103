@@ -45,7 +45,6 @@ public class ProductService implements IProductService {
     // Temporarily disabled for testing
      @Autowired
      private CloudinaryService cloudinaryService;
-
     @Autowired
     private ICategoryRepository categoryRepository;
 
@@ -74,33 +73,12 @@ public class ProductService implements IProductService {
 //        return "/uploads/products/" + uniqueFilename;
 //    }
 
-
-;
-
-
     @Override
     public ProductDTO createProduct(ProductDTO productDTO, List<MultipartFile> imageFiles, List<String> captions) throws IOException {
-        System.out.println("=== DEBUG CREATE PRODUCT ===");
-        System.out.println("Product name: " + productDTO.getProductName());
-        System.out.println("Image files count: " + (imageFiles != null ? imageFiles.size() : 0));
+
         
         // Convert DTO to Entity
         Product product = productMapper.toEntity(productDTO);
-        
-        // Set Category và Supplier từ ID
-        if (productDTO.getCategoryId() != null) {
-            Category category = categoryRepository.findById(productDTO.getCategoryId()).orElse(null);
-            if (category != null) {
-                product.setCategory(category);
-            }
-        }
-        
-        if (productDTO.getSupplierId() != null) {
-            Supplier supplier = supplierRepository.findById(productDTO.getSupplierId()).orElse(null);
-            if (supplier != null) {
-                product.setSupplier(supplier);
-            }
-        }
         
         // Lưu sản phẩm trước
         Product savedProduct = productRepository.save(product);
@@ -153,36 +131,35 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Page<ProductDTO> searchProducts(String keyword, String field, Pageable pageable) {
-        Page<Product> productPage;
+    public Page<ProductDTO> searchProducts(
+            String productName,
+            Double minPrice,
+            Double maxPrice,
+            Integer minQuantity,
+            Integer maxQuantity,
+            Pageable pageable) {
         
-        if (keyword == null || keyword.isEmpty()) {
-            productPage = productRepository.findAll(pageable);
-        } else {
-            switch (field) {
-                case "productName":
-                    productPage = productRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
-                    break;
-                case "price":
-                    try {
-                        Double price = Double.parseDouble(keyword);
-                        productPage = productRepository.findByPriceLessThanEqual(price, pageable);
-                    } catch (NumberFormatException e) {
-                        return Page.empty();
-                    }
-                    break;
-                case "quantity":
-                    try {
-                        Integer quantity = Integer.parseInt(keyword);
-                        productPage = productRepository.findByQuantityLessThanEqual(quantity, pageable);
-                    } catch (NumberFormatException e) {
-                        return Page.empty();
-                    }
-                    break;
-                default:
-                    productPage = productRepository.findAll(pageable);
-            }
+        // Xử lý các giá trị null
+        if (minPrice == null) minPrice = 0.0;
+        if (maxPrice == null) maxPrice = Double.MAX_VALUE;
+        if (minQuantity == null) minQuantity = 0;
+        if (maxQuantity == null) maxQuantity = Integer.MAX_VALUE;
+        
+        // Nếu không có điều kiện tìm kiếm nào được chỉ định
+        if (productName == null && minPrice == 0.0 && maxPrice == Double.MAX_VALUE 
+            && minQuantity == 0 && maxQuantity == Integer.MAX_VALUE) {
+            return findAll(pageable);
         }
+        
+        // Thực hiện tìm kiếm với tất cả các điều kiện
+        Page<Product> productPage = productRepository.searchProducts(
+            productName,
+            minPrice,
+            maxPrice,
+            minQuantity,
+            maxQuantity,
+            pageable
+        );
         
         return productPage.map(productMapper::toDTO);
     }
@@ -195,7 +172,12 @@ public class ProductService implements IProductService {
 
     @Override
     public Product findProductByName(String name) {
-        return productRepository.findByProductName(name);
+        // Sử dụng findAll và lọc theo tên vì findByProductName chưa có trong repository
+        List<Product> products = productRepository.findAll();
+        return products.stream()
+                .filter(product -> name.equals(product.getProductName()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -214,17 +196,6 @@ public class ProductService implements IProductService {
 
         // Cập nhật thông tin từ DTO
         productMapper.updateEntityFromDTO(productDTO, existingProduct);
-        
-        // Cập nhật Category và Supplier từ ID
-        if (productDTO.getCategoryId() != null) {
-            Category category = categoryRepository.findById(productDTO.getCategoryId()).orElse(null);
-            existingProduct.setCategory(category);
-        }
-        
-        if (productDTO.getSupplierId() != null) {
-            Supplier supplier = supplierRepository.findById(productDTO.getSupplierId()).orElse(null);
-            existingProduct.setSupplier(supplier);
-        }
 
         // Xử lý xóa ảnh cũ TRƯỚC
         if (deletedImageUrls != null && !deletedImageUrls.isEmpty()) {
@@ -329,6 +300,14 @@ public class ProductService implements IProductService {
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
     }
+    
+    @Override
+    public Page<ProductDTO> searchProducts(String productName, String searchType, Pageable pageable) {
+        // Tìm kiếm sản phẩm chỉ theo tên
+        Page<Product> productPage = productRepository.findByProductNameContainingIgnoreCase(productName, pageable);
+        return productPage.map(productMapper::toDTO);
+    }
+
     @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();

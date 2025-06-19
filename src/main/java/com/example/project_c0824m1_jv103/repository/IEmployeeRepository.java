@@ -15,7 +15,7 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT e FROM Employee e WHERE " +
             "(:fullName IS NULL OR e.fullName LIKE %:fullName%) AND " +
             "(:phone IS NULL OR e.phone LIKE %:phone%) AND " +
-            "(:role IS NULL OR e.role = :role)")
+            "(:role IS NULL OR e.role = :role) AND e.role != com.example.project_c0824m1_jv103.model.Employee.Role.Admin")
     List<Employee> searchEmployees(@Param("fullName") String fullName,
                                    @Param("phone") String phone,
                                    @Param("role") Employee.Role role);
@@ -23,13 +23,16 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT e FROM Employee e WHERE " +
             "(:fullName IS NULL OR e.fullName LIKE %:fullName%) AND " +
             "(:phone IS NULL OR e.phone LIKE %:phone%) AND " +
-            "(:role IS NULL OR e.role = :role)")
+            "(:role IS NULL OR e.role = :role) AND e.role != com.example.project_c0824m1_jv103.model.Employee.Role.Admin")
     Page<Employee> searchEmployeesWithPaging(@Param("fullName") String fullName,
                                              @Param("phone") String phone,
                                              @Param("role") Employee.Role role,
                                              Pageable pageable);
 
+
     Employee findByEmail(String email);
     Employee findByPhone(String phone);
     List<Employee> findByRole (Employee.Role role);
+    @Query("SELECT e FROM Employee e WHERE e.role != com.example.project_c0824m1_jv103.model.Employee.Role.Admin")
+    Page<Employee> findAllNonAdminWithPaging(Pageable pageable);
 }

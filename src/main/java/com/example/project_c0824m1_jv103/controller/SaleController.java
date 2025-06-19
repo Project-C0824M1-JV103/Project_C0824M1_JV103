@@ -71,6 +71,7 @@ public class SaleController extends BaseAdminController {
         model.addAttribute("totalPages", customers.getTotalPages());
         model.addAttribute("totalElements", customers.getTotalElements());
         model.addAttribute("isSearch", false);
+        model.addAttribute("currentPage", "sale");
 
         model.addAttribute("products", products);
         model.addAttribute("saleDto", new SaleDto());
@@ -105,6 +106,7 @@ public class SaleController extends BaseAdminController {
         model.addAttribute("totalPages", customers.getTotalPages());
         model.addAttribute("totalElements", customers.getTotalElements());
         model.addAttribute("isSearch", isSearch);
+        model.addAttribute("currentPage", "sale");
 
         return "sale/sale-page";
     }

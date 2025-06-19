@@ -18,8 +18,17 @@ public interface IProductService {
     // Lấy danh sách sản phẩm với phân trang
     Page<ProductDTO> findAll(Pageable pageable);
 
-    // Tìm kiếm sản phẩm
-    Page<ProductDTO> searchProducts(String keyword, String field, Pageable pageable);
+    // Tìm kiếm sản phẩm với nhiều điều kiện
+    Page<ProductDTO> searchProducts(
+            String productName,
+            Double minPrice,
+            Double maxPrice,
+            Integer minQuantity,
+            Integer maxQuantity,
+            Pageable pageable);
+    
+    // Tìm kiếm sản phẩm theo tên (overload method)
+    Page<ProductDTO> searchProducts(String productName, String searchType, Pageable pageable);
 
     // Tìm sản phẩm theo ID
     ProductDTO findById(Long id);
@@ -34,7 +43,6 @@ public interface IProductService {
 
     // Lấy tất cả sản phẩm (không phân trang)
     List<ProductDTO> getAllProducts();
-
     List<Category> getAllCategories();
     List<Supplier> getAllSuppliers();
 }

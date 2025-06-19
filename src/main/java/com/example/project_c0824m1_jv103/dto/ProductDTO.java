@@ -18,27 +18,21 @@ public class ProductDTO {
     @DecimalMax(value = "999999999.99", message = "Giá quá lớn")
     private Double price;
     
-    @NotBlank(message = "Kích thước màn hình không được để trống")
     @Size(max = 50, message = "Kích thước màn hình không được vượt quá 50 ký tự")
     private String size;
     
-    @NotBlank(message = "Thông tin camera sau không được để trống")
     @Size(max = 50, message = "Thông tin camera không được vượt quá 50 ký tự")
     private String cameraBack;
     
-    @NotBlank(message = "Thông tin camera trước không được để trống")
     @Size(max = 50, message = "Thông tin selfie không được vượt quá 50 ký tự")
     private String cameraFront;
     
-    @NotBlank(message = "Thông tin CPU không được để trống")
     @Size(max = 50, message = "Thông tin CPU không được vượt quá 50 ký tự")
     private String cpu;
     
-    @NotBlank(message = "Thông tin bộ nhớ không được để trống")
     @Size(max = 50, message = "Thông tin lưu trữ không được vượt quá 50 ký tự")
     private String memory;
     
-    @NotBlank(message = "Mô tả sản phẩm không được để trống")
     @Size(max = 1000, message = "Mô tả không được vượt quá 1000 ký tự")
     private String description; // Mô tả thêm
     
@@ -47,14 +41,12 @@ public class ProductDTO {
     private Integer quantity;
     
     // Cho upload ảnh
+    @NotNull(message = "Ảnh không được để trống")
     private List<MultipartFile> imageFiles;
     private List<String> existingImageUrls;
     
 
-    @NotNull(message = "Danh mục không được để trống")
     private Integer categoryId;
-    
-    @NotNull(message = "Nhà cung cấp không được để trống")
     private Integer supplierId;
 
     private String imageUrl;

@@ -1,6 +1,6 @@
 -- Thêm dữ liệu vào bảng Employee
 INSERT INTO Employee (full_name, email, password, phone, role, status) VALUES
-    ('Nguyen Van A', 'nguyenvana@example.com', 'password123', '0901234567', 'Admin', 'active'),
+    ('Nguyen Van A', 'nguyenvana@example.com', 'password123', '0901234567', 'Business', 'active'),
 ('Tran Thi B', 'tranthib@example.com', 'password456', '0912345678', 'Sales', 'active'),
 ('Le Van C', 'levanc@example.com', 'password789', '0923456789', 'Warehouse', 'active');
 
@@ -21,9 +21,16 @@ INSERT INTO Supplier (suplier_name, address, phone_number, email, image_url) VAL
 
 -- Thêm dữ liệu vào bảng Product (chỉ chứa điện thoại)
 INSERT INTO Product (product_name, size, price, camera_front, camera_back, memory, cpu, description, category_id, suplier_id, quantity) VALUES
-('Samsung Galaxy S21', '6.2 inch', 15000000, '10MP', '12MP + 64MP + 12MP', '128GB', 'Exynos 2100', 'High-performance Samsung smartphone', 1, 1, 50),
-('iPhone 13', '6.1 inch', 20000000, '12MP', '12MP + 12MP', '256GB', 'A15 Bionic', 'Premium Apple smartphone', 2, 2, 30),
-('Xiaomi 12 Pro', '6.73 inch', 18000000, '32MP', '50MP + 50MP + 50MP', '256GB', 'Snapdragon 8 Gen 1', 'Flagship Xiaomi smartphone', 3, 3, 40);
+('Samsung Galaxy S21', '6.2', 15000000, '10', '12', '128', 'Exynos 2100', 'High-performance Samsung smartphone', 1, 1, 50),
+('iPhone 13', '6.1', 20000000, '12MP', '12', '256', 'A15 Bionic', 'Premium Apple smartphone', 2, 2, 30),
+('Xiaomi 12 Pro', '6.73', 18000000, '32', '50', '256', 'Snapdragon 8 Gen 1', 'Flagship Xiaomi smartphone', 3, 3, 40),
+('Samsung Galaxy S22 Ultra', '6.8', 22000000, '40', '108', '512', 'Exynos 2200', 'Premium Samsung flagship with S Pen', 1, 1, 25),
+('iPhone 14 Pro', '6.1', 25000000, '12', '48', '256', 'A16 Bionic', 'Advanced Apple smartphone with Dynamic Island', 2, 2, 20),
+('Oppo Find X5 Pro', '6.7', 19000000, '32', '50', '256', 'Snapdragon 8 Gen 1', 'High-end Oppo with superior camera', 3, 3, 35),
+('Google Pixel 7 Pro', '6.7', 21000000, '10.8', '50', '128', 'Google Tensor G2', 'AI-powered Google smartphone', 1, 2, 30),
+('Vivo X80 Pro', '6.78', 20000000, '32', '50', '256', 'Snapdragon 8 Gen 1', 'Vivo flagship with Zeiss optics', 3, 2, 28),
+('OnePlus 10 Pro', '6.7', 18500000, '32', '48', '256', 'Snapdragon 8 Gen 1', 'Fast and smooth OnePlus experience', 1, 3, 45),
+('Huawei P50 Pro', '6.6', 19500000, '13', '50', '256', 'Kirin 9000', 'Huawei flagship with advanced photography', 2, 1, 15);
 
 -- Thêm dữ liệu vào bảng ProductImages
 INSERT INTO product_images (product_id, image_url, caption, display_order) VALUES

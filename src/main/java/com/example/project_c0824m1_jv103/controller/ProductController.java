@@ -20,6 +20,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/product")
@@ -32,24 +34,49 @@ public class ProductController extends BaseAdminController {
     public String listProducts(
             Model model,
             Principal principal,
-            @RequestParam(value = "field", required = false, defaultValue = "productName") String field,
-            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "productName", required = false) String productName,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "minQuantity", required = false) Integer minQuantity,
+            @RequestParam(value = "maxQuantity", required = false) Integer maxQuantity,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page
     ) {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<ProductDTO> productPage;
         
-        if (keyword != null && !keyword.isEmpty()) {
-            productPage = productService.searchProducts(keyword, field, pageable);
+        // Kiểm tra xem có điều kiện tìm kiếm nào không
+        boolean hasSearchCriteria = productName != null || minPrice != null || maxPrice != null
+                                || minQuantity != null || maxQuantity != null;
+
+        if (hasSearchCriteria) {
+            productPage = productService.searchProducts(
+                productName,
+                minPrice,
+                maxPrice,
+                minQuantity,
+                maxQuantity,
+                pageable
+            );
         } else {
             productPage = productService.findAll(pageable);
         }
-        
+
+        // Thêm các thuộc tính vào model
         model.addAttribute("productPage", productPage);
-        model.addAttribute("field", field);
-        model.addAttribute("keyword", keyword);
+        model.addAttribute("productName", productName);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("minQuantity", minQuantity);
+        model.addAttribute("maxQuantity", maxQuantity);
         model.addAttribute("currentPage", "product");
+
+        // Thêm thông tin tìm kiếm
+        if (hasSearchCriteria) {
+            model.addAttribute("searchResultsCount", productPage.getTotalElements());
+            model.addAttribute("hasResults", productPage.getTotalElements() > 0);
+        }
+
         return "product/list-product";
     }
 
@@ -71,7 +98,17 @@ public class ProductController extends BaseAdminController {
             @RequestParam(value = "deletedImageUrls", required = false) String deletedImageUrls,
             Model model,
             RedirectAttributes redirectAttributes) {
-        
+
+        // Validate images
+        String imageValidationError = validateImages(images);
+        if (imageValidationError != null) {
+            model.addAttribute("error", imageValidationError);
+            model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
+            return "product/add-product-form";
+        }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("productDTO", productDTO);
             model.addAttribute("categories", productService.getAllCategories());
@@ -85,10 +122,10 @@ public class ProductController extends BaseAdminController {
             if (deletedImageUrls != null && !deletedImageUrls.trim().isEmpty()) {
                 deletedUrls = Arrays.asList(deletedImageUrls.split(","));
             }
-            productService.createProduct(productDTO, 
-                images != null ? images : new ArrayList<>(), 
-                captions != null ? captions : new ArrayList<>());
-            
+            productService.createProduct(productDTO,
+                    images != null ? images : new ArrayList<>(),
+                    captions != null ? captions : new ArrayList<>());
+
             redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
             return "redirect:/product";
         } catch (IOException e) {
@@ -136,7 +173,18 @@ public class ProductController extends BaseAdminController {
             @RequestParam(value = "deletedImageUrls", required = false) String deletedImageUrls,
             Model model,
             RedirectAttributes redirectAttributes) {
-        
+
+        // Validate new images
+        String imageValidationError = validateImages(images);
+        if (imageValidationError != null) {
+            model.addAttribute("error", imageValidationError);
+            productDTO.setProductId(id.intValue());
+            model.addAttribute("productDTO", productDTO);
+            model.addAttribute("categories", productService.getAllCategories());
+            model.addAttribute("suppliers", productService.getAllSuppliers());
+            return "product/edit-product-form";
+        }
+
         if (bindingResult.hasErrors()) {
             productDTO.setProductId(id.intValue());
             model.addAttribute("productDTO", productDTO);
@@ -151,12 +199,29 @@ public class ProductController extends BaseAdminController {
             if (deletedImageUrls != null && !deletedImageUrls.trim().isEmpty()) {
                 deletedUrls = Arrays.asList(deletedImageUrls.split(","));
             }
-            
-            productService.updateProduct(id, productDTO, 
-                images != null ? images : new ArrayList<>(), 
-                captions != null ? captions : new ArrayList<>(),
-                deletedUrls);
-            
+
+            // Validate tổng số ảnh sau khi cập nhật
+            ProductDTO existingProduct = productService.findById(id);
+            int existingImageCount = existingProduct.getExistingImageUrls() != null ?
+                    existingProduct.getExistingImageUrls().size() : 0;
+            int newImageCount = images != null ? (int) images.stream().filter(file -> !file.isEmpty()).count() : 0;
+            int deletedImageCount = deletedUrls.size();
+            int totalImagesAfterUpdate = existingImageCount - deletedImageCount + newImageCount;
+
+            if (totalImagesAfterUpdate > 4) {
+                model.addAttribute("error", "Tổng số ảnh không được vượt quá 4 ảnh. Hiện tại: " + totalImagesAfterUpdate);
+                productDTO.setProductId(id.intValue());
+                model.addAttribute("productDTO", productDTO);
+                model.addAttribute("categories", productService.getAllCategories());
+                model.addAttribute("suppliers", productService.getAllSuppliers());
+                return "product/edit-product-form";
+            }
+
+            productService.updateProduct(id, productDTO,
+                    images != null ? images : new ArrayList<>(),
+                    captions != null ? captions : new ArrayList<>(),
+                    deletedUrls);
+
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm thành công!");
             return "redirect:/product";
         } catch (Exception e) {
@@ -196,4 +261,54 @@ public class ProductController extends BaseAdminController {
 //            return "redirect:/product/list";
 //        }
 //    }
+
+
+    private String validateImages(List<MultipartFile> images) {
+        if (images == null || images.isEmpty()) {
+            return null; // No images to validate
+        }
+
+        // Filter out empty files
+        List<MultipartFile> nonEmptyImages = images.stream()
+                .filter(file -> file != null && !file.isEmpty())
+                .toList();
+
+        // Check maximum number of images
+        if (nonEmptyImages.size() > 4) {
+            return "Chỉ được chọn tối đa 4 ảnh. Bạn đã chọn: " + nonEmptyImages.size() + " ảnh.";
+        }
+
+        // Check for duplicate file names
+        Set<String> fileNames = new HashSet<>();
+        for (MultipartFile file : nonEmptyImages) {
+            String fileName = file.getOriginalFilename();
+            if (fileName != null) {
+                if (fileNames.contains(fileName)) {
+                    return "Không được chọn ảnh trùng nhau. Ảnh '" + fileName + "' đã được chọn.";
+                }
+                fileNames.add(fileName);
+            }
+        }
+
+
+        for (MultipartFile file : nonEmptyImages) {
+            if (file.getSize() > 5 * 1024 * 1024) { // 5MB in bytes
+                return "Kích thước file ảnh '" + file.getOriginalFilename() + "' không được vượt quá 5MB.";
+            }
+        }
+
+
+        for (MultipartFile file : nonEmptyImages) {
+            String contentType = file.getContentType();
+            if (contentType == null ||
+                    (!contentType.startsWith("image/jpeg") &&
+                            !contentType.startsWith("image/png") &&
+                            !contentType.startsWith("image/gif"))) {
+                return "Chỉ chấp nhận file ảnh định dạng JPG, PNG, GIF. File '" +
+                        file.getOriginalFilename() + "' không hợp lệ.";
+            }
+        }
+
+        return null;
+    }
 }

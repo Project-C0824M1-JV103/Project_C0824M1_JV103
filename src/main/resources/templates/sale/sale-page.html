@@ -163,7 +163,8 @@
                 </div>
 
                 <div class="search-section">
-                    <h4 class="section-title">Bán hàng</h4>
+                    <h4 class="section-title">
+                        <i class="fas fa-shopping-cart"></i> Bán hàng</h4>
                     <form th:action="@{/Sale/create}" th:object="${saleDto}" method="post">
                         <input type="hidden" name="employeeName" th:value="${currentUser != null ? currentUser.email : ''}">
                         <!-- Thông tin khách hàng -->
@@ -234,9 +235,9 @@
                                 <div class="col-md-2">
                                     <label class="form-label mb-1">Số lượng</label>
                                     <input type="number" class="form-control" min="1" id="selectedProductQuantity" th:field="*{quantity}"/>
+                                    <div id="quantityError" class="invalid-feedback" style="display:none;"></div>
                                 </div>
 
-<!--                                Thêm hình ảnh không ????-->
 
 
                             </div>
@@ -899,26 +900,47 @@ function attachSelectProductEvents() {
     });
 }
 
+let selectedProductStock = 0;
+
 function selectProduct(productId) {
     fetch(`/Sale/products/${productId}`)
         .then(response => response.json())
         .then(product => {
             document.getElementById('selectedProductName').value = product.productName;
             document.getElementById('selectedProductPrice').value = product.price;
-            document.getElementById('selectedProductQuantity').value = 1; // Set default quantity to 1
+            document.getElementById('selectedProductQuantity').value = 1;
+            selectedProductStock = product.quantity; // Lưu số lượng tồn kho
 
-            // Calculate and update total amount
             calculateTotalAmount();
 
             // Đóng modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
             modal.hide();
-
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Có lỗi xảy ra khi lấy thông tin sản phẩm!');
         });
+}
+
+// Kiểm tra số lượng nhập vào không vượt quá tồn kho
+function validateQuantityInput() {
+    const quantityInput = document.getElementById('selectedProductQuantity');
+    const quantity = parseInt(quantityInput.value) || 0;
+    const errorDiv = document.getElementById('quantityError');
+    const addBtn = document.querySelector('.btn-outline-success');
+    if (quantity > selectedProductStock) {
+        quantityInput.classList.add('is-invalid');
+        errorDiv.style.display = 'block';
+        errorDiv.innerText = `Số lượng tồn kho chỉ còn ${selectedProductStock}`;
+        if (addBtn) addBtn.disabled = true;
+    } else {
+        quantityInput.classList.remove('is-invalid');
+        errorDiv.style.display = 'none';
+        errorDiv.innerText = '';
+        if (addBtn) addBtn.disabled = false;
+    }
+    calculateTotalAmount();
 }
 
 // Add function to calculate total amount
@@ -941,7 +963,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listener for quantity input
     const quantityInput = document.getElementById('selectedProductQuantity');
     if (quantityInput) {
-        quantityInput.addEventListener('input', calculateTotalAmount);
+        quantityInput.addEventListener('input', validateQuantityInput);
     }
     
     // Add event listener for customer search form
