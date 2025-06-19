@@ -165,7 +165,7 @@
                 <div class="search-section">
                     <h4 class="section-title">
                         <i class="fas fa-shopping-cart"></i> Bán hàng</h4>
-                    <form th:action="@{/Sale/create}" th:object="${saleDto}" method="post">
+                    <form th:action="@{/Sale/create}" th:object="${saleDto}" method="post" id="saleForm">
                         <input type="hidden" name="employeeName" th:value="${currentUser != null ? currentUser.email : ''}">
                         <!-- Thông tin khách hàng -->
                         <fieldset class="mb-4 p-3 border rounded">
@@ -226,24 +226,41 @@
                             <div class="row g-2 mb-2">
                                 <div class="col-md-6">
                                     <label class="form-label mb-1">Tên sản phẩm</label>
-                                    <input type="text" class="form-control" id="selectedProductName" th:field="*{productName}" readonly/>
+                                    <input type="text" class="form-control" id="selectedProductName" readonly/>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label mb-1">Đơn giá (VND)</label>
-                                    <input type="number" class="form-control" min="0" id="selectedProductPrice" th:field="*{uniquePrice}" readonly/>
+                                    <input type="number" class="form-control" min="0" id="selectedProductPrice" readonly/>
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label mb-1">Số lượng</label>
-                                    <input type="number" class="form-control" min="1" id="selectedProductQuantity" th:field="*{quantity}"/>
+                                    <input type="number" class="form-control" min="1" id="selectedProductQuantity" value="1"/>
                                     <div id="quantityError" class="invalid-feedback" style="display:none;"></div>
                                 </div>
-
-
-
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-4">
-                                    <button type="button" class="btn btn-outline-success w-100" >+ Thêm sản phẩm</button>
+                                    <button type="button" class="btn btn-outline-success w-100" onclick="addProductToTable()">
+                                        <i class="fas fa-plus"></i> Thêm sản phẩm
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-12">
+                                    <table id="selectedProductsTable" class="table table-bordered align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Tên sản phẩm</th>
+                                                <th>Đơn giá (VND)</th>
+                                                <th>Số lượng</th>
+                                                <th>Thành tiền</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Dòng sản phẩm sẽ được thêm ở đây bằng JS -->
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </fieldset>
@@ -782,7 +799,7 @@ function updateProductTable(data) {
                 <tr>
                     <td>${product.productName}</td>
                     <td>${product.categoryName || 'N/A'}</td>
-                    <td>${new Intl.NumberFormat('vi-VN').format(product.price)} VNĐ</td>
+                    <td>${new Intl.NumberFormat('vi-VN').format(product.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}</td>
                     <td>${product.quantity}</td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary btn-select-product"
@@ -900,19 +917,28 @@ function attachSelectProductEvents() {
     });
 }
 
-let selectedProductStock = 0;
+// Danh sách sản phẩm đã chọn
+let selectedProducts = [];
+let currentProductStock = 0;
 
 function selectProduct(productId) {
     fetch(`/Sale/products/${productId}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(product => {
+            if (!product) {
+                throw new Error('Product data is empty');
+            }
+            // Điền thông tin vào form
             document.getElementById('selectedProductName').value = product.productName;
             document.getElementById('selectedProductPrice').value = product.price;
             document.getElementById('selectedProductQuantity').value = 1;
-            selectedProductStock = product.quantity; // Lưu số lượng tồn kho
-
-            calculateTotalAmount();
-
+            currentProductStock = product.quantity;
+            
             // Đóng modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
             modal.hide();
@@ -929,10 +955,16 @@ function validateQuantityInput() {
     const quantity = parseInt(quantityInput.value) || 0;
     const errorDiv = document.getElementById('quantityError');
     const addBtn = document.querySelector('.btn-outline-success');
-    if (quantity > selectedProductStock) {
+    
+    if (quantity > currentProductStock) {
         quantityInput.classList.add('is-invalid');
         errorDiv.style.display = 'block';
-        errorDiv.innerText = `Số lượng tồn kho chỉ còn ${selectedProductStock}`;
+        errorDiv.innerText = `Số lượng tồn kho chỉ còn ${currentProductStock}`;
+        if (addBtn) addBtn.disabled = true;
+    } else if (quantity <= 0) {
+        quantityInput.classList.add('is-invalid');
+        errorDiv.style.display = 'block';
+        errorDiv.innerText = 'Số lượng phải lớn hơn 0';
         if (addBtn) addBtn.disabled = true;
     } else {
         quantityInput.classList.remove('is-invalid');
@@ -940,19 +972,115 @@ function validateQuantityInput() {
         errorDiv.innerText = '';
         if (addBtn) addBtn.disabled = false;
     }
-    calculateTotalAmount();
 }
 
-// Add function to calculate total amount
-function calculateTotalAmount() {
-    const price = parseFloat(document.getElementById('selectedProductPrice').value) || 0;
-    const quantity = parseInt(document.getElementById('selectedProductQuantity').value) || 0;
-    const totalAmount = price * quantity;
+function addProductToTable() {
+    const name = document.getElementById('selectedProductName').value;
+    const price = parseInt(document.getElementById('selectedProductPrice').value);
+    const quantity = parseInt(document.getElementById('selectedProductQuantity').value);
+
+    if (!name || !price || !quantity) {
+        alert('Vui lòng chọn sản phẩm và nhập số lượng!');
+        return;
+    }
+
+    if (quantity > currentProductStock) {
+        alert(`Số lượng không thể vượt quá ${currentProductStock}!`);
+        return;
+    }
+
+    if (quantity <= 0) {
+        alert('Số lượng phải lớn hơn 0!');
+        return;
+    }
+
+    // Kiểm tra trùng sản phẩm
+    if (selectedProducts.some(p => p.productName === name)) {
+        alert('Sản phẩm này đã có trong danh sách!');
+        return;
+    }
+
+    const product = {
+        productName: name,
+        price: price,
+        quantity: quantity,
+        maxQuantity: currentProductStock
+    };
+
+    selectedProducts.push(product);
+    renderSelectedProductsTable();
+
+    // Reset form
+    document.getElementById('selectedProductName').value = '';
+    document.getElementById('selectedProductPrice').value = '';
+    document.getElementById('selectedProductQuantity').value = '1';
+    currentProductStock = 0;
+}
+
+function renderSelectedProductsTable() {
+    const tbody = document.querySelector('#selectedProductsTable tbody');
+    tbody.innerHTML = '';
+    selectedProducts.forEach((product, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${product.productName}</td>
+            <td>${product.price.toLocaleString('vi-VN')}</td>
+            <td>
+                <input type="number" 
+                       min="1" 
+                       max="${product.maxQuantity}"
+                       value="${product.quantity}" 
+                       class="form-control form-control-sm quantity-input" 
+                       style="width:80px;display:inline-block;"
+                       onchange="updateProductQuantity(${index}, this.value)"/>
+                <small class="text-muted">(Tối đa: ${product.maxQuantity})</small>
+            </td>
+            <td>${(product.price * product.quantity).toLocaleString('vi-VN')}</td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(${index})">
+                    <i class="fas fa-trash"></i> Xoá
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+    updateTotalAmount();
+}
+
+function updateProductQuantity(index, newQuantity) {
+    const product = selectedProducts[index];
+    const quantity = parseInt(newQuantity);
     
-    // Update the amount input with formatted value
+    if (isNaN(quantity) || quantity < 1) {
+        alert('Số lượng không hợp lệ!');
+        renderSelectedProductsTable();
+        return;
+    }
+    
+    if (quantity > product.maxQuantity) {
+        alert(`Số lượng không thể vượt quá ${product.maxQuantity}!`);
+        renderSelectedProductsTable();
+        return;
+    }
+    
+    product.quantity = quantity;
+    renderSelectedProductsTable();
+}
+
+function removeProduct(index) {
+    selectedProducts.splice(index, 1);
+    renderSelectedProductsTable();
+}
+
+function updateTotalAmount() {
+    const total = selectedProducts.reduce((sum, product) => {
+        return sum + (product.price * product.quantity);
+    }, 0);
+    
     const amountInput = document.querySelector('input[name="amount"]');
-    // amountInput.value = new Intl.NumberFormat('vi-VN').format(totalAmount);
-    amountInput.value = totalAmount;
+    if (amountInput) {
+        amountInput.value = total;
+    }
 }
 
 // Add event listeners when document is loaded
@@ -960,7 +1088,7 @@ document.addEventListener('DOMContentLoaded', function() {
     attachSelectCustomerEvents();
     attachSelectProductEvents();
     
-    // Add event listener for quantity input
+    // Add event listener for quantity input validation
     const quantityInput = document.getElementById('selectedProductQuantity');
     if (quantityInput) {
         quantityInput.addEventListener('input', validateQuantityInput);
@@ -1028,24 +1156,19 @@ document.getElementById('resetCustomerBtn').addEventListener('click', function()
 });
 
 // Cập nhật xử lý form submit
-document.querySelector('form').addEventListener('submit', function(e) {
+document.getElementById('saleForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     // Kiểm tra thông tin khách hàng
     const customerName = document.querySelector('input[name="customerName"]').value;
     const phoneNumber = document.querySelector('input[name="phoneNumber"]').value;
-    
     if (!customerName || !phoneNumber) {
         alert('Vui lòng nhập đầy đủ thông tin khách hàng!');
         return;
     }
     
-    // Kiểm tra sản phẩm đã chọn
-    const productName = document.getElementById('selectedProductName').value;
-    const productPrice = document.getElementById('selectedProductPrice').value;
-    const productQuantity = document.getElementById('selectedProductQuantity').value;
-    
-    if (!productName || !productPrice || !productQuantity) {
+    // Kiểm tra sản phẩm đã chọn trong bảng
+    if (!selectedProducts.length) {
         alert('Vui lòng chọn sản phẩm và số lượng!');
         return;
     }
@@ -1057,7 +1180,37 @@ document.querySelector('form').addEventListener('submit', function(e) {
         return;
     }
     
-    // Nếu tất cả thông tin hợp lệ, submit form
+    // Xóa các input ẩn cũ
+    document.querySelectorAll('.product-hidden-input').forEach(el => el.remove());
+    
+    // Thêm thông tin sản phẩm vào form
+    selectedProducts.forEach((product, index) => {
+        // Thêm tên sản phẩm
+        const productNameInput = document.createElement('input');
+        productNameInput.type = 'hidden';
+        productNameInput.className = 'product-hidden-input';
+        productNameInput.name = `products[${index}].productName`;
+        productNameInput.value = product.productName;
+        this.appendChild(productNameInput);
+        
+        // Thêm giá sản phẩm
+        const priceInput = document.createElement('input');
+        priceInput.type = 'hidden';
+        priceInput.className = 'product-hidden-input';
+        priceInput.name = `products[${index}].price`;
+        priceInput.value = product.price;
+        this.appendChild(priceInput);
+        
+        // Thêm số lượng
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'hidden';
+        quantityInput.className = 'product-hidden-input';
+        quantityInput.name = `products[${index}].quantity`;
+        quantityInput.value = product.quantity;
+        this.appendChild(quantityInput);
+    });
+    
+    // Submit form
     this.submit();
 });
 
@@ -1085,6 +1238,11 @@ function handleVNPayPayment(orderId, amount) {
         console.error('Error:', error);
         alert('Có lỗi xảy ra khi xử lý thanh toán!');
     });
+}
+
+function showProductModal() {
+    const modal = new bootstrap.Modal(document.getElementById('productModal'));
+    modal.show();
 }
 </script>
 </body>
