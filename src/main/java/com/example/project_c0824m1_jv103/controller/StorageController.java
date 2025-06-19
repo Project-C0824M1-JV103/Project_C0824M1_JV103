@@ -8,11 +8,13 @@ import com.example.project_c0824m1_jv103.model.Storage;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
 import com.example.project_c0824m1_jv103.service.product.IProductService;
 import com.example.project_c0824m1_jv103.service.storage.IStorageService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -52,8 +54,16 @@ public class StorageController extends BaseAdminController {
     }
 
     @PostMapping("/export")
-    public String exportProduct(@ModelAttribute StorageExportDTO exportDTO,
-                              RedirectAttributes redirectAttributes) {
+    public String exportProduct(@Valid @ModelAttribute StorageExportDTO exportDTO,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("exportDTO", exportDTO);
+            model.addAttribute("errorMessage", "Vui lòng kiểm tra lại dữ liệu nhập vào");
+            return "storage/export-form";
+        }
+        
         try {
             storageService.exportProduct(exportDTO);
             redirectAttributes.addFlashAttribute("successMessage", 
