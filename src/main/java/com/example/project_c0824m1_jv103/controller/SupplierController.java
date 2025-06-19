@@ -7,6 +7,7 @@ import com.example.project_c0824m1_jv103.model.Supplier;
 
 import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -28,15 +29,27 @@ public class SupplierController extends BaseAdminController {
     @Autowired
     private ISupplierService supplierService;
 
+
     @GetMapping("")
     public ModelAndView showSupplierList(
             @RequestParam(name = "pageSupplier", required = false, defaultValue = "0") int page,
             @RequestParam(name = "suplierName", required = false) String suplierName,
             @RequestParam(name = "phoneNumber", required = false) String phoneNumber,
             @RequestParam(name = "email", required = false) String email) {
+        if (page < 0) {
+            page = 0;
+        }
+
         Pageable pageable = PageRequest.of(page, 3);
+        Page<Supplier> supplierPage = supplierService.findByCriteria(suplierName, phoneNumber, email, pageable);
+
+        if (page >= supplierPage.getTotalPages() && supplierPage.getTotalPages() > 0) {
+            page = 0;
+            pageable = PageRequest.of(page, 3);
+            supplierPage = supplierService.findByCriteria(suplierName, phoneNumber, email, pageable);
+        }
         ModelAndView modelAndView = new ModelAndView("supplier/list-supplier");
-        modelAndView.addObject("suppliers", supplierService.findByCriteria(suplierName, phoneNumber, email, pageable));
+        modelAndView.addObject("suppliers", supplierPage);
         modelAndView.addObject("suplierName", suplierName);
         modelAndView.addObject("phoneNumber", phoneNumber);
         modelAndView.addObject("email", email);

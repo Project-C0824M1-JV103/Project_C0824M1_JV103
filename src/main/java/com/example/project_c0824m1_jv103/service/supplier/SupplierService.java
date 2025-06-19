@@ -55,6 +55,11 @@ public class SupplierService implements ISupplierService {
     }
 
     @Override
+    public List<Supplier> findAll() {
+        return supplierRepository.findAll();
+    }
+
+    @Override
     public Page<Supplier> findAll(Pageable pageable) {
         return supplierRepository.findAll(pageable);
     }

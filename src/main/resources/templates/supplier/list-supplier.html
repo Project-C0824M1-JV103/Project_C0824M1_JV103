@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Quản lý nhà cung cấp</title>
@@ -339,50 +339,49 @@
                             </tr>
                             </tbody>
                         </table>
+                        <!-- Phân trang -->
+                        <nav aria-label="Phân trang nhà cung cấp" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       th:href="@{/supplier(pageSupplier=0)}"
+                                       th:classappend="${suppliers.number == 0} ? 'disabled' : ''">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       th:href="@{/supplier(pageSupplier=${suppliers.number - 1})}"
+                                       th:classappend="${!suppliers.hasPrevious()} ? 'disabled' : ''">
+                                        <i class="fas fa-angle-left"></i>
+                                    </a>
+                                </li>
+                                <th:block th:each="page, iterStat : ${#numbers.sequence(0, suppliers.totalPages - 1)}">
+                                    <li class="page-item" th:classappend="${page == suppliers.number} ? 'active' : ''">
+                                        <a class="page-link" th:href="@{/supplier(pageSupplier=${page})}" th:text="${page + 1}"></a>
+                                    </li>
+                                </th:block>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       th:href="@{/supplier(pageSupplier=${suppliers.number + 1})}"
+                                       th:classappend="${!suppliers.hasNext()} ? 'disabled' : ''">
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       th:href="@{/supplier(pageSupplier=${suppliers.totalPages - 1})}"
+                                       th:classappend="${suppliers.number == suppliers.totalPages - 1} ? 'disabled' : ''">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="text-center text-muted mt-2">
+                                Trang <span th:text="${suppliers.number + 1}"></span> trong tổng số <span th:text="${suppliers.totalPages}"></span> trang (<span th:text="${suppliers.totalElements}"></span> nhà cung cấp)
+                            </div>
+                        </nav>
                     </div>
                 </div>
-
-                <!-- Phân trang -->
-                <nav aria-label="Phân trang nhà cung cấp" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item">
-                            <a class="page-link"
-                               th:href="@{/supplier(pageSupplier=0)}"
-                               th:classappend="${suppliers.number == 0} ? 'disabled' : ''">
-                                <i class="fas fa-angle-double-left"></i>
-                            </a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link"
-                               th:href="@{/supplier(pageSupplier=${suppliers.number - 1})}"
-                               th:classappend="${!suppliers.hasPrevious()} ? 'disabled' : ''">
-                                <i class="fas fa-angle-left"></i>
-                            </a>
-                        </li>
-                        <th:block th:each="page, iterStat : ${#numbers.sequence(0, suppliers.totalPages - 1)}">
-                            <li class="page-item" th:classappend="${page == suppliers.number} ? 'active' : ''">
-                                <a class="page-link" th:href="@{/supplier(pageSupplier=${page})}" th:text="${page + 1}"></a>
-                            </li>
-                        </th:block>
-                        <li class="page-item">
-                            <a class="page-link"
-                               th:href="@{/supplier(pageSupplier=${suppliers.number + 1})}"
-                               th:classappend="${!suppliers.hasNext()} ? 'disabled' : ''">
-                                <i class="fas fa-angle-right"></i>
-                            </a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link"
-                               th:href="@{/supplier(pageSupplier=${suppliers.totalPages - 1})}"
-                               th:classappend="${suppliers.number == suppliers.totalPages - 1} ? 'disabled' : ''">
-                                <i class="fas fa-angle-double-right"></i>
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="text-center text-muted mt-2">
-                        Trang <span th:text="${suppliers.number + 1}"></span> trong tổng số <span th:text="${suppliers.totalPages}"></span> trang (<span th:text="${suppliers.totalElements}"></span> nhà cung cấp)
-                    </div>
-                </nav>
             </div>
         </div>
     </div>
