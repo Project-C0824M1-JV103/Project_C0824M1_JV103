@@ -25,6 +25,11 @@ public class StorageService implements IStorageService {
     @Override
     @Transactional
     public Storage exportProduct(StorageExportDTO exportDTO) {
+        // Validation: Check export quantity is positive
+        if (exportDTO.getExportQuantity() == null || exportDTO.getExportQuantity() <= 0) {
+            throw new RuntimeException("Số lượng xuất phải lớn hơn 0");
+        }
+        
         Product product = productRepository.findById(exportDTO.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
