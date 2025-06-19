@@ -29,10 +29,27 @@ public class StorageController extends BaseAdminController {
 
     @Autowired
     private ISupplierService supplierService;
+
+    @Autowired
     private IProductService productService;
 
     @Autowired
     private IProductRepository productRepository;
+
+    @GetMapping("")
+    public ModelAndView show(){
+        return new ModelAndView("storage/import-storage").addObject("storages", storageService.findAll());
+    }
+
+    @GetMapping("show-create")
+    public ModelAndView showCreateStorage() {
+        ModelAndView modelAndView = new ModelAndView("storage/import-storage");
+        modelAndView.addObject("inforStorages", storageService.findAll());
+        modelAndView.addObject("suppliers", supplierService.findAll());
+        return modelAndView;
+    }
+
+
 
     @GetMapping("/export")
     public String showExportForm(Model model) {
@@ -54,18 +71,6 @@ public class StorageController extends BaseAdminController {
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("currentPage", "export");
         return "storage/product-selection";
-    }
-    @GetMapping("")
-    public ModelAndView show(){
-        return new ModelAndView("storage/list-storage").addObject("storages", storageService.findAll());
-    }
-
-    @GetMapping("show-create")
-    public ModelAndView showCreateStorage() {
-        ModelAndView modelAndView = new ModelAndView("storage/add-storage");
-        modelAndView.addObject("inforStorages", storageService.findAll());
-        modelAndView.addObject("suppliers", supplierService.findAll());
-        return modelAndView;
     }
 
     @PostMapping("/export")

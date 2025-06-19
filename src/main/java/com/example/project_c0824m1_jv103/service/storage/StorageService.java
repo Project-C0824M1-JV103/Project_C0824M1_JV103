@@ -1,6 +1,7 @@
 package com.example.project_c0824m1_jv103.service.storage;
 
 import com.example.project_c0824m1_jv103.model.Storage;
+import com.example.project_c0824m1_jv103.repository.IEmployeeRepository;
 import com.example.project_c0824m1_jv103.repository.IStorageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class StorageService implements IStorageService {
 
     @Autowired
     private IProductRepository productRepository;
+
+    @Autowired
+    private IEmployeeRepository employeeRepository;
 
     @Override
     @Transactional

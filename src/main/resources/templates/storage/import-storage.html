@@ -24,7 +24,7 @@
         .main-content {
             background-color: #f8f9fa;
             min-height: 100vh;
-            padding: 20px;
+            padding: 20px 20px 20px 0;
         }
 
         .container {
@@ -213,10 +213,12 @@
             .main-content {
                 margin-left: 0;
                 width: 100%;
+                padding: 15px 15px 15px 0;
             }
 
             .container {
                 padding: 25px;
+                margin: 15px 15px 15px 0;
             }
 
             h4.text-center {
@@ -274,6 +276,7 @@
                 margin-bottom: 8px;
             }
         }
+
         .btn-select-product, .btn-select-supplier {
             font-weight: 500;
             transition: all 0.2s ease-in-out;
@@ -295,6 +298,7 @@
         .btn-select-product i, .btn-select-supplier i {
             margin-right: 4px;
         }
+
         .product-image {
             max-width: 80px;
             height: auto;
@@ -303,10 +307,68 @@
             margin-right: 5px;
             margin-bottom: 5px;
         }
+
         .image-container {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            margin: 0;
+            border: 1px solid #dee2e6;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            margin: 0;
+            border: 1px solid #dee2e6;
+            min-height: 110px;
+        }
+
+        .header-section .d-flex {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .header-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-section .text-muted {
+            font-size: 0.95rem;
+            color: #6c757d;
+        }
+
+        @media (max-width: 992px) {
+            .header-section {
+                padding: 15px;
+                margin: 0;
+                min-height: 80px;
+            }
+
+            .header-section h2 {
+                font-size: 1.25rem;
+            }
+
+            .header-section .text-muted {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -314,8 +376,19 @@
 <div class="container-fluid">
     <div class="row">
         <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+
         <div class="col-md-9 col-lg-10">
-            <div class="main-content">
+            <div class="main-content p-4">
+                <div class="header-section">
+                    <div class="d-flex flex-column">
+                        <h2 class="mb-1">
+                            <i class="fas fa-box-open text-primary"></i>
+                            Quản lý sản phẩm
+                        </h2>
+                        <p class="text-muted mb-0">Thêm mới nhập kho</p>
+                    </div>
+                </div>
+
                 <div class="container">
                     <h4 class="text-center mb-4">Nhập kho</h4>
 
@@ -376,8 +449,12 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="submit" class="btn btn-primary">Thêm vào kho</button>
-                            <a th:href="@{/storage}" class="btn btn-secondary">Huỷ</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Lưu vào kho
+                            </button>
+                            <a th:href="@{/storage}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Quay lại
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -388,21 +465,23 @@
 
 <!-- Modal chọn sản phẩm -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" style="max-width: 95vw; width: 120%;">
             <div class="modal-header">
                 <h5 class="modal-title" id="productModalLabel">Chọn sản phẩm</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
+                    <table class="table table-bordered table-hover align-middle text-nowrap">
                         <thead class="table-light">
                         <tr>
-                            <th>Số TT</th>
+                            <th>STT</th>
                             <th>Hình ảnh (Mặt trước/sau)</th>
                             <th>Tên sản phẩm</th>
                             <th>Giá nhập (VND)</th>
+                            <th>CPU</th>
+                            <th>Lưu trữ (GB)</th>
                             <th>Chọn</th>
                         </tr>
                         </thead>
@@ -417,7 +496,9 @@
                                 </div>
                             </td>
                             <td th:text="${i.product.productName}"></td>
-                            <td th:text="${#numbers.formatDecimal(i.cost, 0, 2)}"></td>
+                            <td th:text="${#numbers.formatDecimal(i.cost, 0, 0)}"></td>
+                            <td th:text="${i.product.cpu}"></td>
+                            <td th:text="${i.product.memory}"></td>
                             <td>
                                 <button type="button" class="btn btn-select-product"
                                         th:attr="data-product-name=${i.product.productName},data-product-cost=${i.cost},data-product-images=${#strings.arrayJoin(i.product.productImages.![imageUrl], ',')},data-product-id=${i.product.productId}">
@@ -435,31 +516,33 @@
 
 <!-- Modal chọn nhà cung cấp -->
 <div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
+    <div class="modal-dialog modal-xl modal-dialog-centered"> <!-- Đổi từ modal-lg → modal-xl -->
+        <div class="modal-content" style="max-width: 95vw; width: 130%;"> <!-- Tăng chiều rộng -->
             <div class="modal-header">
                 <h5 class="modal-title" id="supplierModalLabel">Chọn nhà cung cấp</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
+                    <table class="table table-bordered table-hover align-middle text-nowrap">
                         <thead class="table-light">
                         <tr>
-                            <th>Số TT</th>
+                            <th>STT</th>
                             <th>Tên nhà cung cấp</th>
                             <th>Địa chỉ</th>
                             <th>Số điện thoại</th>
+                            <th>Email</th>
                             <th>Chọn</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="s, iterStat : ${suppliers}">
-                            <td th:text="${iterStat.count}"></td>
-                            <td th:text="${s.suplierName}"></td>
-                            <td th:text="${s.address} ?: 'Không có địa chỉ'"></td>
-                            <td th:text="${s.phoneNumber} ?: 'Không có số điện thoại'"></td>
-                            <td>
+                            <td th:text="${iterStat.count}" class="text-nowrap"></td>
+                            <td th:text="${s.suplierName}" class="text-nowrap"></td>
+                            <td th:text="${s.address} ?: 'Không có địa chỉ'" class="text-nowrap"></td>
+                            <td th:text="${s.phoneNumber} ?: 'Không có số điện thoại'" class="text-nowrap"></td>
+                            <td th:text="${s.email} ?: 'Không có email'" class="text-nowrap"></td>
+                            <td class="text-nowrap">
                                 <button type="button" class="btn btn-select-supplier"
                                         th:attr="data-supplier-name=${s.suplierName},data-supplier-id=${s.suplierId}">
                                     <i class="bi bi-check-circle"></i> Chọn
@@ -468,6 +551,7 @@
                         </tr>
                         </tbody>
                     </table>
+
                     <div th:if="${suppliers == null or #lists.isEmpty(suppliers)}" class="alert alert-warning text-center" role="alert">
                         Không có nhà cung cấp nào trong cơ sở dữ liệu.
                     </div>
@@ -489,14 +573,12 @@
                 const images = this.getAttribute('data-product-images').split(',').filter(img => img);
                 const productId = this.getAttribute('data-product-id');
 
-                // Update form fields
                 document.querySelector('input[name="productName"]').value = name;
-                document.querySelector('input[name="cost"]').value = Number(cost).toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.querySelector('input[name="cost"]').value = Number(cost).toLocaleString('vi-VN', { maximumFractionDigits: 0 });
                 document.querySelector('input[name="productId"]').value = productId;
 
-                // Update images in the form
                 const imageContainer = document.querySelector('#productImagesContainer');
-                imageContainer.innerHTML = ''; // Clear existing images
+                imageContainer.innerHTML = '';
                 if (images.length > 0) {
                     images.forEach(img => {
                         const imageElement = document.createElement('img');
@@ -515,10 +597,8 @@
                     imageContainer.appendChild(placeholder);
                 }
 
-                // Update hidden input with all image URLs
                 document.querySelector('#productImagesInput').value = images.join(',');
 
-                // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
                 if (modal) modal.hide();
             });
@@ -538,6 +618,5 @@
         });
     });
 </script>
-
 </body>
 </html>
