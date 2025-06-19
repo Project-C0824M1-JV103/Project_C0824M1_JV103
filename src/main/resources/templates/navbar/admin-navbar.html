@@ -31,7 +31,7 @@
             <nav class="nav flex-column p-3">
 
                 <div class="nav-divider my-2"></div>
-                <a href="/" class="nav-link home-link" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
+                <a href="/" class="nav-link home-link">
                     <i class="fas fa-home"></i>
                     Về trang chủ
                 </a>
@@ -44,7 +44,7 @@
                     Quản lý khách hàng
                 </a>
                 <a th:href="@{/product}" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
-                    <i class="fas fa-box"></i>
+                    <i class="fas fa-box-open"></i>
                     Quản lý sản phẩm
                 </a>
                 <a th:href="@{/Sale}" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
@@ -54,6 +54,10 @@
                 <a th:href="@{/employees}" class="nav-link" th:classappend="${currentPage == 'employee'} ? 'active' : ''">
                     <i class="fas fa-user-tie"></i>
                     Quản lý nhân viên
+                </a>
+                <a th:href="@{/storage/export}" class="nav-link" th:classappend="${currentPage == 'export'} ? 'active' : ''">
+                    <i class="fas fa-dolly"></i>
+                    Xuất sản phẩm
                 </a>
                 <a  th:href="@{/Supplier}" class="nav-link" th:classappend="${currentPage == 'supplier'} ? 'active' : ''">
                     <i class="fas fa-truck"></i>

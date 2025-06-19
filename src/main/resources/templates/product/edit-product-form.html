@@ -14,6 +14,7 @@
     />
     <link rel="stylesheet" th:href="@{/admin-navbar.css}" />
     <link rel="stylesheet" th:href="@{/admin-common.css}" />
+    <link rel="stylesheet" th:href="@{/css/image-validation.css}" />
     
     <!-- CKEditor 5 -->
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
@@ -219,11 +220,11 @@
               <div class="row align-items-center">
                 <div class="col">
                   <h2 class="mb-1">
-                    <i class="fas fa-edit text-primary"></i>
-                    Chỉnh sửa sản phẩm
+                    <i class="fas fa-box-open text-primary"></i>
+                    Quản lý sản phẩm
                   </h2>
                   <p class="text-muted mb-0">
-                    Cập nhật thông tin sản phẩm trong hệ thống
+                    Cập nhật thông tin sản phẩm
                   </p>
                 </div>
 
@@ -233,8 +234,8 @@
             <!-- Form Section -->
             <div class="form-section">
               <div class="form-header">
-                <h4 class="mb-0">
-                  <i class="fas fa-box-open me-2"></i>
+                <h4 class="mb-0" style="text-align: center">
+                  <i class="fas fa-edit"></i>
                   Thông tin sản phẩm
                 </h4>
               </div>
@@ -306,13 +307,13 @@
                     <!-- Kích thước màn hình -->
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label class="form-label">Kích thước màn hình <span class="required">*</span></label>
+                        <label class="form-label">Kích thước màn hình(inch) <span class="required">*</span></label>
                         <input
                           type="text"
                           th:field="*{size}"
                           class="form-control"
                           th:classappend="${#fields.hasErrors('size')} ? 'is-invalid'"
-                          placeholder="Ví dụ: 6.1 inch"
+                          placeholder="Ví dụ: 6.1"
                           required
                         />
                         <div
@@ -348,13 +349,13 @@
                     <!-- Camera sau -->
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label class="form-label">Camera sau <span class="required">*</span></label>
+                        <label class="form-label">Camera sau (MP) <span class="required">*</span></label>
                         <input
                           type="text"
                           th:field="*{cameraBack}"
                           class="form-control"
                           th:classappend="${#fields.hasErrors('cameraBack')} ? 'is-invalid'"
-                          placeholder="Ví dụ: 48MP"
+                          placeholder="Ví dụ: 48"
                           required
                         />
                         <div
@@ -369,13 +370,13 @@
                     <!-- Camera trước -->
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label class="form-label">Camera trước <span class="required">*</span></label>
+                        <label class="form-label">Camera trước (MP) <span class="required">*</span></label>
                         <input
                           type="text"
                           th:field="*{cameraFront}"
                           class="form-control"
                           th:classappend="${#fields.hasErrors('cameraFront')} ? 'is-invalid'"
-                          placeholder="Ví dụ: 12MP"
+                          placeholder="Ví dụ: 12"
                           required
                         />
                         <div
@@ -390,13 +391,13 @@
                     <!-- Bộ nhớ -->
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label class="form-label">Bộ nhớ <span class="required">*</span></label>
+                        <label class="form-label">Bộ nhớ (GB) <span class="required">*</span></label>
                         <input
                           type="text"
                           th:field="*{memory}"
                           class="form-control"
                           th:classappend="${#fields.hasErrors('memory')} ? 'is-invalid'"
-                          placeholder="Ví dụ: 128GB"
+                          placeholder="Ví dụ: 128"
                           required
                         />
                         <div
@@ -582,7 +583,8 @@
                                 <small class="text-muted">
                                   <i class="fas fa-info-circle me-1"></i>
                                   Hỗ trợ: JPG, PNG, GIF<br/>
-                                  Tối đa 5MB mỗi file
+                                  Tối đa 4 ảnh, 5MB mỗi file<br/>
+                                  Không chọn ảnh trùng tên
                                 </small>
                               </div>
                             </div>
@@ -604,12 +606,12 @@
                   <div class="row mt-4">
                     <div class="col-12">
                       <div class="d-flex justify-content-end gap-3">
-                        <a href="/product" class="btn btn-secondary">
-                          <i class="fas fa-times me-1"></i>Hủy
-                        </a>
                         <button type="submit" class="btn btn-primary">
                           <i class="fas fa-save me-1"></i>Cập nhật sản phẩm
                         </button>
+                        <a href="/product" class="btn btn-secondary">
+                          <i class="fas fa-times me-1"></i>Quay lại
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -621,10 +623,21 @@
       </div>
     </div>
 
+    <div class="admin-loading-overlay" id="loading-overlay">
+      <div class="admin-loading-box">
+        <div class="admin-spinner">
+          <i class="fas fa-spinner fa-spin fa-2x"></i>
+        </div>
+        <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       let deletedUrls = [];
       let descriptionEditor;
+      let selectedNewFiles = []; // Track new selected files
+      const MAX_IMAGES = 4;
 
       // Xóa ảnh hiện tại
       function deleteImage(button) {
@@ -649,38 +662,24 @@
         .getElementById("imageFiles")
         .addEventListener("change", function (e) {
           const files = e.target.files;
-          const preview = document.getElementById("imagePreview");
-          preview.innerHTML = "";
-
-          if (files.length > 0) {
-            const title = document.createElement("h6");
-            title.textContent = "Ảnh mới đã chọn:";
-            title.style.marginTop = "15px";
-            preview.appendChild(title);
-
-            for (let i = 0; i < files.length; i++) {
-              const file = files[i];
-              const reader = new FileReader();
-
-              reader.onload = function (e) {
-                const imgDiv = document.createElement("div");
-                imgDiv.className = "image-preview";
-                imgDiv.innerHTML = `
-                <img src="${e.target.result}" alt="New Image" />
-                <button type="button" class="btn-delete" onclick="if(confirm('Xóa ảnh này?')) this.parentElement.remove()" title="Xóa ảnh này">
-                  <i class="fas fa-times"></i>
-                </button>
-              `;
-                preview.appendChild(imgDiv);
-              };
-
-              reader.readAsDataURL(file);
-            }
-
-            // Cập nhật text
-            const uploadArea = document.querySelector(".image-upload-area p");
-            uploadArea.textContent = `Đã chọn ${files.length} ảnh`;
+          
+          // Validate before adding files
+          const validationResult = validateNewImages(files);
+          if (validationResult.error) {
+            alert(validationResult.error);
+            e.target.value = ''; // Clear input
+            return;
           }
+          
+          // Add new files to existing selection (không thay thế)
+          for (let i = 0; i < files.length; i++) {
+            selectedNewFiles.push(files[i]);
+          }
+          
+          updateNewFilePreview();
+          
+          // Clear input to allow same file selection again
+          e.target.value = '';
         });
 
       // Initialize CKEditor
@@ -708,6 +707,192 @@
         .catch(error => {
           console.error('Error initializing CKEditor:', error);
         });
+
+      // Remove new file function
+      function removeNewFile(index) {
+        if (confirm('Xóa ảnh này?')) {
+          selectedNewFiles.splice(index, 1);
+          updateNewFilePreview();
+        }
+      }
+
+      // Update new file preview
+      function updateNewFilePreview() {
+        const preview = document.getElementById("imagePreview");
+        preview.innerHTML = "";
+
+        if (selectedNewFiles.length > 0) {
+          const title = document.createElement("h6");
+          title.textContent = "Ảnh mới đã chọn:";
+          title.style.marginTop = "15px";
+          preview.appendChild(title);
+
+          selectedNewFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const imgDiv = document.createElement("div");
+              imgDiv.className = "image-preview";
+              imgDiv.setAttribute('data-file-index', index);
+              imgDiv.innerHTML = `
+                <img src="${e.target.result}" alt="New Image" />
+                <button type="button" class="btn-delete" onclick="removeNewFile(${index})" title="Xóa ảnh này">
+                  <i class="fas fa-times"></i>
+                </button>
+              `;
+              preview.appendChild(imgDiv);
+            };
+            reader.readAsDataURL(file);
+          });
+
+          // Update files in input
+          const dt = new DataTransfer();
+          selectedNewFiles.forEach(file => dt.items.add(file));
+          document.getElementById('imageFiles').files = dt.files;
+
+          // Update text
+          const uploadArea = document.querySelector(".image-upload-area p");
+          uploadArea.textContent = `Đã chọn ${selectedNewFiles.length} ảnh`;
+        } else {
+          const uploadArea = document.querySelector(".image-upload-area p");
+          uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
+        }
+      }
+
+      // Validate new images before adding
+      function validateNewImages(newFiles) {
+        // Count existing images (not deleted)
+        const existingImages = document.querySelectorAll('.existing-images .image-preview');
+        const existingCount = Array.from(existingImages).filter(img => 
+          img.style.display !== 'none'
+        ).length;
+        
+        const currentNewCount = selectedNewFiles.length;
+        const incomingCount = newFiles.length;
+        const totalCount = existingCount + currentNewCount + incomingCount;
+        
+        // Check total count limit
+        if (totalCount > MAX_IMAGES) {
+          return {
+            error: `Tổng số ảnh không được vượt quá ${MAX_IMAGES} ảnh. Hiện tại có ${existingCount} ảnh cũ + ${currentNewCount} ảnh mới đã chọn, bạn đang chọn thêm ${incomingCount} ảnh.`
+          };
+        }
+        
+        // Get existing image names from data attributes
+        const existingImageNames = [];
+        const existingImageElements = document.querySelectorAll('.existing-images .image-preview');
+        existingImageElements.forEach(img => {
+          if (img.style.display !== 'none') {
+            const imageUrl = img.getAttribute('data-image-url');
+            if (imageUrl) {
+              // Extract filename from URL
+              const fileName = imageUrl.split('/').pop().toLowerCase();
+              existingImageNames.push(fileName);
+            }
+          }
+        });
+        
+        // Get already selected new file names
+        const selectedNewFileNames = selectedNewFiles.map(file => file.name.toLowerCase());
+        
+        // Check for duplicate files
+        const newFileNames = [];
+        for (let i = 0; i < newFiles.length; i++) {
+          const fileName = newFiles[i].name.toLowerCase();
+          
+          // Check if already exists in current product
+          const fileNameOnly = fileName.split('.')[0]; // Get name without extension
+          const existingMatch = existingImageNames.some(existingName => 
+            existingName.includes(fileNameOnly) || fileNameOnly.includes(existingName.split('.')[0])
+          );
+          
+          if (existingMatch) {
+            return {
+              error: `Ảnh "${newFiles[i].name}" có tên tương tự với ảnh hiện tại của sản phẩm.`
+            };
+          }
+          
+          // Check if already selected in new files
+          if (selectedNewFileNames.includes(fileName)) {
+            return {
+              error: `Ảnh "${newFiles[i].name}" đã được chọn trước đó.`
+            };
+          }
+          
+          // Check for duplicates in current batch
+          if (newFileNames.includes(fileName)) {
+            return {
+              error: `Bạn đang chọn ảnh "${newFiles[i].name}" nhiều lần.`
+            };
+          }
+          
+          newFileNames.push(fileName);
+          
+          // Check file size (5MB max)
+          if (newFiles[i].size > 5 * 1024 * 1024) {
+            return {
+              error: `Ảnh "${newFiles[i].name}" có kích thước quá lớn (tối đa 5MB).`
+            };
+          }
+          
+          // Check file type
+          const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+          if (!validTypes.includes(newFiles[i].type)) {
+            return {
+              error: `Ảnh "${newFiles[i].name}" không đúng định dạng. Chỉ chấp nhận JPG, PNG, GIF.`
+            };
+          }
+        }
+        
+        return { error: null }; // Valid
+      }
+
+      // Drag and drop functionality
+      const uploadArea = document.querySelector('.image-upload-area');
+      
+      if (uploadArea) {
+        uploadArea.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          this.style.backgroundColor = '#f0f2ff';
+          this.style.borderColor = '#667eea';
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+          e.preventDefault();
+          this.style.backgroundColor = '#f8f9fa';
+          this.style.borderColor = '#dee2e6';
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+          e.preventDefault();
+          this.style.backgroundColor = '#f8f9fa';
+          this.style.borderColor = '#dee2e6';
+          
+          const files = e.dataTransfer.files;
+          
+          // Validate before adding files
+          const validationResult = validateNewImages(files);
+          if (validationResult.error) {
+            alert(validationResult.error);
+            return;
+          }
+          
+          // Add dropped files to selectedFiles array
+          for (let i = 0; i < files.length; i++) {
+            selectedNewFiles.push(files[i]);
+          }
+          
+          updateNewFilePreview();
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var form = document.querySelector('form');
+        if(form) {
+          form.addEventListener('submit', function() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+          });
+        }
+      });
     </script>
   </body>
 </html>

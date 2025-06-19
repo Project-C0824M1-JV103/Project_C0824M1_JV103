@@ -100,7 +100,7 @@
 <div class="container-fluid">
     <div class="row">
         <!-- Include Admin Navbar -->
-                    <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
 
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
@@ -110,47 +110,23 @@
                     <div class="row align-items-center">
                         <div class="col">
                             <h2 class="mb-1">
-                                <i class="fas fa-users text-primary"></i>
+                                <i class="fas fa-user-tie text-primary"></i>
                                 Quản lý nhân viên
                             </h2>
                             <p class="text-muted mb-0">
-                                Thêm nhân viên mới
+                                Thêm mới nhân viên
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Success/Error Messages -->
-                <div
-                    th:if="${successMessage}"
-                    class="alert alert-success alert-dismissible fade show"
-                    role="alert"
-                >
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span th:text="${successMessage}"></span>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert"
-                    ></button>
-                </div>
-
-                <div
-                    th:if="${errorMessage}"
-                    class="alert alert-danger alert-dismissible fade show"
-                    role="alert"
-                >
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <span th:text="${errorMessage}"></span>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert"
-                    ></button>
-                </div>
-
                 <div class="search-section">
-                    <h4 class="section-title">Thêm mới nhân viên</h4>
+                    <div class="section-title">
+                        <h4>
+                            <i class="fas fa-plus"></i>
+                            Thông tin nhân viên
+                        </h4>
+                    </div>
                     <form
                             th:action="@{/employees/create}"
                             th:object="${employee}"
@@ -159,7 +135,7 @@
                     >
                         <div class="form-inner">
                             <div class="mb-3">
-                                <label>Họ và tên</label>
+                                <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
                                 <input
                                         type="text"
                                         th:field="*{fullName}"
@@ -171,7 +147,8 @@
                             <div class="mb-3">
                                 <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                                 <input type="text" th:field="*{phone}" class="form-control"/>
-                                <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('phone')}"
+                                     th:errors="*{phone}"></div>
                             </div>
 
                             <div class="mb-3">
@@ -188,9 +165,11 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Email (tên đăng nhập) <span class="text-danger">*</span></label>
+                                <label class="form-label">Email (tên đăng nhập) <span
+                                        class="text-danger">*</span></label>
                                 <input type="email" th:field="*{email}" class="form-control" required/>
-                                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('email')}"
+                                     th:errors="*{email}"></div>
                             </div>
 
                             <div class="mb-3">
@@ -201,8 +180,11 @@
                             </div>
 
                             <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
-                                <a th:href="@{/employees}" class="btn btn-secondary">Quay lại</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Lưu nhân viên
+                                </button>
+                                <a th:href="@{/employees}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>Quay lại</a>
                             </div>
                         </div>
                     </form>

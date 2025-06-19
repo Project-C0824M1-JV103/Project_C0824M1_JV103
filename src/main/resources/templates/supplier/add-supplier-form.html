@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thêm nhà cung cấp - Admin</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/admin-navbar.css}">
+  <link rel="stylesheet" th:href="@{/admin-common.css}">
+
+  <style>
+    .main-content {
+      background-color: #f8f9fa;
+      min-height: 100vh;
+    }
+
+    .header-section {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .form-section {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .form-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .form-body {
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .form-control,
+    .form-select {
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 12px 15px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .image-section {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .image-preview-section {
+      flex: 1;
+    }
+
+    .image-upload-section {
+      flex: 1;
+    }
+
+    .image-upload-area {
+      border: 2px dashed #dee2e6;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      background-color: #f8f9fa;
+      transition: all 0.3s ease;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .image-upload-area:hover {
+      border-color: #667eea;
+      background-color: #f0f2ff;
+    }
+
+    .image-preview {
+      width: 200px;
+      height: 200px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #dee2e6;
+      position: relative;
+      display: inline-block;
+      margin: 5px;
+    }
+
+    .image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background-color: #f8f9fa;
+    }
+
+    .btn-delete {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #dc3545;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .btn-delete:hover {
+      background: #c82333;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .invalid-feedback {
+      display: block;
+      color: #dc3545;
+      font-size: 0.875em;
+      margin-top: 5px;
+    }
+
+    .required {
+      color: #dc3545;
+    }
+
+    .alert {
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Admin Sidebar -->
+    <div class="col-md-3 col-lg-2">
+      <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10">
+      <div class="main-content p-4">
+        <!-- Header -->
+        <div class="header-section">
+          <div class="row align-items-center">
+            <div class="col">
+              <h2 class="mb-1">
+                <i class="fas fa-truck text-primary"></i>
+                Quản lý nhà cung cấp
+              </h2>
+              <p class="text-muted mb-0">
+                Thêm mới nhà cung cấp
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${message}" class="alert alert-success" role="alert">
+          <i class="fas fa-check-circle me-2"></i>
+          <span th:text="${message}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <span th:text="${error}"></span>
+        </div>
+        
+        <!-- Client Validation Error Message -->
+        <div id="clientValidationAlert" class="alert alert-danger" role="alert" style="display: none;">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <span>Vui lòng kiểm tra lại thông tin đã nhập</span>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-section">
+          <div class="form-header">
+            <h4 class="mb-0" style="text-align: center">
+              <i class="fas fa-plus me-2"></i>
+              Thông tin nhà cung cấp
+            </h4>
+          </div>
+
+          <div class="form-body">
+            <form
+              th:action="@{/Supplier/add}"
+              th:object="${supplierDto}"
+              method="post"
+              enctype="multipart/form-data"
+              novalidate
+            >
+              <div class="row">
+                <!-- Tên nhà cung cấp -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">
+                      Tên nhà cung cấp <span class="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      th:field="*{suplierName}"
+                      class="form-control"
+                      th:classappend="${#fields.hasErrors('suplierName')} ? 'is-invalid'"
+                      placeholder="Nhập tên nhà cung cấp"
+                      required
+                    />
+                    <div
+                      th:if="${#fields.hasErrors('suplierName')}"
+                      class="invalid-feedback"
+                    >
+                      <span th:errors="*{suplierName}"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">
+                      Email <span class="required">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      th:field="*{email}"
+                      class="form-control"
+                      th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                      placeholder="Nhập email nhà cung cấp"
+                      required
+                    />
+                    <div
+                      th:if="${#fields.hasErrors('email')}"
+                      class="invalid-feedback"
+                    >
+                      <span th:errors="*{email}"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Số điện thoại -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">
+                      Số điện thoại <span class="required">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      th:field="*{phoneNumber}"
+                      class="form-control"
+                      th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
+                      placeholder="Nhập số điện thoại"
+                      required
+                    />
+                    <div
+                      th:if="${#fields.hasErrors('phoneNumber')}"
+                      class="invalid-feedback"
+                    >
+                      <span th:errors="*{phoneNumber}"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Địa chỉ -->
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">
+                      Địa chỉ <span class="required">*</span>
+                    </label>
+                    <textarea
+                      th:field="*{address}"
+                      class="form-control"
+                      th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'"
+                      placeholder="Nhập địa chỉ nhà cung cấp"
+                      rows="3"
+                      required
+                    ></textarea>
+                    <div
+                      th:if="${#fields.hasErrors('address')}"
+                      class="invalid-feedback"
+                    >
+                      <span th:errors="*{address}"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Image Section -->
+              <div class="row mt-4">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label">Hình ảnh nhà cung cấp</label>
+                    <div class="image-section">
+                      <div class="image-preview-section">
+                        <div id="imagePreview"></div>
+                      </div>
+
+                      <div class="image-upload-section">
+                        <div class="image-upload-area">
+                          <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                          <h6 class="text-muted mb-2">Thêm ảnh nhà cung cấp</h6>
+                          <p class="text-muted mb-3">
+                            Kéo thả file ảnh vào đây<br/>hoặc click để chọn
+                          </p>
+                          <input
+                            type="file"
+                            id="imageFile"
+                            th:field="*{imageFile}"
+                            accept="image/*"
+                            class="form-control"
+                            style="display: none"
+                          />
+                          <button
+                            type="button"
+                            class="btn btn-primary btn-sm mb-3"
+                            onclick="document.getElementById('imageFile').click()"
+                          >
+                            <i class="fas fa-plus me-2"></i>Chọn ảnh
+                          </button>
+                          <div class="text-center">
+                            <small class="text-muted">
+                              <i class="fas fa-info-circle me-1"></i>
+                              Hỗ trợ: JPG, PNG, GIF<br/>
+                              Tối đa 5MB mỗi file
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="row mt-4">
+                <div class="col-12">
+                  <div class="d-flex justify-content-end gap-3">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-save me-1"></i>Lưu nhà cung cấp
+                    </button>
+                    <a href="/Supplier" class="btn btn-secondary">
+                      <i class="fas fa-times me-1"></i>Quay lại
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script xem trước hình ảnh và validation -->
+<script>
+  // Preview ảnh được chọn
+  document.getElementById('imageFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    
+    if (file) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        preview.innerHTML = `
+          <h6 style="margin-top: 15px; margin-bottom: 15px;">Ảnh đã chọn:</h6>
+          <div class="image-preview">
+            <img src="${e.target.result}" alt="Preview Image" />
+            <button type="button" class="btn-delete" onclick="removeImage()" title="Xóa ảnh này">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        `;
+      };
+      
+      reader.readAsDataURL(file);
+      
+      // Cập nhật text
+      const uploadArea = document.querySelector('.image-upload-area p');
+      uploadArea.innerHTML = `Đã chọn: ${file.name}`;
+    }
+  });
+
+  function removeImage() {
+    if (confirm('Xóa ảnh này?')) {
+      document.getElementById('imageFile').value = '';
+      document.getElementById('imagePreview').innerHTML = '';
+      
+      // Reset upload area text
+      const uploadArea = document.querySelector('.image-upload-area p');
+      uploadArea.innerHTML = 'Kéo thả file ảnh vào đây<br/>hoặc click để chọn';
+    }
+  }
+
+  // Drag and drop functionality
+  const uploadArea = document.querySelector('.image-upload-area');
+  
+  uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.style.backgroundColor = '#f0f2ff';
+    this.style.borderColor = '#667eea';
+  });
+
+  uploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.style.backgroundColor = '#f8f9fa';
+    this.style.borderColor = '#dee2e6';
+  });
+
+  uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.style.backgroundColor = '#f8f9fa';
+    this.style.borderColor = '#dee2e6';
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      
+      // Set file to input element
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      document.getElementById('imageFile').files = dt.files;
+      
+      // Trigger change event
+      const event = new Event('change', { bubbles: true });
+      document.getElementById('imageFile').dispatchEvent(event);
+    }
+  });
+
+  // Client-side validation for duplicate email and phone number
+  let emailValidationTimeout;
+  let phoneValidationTimeout;
+
+  // Validate email format
+  function validateEmailFormat() {
+    const emailInput = document.querySelector('input[name="email"]');
+    const emailValue = emailInput.value.trim();
+    
+    // Remove existing validation message
+    removeValidationMessage(emailInput);
+    
+    if (emailValue.length > 0) {
+      // Check if email has valid format
+      if (!isValidEmail(emailValue)) {
+        showValidationError(emailInput, 'Email phải có định dạng hợp lệ (ví dụ: example@domain.com)');
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Validate email (format + duplicate check)
+  function validateEmail() {
+    const emailInput = document.querySelector('input[name="email"]');
+    const emailValue = emailInput.value.trim();
+    
+    // First validate format
+    if (!validateEmailFormat()) {
+      return;
+    }
+    
+    // Then check for duplicates if format is valid
+    if (emailValue.length > 0 && isValidEmail(emailValue)) {
+      clearTimeout(emailValidationTimeout);
+      emailValidationTimeout = setTimeout(() => {
+        fetch('/Supplier/check-email?email=' + encodeURIComponent(emailValue))
+          .then(response => response.json())
+          .then(data => {
+            if (data.exists) {
+              showValidationError(emailInput, 'Email này đã được sử dụng bởi nhà cung cấp khác');
+            }
+          })
+          .catch(error => {
+            console.error('Error checking email:', error);
+          });
+      }, 500);
+    }
+  }
+
+  // Validate phone number format
+  function validatePhoneNumberFormat() {
+    const phoneInput = document.querySelector('input[name="phoneNumber"]');
+    const phoneValue = phoneInput.value.trim();
+    
+    // Remove existing validation message
+    removeValidationMessage(phoneInput);
+    
+    if (phoneValue.length > 0) {
+      // Check if phone number contains only digits
+      if (!/^\d+$/.test(phoneValue)) {
+        showValidationError(phoneInput, 'Số điện thoại chỉ được chứa các chữ số');
+        return false;
+      }
+      
+      // Check phone number length (10-11 digits)
+      if (phoneValue.length < 10 || phoneValue.length > 11) {
+        showValidationError(phoneInput, 'Số điện thoại phải có từ 10-11 chữ số');
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Validate phone number (format + duplicate check)
+  function validatePhoneNumber() {
+    const phoneInput = document.querySelector('input[name="phoneNumber"]');
+    const phoneValue = phoneInput.value.trim();
+    
+    // First validate format
+    if (!validatePhoneNumberFormat()) {
+      return;
+    }
+    
+    // Then check for duplicates if format is valid
+    if (phoneValue.length >= 10 && phoneValue.length <= 11) {
+      clearTimeout(phoneValidationTimeout);
+      phoneValidationTimeout = setTimeout(() => {
+        fetch('/Supplier/check-phone?phoneNumber=' + encodeURIComponent(phoneValue))
+          .then(response => response.json())
+          .then(data => {
+            if (data.exists) {
+              showValidationError(phoneInput, 'Số điện thoại này đã được sử dụng bởi nhà cung cấp khác');
+            }
+          })
+          .catch(error => {
+            console.error('Error checking phone number:', error);
+          });
+      }, 500);
+    }
+  }
+
+  // Helper function to validate email format
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  // Show validation error
+  function showValidationError(inputElement, message) {
+    inputElement.classList.add('is-invalid');
+    
+    let feedback = inputElement.parentNode.querySelector('.client-validation-feedback');
+    if (!feedback) {
+      feedback = document.createElement('div');
+      feedback.classList.add('client-validation-feedback', 'invalid-feedback');
+      inputElement.parentNode.appendChild(feedback);
+    }
+    feedback.textContent = message;
+  }
+
+  // Remove validation message
+  function removeValidationMessage(inputElement) {
+    inputElement.classList.remove('is-invalid');
+    const feedback = inputElement.parentNode.querySelector('.client-validation-feedback');
+    if (feedback) {
+      feedback.remove();
+    }
+  }
+
+  // Attach event listeners
+  document.addEventListener('DOMContentLoaded', function() {
+    const emailInput = document.querySelector('input[name="email"]');
+    const phoneInput = document.querySelector('input[name="phoneNumber"]');
+    const form = document.querySelector('form');
+    
+    if (emailInput) {
+      emailInput.addEventListener('input', validateEmailFormat);
+      emailInput.addEventListener('blur', validateEmail);
+    }
+    
+    if (phoneInput) {
+      phoneInput.addEventListener('input', validatePhoneNumberFormat);
+      phoneInput.addEventListener('blur', validatePhoneNumber);
+    }
+    
+    // Form submission validation
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const hasClientErrors = document.querySelectorAll('.client-validation-feedback').length > 0;
+        const alertDiv = document.getElementById('clientValidationAlert');
+        
+        if (hasClientErrors) {
+          e.preventDefault();
+          // Show error alert
+          alertDiv.style.display = 'block';
+          // Scroll to top to show the alert
+          window.scrollTo({top: 0, behavior: 'smooth'});
+          // Hide alert after 5 seconds
+          setTimeout(() => {
+            alertDiv.style.display = 'none';
+          }, 5000);
+        } else {
+          // Hide alert if no errors
+          alertDiv.style.display = 'none';
+        }
+      });
+    }
+  });
+</script>
+
+<div class="admin-loading-overlay" id="loading-overlay">
+  <div class="admin-loading-box">
+    <div class="admin-spinner">
+      <i class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+    <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.querySelector('form');
+    if(form) {
+      form.addEventListener('submit', function() {
+        document.getElementById('loading-overlay').style.display = 'flex';
+      });
+    }
+  });
+</script>
+</body>
+</html>

@@ -157,7 +157,6 @@
 }
 
 /* Pagination */
-
 .pagination .page-link {
     color: #667eea;
     border: 1px solid #dee2e6;
@@ -257,4 +256,58 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #5a6dd8;
+}
+
+/* Popup Loading Overlay - Admin Style */
+.admin-loading-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(102, 126, 234, 0.12); /* tím nhạt */
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s;
+}
+.admin-loading-overlay[style*="display: flex"] {
+  display: flex !important;
+}
+.admin-loading-box {
+  background: #fff;
+  padding: 36px 56px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInScale 0.4s cubic-bezier(.4,2,.6,1) both;
+}
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.admin-spinner {
+  margin-bottom: 18px;
+  color: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.12);
+}
+.admin-spinner i {
+  color: #fff;
+  font-size: 2.2rem;
+  text-shadow: 0 2px 8px rgba(102, 126, 234, 0.18);
+}
+.admin-loading-text {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 500;
+  margin-top: 6px;
+  letter-spacing: 0.01em;
+  font-family: 'Noto Sans', 'Segoe UI', Arial, sans-serif;
 } 

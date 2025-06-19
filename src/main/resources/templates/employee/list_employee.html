@@ -326,11 +326,11 @@
               <div class="row align-items-center">
                 <div class="col">
                   <h2 class="mb-1">
-                    <i class="fas fa-users text-primary"></i>
+                    <i class="fas fa-user-tie text-primary"></i>
                     Quản lý nhân viên
                   </h2>
                   <p class="text-muted mb-0">
-                    Danh sách tất cả nhân viên trong hệ thống
+                    Danh sách nhân viên
                   </p>
                 </div>
                 <div class="col-auto">
@@ -399,7 +399,7 @@
                         <i class="fas fa-phone"></i>
                       </span>
                       <input
-                        type="text"
+                        type="number"
                         id="phone"
                         name="phone"
                         class="form-control"
@@ -442,7 +442,7 @@
                       <i class="fas fa-refresh"></i> Làm mới
                     </button>
                   </div>
-                  <div class="col-md-10">
+                  <div class="col-md-7">
                     <div class="d-flex align-items-center gap-3">
                       <button
                         id="deleteSelectedBtn"
@@ -456,6 +456,16 @@
                         Vô hiệu hóa nhân viên đã chọn
                       </button>
                       <span id="selectedCount" class="selected-count"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="text-muted d-flex align-items-center h-100 justify-content-end">
+                      <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        <span th:if="${totalElements != null}">
+                          Tìm thấy <strong th:text="${totalElements}">0</strong> nhân viên
+                        </span>
+                      </small>
                     </div>
                   </div>
                 </div>
@@ -561,90 +571,69 @@
                         </div>
                       </td>
                     </tr>
+                    <!-- Empty state -->
+                    <tr th:if="${listEmployee.isEmpty()}">
+                      <td colspan="7" class="text-center py-4">
+                        <div class="text-muted">
+                          <div>
+                            <i class="fas fa-user-tie text-primary"></i>
+                            <h6>
+                              Không có kết quả tìm kiếm phù hợp
+                            </h6>
+                            <p class="mb-0">
+                              Vui lòng thử lại với từ khóa khác
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
 
               <!-- Pagination -->
-              <nav
-                      th:if="${totalPages > 1}"
-                      aria-label="Employee pagination"
-                      class="mt-4"
-              >
+              <nav aria-label="Employee pagination" class="mt-4">
                 <ul class="pagination justify-content-center">
-                  <!-- First page -->
-                  <li
-                          class="page-item"
-                          th:classappend="${pageNumber == 0} ? 'disabled'"
-                  >
-                    <a
-                            class="page-link"
-                            th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=0, size=${pageSize})} : @{/employees(page=0, size=${pageSize})}"
-                    >
+                  <li class="page-item" th:classappend="${listEmployee.isEmpty() || pageNumber == 0} ? 'disabled' : ''">
+                    <a class="page-link"
+                       th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=0, size=${pageSize})} : @{/employees(page=0, size=${pageSize})}"
+                       tabindex="-1">
                       <i class="fas fa-angle-double-left"></i>
                     </a>
                   </li>
-
-                  <!-- Previous page -->
-                  <li
-                          class="page-item"
-                          th:classappend="${pageNumber == 0} ? 'disabled'"
-                  >
-                    <a
-                            class="page-link"
-                            th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=${pageNumber - 1}, size=${pageSize})} : @{/employees(page=${pageNumber - 1}, size=${pageSize})}"
-                    >
+                  <li class="page-item" th:classappend="${listEmployee.isEmpty() || pageNumber == 0} ? 'disabled' : ''">
+                    <a class="page-link"
+                       th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=${pageNumber - 1}, size=${pageSize})} : @{/employees(page=${pageNumber - 1}, size=${pageSize})}"
+                       tabindex="-1">
                       <i class="fas fa-angle-left"></i>
                     </a>
                   </li>
-
-                  <!-- Page numbers -->
-                  <li
-                          th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                          class="page-item"
-                          th:if="${pageNum >= pageNumber - 2 and pageNum <= pageNumber + 2}"
-                          th:classappend="${pageNum == pageNumber} ? 'active'"
-                  >
-                    <a
-                            class="page-link"
-                            th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=${pageNum}, size=${pageSize})} : @{/employees(page=${pageNum}, size=${pageSize})}"
-                            th:text="${pageNum + 1}"
-                    ></a>
-                  </li>
-
-                  <!-- Next page -->
-                  <li
-                          class="page-item"
-                          th:classappend="${pageNumber >= totalPages - 1} ? 'disabled'"
-                  >
-                    <a
-                            class="page-link"
-                            th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=${pageNumber + 1}, size=${pageSize})} : @{/employees(page=${pageNumber + 1}, size=${pageSize})}"
-                    >
+                  <th:block th:if="${!listEmployee.isEmpty()}">
+                    <th:block th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
+                      <li class="page-item" th:classappend="${pageNum == pageNumber} ? 'active' : ''">
+                        <a class="page-link"
+                           th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=${pageNum}, size=${pageSize})} : @{/employees(page=${pageNum}, size=${pageSize})}"
+                           th:text="${pageNum + 1}"></a>
+                      </li>
+                    </th:block>
+                  </th:block>
+                  <li class="page-item" th:classappend="${listEmployee.isEmpty() || pageNumber >= totalPages - 1} ? 'disabled' : ''">
+                    <a class="page-link"
+                       th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=${pageNumber + 1}, size=${pageSize})} : @{/employees(page=${pageNumber + 1}, size=${pageSize})}"
+                       tabindex="-1">
                       <i class="fas fa-angle-right"></i>
                     </a>
                   </li>
-
-                  <!-- Last page -->
-                  <li
-                          class="page-item"
-                          th:classappend="${pageNumber >= totalPages - 1} ? 'disabled'"
-                  >
-                    <a
-                            class="page-link"
-                            th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=${totalPages - 1}, size=${pageSize})} : @{/employees(page=${totalPages - 1}, size=${pageSize})}"
-                    >
+                  <li class="page-item" th:classappend="${listEmployee.isEmpty() || pageNumber >= totalPages - 1} ? 'disabled' : ''">
+                    <a class="page-link"
+                       th:href="${isSearch} ? @{/employees(fullName=${fullName}, phone=${phone}, role=${roleParam}, page=${totalPages - 1}, size=${pageSize})} : @{/employees(page=${totalPages - 1}, size=${pageSize})}"
+                       tabindex="-1">
                       <i class="fas fa-angle-double-right"></i>
                     </a>
                   </li>
                 </ul>
-
-                <!-- Page info -->
                 <div class="text-center text-muted mt-2">
-                  Trang <span th:text="${pageNumber + 1}"></span> trong
-                  tổng số <span th:text="${totalPages}"></span> trang
-                  (<span th:text="${totalElements}"></span>
-                  nhân viên)
+                  Trang <span th:text="${pageNumber + 1}"></span> trong tổng số <span th:text="${totalPages}"></span> trang (<span th:text="${totalElements}"></span> nhân viên)
                 </div>
               </nav>
             </div>
