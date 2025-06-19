@@ -18,7 +18,11 @@ public class EmployeeService implements IEmployeeService {
 
     @Override
     public void deleteEmployeesByIds(List<Integer> employeeIds) {
-        employeeRepository.deleteAllById(employeeIds);
+        List<Employee> employees = employeeRepository.findAllById(employeeIds);
+        for (Employee employee : employees) {
+            employee.setStatus(Employee.Status.inactive);
+        }
+        employeeRepository.saveAll(employees);
     }
 
     @Override

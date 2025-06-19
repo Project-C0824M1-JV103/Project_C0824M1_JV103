@@ -156,4 +156,14 @@ public class SupplierController extends BaseAdminController {
         response.put("exists", exists);
         return response;
     }
+
+    // API endpoint để kiểm tra tên nhà cung cấp đã tồn tại
+    @GetMapping("/check-name")
+    @ResponseBody
+    public Map<String, Boolean> checkSupplierName(@RequestParam("suplierName") String suplierName) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = supplierService.isSupplierNameExists(suplierName);
+        response.put("exists", exists);
+        return response;
+    }
 }

@@ -91,6 +91,7 @@
                         <div class="form-group">
                             <label for="exportQuantity">Số lượng xuất</label>
                             <input type="number" class="form-control" id="exportQuantity" th:field="*{exportQuantity}" min="1"/>
+                            <div class="text-danger" th:if="${#fields.hasErrors('exportQuantity')}" th:errors="*{exportQuantity}"></div>
                         </div>
 
                         <div class="btn-actions">

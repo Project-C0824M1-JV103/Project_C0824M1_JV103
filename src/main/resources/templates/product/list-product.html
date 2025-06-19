@@ -471,12 +471,7 @@
                                 </td>
                                 <td style="border: none !important;">
                                     <div class="d-flex align-items-center">
-                                        <div>
-                                            <div class="product-name" th:text="${product.productName}">Tên sản phẩm
-                                            </div>
-                                            <small class="text-muted"
-                                                   th:if="${product.description != null and !product.description.isEmpty()}"
-                                                   th:text="${#strings.abbreviate(product.description, 50)}"></small>
+                                        <div class="product-name" th:text="${product.productName}">Tên sản phẩm
                                         </div>
                                     </div>
                                 </td>
@@ -491,8 +486,7 @@
                                     <span th:text="${product.memory ?: 'N/A'}" class="text-muted"></span>
                                 </td>
                                 <td style="border: none !important;">
-                        <span th:text="${product.quantity}"
-                              th:class="${product.quantity > 0 ? 'badge bg-success' : 'badge bg-warning text-dark'}"></span>
+                                    <span th:text="${product.quantity}"></span>
                                 </td>
                                 <td style="border: none !important;">
                                     <div class="btn-actions">
@@ -508,48 +502,16 @@
                             </tr>
                             <!-- Empty state message -->
                             <tr th:if="${#lists.isEmpty(productPage.content)}">
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="7" class="text-center py-4">
                                     <div class="text-muted">
-                                        <i class="fas fa-search fa-3x mb-3 text-secondary"></i>
-                                        <div th:if="${productName != null || minPrice != null || maxPrice != null || minQuantity != null || maxQuantity != null}">
-                                            <h5 class="mb-2">Không tìm thấy sản phẩm nào</h5>
-                                            <p class="mb-2">Với điều kiện tìm kiếm:</p>
-                                            <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
-                              <span th:if="${productName != null && !productName.isEmpty()}" class="badge bg-primary">
-                                Tên: <strong th:text="${productName}"></strong>
-                              </span>
-                                                <span th:if="${minPrice != null || maxPrice != null}"
-                                                      class="badge bg-success">
-                                Giá: <strong th:text="${minPrice ?: '0'} + ' - ' + ${maxPrice ?: '∞'} + ' VNĐ'"></strong>
-                              </span>
-                                                <span th:if="${minQuantity != null || maxQuantity != null}"
-                                                      class="badge bg-info">
-                                Số lượng: <strong th:text="${minQuantity ?: '0'} + ' - ' + ${maxQuantity ?: '∞'}"></strong>
-                              </span>
-                                            </div>
-                                            <div>
-                                                <p class="mb-2">Thử:</p>
-                                                <ul class="list-unstyled text-start d-inline-block">
-                                                    <li><i class="fas fa-arrow-right text-primary me-2"></i>Thay đổi
-                                                        điều kiện tìm kiếm
-                                                    </li>
-                                                    <li><i class="fas fa-arrow-right text-primary me-2"></i>Giảm bớt bộ
-                                                        lọc
-                                                    </li>
-                                                    <li><i class="fas fa-arrow-right text-primary me-2"></i>Kiểm tra
-                                                        chính tả
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div th:unless="${productName != null || minPrice != null || maxPrice != null || minQuantity != null || maxQuantity != null}">
-                                            <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i>
-                                            <h5 class="mb-2">Chưa có sản phẩm nào</h5>
-                                            <p class="mb-3">Hệ thống chưa có sản phẩm nào. Hãy bắt đầu thêm sản phẩm đầu
-                                                tiên!</p>
-                                            <a href="/product/add" class="btn btn-primary">
-                                                <i class="fas fa-plus me-2"></i>Thêm sản phẩm đầu tiên
-                                            </a>
+                                        <div>
+                                            <i class="fas fa-search text-primary"></i>
+                                            <h6>
+                                                Không có kết quả tìm kiếm phù hợp
+                                            </h6>
+                                            <p class="mb-0">
+                                                Vui lòng thử lại với từ khóa khác
+                                            </p>
                                         </div>
                                     </div>
                                 </td>

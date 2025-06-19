@@ -104,8 +104,16 @@ public class StorageController extends BaseAdminController {
     }
 
     @PostMapping("/export")
-    public String exportProduct(@ModelAttribute StorageExportDTO exportDTO,
-                              RedirectAttributes redirectAttributes) {
+    public String exportProduct(@Valid @ModelAttribute StorageExportDTO exportDTO,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("exportDTO", exportDTO);
+            model.addAttribute("errorMessage", "Vui lòng kiểm tra lại dữ liệu nhập vào");
+            return "storage/export-form";
+        }
+        
         try {
             storageService.exportProduct(exportDTO);
             redirectAttributes.addFlashAttribute("successMessage", 
