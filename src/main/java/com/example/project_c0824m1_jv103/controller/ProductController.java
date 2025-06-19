@@ -174,6 +174,11 @@ public class ProductController extends BaseAdminController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        // Debug logs
+//        System.out.println("Received update request for product ID: " + id);
+//        System.out.println("Number of new images: " + (images != null ? images.size() : 0));
+//        System.out.println("Deleted image URLs: " + deletedImageUrls);
+
         // Validate new images
         String imageValidationError = validateImages(images);
         if (imageValidationError != null) {
@@ -198,15 +203,24 @@ public class ProductController extends BaseAdminController {
             List<String> deletedUrls = new ArrayList<>();
             if (deletedImageUrls != null && !deletedImageUrls.trim().isEmpty()) {
                 deletedUrls = Arrays.asList(deletedImageUrls.split(","));
+
             }
 
-            // Validate tổng số ảnh sau khi cập nhật
+            // Debug log existing images
             ProductDTO existingProduct = productService.findById(id);
+
+            // Validate tổng số ảnh sau khi cập nhật
             int existingImageCount = existingProduct.getExistingImageUrls() != null ?
                     existingProduct.getExistingImageUrls().size() : 0;
             int newImageCount = images != null ? (int) images.stream().filter(file -> !file.isEmpty()).count() : 0;
             int deletedImageCount = deletedUrls.size();
             int totalImagesAfterUpdate = existingImageCount - deletedImageCount + newImageCount;
+
+//            System.out.println("Total images calculation:");
+//            System.out.println("- Existing images: " + existingImageCount);
+//            System.out.println("- New images: " + newImageCount);
+//            System.out.println("- Deleted images: " + deletedImageCount);
+//            System.out.println("- Total after update: " + totalImagesAfterUpdate);
 
             if (totalImagesAfterUpdate > 4) {
                 model.addAttribute("error", "Tổng số ảnh không được vượt quá 4 ảnh. Hiện tại: " + totalImagesAfterUpdate);
@@ -217,14 +231,31 @@ public class ProductController extends BaseAdminController {
                 return "product/edit-product-form";
             }
 
+            // Debug log before service call
+            if (images != null) {
+                images.forEach(file -> {
+                    if (!file.isEmpty()) {
+                        System.out.println("Processing new image: " + file.getOriginalFilename() + 
+                            ", size: " + file.getSize() + " bytes");
+                    }
+                });
+            }
+
             productService.updateProduct(id, productDTO,
                     images != null ? images : new ArrayList<>(),
                     captions != null ? captions : new ArrayList<>(),
                     deletedUrls);
 
+            // Debug log after update
+//            ProductDTO updatedProduct = productService.findById(id);
+//            System.out.println("Images after update: " +
+//                (updatedProduct.getExistingImageUrls() != null ? updatedProduct.getExistingImageUrls() : "none"));
+
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm thành công!");
             return "redirect:/product";
         } catch (Exception e) {
+            System.err.println("Error updating product: " + e.getMessage());
+            e.printStackTrace();
             model.addAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
             productDTO.setProductId(id.intValue());
             model.addAttribute("productDTO", productDTO);
