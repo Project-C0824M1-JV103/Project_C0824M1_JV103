@@ -491,8 +491,7 @@
                                     <span th:text="${product.memory ?: 'N/A'}" class="text-muted"></span>
                                 </td>
                                 <td style="border: none !important;">
-                        <span th:text="${product.quantity}"
-                              th:class="${product.quantity > 30 ? 'badge bg-success' : 'badge bg-warning text-dark'}"></span>
+                        <span th:text="${product.quantity}"></span>
                                 </td>
                                 <td style="border: none !important;">
                                     <div class="btn-actions">
