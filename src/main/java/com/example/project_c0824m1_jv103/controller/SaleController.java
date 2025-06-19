@@ -10,6 +10,7 @@ import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.Sale;
 import com.example.project_c0824m1_jv103.model.SaleDetails;
+import com.example.project_c0824m1_jv103.service.EmailService;
 import com.example.project_c0824m1_jv103.service.PDFService;
 import com.example.project_c0824m1_jv103.service.VNPayService;
 import com.example.project_c0824m1_jv103.service.customer.ICustomerService;
@@ -59,6 +60,9 @@ public class SaleController extends BaseAdminController {
 
     @Autowired
     private PDFService pdfService;
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("")
     public String showSalePage(Model model) {
@@ -323,5 +327,37 @@ public class SaleController extends BaseAdminController {
             e.printStackTrace();
             return "redirect:/Sale?error=system_error";
         }
+    }
+
+    // API endpoint để kiểm tra email đã tồn tại
+    @GetMapping("/check-email")
+    @ResponseBody
+    public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = customerService.isEmailExists(email);
+        response.put("exists", exists);
+        return response;
+    }
+
+    @PostMapping("/send-otp")
+    @ResponseBody
+    public Map<String, Object> sendOtp(@RequestParam String email) {
+        Map<String, Object> res = new HashMap<>();
+        boolean sent = emailService.sendOtp(email);
+        res.put("success", sent);
+        res.put("message", sent ? "Đã gửi OTP đến email." : "Không thể gửi OTP. Vui lòng thử lại.");
+        return res;
+    }
+
+    @PostMapping("/verify-otp")
+    @ResponseBody
+    public Map<String, Object> verifyOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String otp = body.get("otp");
+        boolean verified = emailService.verifyOtp(email, otp);
+        Map<String, Object> res = new HashMap<>();
+        res.put("verified", verified);
+        res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
+        return res;
     }
 }
