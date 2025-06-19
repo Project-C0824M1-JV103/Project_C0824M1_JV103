@@ -537,6 +537,7 @@
   // Client-side validation for duplicate email and phone number
   let emailValidationTimeout;
   let phoneValidationTimeout;
+  let supplierNameValidationTimeout;
 
   // Validate email format
   function validateEmailFormat() {
@@ -638,6 +639,53 @@
     }
   }
 
+  // Validate supplier name format
+  function validateSupplierNameFormat() {
+    const nameInput = document.querySelector('input[name="suplierName"]');
+    const nameValue = nameInput.value.trim();
+    
+    // Remove existing validation message
+    removeValidationMessage(nameInput);
+    
+    if (nameValue.length > 0) {
+      // Check minimum length
+      if (nameValue.length < 2) {
+        showValidationError(nameInput, 'Tên nhà cung cấp phải có ít nhất 2 ký tự');
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Validate supplier name (format + duplicate check)
+  function validateSupplierName() {
+    const nameInput = document.querySelector('input[name="suplierName"]');
+    const nameValue = nameInput.value.trim();
+    
+    // First validate format
+    if (!validateSupplierNameFormat()) {
+      return;
+    }
+    
+    // Then check for duplicates if format is valid
+    if (nameValue.length >= 2) {
+      clearTimeout(supplierNameValidationTimeout);
+      supplierNameValidationTimeout = setTimeout(() => {
+        fetch('/Supplier/check-name?suplierName=' + encodeURIComponent(nameValue))
+          .then(response => response.json())
+          .then(data => {
+            if (data.exists) {
+              showValidationError(nameInput, 'Tên nhà cung cấp này đã được sử dụng bởi nhà cung cấp khác');
+            }
+          })
+          .catch(error => {
+            console.error('Error checking supplier name:', error);
+          });
+      }, 500);
+    }
+  }
+
   // Helper function to validate email format
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -668,9 +716,15 @@
 
   // Attach event listeners
   document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.querySelector('input[name="suplierName"]');
     const emailInput = document.querySelector('input[name="email"]');
     const phoneInput = document.querySelector('input[name="phoneNumber"]');
     const form = document.querySelector('form');
+    
+    if (nameInput) {
+      nameInput.addEventListener('input', validateSupplierNameFormat);
+      nameInput.addEventListener('blur', validateSupplierName);
+    }
     
     if (emailInput) {
       emailInput.addEventListener('input', validateEmailFormat);
