@@ -302,6 +302,12 @@ public class SaleController extends BaseAdminController {
             // Lưu đơn hàng vào database
             Sale savedSale = saleService.createSale(sale);
 
+            // Gửi email xác nhận đơn hàng
+            boolean emailSent = emailService.sendOrderConfirmation(savedSale);
+            if (!emailSent) {
+                return "redirect:/Sale?error=email_failed";
+            }
+
             // Xử lý thanh toán dựa trên phương thức
             if ("VNPAY".equals(saleDto.getPaymentMethod())) {
                 try {

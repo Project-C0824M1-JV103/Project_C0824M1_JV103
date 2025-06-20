@@ -136,6 +136,36 @@
             box-shadow: none;
             border-color: #ced4da;
         }
+        /* Loading overlay styles (copied from add-supplier-form.html) */
+        .admin-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(102,126,234,0.15); /* subtle blue, like add-supplier-form */
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .admin-loading-box {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 32px rgba(102,126,234,0.15);
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .admin-spinner {
+            margin-bottom: 16px;
+        }
+        .admin-loading-text {
+            font-size: 1.2rem;
+            color: #667eea;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -267,7 +297,7 @@
                                     <div id="quantityError" class="invalid-feedback" style="display:none;"></div>
                                 </div>
                             </div>
-                            <div class="row mb-2">
+                            <div class="row g-2 mb-2">
                                 <div class="col-md-4">
                                     <button type="button" class="btn btn-outline-success w-100"
                                             onclick="addProductToTable()">
@@ -677,6 +707,16 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="admin-loading-overlay" id="loading-overlay">
+  <div class="admin-loading-box">
+    <div class="admin-spinner">
+      <i class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+    <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
+  </div>
 </div>
 
 <script>
@@ -1528,6 +1568,47 @@
             feedback.remove();
         }
     }
+
+    // Add JS to show/hide loading overlay on Verify and form submit
+    (function() {
+        function showLoading() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+        // Show loading on form submit
+        var saleForm = document.getElementById('saleForm');
+        if (saleForm) {
+            saleForm.addEventListener('submit', function(e) {
+                // Only show loading if validation passes and about to submit
+                if (emailVerified && document.querySelector('input[name="customerName"]').value && document.querySelector('input[name="phoneNumber"]').value && selectedProducts.length && document.querySelector('input[name="paymentMethod"]:checked')) {
+                    showLoading();
+                }
+            });
+        }
+        // Show loading on Verify click
+        var verifyBtn = document.getElementById('verifyEmailBtn');
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', function() {
+                if (isValidEmail(document.querySelector('input[name="email"]').value.trim())) {
+                    showLoading();
+                }
+            });
+        }
+        // Hide loading on AJAX completion/errors for Verify/OTP
+        // Patch fetch for /Sale/send-otp and /Sale/verify-otp
+        const origFetch = window.fetch;
+        window.fetch = function() {
+            const url = arguments[0];
+            if (typeof url === 'string' && (url.includes('/Sale/send-otp') || url.includes('/Sale/verify-otp'))) {
+                return origFetch.apply(this, arguments).finally(hideLoading);
+            }
+            return origFetch.apply(this, arguments);
+        };
+        // Hide loading on page load (in case left open)
+        document.addEventListener('DOMContentLoaded', hideLoading);
+    })();
 </script>
 </body>
 </html>
