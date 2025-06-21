@@ -2,6 +2,7 @@ package com.example.project_c0824m1_jv103.controller;
 
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.dto.CustomerSaleDto;
+import com.example.project_c0824m1_jv103.dto.PendingSaleDto;
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
 import com.example.project_c0824m1_jv103.dto.SaleDetailsDto;
 import com.example.project_c0824m1_jv103.dto.SaleDto;
@@ -17,6 +18,7 @@ import com.example.project_c0824m1_jv103.service.customer.ICustomerService;
 import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
 import com.example.project_c0824m1_jv103.service.product.IProductService;
 import com.example.project_c0824m1_jv103.service.sale.ISaleService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -241,7 +243,8 @@ public class SaleController extends BaseAdminController {
     @PostMapping("/create")
     public String createSale(@Valid @ModelAttribute("saleDto") SaleDto saleDto,
                              BindingResult bindingResult,
-                             Model model) {
+                             Model model,
+                             HttpSession session) {
         if(bindingResult.hasErrors()) {
             Page<Customer> customers = customerService.findAll(PageRequest.of(0, 6));
             Page<ProductDTO> products = productService.findAll(PageRequest.of(0, 6));
@@ -251,16 +254,15 @@ public class SaleController extends BaseAdminController {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "sale/sale-page";
         }
+        
         try {
-            Sale sale = new Sale();
-
-            // Tìm nhân viên
+            // chuẩn bị dữ liệu (không lưu vào DB)
             Employee employee = employeeService.findByEmail(saleDto.getEmployeeName());
             if (employee == null) {
                 return "redirect:/Sale?error=employee_not_found";
             }
 
-            // Tìm hoặc tạo mới khách hàng
+            // Tìm hoặc tạo mới khách hàng (chỉ validate, chưa lưu)
             Customer customer = customerService.findByPhone(saleDto.getPhoneNumber())
                     .orElseGet(() -> {
                         Customer newCustomer = new Customer();
@@ -271,67 +273,198 @@ public class SaleController extends BaseAdminController {
                         if (saleDto.getBirthdayDate() != null && !saleDto.getBirthdayDate().isEmpty()) {
                             newCustomer.setBirthdayDate(LocalDate.parse(saleDto.getBirthdayDate()));
                         }
-                        return customerService.save(newCustomer);
+                        return newCustomer; // Chỉ tạo object, chưa lưu
                     });
 
-            // Thiết lập thông tin cơ bản của đơn hàng
+            // Validate sản phẩm
+            List<SaleDetails> saleDetailsList = new ArrayList<>();
+            for (SaleDetailsDto productInfo : saleDto.getProducts()) {
+                Product product = productService.findProductByName(productInfo.getProductName());
+                if (product == null) {
+                    return "redirect:/Sale?error=product_not_found";
+                }
+                // Kiểm tra tồn kho
+                if (product.getQuantity() < productInfo.getQuantity()) {
+                    return "redirect:/Sale?error=insufficient_stock";
+                }
+            }
+
+            // Xử lý theo phương thức thanh toán
+            if ("VNPAY".equals(saleDto.getPaymentMethod())) {
+                // Tạo session data để lưu thông tin đơn hàng tạm thời
+                String sessionKey = "pending_sale_" + System.currentTimeMillis();
+                // Lưu thông tin đơn hàng vào session hoặc cache
+                savePendingSaleToSession(sessionKey, saleDto, employee, customer, session);
+                
+                try {
+                    String paymentUrl = vnPayService.createPaymentUrl(
+                        sessionKey, // Sử dụng session key thay vì sale ID
+                        BigDecimal.valueOf(saleDto.getAmount()).longValue(),
+                        saleDto.isPrintPDF()
+                    );
+                    return "redirect:" + paymentUrl;
+                } catch (UnsupportedEncodingException e) {
+                    return "redirect:/Sale?error=vnpay_error";
+                }
+            } else {
+                // Thanh toán tiền mặt
+                return processCashPayment(saleDto, employee, customer);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/Sale?error=system_error";
+        }
+    }
+
+    // Method xử lý thanh toán tiền mặt
+    private String processCashPayment(SaleDto saleDto, Employee employee, Customer customer) {
+        try {
+            // Lưu khách hàng nếu là khách hàng mới
+            if (customer.getCustomerId() == null) {
+                customer = customerService.save(customer);
+            }
+
+            // Tạo đơn hàng
+            Sale sale = new Sale();
             sale.setEmployee(employee);
             sale.setCustomer(customer);
             sale.setSaleDate(LocalDateTime.now());
             sale.setAmount(BigDecimal.valueOf(saleDto.getAmount()));
             sale.setPaymentMethod(saleDto.getPaymentMethod());
 
-            // Tạo danh sách chi tiết đơn hàng cho nhiều sản phẩm
+            // Tạo chi tiết đơn hàng
             List<SaleDetails> saleDetailsList = new ArrayList<>();
-            
             for (SaleDetailsDto productInfo : saleDto.getProducts()) {
                 SaleDetails saleDetails = new SaleDetails();
                 Product product = productService.findProductByName(productInfo.getProductName());
-                if (product == null) {
-                    return "redirect:/Sale?error=product_not_found";
-                }
                 saleDetails.setProduct(product);
                 saleDetails.setUniquePrice(productInfo.getPrice());
                 saleDetails.setQuantity(productInfo.getQuantity());
                 saleDetails.setSale(sale);
                 saleDetailsList.add(saleDetails);
             }
-
             sale.setSaleDetails(saleDetailsList);
 
-            // Lưu đơn hàng vào database
+            // Lưu đơn hàng
             Sale savedSale = saleService.createSale(sale);
 
-            // Gửi email xác nhận đơn hàng
-            boolean emailSent = emailService.sendOrderConfirmation(savedSale);
-            if (!emailSent) {
-                return "redirect:/Sale?error=email_failed";
-            }
+            // Gửi email xác nhận
+            emailService.sendOrderConfirmation(savedSale);
 
-            // Xử lý thanh toán dựa trên phương thức
-            if ("VNPAY".equals(saleDto.getPaymentMethod())) {
-                try {
-                    String paymentUrl = vnPayService.createPaymentUrl(
-                        "ORDER_" + savedSale.getSaleId(),
-                        savedSale.getAmount().longValue(),
-                        saleDto.isPrintPDF()
-                    );
-                    return "redirect:" + paymentUrl;
-
-                } catch (UnsupportedEncodingException e) {
-                    return "redirect:/Sale?error=vnpay_error";
-                }
-            }
-
-            // Nếu thanh toán tiền mặt, chuyển hướng đến trang xác nhận
+            // Redirect đến trang xác nhận
             String redirectUrl = "redirect:/Sale/confirmation/" + savedSale.getSaleId();
             if (saleDto.isPrintPDF()) {
                 redirectUrl += "?printPdf=true";
             }
             return redirectUrl;
+
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/Sale?error=system_error";
+            return "redirect:/Sale?error=payment_failed";
+        }
+    }
+
+    // Method lưu thông tin đơn hàng tạm thời
+    private void savePendingSaleToSession(String sessionKey, SaleDto saleDto, Employee employee, Customer customer, HttpSession session) {
+        PendingSaleDto pendingSale = new PendingSaleDto(saleDto, employee, customer, sessionKey);
+        session.setAttribute(sessionKey, pendingSale);
+    }
+
+    // Endpoint callback từ VNPAY
+    @GetMapping("/vnpay-callback")
+    public String vnpayCallback(@RequestParam Map<String, String> queryParams, 
+                               HttpSession session) {
+        try {
+            // Verify VNPAY response
+            boolean isValid = vnPayService.verifyPaymentResponse(queryParams);
+            
+            if (!isValid) {
+                return "redirect:/Sale?error=payment_verification_failed";
+            }
+            
+            // Check payment status
+            String responseCode = queryParams.get("vnp_ResponseCode");
+            if (!"00".equals(responseCode)) {
+                return "redirect:/Sale?error=payment_failed";
+            }
+            
+            String sessionKey = queryParams.get("vnp_TxnRef"); // Lấy session key
+            
+            // Lấy thông tin đơn hàng từ session
+            PendingSaleDto pendingSale = (PendingSaleDto) session.getAttribute(sessionKey);
+            
+            if (pendingSale == null || !pendingSale.isValid()) {
+                return "redirect:/Sale?error=session_expired";
+            }
+            
+            // Tạo đơn hàng thực sự
+            Sale savedSale = processPendingSale(pendingSale);
+            
+            // Xóa session data
+            session.removeAttribute(sessionKey);
+            
+            // Check if print PDF is requested
+            String orderInfo = queryParams.get("vnp_OrderInfo");
+            boolean printPdf = orderInfo != null && orderInfo.contains("printPdf=true");
+            
+            String redirectUrl = "redirect:/Sale/confirmation/" + savedSale.getSaleId();
+            if (printPdf) {
+                redirectUrl += "?printPdf=true";
+            }
+            
+            return redirectUrl;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/Sale?error=payment_verification_failed";
+        }
+    }
+
+    // Method xử lý đơn hàng từ pending sale
+    private Sale processPendingSale(PendingSaleDto pendingSale) {
+        try {
+            SaleDto saleDto = pendingSale.getSaleDto();
+            Employee employee = pendingSale.getEmployee();
+            Customer customer = pendingSale.getCustomer();
+
+            // Lưu khách hàng nếu là khách hàng mới
+            if (customer.getCustomerId() == null) {
+                customer = customerService.save(customer);
+            }
+
+            // Tạo đơn hàng
+            Sale sale = new Sale();
+            sale.setEmployee(employee);
+            sale.setCustomer(customer);
+            sale.setSaleDate(LocalDateTime.now());
+            sale.setAmount(BigDecimal.valueOf(saleDto.getAmount()));
+            sale.setPaymentMethod(saleDto.getPaymentMethod());
+
+            // Tạo chi tiết đơn hàng
+            List<SaleDetails> saleDetailsList = new ArrayList<>();
+            for (SaleDetailsDto productInfo : saleDto.getProducts()) {
+                SaleDetails saleDetails = new SaleDetails();
+                Product product = productService.findProductByName(productInfo.getProductName());
+                saleDetails.setProduct(product);
+                saleDetails.setUniquePrice(productInfo.getPrice());
+                saleDetails.setQuantity(productInfo.getQuantity());
+                saleDetails.setSale(sale);
+                saleDetailsList.add(saleDetails);
+            }
+            sale.setSaleDetails(saleDetailsList);
+
+            // Lưu đơn hàng
+            Sale savedSale = saleService.createSale(sale);
+
+            // Gửi email xác nhận
+            emailService.sendOrderConfirmation(savedSale);
+
+            return savedSale;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to process pending sale", e);
         }
     }
 
@@ -365,5 +498,33 @@ public class SaleController extends BaseAdminController {
         res.put("verified", verified);
         res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
         return res;
+    }
+
+    // Endpoint xử lý hủy thanh toán
+    @GetMapping("/cancel-payment")
+    public String cancelPayment(@RequestParam String sessionKey, HttpSession session) {
+        try {
+            // Xóa session data
+            session.removeAttribute(sessionKey);
+            return "redirect:/Sale?error=payment_cancelled";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/Sale?error=system_error";
+        }
+    }
+
+    // Endpoint để cleanup session expired
+    @GetMapping("/cleanup-session")
+    public String cleanupExpiredSession(@RequestParam String sessionKey, HttpSession session) {
+        try {
+            PendingSaleDto pendingSale = (PendingSaleDto) session.getAttribute(sessionKey);
+            if (pendingSale != null && !pendingSale.isValid()) {
+                session.removeAttribute(sessionKey);
+            }
+            return "redirect:/Sale?error=session_expired";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/Sale?error=system_error";
+        }
     }
 }
