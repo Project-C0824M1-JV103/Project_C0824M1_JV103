@@ -1,10 +1,16 @@
 package com.example.project_c0824m1_jv103.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class StorageExportDTO {
     private Integer productId;
     private String productName;
     private String supplierName;
     private Integer remainingQuantity;
+    
+    @NotNull(message = "Số lượng xuất không được để trống")
+    @Min(value = 1, message = "Số lượng xuất phải lớn hơn 0")
     private Integer exportQuantity;
 
     public StorageExportDTO() {
