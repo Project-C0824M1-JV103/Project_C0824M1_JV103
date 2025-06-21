@@ -1,14 +1,22 @@
 package com.example.project_c0824m1_jv103.service.storage;
 
+import com.example.project_c0824m1_jv103.dto.StorageDto;
 import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
+import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
+import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.Storage;
+import com.example.project_c0824m1_jv103.model.Supplier;
+import com.example.project_c0824m1_jv103.repository.IEmployeeRepository;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
 import com.example.project_c0824m1_jv103.repository.IStorageRepository;
+import com.example.project_c0824m1_jv103.repository.ISupplierRepository;
+import com.example.project_c0824m1_jv103.service.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +37,6 @@ public class StorageService implements IStorageService {
     private IEmployeeRepository employeeRepository;
     @Autowired
     private CloudinaryService cloudinaryService;
-
-
-    @Autowired
-    private IEmployeeRepository employeeRepository;
 
     @Autowired
     private ISupplierRepository supplierRepository;
@@ -134,7 +138,6 @@ public class StorageService implements IStorageService {
             return dto;
         }).collect(Collectors.toList());
     }
-}
 
     @Override
     @Transactional
@@ -189,6 +192,45 @@ public class StorageService implements IStorageService {
 
             return storageRepository.save(newStorage);
         }
+    }
+
+    @Override
+    @Transactional
+    public Storage updateStorage(Integer storageId, StorageDto storageDto) {
+        Storage existingStorage = storageRepository.findById(storageId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bản ghi nhập kho"));
+
+        // Validate input
+        if (storageDto.getQuantity() == null || storageDto.getQuantity() <= 0) {
+            throw new RuntimeException("Số lượng phải lớn hơn 0");
+        }
+        
+        if (storageDto.getCost() == null || storageDto.getCost() <= 0) {
+            throw new RuntimeException("Giá nhập phải lớn hơn 0");
+        }
+
+        // Update fields that can be changed
+        Integer oldQuantity = existingStorage.getQuantity();
+        Integer newQuantity = storageDto.getQuantity();
+        
+        // Update storage record
+        existingStorage.setQuantity(newQuantity);
+        existingStorage.setCost(storageDto.getCost());
+        
+        // Update employee if provided
+        if (storageDto.getEmployeeId() != null) {
+            Employee employee = employeeRepository.findById(storageDto.getEmployeeId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+            existingStorage.setEmployee(employee);
+        }
+
+        // Update product quantity based on difference
+        Product product = existingStorage.getProduct();
+        int quantityDifference = newQuantity - oldQuantity;
+        product.setQuantity(product.getQuantity() + quantityDifference);
+        productRepository.save(product);
+
+        return storageRepository.save(existingStorage);
     }
 
 }
