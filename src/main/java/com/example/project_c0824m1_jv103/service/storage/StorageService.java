@@ -74,7 +74,6 @@ public class StorageService implements IStorageService {
     @Override
     public Page<Storage> getExportHistory(Pageable pageable) {
         Page<Storage> all = storageRepository.findAll(pageable);
-        // Lọc các bản ghi xuất kho (quantity < 0)
         return new PageImpl<>(
             all.getContent().stream().filter(s -> s.getQuantity() < 0).collect(Collectors.toList()),
             pageable,
@@ -98,15 +97,11 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Giá nhập phải lớn hơn 0");
         }
 
-        Product product = productRepository.findById(importDTO.getProductId())
+        Product originalProduct = productRepository.findById(importDTO.getProductId())
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
         Supplier supplier = supplierRepository.findById(importDTO.getSupplierId())
                 .orElseThrow(() -> new RuntimeException("Nhà cung cấp không tồn tại"));
-
-        if (!product.getSupplier().getSuplierId().equals(supplier.getSuplierId())) {
-            throw new RuntimeException("Sản phẩm không thuộc nhà cung cấp đã chọn");
-        }
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Employee employee = employeeRepository.findByEmail(email);
@@ -114,32 +109,49 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Nhân viên không tồn tại");
         }
 
-        product.setQuantity(product.getQuantity() + importDTO.getImportQuantity());
-        productRepository.save(product);
+        Product productToUse;
+        if (!originalProduct.getSupplier().getSuplierId().equals(supplier.getSuplierId())) {
+            Product copiedProduct = new Product(
+                    originalProduct.getProductName(),
+                    originalProduct.getSize(),
+                    originalProduct.getPrice(),
+                    originalProduct.getCameraFront(),
+                    originalProduct.getCameraBack(),
+                    originalProduct.getMemory(),
+                    originalProduct.getCpu(),
+                    originalProduct.getDescription(),
+                    0, // Tạm thời để 0, sẽ cộng ở dưới
+                    originalProduct.getCategory(),
+                    supplier
+            );
+            copiedProduct.setProductImages(originalProduct.getProductImages());
+            productToUse = productRepository.save(copiedProduct);
+        } else {
+            productToUse = originalProduct;
+        }
+
+        int updatedQuantity = productToUse.getQuantity() + importDTO.getImportQuantity();
+        productToUse.setQuantity(updatedQuantity);
+        productRepository.save(productToUse);
 
         Storage existingStorage = storageRepository.findAll().stream()
-                .filter(s -> s.getProduct().getProductId().equals(importDTO.getProductId())
-                        && s.getProduct().getSupplier().getSuplierId().equals(importDTO.getSupplierId()))
+                .filter(s -> s.getProduct().getProductId().equals(productToUse.getProductId())
+                        && s.getProduct().getSupplier().getSuplierId().equals(supplier.getSuplierId()))
                 .findFirst()
                 .orElse(null);
 
         if (existingStorage != null) {
             existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
-            if (importDTO.getCost() != null) {
-                existingStorage.setCost(importDTO.getCost());
-            }
+            existingStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : existingStorage.getCost());
             existingStorage.setEmployee(employee);
-
             return storageRepository.save(existingStorage);
         } else {
             Storage newStorage = new Storage();
-            newStorage.setProduct(product);
+            newStorage.setProduct(productToUse);
             newStorage.setQuantity(importDTO.getImportQuantity());
-            newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
+            newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : productToUse.getPrice());
             newStorage.setEmployee(employee);
-
             return storageRepository.save(newStorage);
         }
     }
-
 }
