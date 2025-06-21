@@ -52,6 +52,7 @@ public class ProductDTO {
     private String imageUrl;
     
     private String categoryName;
+    private String supplierName;
 
     public String getCategoryName() {
         return categoryName;
@@ -83,6 +84,14 @@ public class ProductDTO {
         this.memory = memory;
         this.description = description;
         this.quantity = quantity;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 
     public Integer getProductId() {

@@ -143,6 +143,14 @@ public class SupplierService implements ISupplierService {
     }
 
     @Override
+    public boolean isSupplierNameExists(String suplierName) {
+        if (suplierName == null || suplierName.trim().isEmpty()) {
+            return false;
+        }
+        return supplierRepository.existsBySupplierNameIgnoreCase(suplierName.trim());
+    }
+
+    @Override
     public boolean isEmailExistsForUpdate(String email, Integer id) {
         if (email == null || email.trim().isEmpty() || id == null) {
             return false;
@@ -162,6 +170,13 @@ public class SupplierService implements ISupplierService {
     public String validateNewSupplier(SupplierDto supplierDto) {
         if (supplierDto == null) {
             return "Thông tin nhà cung cấp không được để trống";
+        }
+
+        // Kiểm tra tên nhà cung cấp đã tồn tại
+        if (supplierDto.getSuplierName() != null && !supplierDto.getSuplierName().trim().isEmpty()) {
+            if (isSupplierNameExists(supplierDto.getSuplierName())) {
+                return "Tên nhà cung cấp '" + supplierDto.getSuplierName() + "' đã được sử dụng bởi nhà cung cấp khác";
+            }
         }
 
         // Kiểm tra email đã tồn tại

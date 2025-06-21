@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Quản lý giá bán lẻ</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    />
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}"/>
+    <link rel="stylesheet" th:href="@{/admin-common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/image-validation.css}"/>
+
+    <!-- CKEditor 5 -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <style>
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .header-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .form-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .image-section {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .image-preview-section {
+            flex: 1;
+        }
+
+        .image-upload-section {
+            flex: 1;
+        }
+
+        .image-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .image-upload-area:hover {
+            border-color: #667eea;
+            background-color: #f0f2ff;
+        }
+
+        .existing-images {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #dee2e6;
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #f8f9fa;
+        }
+
+        .btn-delete {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .invalid-feedback {
+            display: block;
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 5px;
+        }
+
+        .currency-input {
+            position: relative;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        /* CKEditor styling */
+        .ck-editor__editable {
+            min-height: 150px;
+        }
+
+        .ck.ck-editor {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Include Admin Navbar -->
+        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="main-content p-4">
+                <!-- Header Section -->
+                <div class="header-section">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-1">
+                                <i class="fas fa-tags text-primary"></i>
+                                Quản lý giá bán lẻ
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Cập nhật giá bán lẻ
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Form Section -->
+                <div class="form-section">
+                    <div class="form-header">
+                        <h4 class="mb-0" style="text-align: center">
+                            <i class="fas fa-edit"></i>
+                            Thông tin giá bán lẻ
+                        </h4>
+                    </div>
+
+                    <div class="form-body">
+                        <!-- Success/Error Messages -->
+                        <div th:if="${error}" class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span th:text="${error}"></span>
+                        </div>
+
+                        <form
+                                th:action="@{/Business/update/{id}(id=${productRetailDTO.productId})}"
+                                th:object="${productRetailDTO}"
+                                method="post"
+                                novalidate
+                        >
+                            <!-- Nút chọn sản phẩm -->
+                            <div class="text-center mb-4">
+                                <button type="button" class="btn btn-primary btn-select-product" data-bs-toggle="modal"
+                                        data-bs-target="#productModal">
+                                    <i class="fas fa-search me-2"></i>Chọn sản phẩm
+                                </button>
+                            </div>
+                            
+                            <div class="row">
+                                <!-- Tên sản phẩm -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Tên sản phẩm
+                                        </label>
+                                        <input
+                                                type="text"
+                                                th:field="*{productName}"
+                                                class="form-control"
+                                        />
+                                    </div>
+                                </div>
+                                <!-- Bộ nhớ -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Bộ nhớ (GB)</label>
+                                        <input
+                                                type="text"
+                                                th:field="*{memory}"
+                                                class="form-control"
+                                                placeholder="Ví dụ: 128"
+                                                readonly/>
+
+                                    </div>
+                                </div>
+
+                                <!-- Giá -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Giá nhập kho (VNĐ)
+                                        </label>
+                                        <div class="currency-input">
+                                            <input
+                                                    type="number"
+                                                    th:field="*{price}"
+                                                    class="form-control"
+                                                    step="1000"
+                                                    placeholder="0"
+                                                    style="padding-right: 50px"
+                                                    readonly
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Số lượng -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Số lượng
+                                        </label>
+                                        <input
+                                                type="number"
+                                                th:field="*{quantity}"
+                                                class="form-control"
+                                                min="0"
+                                                placeholder="0"
+                                                readonly
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Hãng -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Danh mục
+                                        </label>
+                                        <input
+                                                th:field="*{categoryName}"
+                                                class="form-control"
+                                                readonly
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Nhà cung cấp -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Nhà cung cấp
+                                        </label>
+                                        <input
+                                                th:field="*{supplierName}"
+                                                class="form-control"
+                                                readonly
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row justify-content-center">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Nhập giá bán lẻ <span class="required">*</span>
+                                        </label>
+                                        <input
+                                                type="number"
+                                                th:field="*{retailPrice}"
+                                                class="form-control"
+                                                th:classappend="${#fields.hasErrors('retailPrice')} ? 'is-invalid'"
+                                                required
+                                        >
+                                        <div
+                                                th:if="${#fields.hasErrors('retailPrice')}"
+                                                class="invalid-feedback"
+                                        >
+                                            <span th:errors="*{retailPrice}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-end gap-3">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-1"></i>Cập nhật giá bán lẻ
+                                        </button>
+                                        <a href="/product" class="btn btn-secondary">
+                                            <i class="fas fa-times me-1"></i>Quay lại
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="admin-loading-overlay" id="loading-overlay">
+    <div class="admin-loading-box">
+        <div class="admin-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+        </div>
+        <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
+    </div>
+</div>
+
+<!-- Modal chọn sản phẩm -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Chọn sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Form tìm kiếm sản phẩm -->
+                <form id="productSearchForm" class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </span>
+                                <input type="text" name="productName" class="form-control"
+                                       placeholder="Tìm kiếm theo tên sản phẩm..."/>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-primary w-100" onclick="searchProducts()">
+                                <i class="fas fa-search"></i> Tìm kiếm
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="refreshProductList()"
+                                    title="Làm mới">
+                                <i class="fas fa-sync-alt"></i> Làm mới
+                            </button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="page" value="0"/>
+                    <input type="hidden" name="size" value="6"/>
+                </form>
+                <div id="productTableContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Render bảng sản phẩm trong modal
+    function updateProductTable(data) {
+        const container = document.getElementById('productTableContainer');
+        let content = '';
+        if (!data.products || data.products.length === 0) {
+            content = `<div class="text-center py-4">
+                <i class="fas fa-box fa-2x text-muted mb-3"></i>
+                <h6 class="text-muted">Không tìm thấy sản phẩm nào</h6>
+                <p class="text-muted mb-0">Thử thay đổi điều kiện tìm kiếm</p>
+            </div>`;
+        } else {
+            content = `<div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>Bộ nhớ</th>
+                            <th>Giá nhập</th>
+                            <th>Số lượng</th>
+                            <th>Danh mục</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            data.products.forEach(product => {
+                content += `
+                <tr>
+                    <td>${product.productName}</td>
+                    <td>${product.memory || ''}</td>
+                    <td>${product.price.toLocaleString('vi-VN')} VNĐ</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.categoryName || ''}</td>
+                    <td>${product.supplierName || ''}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary btn-select-product"
+                                data-product-id="${product.productId}"
+                                ${product.quantity <= 0 ? 'disabled' : ''}>
+                            <i class="fas fa-plus"></i>
+                            ${product.quantity > 0 ? 'Chọn' : 'Hết hàng'}
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            content += `</tbody></table></div>`;
+        }
+
+        // Thêm phần pagination
+        if (data.totalPages > 1) {
+            content += `
+                <div class="d-flex justify-content-between align-items-center p-3 border-top mt-3">
+                    <div class="text-muted">
+                        Hiển thị ${data.products.length} trên ${data.totalElements} sản phẩm
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item ${data.pageNumber == 0 ? 'disabled' : ''}">
+                                <a class="page-link" href="javascript:void(0)"
+                                   onclick="changeProductPage(${data.pageNumber - 1})"
+                                   ${data.pageNumber == 0 ? 'style="pointer-events:none"' : ''}>
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>`;
+            for (let i = 0; i < data.totalPages; i++) {
+                if (i >= data.pageNumber - 2 && i <= data.pageNumber + 2) {
+                    content += `
+                        <li class="page-item ${i == data.pageNumber ? 'active' : ''}">
+                            <a class="page-link" href="javascript:void(0)"
+                               onclick="changeProductPage(${i})"
+                               ${i == data.pageNumber ? 'style="pointer-events:none"' : ''}>
+                                ${i + 1}
+                            </a>
+                        </li>`;
+                }
+            }
+            content += `
+                            <li class="page-item ${data.pageNumber >= data.totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" href="javascript:void(0)"
+                                   onclick="changeProductPage(${data.pageNumber + 1})"
+                                   ${data.pageNumber >= data.totalPages - 1 ? 'style="pointer-events:none"' : ''}>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>`;
+        }
+
+        container.innerHTML = content;
+        attachSelectProductEvents();
+    }
+
+    function changeProductPage(page) {
+        const form = document.getElementById('productSearchForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        params.set('page', page);
+
+        fetch(`/Sale/products/data?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => updateProductTable(data))
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi chuyển trang!');
+            });
+    }
+
+    function searchProducts() {
+        const form = document.getElementById('productSearchForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        params.set('page', '0');
+        fetch(`/Sale/products/data?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => updateProductTable(data))
+            .catch(error => {
+                alert('Có lỗi xảy ra khi tìm kiếm sản phẩm!');
+            });
+    }
+
+    function refreshProductList() {
+        const form = document.getElementById('productSearchForm');
+        form.reset();
+        fetch('/Sale/products/data?page=0&size=6')
+            .then(response => response.json())
+            .then(data => updateProductTable(data))
+            .catch(error => {
+                alert('Có lỗi xảy ra khi làm mới danh sách sản phẩm!');
+            });
+    }
+
+    function attachSelectProductEvents() {
+        document.querySelectorAll('.btn-select-product').forEach(btn => {
+            btn.onclick = function () {
+                const productId = btn.getAttribute('data-product-id');
+                selectProduct(productId);
+            }
+        });
+    }
+
+    // Khi chọn sản phẩm, gán vào các input (trừ retailPrice)
+    function selectProduct(productId) {
+        fetch(`/Sale/products/${productId}`)
+            .then(response => response.json())
+            .then(product => {
+                document.querySelector('input[name="productName"]').value = product.productName || '';
+                document.querySelector('input[name="memory"]').value = product.memory || '';
+                document.querySelector('input[name="price"]').value = product.price || '';
+                document.querySelector('input[name="quantity"]').value = product.quantity || '';
+                document.querySelector('input[name="categoryName"]').value = product.categoryName || '';
+                document.querySelector('input[name="supplierName"]').value = product.supplierName || '';
+                // Đóng modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+                modal.hide();
+            })
+            .catch(error => {
+                alert('Có lỗi xảy ra khi lấy thông tin sản phẩm!');
+            });
+    }
+
+    // Tự động load danh sách sản phẩm khi mở modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const productModal = document.getElementById('productModal');
+        if (productModal) {
+            productModal.addEventListener('show.bs.modal', function () {
+                refreshProductList();
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

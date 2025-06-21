@@ -79,9 +79,13 @@ public class SupplierController extends BaseAdminController {
     }
 
     @PostMapping("/save")
-    public String saveSupplier(@ModelAttribute("supplier") Supplier supplier,
+    public String saveSupplier(@Valid @ModelAttribute("supplier") Supplier supplier,
+                               BindingResult result,
                                @RequestParam(value = "image", required = false) MultipartFile image,
                                RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "supplier/edit"; // Trả về lại form nếu có lỗi
+        }
         try {
             supplierService.saveSupplier(supplier, image);
             redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
@@ -165,6 +169,16 @@ public class SupplierController extends BaseAdminController {
     public Map<String, Boolean> checkPhoneNumber(@RequestParam("phoneNumber") String phoneNumber) {
         Map<String, Boolean> response = new HashMap<>();
         boolean exists = supplierService.isPhoneNumberExists(phoneNumber);
+        response.put("exists", exists);
+        return response;
+    }
+
+    // API endpoint để kiểm tra tên nhà cung cấp đã tồn tại
+    @GetMapping("/check-name")
+    @ResponseBody
+    public Map<String, Boolean> checkSupplierName(@RequestParam("suplierName") String suplierName) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = supplierService.isSupplierNameExists(suplierName);
         response.put("exists", exists);
         return response;
     }

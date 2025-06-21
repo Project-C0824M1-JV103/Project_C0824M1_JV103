@@ -81,4 +81,46 @@ public class VNPayService {
             throw new RuntimeException("Error calculating HMAC-SHA512", e);
         }
     }
+
+    public boolean verifyPaymentResponse(Map<String, String> queryParams) {
+        try {
+            String vnp_SecureHash = queryParams.get("vnp_SecureHash");
+            if (vnp_SecureHash == null || vnp_SecureHash.isEmpty()) {
+                return false;
+            }
+
+            // Remove vnp_SecureHash from params for hash calculation
+            Map<String, String> paramsForHash = new HashMap<>(queryParams);
+            paramsForHash.remove("vnp_SecureHash");
+
+            // Sort parameters
+            List<String> fieldNames = new ArrayList<>(paramsForHash.keySet());
+            Collections.sort(fieldNames);
+
+            // Build hash data
+            StringBuilder hashData = new StringBuilder();
+            Iterator<String> itr = fieldNames.iterator();
+            while (itr.hasNext()) {
+                String fieldName = itr.next();
+                String fieldValue = paramsForHash.get(fieldName);
+                if ((fieldValue != null) && (!fieldValue.isEmpty())) {
+                    hashData.append(fieldName);
+                    hashData.append('=');
+                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                    if (itr.hasNext()) {
+                        hashData.append('&');
+                    }
+                }
+            }
+
+            // Calculate hash
+            String calculatedHash = hmacSHA512(vnPayConfig.getVnp_HashSecret(), hashData.toString());
+
+            // Compare hashes
+            return calculatedHash.equals(vnp_SecureHash);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 } 

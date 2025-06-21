@@ -22,9 +22,11 @@ public interface ISupplierService {
     // Validation methods
     boolean isEmailExists(String email);
     boolean isPhoneNumberExists(String phoneNumber);
+    boolean isSupplierNameExists(String suplierName);
     boolean isEmailExistsForUpdate(String email, Integer id);
     boolean isPhoneNumberExistsForUpdate(String phoneNumber, Integer id);
 
     // Validation method for new supplier
     String validateNewSupplier(SupplierDto supplierDto);
+
 }

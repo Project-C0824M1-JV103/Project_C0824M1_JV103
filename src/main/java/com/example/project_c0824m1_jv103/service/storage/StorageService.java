@@ -9,25 +9,40 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import com.example.project_c0824m1_jv103.dto.StorageDto;
 import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
+import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
+import com.example.project_c0824m1_jv103.model.Employee;
+import com.example.project_c0824m1_jv103.model.Product;
+
 import com.example.project_c0824m1_jv103.model.Storage;
+import com.example.project_c0824m1_jv103.repository.IEmployeeRepository;
+import com.example.project_c0824m1_jv103.repository.IProductRepository;
 import com.example.project_c0824m1_jv103.repository.IStorageRepository;
+import com.example.project_c0824m1_jv103.service.CloudinaryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class StorageService implements IStorageService {
+
     @Autowired
     private IStorageRepository storageRepository;
 
     @Autowired
     private IProductRepository productRepository;
-
     @Autowired
     private IEmployeeRepository employeeRepository;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @Autowired
     private ISupplierRepository supplierRepository;
@@ -59,6 +74,26 @@ public class StorageService implements IStorageService {
 
         return storageRepository.save(storage);
     }
+//    @Override
+//    @Transactional
+//    public Storage importProduct(StorageImportDTO importDTO) {
+//        Product product = productRepository.findById(importDTO.getProductId())
+//                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+//
+//        Employee employee = employeeRepository.findById(importDTO.getEmployeeId())
+//                .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại"));
+//
+//        product.setQuantity(product.getQuantity() + importDTO.getImportQuantity());
+//        productRepository.save(product);
+//
+//        Storage storage = new Storage();
+//        storage.setProduct(product);
+//        storage.setQuantity(importDTO.getImportQuantity());
+//        storage.setCost(importDTO.getCost());
+//        storage.setEmployee(employee);
+//
+//        return storageRepository.save(storage);
+//    }
 
     @Override
     public Page<Storage> getAllStorageRecords(Pageable pageable) {
@@ -74,6 +109,7 @@ public class StorageService implements IStorageService {
     @Override
     public Page<Storage> getExportHistory(Pageable pageable) {
         Page<Storage> all = storageRepository.findAll(pageable);
+        // Lọc các bản ghi xuất kho (quantity < 0)
         return new PageImpl<>(
             all.getContent().stream().filter(s -> s.getQuantity() < 0).collect(Collectors.toList()),
             pageable,
@@ -82,7 +118,7 @@ public class StorageService implements IStorageService {
     }
 
     @Override
-    public List<Storage> findAll() {
+    public List<Storage> findAllStorage() {
         return storageRepository.findAll();
     }
 
@@ -153,5 +189,54 @@ public class StorageService implements IStorageService {
             newStorage.setEmployee(employee);
             return storageRepository.save(newStorage);
         }
+    }
+
+    @Override
+    public Page<Storage> getImportHistory(Pageable pageable) {
+        return storageRepository.findAllImports(pageable);
+
+    }
+
+    @Override
+    public List<StorageDto> findAll() {
+        return storageRepository.findAll().stream().map(storage -> {
+            StorageDto dto = new StorageDto();
+            dto.setStorageId(storage.getStorageId());
+            dto.setProductId(storage.getProduct().getProductId());
+            dto.setQuantity(storage.getQuantity());
+            dto.setCost(storage.getCost());
+            dto.setEmployeeId(storage.getEmployee() != null ? storage.getEmployee().getEmployeeId() : null);
+            dto.setTransactionDate(storage.getTransactionDate());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+    @Override
+    public List<StorageDto> findByCriteria(String productName, LocalDate startDate, LocalDate endDate) {
+        List<Storage> storages = storageRepository.findAll();
+        if (productName != null && !productName.isEmpty()) {
+            storages = storages.stream()
+                    .filter(storage -> storage.getProduct().getProductName().toLowerCase().contains(productName.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (startDate != null || endDate != null) {
+            storages = storages.stream()
+                    .filter(storage -> {
+                        LocalDate transactionDate = storage.getTransactionDate().toLocalDate();
+                        boolean isAfterStart = startDate == null || !transactionDate.isBefore(startDate);
+                        boolean isBeforeEnd = endDate == null || !transactionDate.isAfter(endDate);
+                        return isAfterStart && isBeforeEnd;
+                    })
+                    .collect(Collectors.toList());
+        }
+        return storages.stream().map(storage -> {
+            StorageDto dto = new StorageDto();
+            dto.setStorageId(storage.getStorageId());
+            dto.setProductId(storage.getProduct().getProductId());
+            dto.setQuantity(storage.getQuantity());
+            dto.setCost(storage.getCost());
+            dto.setEmployeeId(storage.getEmployee() != null ? storage.getEmployee().getEmployeeId() : null);
+            dto.setTransactionDate(storage.getTransactionDate());
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

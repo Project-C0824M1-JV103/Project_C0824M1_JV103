@@ -372,7 +372,6 @@
                             id="imageFile"
                             th:field="*{imageFile}"
                             accept="image/*"
-                            multiple
                             class="form-control"
                             style="display: none"
                           />
@@ -423,21 +422,16 @@
 
 <!-- Script xem trước hình ảnh và validation -->
 <script>
-  let selectedFiles = []; // Track selected files
+  let selectedFile = null; // Chỉ 1 file
 
   // Preview ảnh được chọn
   document.getElementById('imageFile').addEventListener('change', function(e) {
-    const files = e.target.files;
-    const preview = document.getElementById('imagePreview');
-
-    // Add new files to selectedFiles array
-    for (let i = 0; i < files.length; i++) {
-      selectedFiles.push(files[i]);
+    const file = e.target.files[0];
+    if (file) {
+      selectedFile = file;
     }
-
     updatePreview();
-
-    // Clear input to allow same file selection again
+    // Clear input để chọn lại cùng file nếu muốn
     e.target.value = '';
   });
 
@@ -445,35 +439,29 @@
     const preview = document.getElementById('imagePreview');
     preview.innerHTML = '';
 
-    if (selectedFiles.length > 0) {
+    if (selectedFile) {
       const title = document.createElement('h6');
       title.textContent = 'Ảnh đã chọn:';
       title.style.marginTop = '15px';
       title.style.marginBottom = '15px';
       preview.appendChild(title);
 
-      selectedFiles.forEach((file, index) => {
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-          const imgDiv = document.createElement('div');
-          imgDiv.className = 'image-preview';
-          imgDiv.setAttribute('data-file-index', index);
-          imgDiv.innerHTML = `
-            <img src="${e.target.result}" alt="Preview Image" />
-            <button type="button" class="btn-delete" onclick="removeFile(${index})" title="Xóa ảnh này">
-              <i class="fas fa-times"></i>
-            </button>
-          `;
-          preview.appendChild(imgDiv);
-        };
-
-        reader.readAsDataURL(file);
-      });
-
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imgDiv = document.createElement('div');
+        imgDiv.className = 'image-preview';
+        imgDiv.innerHTML = `
+          <img src="${e.target.result}" alt="Preview Image" />
+          <button type="button" class="btn-delete" onclick="removeFile()" title="Xóa ảnh này">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        preview.appendChild(imgDiv);
+      };
+      reader.readAsDataURL(selectedFile);
       // Cập nhật text
       const uploadArea = document.querySelector('.image-upload-area p');
-      uploadArea.innerHTML = `Đã chọn ${selectedFiles.length} ảnh`;
+      uploadArea.innerHTML = `Đã chọn 1 ảnh`;
     } else {
       // Reset upload area text
       const uploadArea = document.querySelector('.image-upload-area p');
@@ -481,27 +469,20 @@
     }
   }
 
-
-
-  function removeFile(index) {
+  function removeFile() {
     if (confirm('Xóa ảnh này?')) {
-      selectedFiles.splice(index, 1); // Remove file from array
-      updatePreview(); // Refresh preview
+      selectedFile = null;
+      updatePreview();
     }
   }
 
-  // Before form submit, create new FormData with selected files
+  // Before form submit, create new FormData with selected file
   document.querySelector('form').addEventListener('submit', function(e) {
-    // Create a new DataTransfer object to set files
-    const dt = new DataTransfer();
-
-    // Add selected files to DataTransfer
-    selectedFiles.forEach(file => {
-      dt.items.add(file);
-    });
-
-    // Set the files to the input element
-    document.getElementById('imageFile').files = dt.files;
+    if (selectedFile) {
+      const dt = new DataTransfer();
+      dt.items.add(selectedFile);
+      document.getElementById('imageFile').files = dt.files;
+    }
   });
 
   // Drag and drop functionality
@@ -523,20 +504,17 @@
     e.preventDefault();
     this.style.backgroundColor = '#f8f9fa';
     this.style.borderColor = '#dee2e6';
-    
     const files = e.dataTransfer.files;
-
-    // Add dropped files to selectedFiles array
-    for (let i = 0; i < files.length; i++) {
-      selectedFiles.push(files[i]);
+    if (files.length > 0) {
+      selectedFile = files[0];
+      updatePreview();
     }
-
-    updatePreview();
   });
 
   // Client-side validation for duplicate email and phone number
   let emailValidationTimeout;
   let phoneValidationTimeout;
+  let supplierNameValidationTimeout;
 
   // Validate email format
   function validateEmailFormat() {
@@ -638,6 +616,53 @@
     }
   }
 
+  // Validate supplier name format
+  function validateSupplierNameFormat() {
+    const nameInput = document.querySelector('input[name="suplierName"]');
+    const nameValue = nameInput.value.trim();
+    
+    // Remove existing validation message
+    removeValidationMessage(nameInput);
+    
+    if (nameValue.length > 0) {
+      // Check minimum length
+      if (nameValue.length < 2) {
+        showValidationError(nameInput, 'Tên nhà cung cấp phải có ít nhất 2 ký tự');
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Validate supplier name (format + duplicate check)
+  function validateSupplierName() {
+    const nameInput = document.querySelector('input[name="suplierName"]');
+    const nameValue = nameInput.value.trim();
+    
+    // First validate format
+    if (!validateSupplierNameFormat()) {
+      return;
+    }
+    
+    // Then check for duplicates if format is valid
+    if (nameValue.length >= 2) {
+      clearTimeout(supplierNameValidationTimeout);
+      supplierNameValidationTimeout = setTimeout(() => {
+        fetch('/Supplier/check-name?suplierName=' + encodeURIComponent(nameValue))
+          .then(response => response.json())
+          .then(data => {
+            if (data.exists) {
+              showValidationError(nameInput, 'Tên nhà cung cấp này đã được sử dụng bởi nhà cung cấp khác');
+            }
+          })
+          .catch(error => {
+            console.error('Error checking supplier name:', error);
+          });
+      }, 500);
+    }
+  }
+
   // Helper function to validate email format
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -668,9 +693,15 @@
 
   // Attach event listeners
   document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.querySelector('input[name="suplierName"]');
     const emailInput = document.querySelector('input[name="email"]');
     const phoneInput = document.querySelector('input[name="phoneNumber"]');
     const form = document.querySelector('form');
+    
+    if (nameInput) {
+      nameInput.addEventListener('input', validateSupplierNameFormat);
+      nameInput.addEventListener('blur', validateSupplierName);
+    }
     
     if (emailInput) {
       emailInput.addEventListener('input', validateEmailFormat);

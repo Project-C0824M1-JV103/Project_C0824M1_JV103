@@ -45,4 +45,5 @@ public interface IProductService {
     List<ProductDTO> getAllProducts();
     List<Category> getAllCategories();
     List<Supplier> getAllSuppliers();
+
 }
