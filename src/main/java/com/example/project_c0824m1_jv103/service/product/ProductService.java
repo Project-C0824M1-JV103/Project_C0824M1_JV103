@@ -79,6 +79,8 @@ public class ProductService implements IProductService {
         
         // Convert DTO to Entity
         Product product = productMapper.toEntity(productDTO);
+        product.setCategory(categoryRepository.findById(productDTO.getCategoryId()).get());
+        product.setSupplier(supplierRepository.findById(productDTO.getSupplierId()).get());
         
         // Lưu sản phẩm trước
         Product savedProduct = productRepository.save(product);

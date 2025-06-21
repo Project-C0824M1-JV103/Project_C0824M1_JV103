@@ -1,22 +1,32 @@
 package com.example.project_c0824m1_jv103.controller;
 
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
+import com.example.project_c0824m1_jv103.dto.StorageDto;
 import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
+import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
+import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.Storage;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
+import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
 import com.example.project_c0824m1_jv103.service.product.IProductService;
 import com.example.project_c0824m1_jv103.service.storage.IStorageService;
+import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 @RequestMapping("/storage")
@@ -30,6 +40,29 @@ public class StorageController extends BaseAdminController {
 
     @Autowired
     private IProductRepository productRepository;
+    @Autowired
+    private IEmployeeService employeeService;
+    @Autowired
+    private ISupplierService supplierService;
+    @GetMapping("/list")
+    public String showStorageList(
+            @RequestParam(value = "productName", required = false) String productName,
+            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate,
+            Model model) {
+        LocalDate start = startDate != null ? LocalDate.parse(startDate) : null;
+        LocalDate end = endDate != null ? LocalDate.parse(endDate) : null;
+        List<StorageDto> storages = storageService.findByCriteria(productName, start, end);
+        if (storages == null) {
+            model.addAttribute("storages", List.of());
+        } else {
+            model.addAttribute("storages", storages);
+        }
+        model.addAttribute("productName", productName);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        return "storage/list";
+    }
 
     @GetMapping("/export")
     public String showExportForm(Model model) {
