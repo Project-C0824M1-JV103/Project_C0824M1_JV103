@@ -1,6 +1,7 @@
 package com.example.project_c0824m1_jv103.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -16,14 +17,20 @@ public class Supplier {
     private Integer suplierId;
 
     @Column(name = "suplier_name", nullable = false, length = 100)
+    @NotBlank(message = "Tên nhà cung cấp không được để trống")
+    @Size(min = 2, max = 100, message = "Tên nhà cung cấp phải từ 2-100 ký tự")
     private String suplierName;
-
+    @NotBlank(message = "Địa chỉ không được để trống")
+    @Size(max = 500, message = "Địa chỉ không được vượt quá 500 ký tự")
     @Column(name = "address", columnDefinition = "TEXT")
     private String address;
-
+    @NotBlank(message = "Số điện thoại không được để trống")
+    @Size(min = 10, max = 11, message = "Số điện thoại phải từ 10-11 ký tự")
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
-
+    @NotBlank(message = "Email không được để trống")
+    @Email(message = "Email không hợp lệ")
+    @Size(max = 255, message = "Email không được vượt quá 255 ký tự")
     @Column(name = "email", length = 255)
     private String email;
 

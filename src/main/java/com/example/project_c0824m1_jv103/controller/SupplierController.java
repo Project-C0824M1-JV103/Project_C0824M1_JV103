@@ -67,9 +67,13 @@ public class SupplierController extends BaseAdminController {
     }
 
     @PostMapping("/save")
-    public String saveSupplier(@ModelAttribute("supplier") Supplier supplier,
+    public String saveSupplier(@Valid @ModelAttribute("supplier") Supplier supplier,
+                               BindingResult result,
                                @RequestParam(value = "image", required = false) MultipartFile image,
                                RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "supplier/edit"; // Trả về lại form nếu có lỗi
+        }
         try {
             supplierService.saveSupplier(supplier, image);
             redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
