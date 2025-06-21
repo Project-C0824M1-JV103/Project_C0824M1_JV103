@@ -249,4 +249,11 @@ public class StorageController extends BaseAdminController {
             }
         }
     }
+
+    // API để lấy sản phẩm theo nhà cung cấp
+    @GetMapping("/api/products-by-supplier/{supplierId}")
+    @ResponseBody
+    public List<Product> getProductsBySupplier(@PathVariable Integer supplierId) {
+        return productRepository.findBySupplier_SuplierId(supplierId);
+    }
 } 

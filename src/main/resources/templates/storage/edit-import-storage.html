@@ -138,6 +138,15 @@
             color: #212529;
             font-size: 1.1em;
         }
+
+        /* Style cho ô tổng tiền */
+        #totalAmount {
+            background-color: #f8f9fa !important;
+            font-weight: bold !important;
+            color: #28a745 !important;
+            font-size: 1.1em !important;
+            text-align: right !important;
+        }
     </style>
 </head>
 <body>
@@ -305,6 +314,25 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Tổng tiền -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Tổng tiền</label>
+                                            <div class="currency-input">
+                                                <input
+                                                    type="text"
+                                                    id="totalAmount"
+                                                    class="form-control readonly-field"
+                                                    readonly
+                                                    placeholder="0"
+                                                    style="padding-right: 50px; font-weight: bold; color: #28a745;"
+                                                />
+                                                <span class="currency-symbol">VNĐ</span>
+                                            </div>
+                                            <small class="text-muted">Tổng tiền = Số lượng × Giá nhập</small>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Action Buttons -->
@@ -345,6 +373,36 @@
                 form.addEventListener('submit', function() {
                     document.getElementById('loading-overlay').style.display = 'flex';
                 });
+            }
+
+            // Lấy các input fields
+            const quantityInput = document.querySelector('input[name="quantity"]');
+            const costInput = document.querySelector('input[name="cost"]');
+            const totalAmountInput = document.getElementById('totalAmount');
+
+            // Hàm tính toán tổng tiền
+            function calculateTotal() {
+                const quantity = parseFloat(quantityInput.value) || 0;
+                const cost = parseFloat(costInput.value) || 0;
+                const total = quantity * cost;
+                
+                // Format số với dấu phẩy phân tách hàng nghìn
+                totalAmountInput.value = total.toLocaleString('vi-VN');
+            }
+
+            // Tính toán tổng tiền ban đầu khi trang load
+            calculateTotal();
+
+            // Lắng nghe sự kiện thay đổi trên input số lượng
+            if (quantityInput) {
+                quantityInput.addEventListener('input', calculateTotal);
+                quantityInput.addEventListener('change', calculateTotal);
+            }
+
+            // Lắng nghe sự kiện thay đổi trên input giá nhập
+            if (costInput) {
+                costInput.addEventListener('input', calculateTotal);
+                costInput.addEventListener('change', calculateTotal);
             }
         });
     </script>
