@@ -43,13 +43,13 @@ VALUES ('Samsung Galaxy S21', '6.2', 15000000, '10', '12', '128', 'Exynos 2100',
         2, 1, 15);
 
 -- Thêm dữ liệu vào bảng ProductImages
-INSERT INTO product_images (product_id, image_url, caption, display_order)
+INSERT INTO product_images (product_id, image_url, caption, image_id)
 VALUES (1, 'https://example.com/images/s21_front.jpg', 'Mặt trước Samsung Galaxy S21', 1),
        (1, 'https://example.com/images/s21_back.jpg', 'Mặt sau Samsung Galaxy S21', 2),
-       (2, 'https://example.com/images/iphone13_front.jpg', 'Mặt trước iPhone 13', 1),
-       (2, 'https://example.com/images/iphone13_back.jpg', 'Mặt sau iPhone 13', 2),
-       (3, 'https://example.com/images/xiaomi12pro_front.jpg', 'Mặt trước Xiaomi 12 Pro', 1),
-       (3, 'https://example.com/images/xiaomi12pro_back.jpg', 'Mặt sau Xiaomi 12 Pro', 2);
+       (2, 'https://example.com/images/iphone13_front.jpg', 'Mặt trước iPhone 13', 3),
+       (2, 'https://example.com/images/iphone13_back.jpg', 'Mặt sau iPhone 13', 4),
+       (3, 'https://example.com/images/xiaomi12pro_front.jpg', 'Mặt trước Xiaomi 12 Pro', 5),
+       (3, 'https://example.com/images/xiaomi12pro_back.jpg', 'Mặt sau Xiaomi 12 Pro', 6);
 
 -- Thêm dữ liệu vào bảng Customer
 INSERT INTO Customer (customer_name, phone_number, address, birthday_date, email)

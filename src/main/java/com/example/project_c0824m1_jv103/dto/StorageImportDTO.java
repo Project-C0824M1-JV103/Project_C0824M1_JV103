@@ -4,28 +4,49 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public class StorageImportDTO {
-
-    @NotNull(message = "ID sản phẩm là bắt buộc")
+    @NotNull(message = "ID sản phẩm không được để trống")
     private Integer productId;
-
-    @NotNull(message = "Số lượng là bắt buộc")
-    @Min(value = 1, message = "Số lượng phải lớn hơn 0")
+    private String productName;
+    private String supplierName;
+    @NotNull(message = "Số lượng nhập không được để trống")
+    @Min(value = 1, message = "Số lượng nhập phải lớn hơn 0")
     private Integer importQuantity;
-
-    @NotNull(message = "Giá nhập là bắt buộc")
-    @Min(value = 0, message = "Giá nhập không được âm")
+    @Min(value = 0, message = "Giá nhập phải lớn hơn hoặc bằng 0")
     private Double cost;
+    @NotNull(message = "ID nhà cung cấp không được để trống")
+    private Integer supplierId;
 
-    @NotNull(message = "ID nhân viên là bắt buộc")
-    private Integer employeeId;
+    public StorageImportDTO() {}
 
-    // Getters and Setters
+    public StorageImportDTO(Integer productId, String productName, String supplierName, Integer importQuantity) {
+        this.productId = productId;
+        this.productName = productName;
+        this.supplierName = supplierName;
+        this.importQuantity = importQuantity;
+    }
+
     public Integer getProductId() {
         return productId;
     }
 
     public void setProductId(Integer productId) {
         this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 
     public Integer getImportQuantity() {
@@ -44,11 +65,11 @@ public class StorageImportDTO {
         this.cost = cost;
     }
 
-    public Integer getEmployeeId() {
-        return employeeId;
+    public Integer getSupplierId() {
+        return supplierId;
     }
 
-    public void setEmployeeId(Integer employeeId) {
-        this.employeeId = employeeId;
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
     }
 }

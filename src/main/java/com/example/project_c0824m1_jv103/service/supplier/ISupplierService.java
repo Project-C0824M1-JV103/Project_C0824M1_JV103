@@ -15,6 +15,7 @@ public interface ISupplierService {
     Optional<Supplier> findById(Integer id);
     void saveSupplier(Supplier supplier, MultipartFile image);
     Page<Supplier> findByCriteria(String suplierName, String phoneNumber, String email, Pageable pageable);
+    List<Supplier> findAll();
 
     Supplier saveSupplier(SupplierDto supplierDto) throws IOException;
 

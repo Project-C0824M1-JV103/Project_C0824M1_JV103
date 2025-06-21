@@ -6,6 +6,7 @@ import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
 import com.example.project_c0824m1_jv103.model.Employee;
+import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.Storage;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
@@ -19,6 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +32,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 @Controller
 @RequestMapping("/storage")
 public class StorageController extends BaseAdminController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(StorageController.class);
+
     @Autowired
     private IStorageService storageService;
+
+    @Autowired
+    private ISupplierService supplierService;
 
     @Autowired
     private IProductService productService;
@@ -62,6 +75,43 @@ public class StorageController extends BaseAdminController {
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
         return "storage/list";
+    }
+
+    @GetMapping("/show-create")
+    public ModelAndView showCreateStorage() {
+        LOGGER.info("Handling /storage/show-create request");
+        ModelAndView modelAndView = new ModelAndView("storage/import-storage");
+        modelAndView.addObject("inforStorages", storageService.findAll()); // hoặc storageService.findAll()
+        modelAndView.addObject("suppliers", supplierService.findAll());
+        modelAndView.addObject("storageImportDTO", new StorageImportDTO());
+        return modelAndView;
+    }
+
+    @PostMapping("/create")
+    public String importProduct(
+            @Valid @ModelAttribute("storageImportDTO") StorageImportDTO importDTO,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("availableProducts", storageService.findAll());
+            model.addAttribute("suppliers", supplierService.findAll());
+            model.addAttribute("errorMessage", "Vui lòng kiểm tra lại dữ liệu nhập vào");
+            return "storage/import-storage";
+        }
+
+        try {
+            storageService.importProduct(importDTO);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Nhập kho sản phẩm \"" + importDTO.getProductName() + "\" thành công.");
+            return "redirect:/storage";
+        } catch (RuntimeException e) {
+            model.addAttribute("availableProducts", storageService.findAll());
+            model.addAttribute("suppliers", supplierService.findAll());
+            model.addAttribute("errorMessage", e.getMessage());
+            return "storage/import-storage";
+        }
     }
 
     @GetMapping("/export")
@@ -99,7 +149,7 @@ public class StorageController extends BaseAdminController {
         
         try {
             storageService.exportProduct(exportDTO);
-            redirectAttributes.addFlashAttribute("successMessage", 
+            redirectAttributes.addFlashAttribute("successMessage",
                 "Xuất kho " + exportDTO.getProductName() + " thành công");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());

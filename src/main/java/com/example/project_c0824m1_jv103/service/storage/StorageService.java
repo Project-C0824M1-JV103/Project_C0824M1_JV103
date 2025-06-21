@@ -1,16 +1,10 @@
 package com.example.project_c0824m1_jv103.service.storage;
 
-import com.example.project_c0824m1_jv103.dto.StorageDto;
 import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
-import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
-import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.model.Product;
-
 import com.example.project_c0824m1_jv103.model.Storage;
-import com.example.project_c0824m1_jv103.repository.IEmployeeRepository;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
 import com.example.project_c0824m1_jv103.repository.IStorageRepository;
-import com.example.project_c0824m1_jv103.service.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +30,12 @@ public class StorageService implements IStorageService {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+
+    @Autowired
+    private IEmployeeRepository employeeRepository;
+
+    @Autowired
+    private ISupplierRepository supplierRepository;
 
     @Override
     @Transactional
@@ -64,26 +64,6 @@ public class StorageService implements IStorageService {
 
         return storageRepository.save(storage);
     }
-//    @Override
-//    @Transactional
-//    public Storage importProduct(StorageImportDTO importDTO) {
-//        Product product = productRepository.findById(importDTO.getProductId())
-//                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
-//
-//        Employee employee = employeeRepository.findById(importDTO.getEmployeeId())
-//                .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại"));
-//
-//        product.setQuantity(product.getQuantity() + importDTO.getImportQuantity());
-//        productRepository.save(product);
-//
-//        Storage storage = new Storage();
-//        storage.setProduct(product);
-//        storage.setQuantity(importDTO.getImportQuantity());
-//        storage.setCost(importDTO.getCost());
-//        storage.setEmployee(employee);
-//
-//        return storageRepository.save(storage);
-//    }
 
     @Override
     public Page<Storage> getAllStorageRecords(Pageable pageable) {
@@ -154,4 +134,61 @@ public class StorageService implements IStorageService {
             return dto;
         }).collect(Collectors.toList());
     }
-} 
+}
+
+    @Override
+    @Transactional
+    public Storage importProduct(StorageImportDTO importDTO) {
+        if (importDTO.getImportQuantity() == null || importDTO.getImportQuantity() <= 0) {
+            throw new RuntimeException("Số lượng nhập phải lớn hơn 0");
+        }
+
+        if (importDTO.getCost() != null && importDTO.getCost() <= 0) {
+            throw new RuntimeException("Giá nhập phải lớn hơn 0");
+        }
+
+        Product product = productRepository.findById(importDTO.getProductId())
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+
+        Supplier supplier = supplierRepository.findById(importDTO.getSupplierId())
+                .orElseThrow(() -> new RuntimeException("Nhà cung cấp không tồn tại"));
+
+        if (!product.getSupplier().getSuplierId().equals(supplier.getSuplierId())) {
+            throw new RuntimeException("Sản phẩm không thuộc nhà cung cấp đã chọn");
+        }
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Employee employee = employeeRepository.findByEmail(email);
+        if (employee == null) {
+            throw new RuntimeException("Nhân viên không tồn tại");
+        }
+
+        product.setQuantity(product.getQuantity() + importDTO.getImportQuantity());
+        productRepository.save(product);
+
+        Storage existingStorage = storageRepository.findAll().stream()
+                .filter(s -> s.getProduct().getProductId().equals(importDTO.getProductId())
+                        && s.getProduct().getSupplier().getSuplierId().equals(importDTO.getSupplierId()))
+                .findFirst()
+                .orElse(null);
+
+        if (existingStorage != null) {
+            existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
+            if (importDTO.getCost() != null) {
+                existingStorage.setCost(importDTO.getCost());
+            }
+            existingStorage.setEmployee(employee);
+
+            return storageRepository.save(existingStorage);
+        } else {
+            Storage newStorage = new Storage();
+            newStorage.setProduct(product);
+            newStorage.setQuantity(importDTO.getImportQuantity());
+            newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
+            newStorage.setEmployee(employee);
+
+            return storageRepository.save(newStorage);
+        }
+    }
+
+}
