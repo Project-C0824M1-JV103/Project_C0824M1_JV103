@@ -1,6 +1,7 @@
 package com.example.project_c0824m1_jv103.controller;
 
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
+import com.example.project_c0824m1_jv103.dto.StorageDto;
 import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
@@ -11,6 +12,7 @@ import com.example.project_c0824m1_jv103.repository.IProductRepository;
 import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
 import com.example.project_c0824m1_jv103.service.product.IProductService;
 import com.example.project_c0824m1_jv103.service.storage.IStorageService;
+import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -38,49 +42,28 @@ public class StorageController extends BaseAdminController {
     private IProductRepository productRepository;
     @Autowired
     private IEmployeeService employeeService;
+    @Autowired
+    private ISupplierService supplierService;
+    @GetMapping("/list")
+    public String showStorageList(
+            @RequestParam(value = "productName", required = false) String productName,
+            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate,
+            Model model) {
+        LocalDate start = startDate != null ? LocalDate.parse(startDate) : null;
+        LocalDate end = endDate != null ? LocalDate.parse(endDate) : null;
+        List<StorageDto> storages = storageService.findByCriteria(productName, start, end);
+        if (storages == null) {
+            model.addAttribute("storages", List.of());
+        } else {
+            model.addAttribute("storages", storages);
+        }
+        model.addAttribute("productName", productName);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        return "storage/list";
+    }
 
-    @GetMapping("/import")
-    public String showImportForm(Model model) {
-        model.addAttribute("storageImportDTO", new StorageImportDTO());
-        List<ProductDTO> products = productService.getAllProducts();
-        List<Employee> employees = employeeService.findAll();
-        model.addAttribute("products", products);
-        model.addAttribute("employees", employees);
-        return "storage/import";
-    }
-    @PostMapping("/import")
-    public String importProduct(@Valid @ModelAttribute("storageImportDTO") StorageImportDTO importDTO,
-                                BindingResult result,
-                                RedirectAttributes redirectAttributes,
-                                Model model) {
-        if (result.hasErrors()) {
-            List<ProductDTO> products = productService.getAllProducts();
-            List<Employee> employees = employeeService.findAll();
-            model.addAttribute("products", products);
-            model.addAttribute("employees", employees);
-            return "storage/import";
-        }
-        try {
-            storageService.importProduct(importDTO);
-            redirectAttributes.addFlashAttribute("message", "Nhập kho thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Lỗi khi nhập kho: " + e.getMessage());
-            return "redirect:/storage/import";
-        }
-        return "redirect:/storage/import-history";
-    }@GetMapping("/import-history")
-    public String showImportHistory(Model model,
-                                    @RequestParam(value = "page", defaultValue = "0") int page,
-                                    @RequestParam(value = "size", defaultValue = "6") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Storage> importHistory = storageService.getImportHistory(pageable);
-        model.addAttribute("importHistory", importHistory);
-        model.addAttribute("pageNumber", page);
-        model.addAttribute("pageSize", size);
-        model.addAttribute("totalPages", importHistory.getTotalPages());
-        model.addAttribute("totalElements", importHistory.getTotalElements());
-        return "storage/import-history";
-    }
     @GetMapping("/export")
     public String showExportForm(Model model) {
         model.addAttribute("exportDTO", new StorageExportDTO());

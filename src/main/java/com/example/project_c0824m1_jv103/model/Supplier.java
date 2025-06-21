@@ -1,6 +1,9 @@
 package com.example.project_c0824m1_jv103.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
 
 @Entity

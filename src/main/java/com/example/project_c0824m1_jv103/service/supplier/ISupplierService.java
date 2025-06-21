@@ -27,4 +27,5 @@ public interface ISupplierService {
 
     // Validation method for new supplier
     String validateNewSupplier(SupplierDto supplierDto);
+
 }
