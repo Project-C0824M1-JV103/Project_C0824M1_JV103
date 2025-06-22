@@ -22,9 +22,11 @@ public interface IStorageService {
     Storage getStorageById(Integer id);
     Page<Storage> getExportHistory(Pageable pageable);
     Page<Storage> getImportHistory(Pageable pageable);
+
     List<StorageDto> findAll();
     List<StorageDto> findByCriteria(String productName, LocalDate startDate, LocalDate endDate);
 
     // Thêm method để chỉnh sửa nhập kho
     Storage updateStorage(Integer storageId, StorageDto storageDto);
+    Page<StorageDto> paginateStorageList(List<StorageDto> storageList, Pageable pageable);
 }

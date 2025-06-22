@@ -54,6 +54,7 @@ public class StorageService implements IStorageService {
 
     @Autowired
     private IEmployeeRepository employeeRepository;
+
     @Autowired
     private CloudinaryService cloudinaryService;
 
@@ -250,9 +251,11 @@ public class StorageService implements IStorageService {
             StorageDto dto = new StorageDto();
             dto.setStorageId(storage.getStorageId());
             dto.setProductId(storage.getProduct().getProductId());
+            dto.setProductName(storage.getProduct().getProductName());
             dto.setQuantity(storage.getQuantity());
             dto.setCost(storage.getCost());
             dto.setEmployeeId(storage.getEmployee() != null ? storage.getEmployee().getEmployeeId() : null);
+            dto.setEmployeeName(storage.getEmployee() != null ? storage.getEmployee().getFullName() : "Chưa xác định");
             dto.setTransactionDate(storage.getTransactionDate());
             return dto;
         }).collect(Collectors.toList());
@@ -261,11 +264,14 @@ public class StorageService implements IStorageService {
     @Override
     public List<StorageDto> findByCriteria(String productName, LocalDate startDate, LocalDate endDate) {
         List<Storage> storages = storageRepository.findAll();
+
+        // Áp dụng điều kiện lọc linh hoạt
         if (productName != null && !productName.isEmpty()) {
             storages = storages.stream()
                     .filter(storage -> storage.getProduct().getProductName().toLowerCase().contains(productName.toLowerCase()))
                     .collect(Collectors.toList());
         }
+
         if (startDate != null || endDate != null) {
             storages = storages.stream()
                     .filter(storage -> {
@@ -276,15 +282,29 @@ public class StorageService implements IStorageService {
                     })
                     .collect(Collectors.toList());
         }
+
         return storages.stream().map(storage -> {
             StorageDto dto = new StorageDto();
             dto.setStorageId(storage.getStorageId());
             dto.setProductId(storage.getProduct().getProductId());
+            dto.setProductName(storage.getProduct().getProductName());
             dto.setQuantity(storage.getQuantity());
             dto.setCost(storage.getCost());
             dto.setEmployeeId(storage.getEmployee() != null ? storage.getEmployee().getEmployeeId() : null);
+            dto.setEmployeeName(storage.getEmployee() != null ? storage.getEmployee().getFullName() : "Chưa xác định");
             dto.setTransactionDate(storage.getTransactionDate());
             return dto;
         }).collect(Collectors.toList());
+    }
+    @Override
+    public Page<StorageDto> paginateStorageList(List<StorageDto> storageList, Pageable pageable) {
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), storageList.size());
+
+        return new PageImpl<>(
+                storageList.subList(start, end),
+                pageable,
+                storageList.size()
+        );
     }
 }
