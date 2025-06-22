@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.example.project_c0824m1_jv103.dto.StorageDto;
@@ -268,7 +269,8 @@ public class StorageService implements IStorageService {
         // Áp dụng điều kiện lọc linh hoạt
         if (productName != null && !productName.isEmpty()) {
             storages = storages.stream()
-                    .filter(storage -> storage.getProduct().getProductName().toLowerCase().contains(productName.toLowerCase()))
+                    .filter(storage -> storage.getProduct() != null &&
+                            storage.getProduct().getProductName().toLowerCase().contains(productName.toLowerCase()))
                     .collect(Collectors.toList());
         }
 
@@ -286,8 +288,8 @@ public class StorageService implements IStorageService {
         return storages.stream().map(storage -> {
             StorageDto dto = new StorageDto();
             dto.setStorageId(storage.getStorageId());
-            dto.setProductId(storage.getProduct().getProductId());
-            dto.setProductName(storage.getProduct().getProductName());
+            dto.setProductId(storage.getProduct() != null ? storage.getProduct().getProductId() : null);
+            dto.setProductName(storage.getProduct() != null ? storage.getProduct().getProductName() : "N/A");
             dto.setQuantity(storage.getQuantity());
             dto.setCost(storage.getCost());
             dto.setEmployeeId(storage.getEmployee() != null ? storage.getEmployee().getEmployeeId() : null);
@@ -296,15 +298,14 @@ public class StorageService implements IStorageService {
             return dto;
         }).collect(Collectors.toList());
     }
-    @Override
-    public Page<StorageDto> paginateStorageList(List<StorageDto> storageList, Pageable pageable) {
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), storageList.size());
 
-        return new PageImpl<>(
-                storageList.subList(start, end),
-                pageable,
-                storageList.size()
-        );
+    public Page<StorageDto> paginateStorageList(List<StorageDto> storages, Pageable pageable) {
+        if (storages == null || storages.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), storages.size());
+        List<StorageDto> subList = start < storages.size() ? storages.subList(start, end) : Collections.emptyList();
+        return new PageImpl<>(subList, pageable, storages.size());
     }
 }
