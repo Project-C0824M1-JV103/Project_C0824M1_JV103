@@ -20,4 +20,5 @@ public interface IStorageService {
 
     List<StorageDto> findAll();
     List<StorageDto> findByCriteria(String productName, LocalDate startDate, LocalDate endDate);
+    Page<StorageDto> paginateStorageList(List<StorageDto> storageList, Pageable pageable);
 } 

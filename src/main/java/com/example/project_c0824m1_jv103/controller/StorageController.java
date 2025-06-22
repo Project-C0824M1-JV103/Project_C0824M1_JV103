@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -49,18 +50,39 @@ public class StorageController extends BaseAdminController {
             @RequestParam(value = "productName", required = false) String productName,
             @RequestParam(value = "startDate", required = false) String startDate,
             @RequestParam(value = "endDate", required = false) String endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             Model model) {
-        LocalDate start = startDate != null ? LocalDate.parse(startDate) : null;
-        LocalDate end = endDate != null ? LocalDate.parse(endDate) : null;
-        List<StorageDto> storages = storageService.findByCriteria(productName, start, end);
-        if (storages == null) {
-            model.addAttribute("storages", List.of());
-        } else {
-            model.addAttribute("storages", storages);
+
+        // Xử lý ngày
+        LocalDate start = null;
+        LocalDate end = null;
+        if (startDate != null && !startDate.isEmpty()) {
+            start = LocalDate.parse(startDate);
         }
+        if (endDate != null && !endDate.isEmpty()) {
+            end = LocalDate.parse(endDate);
+        }
+
+        List<StorageDto> filteredStorages = storageService.findByCriteria(productName, start, end);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+        Page<StorageDto> storagePage = storageService.paginateStorageList(filteredStorages, pageable);
+
+        // Đặt tên biến nhất quán (storagePage thay vì storagesPage)
+        model.addAttribute("storagePage", storagePage);
+        model.addAttribute("storages", storagePage.getContent());
         model.addAttribute("productName", productName);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
+
+        // Các thông tin phân trang
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", storagePage.getTotalPages());
+        model.addAttribute("totalItems", storagePage.getTotalElements());
+
+        model.addAttribute("suppliers", supplierService.findAll(Pageable.unpaged()));
+
         return "storage/list";
     }
 
