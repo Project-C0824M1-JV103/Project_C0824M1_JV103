@@ -125,6 +125,7 @@ public class StorageService implements IStorageService {
     @Override
     @Transactional
     public Storage importProduct(StorageImportDTO importDTO) {
+
         if (importDTO.getImportQuantity() == null || importDTO.getImportQuantity() <= 0) {
             throw new RuntimeException("Số lượng nhập phải lớn hơn 0");
         }
@@ -133,10 +134,10 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Giá nhập phải lớn hơn 0");
         }
 
-        Product originalProduct = productRepository.findById(importDTO.getProductId())
+        Product existingProduct = productRepository.findById(importDTO.getProductId())
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
-        Supplier supplier = supplierRepository.findById(importDTO.getSupplierId())
+        Supplier selectedSupplier = supplierRepository.findById(importDTO.getSupplierId())
                 .orElseThrow(() -> new RuntimeException("Nhà cung cấp không tồn tại"));
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -146,50 +147,45 @@ public class StorageService implements IStorageService {
         }
 
         Product productToUse;
-        if (!originalProduct.getSupplier().getSuplierId().equals(supplier.getSuplierId())) {
-            Product copiedProduct = new Product(
-                    originalProduct.getProductName(),
-                    originalProduct.getSize(),
-                    originalProduct.getPrice(),
-                    originalProduct.getCameraFront(),
-                    originalProduct.getCameraBack(),
-                    originalProduct.getMemory(),
-                    originalProduct.getCpu(),
-                    originalProduct.getDescription(),
-                    0, // Tạm thời để 0, sẽ cộng ở dưới
-                    originalProduct.getCategory(),
-                    supplier
+
+        if (!existingProduct.getSupplier().getSuplierId().equals(selectedSupplier.getSuplierId())) {
+            productToUse = new Product(
+                    existingProduct.getProductName(),
+                    existingProduct.getSize(),
+                    existingProduct.getPrice(),
+                    existingProduct.getCameraFront(),
+                    existingProduct.getCameraBack(),
+                    existingProduct.getMemory(),
+                    existingProduct.getCpu(),
+                    existingProduct.getDescription(),
+                    0,
+                    existingProduct.getCategory(),
+                    selectedSupplier
             );
-            copiedProduct.setProductImages(originalProduct.getProductImages());
-            productToUse = productRepository.save(copiedProduct);
+
+            List<ProductImages> clonedImages = existingProduct.getProductImages().stream()
+                    .map(img -> new ProductImages(productToUse, img.getImageUrl(), img.getCaption()))
+                    .toList();
+
+            productToUse.setProductImages(clonedImages);
+            productRepository.save(productToUse);
         } else {
-            productToUse = originalProduct;
+            productToUse = existingProduct;
         }
 
-        int updatedQuantity = productToUse.getQuantity() + importDTO.getImportQuantity();
-        productToUse.setQuantity(updatedQuantity);
+        productToUse.setQuantity(productToUse.getQuantity() + importDTO.getImportQuantity());
         productRepository.save(productToUse);
 
-        Storage existingStorage = storageRepository.findAll().stream()
-                .filter(s -> s.getProduct().getProductId().equals(productToUse.getProductId())
-                        && s.getProduct().getSupplier().getSuplierId().equals(supplier.getSuplierId()))
-                .findFirst()
-                .orElse(null);
+        Storage storage = new Storage();
+        storage.setProduct(productToUse);
+        storage.setQuantity(importDTO.getImportQuantity());
+        storage.setCost(importDTO.getCost() != null ? importDTO.getCost() : productToUse.getPrice());
+        storage.setEmployee(employee);
 
-        if (existingStorage != null) {
-            existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
-            existingStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : existingStorage.getCost());
-            existingStorage.setEmployee(employee);
-            return storageRepository.save(existingStorage);
-        } else {
-            Storage newStorage = new Storage();
-            newStorage.setProduct(productToUse);
-            newStorage.setQuantity(importDTO.getImportQuantity());
-            newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : productToUse.getPrice());
-            newStorage.setEmployee(employee);
-            return storageRepository.save(newStorage);
-        }
+        return storageRepository.save(storage);
     }
+
+
 
     @Override
     public Page<Storage> getImportHistory(Pageable pageable) {

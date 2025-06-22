@@ -86,14 +86,12 @@ public class StorageController extends BaseAdminController {
     }
 
     @PostMapping("/create")
-    public String importProduct(
-            @Valid @ModelAttribute("storageImportDTO") StorageImportDTO importDTO,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            Model model
-    ) {
+    public String importProduct(@Valid @ModelAttribute("storageImportDTO") StorageImportDTO importDTO,
+                                BindingResult bindingResult,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("availableProducts", storageService.findAll());
+            model.addAttribute("inforStorages", storageService.findAll());
             model.addAttribute("suppliers", supplierService.findAll());
             model.addAttribute("errorMessage", "Vui lòng kiểm tra lại dữ liệu nhập vào");
             return "storage/import-storage";
@@ -102,15 +100,16 @@ public class StorageController extends BaseAdminController {
         try {
             storageService.importProduct(importDTO);
             redirectAttributes.addFlashAttribute("successMessage",
-                    "Nhập kho sản phẩm \"" + importDTO.getProductName() + "\" thành công.");
+                    "Nhập kho sản phẩm " + importDTO.getProductName() + " thành công");
             return "redirect:/storage";
         } catch (RuntimeException e) {
-            model.addAttribute("availableProducts", storageService.findAll());
+            model.addAttribute("inforStorages", storageService.findAll());
             model.addAttribute("suppliers", supplierService.findAll());
             model.addAttribute("errorMessage", e.getMessage());
             return "storage/import-storage";
         }
     }
+
 
     @GetMapping("/export")
     public String showExportForm(Model model) {
