@@ -139,36 +139,13 @@
             font-size: 1.1em;
         }
 
-        /* Style cho hiển thị tổng tiền */
-        .total-display {
-            background-color: #f8f9fa;
-            padding: 12px 16px;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-            margin-top: 10px;
-        }
-        
-        .total-label {
-            font-weight: 600;
-            color: #495057;
-            font-size: 1.1em;
-        }
-        
-        .total-value {
-            font-weight: bold;
-            color: #28a745;
-            font-size: 1.3em;
-        }
-
-        /* Validation error styling */
-        .validation-error {
-            font-size: 0.875em;
-            margin-top: 0.25rem;
-        }
-
-        .is-invalid {
-            border-color: #dc3545 !important;
-            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        /* Style cho ô tổng tiền */
+        #totalAmount {
+            background-color: #f8f9fa !important;
+            font-weight: bold !important;
+            color: #28a745 !important;
+            font-size: 1.1em !important;
+            text-align: right !important;
         }
     </style>
 </head>
@@ -269,11 +246,8 @@
                                                 class="form-control"
                                                 th:classappend="${#fields.hasErrors('quantity')} ? 'is-invalid'"
                                                 min="1"
-                                                max="10000"
-                                                placeholder="Nhập số lượng (1-10,000)"
-                                                value=""
+                                                placeholder="0"
                                                 required
-                                                oninput="validateQuantity(this)"
                                             />
                                             <div
                                                 th:if="${#fields.hasErrors('quantity')}"
@@ -296,14 +270,10 @@
                                                     th:field="*{cost}"
                                                     class="form-control"
                                                     th:classappend="${#fields.hasErrors('cost')} ? 'is-invalid'"
-                                                    min="1000"
-                                                    max="1000000000"
                                                     step="1000"
-                                                    placeholder="Nhập giá tiền (1,000-1,000,000,000 VND)"
-                                                    value=""
+                                                    placeholder="0"
                                                     style="padding-right: 50px"
                                                     required
-                                                    oninput="validateCost(this)"
                                                 />
                                                 <span class="currency-symbol">VNĐ</span>
                                             </div>
@@ -320,25 +290,47 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                Nhân viên nhập
+                                                Nhân viên nhập <span class="required">*</span>
                                             </label>
-                                            <input
-                                                type="text"
-                                                class="form-control readonly-field"
-                                                value="Warehouse Staff"
-                                                readonly
-                                            />
-                                            <input type="hidden" th:field="*{employeeId}" value="1" />
+                                            <select
+                                                th:field="*{employeeId}"
+                                                class="form-control"
+                                                th:classappend="${#fields.hasErrors('employeeId')} ? 'is-invalid'"
+                                                required
+                                            >
+                                                <option value="">-- Chọn nhân viên --</option>
+                                                <option
+                                                    th:each="employee : ${employees}"
+                                                    th:value="${employee.employeeId}"
+                                                    th:text="${employee.fullName}"
+                                                    th:selected="${employee.employeeId == storageDto.employeeId}"
+                                                ></option>
+                                            </select>
+                                            <div
+                                                th:if="${#fields.hasErrors('employeeId')}"
+                                                class="invalid-feedback"
+                                            >
+                                                <span th:errors="*{employeeId}"></span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Tổng tiền -->
-                                <div class="row mt-3">
-                                    <div class="col-md-12 text-end">
-                                        <div class="total-display">
-                                            <span class="total-label">Tổng tiền: </span>
-                                            <span id="totalAmount" class="total-value">0 VNĐ</span>
+                                    <!-- Tổng tiền -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Tổng tiền</label>
+                                            <div class="currency-input">
+                                                <input
+                                                    type="text"
+                                                    id="totalAmount"
+                                                    class="form-control readonly-field"
+                                                    readonly
+                                                    placeholder="0"
+                                                    style="padding-right: 50px; font-weight: bold; color: #28a745;"
+                                                />
+                                                <span class="currency-symbol">VNĐ</span>
+                                            </div>
+                                            <small class="text-muted">Tổng tiền = Số lượng × Giá nhập</small>
                                         </div>
                                     </div>
                                 </div>
@@ -383,73 +375,36 @@
                 });
             }
 
-            // Tính toán tổng tiền
+            // Lấy các input fields
             const quantityInput = document.querySelector('input[name="quantity"]');
             const costInput = document.querySelector('input[name="cost"]');
             const totalAmountInput = document.getElementById('totalAmount');
 
+            // Hàm tính toán tổng tiền
             function calculateTotal() {
                 const quantity = parseFloat(quantityInput.value) || 0;
                 const cost = parseFloat(costInput.value) || 0;
                 const total = quantity * cost;
-                totalAmountInput.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
+                
+                // Format số với dấu phẩy phân tách hàng nghìn
+                totalAmountInput.value = total.toLocaleString('vi-VN');
             }
-            
+
+            // Tính toán tổng tiền ban đầu khi trang load
             calculateTotal();
 
+            // Lắng nghe sự kiện thay đổi trên input số lượng
             if (quantityInput) {
                 quantityInput.addEventListener('input', calculateTotal);
+                quantityInput.addEventListener('change', calculateTotal);
             }
+
+            // Lắng nghe sự kiện thay đổi trên input giá nhập
             if (costInput) {
                 costInput.addEventListener('input', calculateTotal);
+                costInput.addEventListener('change', calculateTotal);
             }
         });
-
-        // Validation functions
-        function validateQuantity(input) {
-            const value = parseInt(input.value);
-            const errorElement = input.parentElement.querySelector('.validation-error') || createErrorElement(input);
-            
-            if (isNaN(value) || value < 1) {
-                showError(input, errorElement, 'Số lượng phải từ 1 trở lên');
-            } else if (value > 10000) {
-                showError(input, errorElement, 'Số lượng không được vượt quá 10,000');
-            } else {
-                hideError(input, errorElement);
-            }
-        }
-
-        function validateCost(input) {
-            const value = parseFloat(input.value);
-            const errorElement = input.parentElement.querySelector('.validation-error') || createErrorElement(input);
-            
-            if (isNaN(value) || value < 1000) {
-                showError(input, errorElement, 'Giá nhập phải từ 1,000 VND trở lên');
-            } else if (value > 1000000000) {
-                showError(input, errorElement, 'Giá nhập không được vượt quá 1,000,000,000 VND');
-            } else {
-                hideError(input, errorElement);
-            }
-        }
-
-        function createErrorElement(input) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'validation-error text-danger small mt-1';
-            input.parentElement.appendChild(errorDiv);
-            return errorDiv;
-        }
-
-        function showError(input, errorElement, message) {
-            input.classList.add('is-invalid');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
-
-        function hideError(input, errorElement) {
-            input.classList.remove('is-invalid');
-            errorElement.textContent = '';
-            errorElement.style.display = 'none';
-        }
     </script>
 </body>
 </html> 
