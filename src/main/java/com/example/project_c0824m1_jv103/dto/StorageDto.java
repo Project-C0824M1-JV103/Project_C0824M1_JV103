@@ -1,5 +1,8 @@
 package com.example.project_c0824m1_jv103.dto;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,10 +16,13 @@ public class StorageDto {
     private Integer productId;
 
     @NotNull(message = "Số lượng không được để trống")
-    @Min(value = 1, message = "Số lượng phải lớn hơn 0")
+    @Min(value = 1, message = "Số lượng phải từ 1 trở lên")
+    @Max(value = 10000, message = "Số lượng không được vượt quá 10,000")
     private Integer quantity;
 
     @NotNull(message = "Giá nhập không được để trống")
+    @DecimalMin(value = "1000", message = "Giá nhập phải từ 1,000 VND trở lên")
+    @DecimalMax(value = "1000000000", message = "Giá nhập không được vượt quá 1,000,000,000 VND")
     private Double cost;
 
     @NotNull(message = "Vui lòng chọn nhân viên")
