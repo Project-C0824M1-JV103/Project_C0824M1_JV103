@@ -24,4 +24,7 @@ public interface IStorageService {
     Page<Storage> getImportHistory(Pageable pageable);
     List<StorageDto> findAll();
     List<StorageDto> findByCriteria(String productName, LocalDate startDate, LocalDate endDate);
+
+    // Thêm method để chỉnh sửa nhập kho
+    Storage updateStorage(Integer storageId, StorageDto storageDto);
 }

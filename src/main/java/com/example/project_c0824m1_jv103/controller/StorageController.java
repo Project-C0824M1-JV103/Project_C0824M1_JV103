@@ -5,6 +5,8 @@ import com.example.project_c0824m1_jv103.dto.StorageDto;
 import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
+import com.example.project_c0824m1_jv103.model.Employee;
+import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.Storage;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
@@ -182,4 +184,76 @@ public class StorageController extends BaseAdminController {
         model.addAttribute("currentPage", "export");
         return "storage/export-history";
     }
-} 
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Integer id, Model model) {
+        try {
+            Storage storage = storageService.getStorageById(id);
+
+            // Convert to StorageDto
+            StorageDto storageDto = new StorageDto();
+            storageDto.setStorageId(storage.getStorageId());
+            storageDto.setProductId(storage.getProduct().getProductId());
+            storageDto.setQuantity(storage.getQuantity());
+            storageDto.setCost(storage.getCost());
+            storageDto.setEmployeeId(storage.getEmployee() != null ? storage.getEmployee().getEmployeeId() : null);
+            storageDto.setTransactionDate(storage.getTransactionDate());
+
+            model.addAttribute("storageDto", storageDto);
+            model.addAttribute("storage", storage);
+            model.addAttribute("suppliers", supplierService.findAll());
+            model.addAttribute("employees", employeeService.findAll());
+
+            return "storage/edit-import-storage";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            return "redirect:/storage/list";
+        }
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateStorage(@PathVariable Integer id,
+                               @Valid @ModelAttribute StorageDto storageDto,
+                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes,
+                               Model model) {
+        if (bindingResult.hasErrors()) {
+            try {
+                Storage storage = storageService.getStorageById(id);
+                model.addAttribute("storage", storage);
+                model.addAttribute("suppliers", supplierService.findAll());
+                model.addAttribute("employees", employeeService.findAll());
+                model.addAttribute("error", "Vui lòng kiểm tra lại dữ liệu nhập vào");
+                return "storage/edit-import-storage";
+            } catch (RuntimeException e) {
+                redirectAttributes.addFlashAttribute("error", e.getMessage());
+                return "redirect:/storage";
+            }
+        }
+
+        try {
+            storageService.updateStorage(id, storageDto);
+            redirectAttributes.addFlashAttribute("message", "Cập nhật thông tin nhập kho thành công");
+            return "redirect:/storage/list";
+        } catch (RuntimeException e) {
+            try {
+                Storage storage = storageService.getStorageById(id);
+                model.addAttribute("storage", storage);
+                model.addAttribute("suppliers", supplierService.findAll());
+                model.addAttribute("employees", employeeService.findAll());
+                model.addAttribute("error", e.getMessage());
+                return "storage/edit-import-storage";
+            } catch (RuntimeException ex) {
+                redirectAttributes.addFlashAttribute("error", ex.getMessage());
+                return "redirect:/storage/list";
+            }
+        }
+    }
+
+    // API để lấy sản phẩm theo nhà cung cấp
+    @GetMapping("/api/products-by-supplier/{supplierId}")
+    @ResponseBody
+    public List<Product> getProductsBySupplier(@PathVariable Integer supplierId) {
+        return productRepository.findBySupplier_SuplierId(supplierId);
+    }
+}
