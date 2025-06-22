@@ -76,10 +76,15 @@
         .currency-symbol {
             position: absolute;
             right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 12px;
             color: #6c757d;
             font-weight: 600;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 15;
+            background-color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
         }
 
         .required {
@@ -164,11 +169,33 @@
          .validation-error {
              font-size: 0.875em;
              margin-top: 0.25rem;
+             position: relative;
+             z-index: 1;
          }
 
          .is-invalid {
              border-color: #dc3545 !important;
              box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+         }
+
+         /* Fix currency symbol position when validation error appears */
+         .currency-input .validation-error {
+             margin-top: 0.5rem;
+         }
+
+         .currency-input .form-control {
+             position: relative;
+             z-index: 5;
+             padding-right: 55px; /* chỉ chừa chỗ cho VNĐ */
+         }
+
+         /* Ẩn icon validation mặc định của browser */
+         .currency-input .form-control:invalid {
+             background-image: none;
+         }
+
+         .currency-input .form-control.is-invalid {
+             background-image: none;
          }
     </style>
 </head>
@@ -267,13 +294,13 @@
                                                 type="number"
                                                 th:field="*{quantity}"
                                                 class="form-control"
-                                                                                                 th:classappend="${#fields.hasErrors('quantity')} ? 'is-invalid'"
-                                                 min="1"
-                                                 max="10000"
-                                                 placeholder="Nhập số lượng (1-10,000)"
-                                                 value=""
-                                                 required
-                                                 oninput="validateQuantity(this)"
+                                                th:classappend="${#fields.hasErrors('quantity')} ? 'is-invalid'"
+                                                min="1"
+                                                max="10000"
+                                                placeholder="Nhập số lượng (1-10,000)"
+                                                value=""
+                                                required
+                                                oninput="validateQuantity(this)"
                                             />
                                             <div
                                                 th:if="${#fields.hasErrors('quantity')}"
@@ -294,16 +321,16 @@
                                                 <input
                                                     type="number"
                                                     th:field="*{cost}"
-                                                                                                         class="form-control"
-                                                     th:classappend="${#fields.hasErrors('cost')} ? 'is-invalid'"
-                                                     min="1000"
-                                                     max="1000000000"
-                                                     step="1000"
-                                                     placeholder="Nhập giá tiền (1,000-1,000,000,000 VND)"
-                                                     value=""
-                                                     style="padding-right: 50px"
-                                                     required
-                                                     oninput="validateCost(this)"
+                                                    class="form-control"
+                                                    th:classappend="${#fields.hasErrors('cost')} ? 'is-invalid'"
+                                                    min="1000"
+                                                    max="1000000000"
+                                                    step="1000"
+                                                    placeholder="Nhập giá tiền (1,000-1,000,000,000 VND)"
+                                                    value=""
+
+                                                    required
+                                                    oninput="validateCost(this)"
                                                 />
                                                 <span class="currency-symbol">VNĐ</span>
                                             </div>
