@@ -5,6 +5,7 @@ import com.example.project_c0824m1_jv103.dto.*;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.model.Product;
+import com.example.project_c0824m1_jv103.model.ProductImages;
 import com.example.project_c0824m1_jv103.model.Storage;
 import com.example.project_c0824m1_jv103.repository.ICategoryRepository;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
@@ -31,8 +32,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -332,5 +331,36 @@ public class StorageController extends BaseAdminController {
     @ResponseBody
     public List<Product> getProductsBySupplier(@PathVariable Integer supplierId) {
         return productRepository.findBySupplier_SuplierId(supplierId);
+    }
+
+    @GetMapping("/products/data")
+    @ResponseBody
+    public Object getProductsData(
+            @RequestParam(value = "productName", required = false, defaultValue = "") String productName,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "6") int size
+    ) {
+        Page<Product> productPage = productRepository.findByProductNameContainingIgnoreCase(productName, PageRequest.of(page, size));
+        List<StorageImportModal> content = productPage.getContent().stream().map(product -> {
+            List<String> images = product.getProductImages() != null ?
+                product.getProductImages().stream().map(ProductImages::getImageUrl).toList() :
+                java.util.Collections.emptyList();
+            return new StorageImportModal(
+                product.getProductId(),
+                product.getProductName(),
+                product.getPrice(),
+                product.getCpu(),
+                product.getMemory(),
+                images,
+                product.getSupplier() != null ? product.getSupplier().getSuplierId() : null,
+                product.getSupplier() != null ? product.getSupplier().getSuplierName() : null
+            );
+        }).toList();
+        return new java.util.HashMap<String, Object>() {{
+            put("content", content);
+            put("totalPages", productPage.getTotalPages());
+            put("pageNumber", productPage.getNumber());
+            put("size", productPage.getSize());
+        }};
     }
 }
