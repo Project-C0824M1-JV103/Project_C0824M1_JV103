@@ -2,10 +2,11 @@ package com.example.project_c0824m1_jv103.controller;
 
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.dto.*;
-import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
+import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.Storage;
+import com.example.project_c0824m1_jv103.repository.ICategoryRepository;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
 import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
 import com.example.project_c0824m1_jv103.service.product.IProductService;
@@ -17,10 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,11 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import java.io.IOException;
-import java.security.Principal;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
@@ -59,6 +58,9 @@ public class StorageController extends BaseAdminController {
 
     @Autowired
     private IEmployeeService employeeService;
+
+    @Autowired
+    private ICategoryRepository categoryRepository;
 
     @GetMapping("")
     public String showStorageList(
@@ -107,7 +109,9 @@ public class StorageController extends BaseAdminController {
         ModelAndView modelAndView = new ModelAndView("storage/import-storage");
         modelAndView.addObject("inforStorages", storageService.findAllStorage());
         modelAndView.addObject("suppliers", supplierService.findAll());
+        modelAndView.addObject("categorys", categoryRepository.findAll());
         modelAndView.addObject("storageImportDTO", new StorageImportDTO());
+        modelAndView.addObject("importStorageProduct", new StorageImportProduct());
         return modelAndView;
     }
 
@@ -124,11 +128,10 @@ public class StorageController extends BaseAdminController {
                 dto.setProductImages(imageUrls);
             }
 
-
             model.addAttribute("storageImportDTO", dto);
             model.addAttribute("inforStorages", storageService.findAllStorage());
             model.addAttribute("suppliers", supplierService.findAll());
-
+            model.addAttribute("importStorageProduct", new StorageImportProduct());
             return "storage/import-storage";
         }
         try {
@@ -145,8 +148,45 @@ public class StorageController extends BaseAdminController {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("inforStorages", storageService.findAllStorage());
             model.addAttribute("suppliers", supplierService.findAll());
-
+            model.addAttribute("importStorageProduct", new StorageImportProduct());
             return "storage/import-storage";
+        }
+    }
+
+    @PostMapping("/create-product")
+    public String createProduct(@Valid @ModelAttribute StorageImportProduct dto, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("inforStorages", storageService.findAllStorage());
+            model.addAttribute("suppliers", supplierService.findAll());
+            model.addAttribute("categorys", categoryRepository.findAll());
+            model.addAttribute("storageImportDTO", new StorageImportDTO());
+            model.addAttribute("importStorageProduct", dto);
+            model.addAttribute("showAddProductModal", true);
+            return "storage/import-storage";
+        }
+        try {
+            dto.setPrice(0.0);
+            dto.setQuantity(0);
+            var product = productService.createProductFromImport(dto);
+            Integer employeeId = null;
+            try {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
+                    String email = authentication.getName();
+                    Employee employee = employeeService.findByEmail(email);
+                    if (employee != null) {
+                        employeeId = employee.getEmployeeId();
+                    }
+                }
+            } catch (Exception ex) {
+                employeeId = null;
+            }
+            storageService.importProduct(new StorageImportId(product.getProductId(), employeeId));
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm mới thành công!");
+            return "redirect:/storage/show-create";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm sản phẩm mới: " + e.getMessage());
+            return "redirect:/storage/show-create";
         }
     }
 

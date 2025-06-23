@@ -185,6 +185,20 @@ public class StorageService implements IStorageService {
         return storageRepository.save(newStorage);
     }
 
+    @Override
+    public void importProduct(com.example.project_c0824m1_jv103.dto.StorageImportId storageImportId) {
+        Storage storage = new Storage();
+        Product product = productRepository.findById(storageImportId.getProductId()).orElse(null);
+        if (product == null) throw new RuntimeException("Product not found");
+        storage.setProduct(product);
+        storage.setCost(1000.0);
+        storage.setQuantity(1);
+        if (storageImportId.getEmployeeId() == null) throw new RuntimeException("EmployeeId is required");
+        Employee employee = employeeRepository.findById(storageImportId.getEmployeeId())
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+        storage.setEmployee(employee);
+        storageRepository.save(storage);
+    }
 
     @Override
     public Page<Storage> getImportHistory(Pageable pageable) {
@@ -293,4 +307,6 @@ public class StorageService implements IStorageService {
         List<StorageDto> subList = start < storages.size() ? storages.subList(start, end) : Collections.emptyList();
         return new PageImpl<>(subList, pageable, storages.size());
     }
+
+
 }

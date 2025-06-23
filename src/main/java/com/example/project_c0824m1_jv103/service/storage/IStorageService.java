@@ -29,4 +29,6 @@ public interface IStorageService {
     // Thêm method để chỉnh sửa nhập kho
     Storage updateStorage(Integer storageId, StorageDto storageDto);
     Page<StorageDto> paginateStorageList(List<StorageDto> storageList, Pageable pageable);
+
+    void importProduct(com.example.project_c0824m1_jv103.dto.StorageImportId storageImportId);
 }

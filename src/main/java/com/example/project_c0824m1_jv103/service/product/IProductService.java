@@ -1,6 +1,7 @@
 package com.example.project_c0824m1_jv103.service.product;
 
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
+import com.example.project_c0824m1_jv103.dto.StorageImportProduct;
 import com.example.project_c0824m1_jv103.model.Category;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.Supplier;
@@ -46,4 +47,6 @@ public interface IProductService {
     List<Category> getAllCategories();
     List<Supplier> getAllSuppliers();
 
+    // Tạo sản phẩm mới từ ImportStorageProduct
+    Product createProductFromImport(StorageImportProduct dto);
 }

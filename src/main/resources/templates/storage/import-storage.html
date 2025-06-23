@@ -11,173 +11,69 @@
     <style>
         body {
             background-color: #f8f9fa;
-            padding: 0;
-            margin: 0;
             overflow-x: hidden;
         }
-
-        .container-fluid {
-            padding: 0;
-            margin: 0;
-        }
-
         .main-content {
             background-color: #f8f9fa;
             min-height: 100vh;
             padding: 20px 20px 20px 0;
         }
-
         .container {
             background: white;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 40px;
-            max-width: 100%;
             margin: 30px 30px 30px 0;
             border: 1px solid #dee2e6;
         }
-
         h4.text-center {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px;
             font-weight: 600;
-            text-align: center;
             border-radius: 0.5rem;
             margin-bottom: 30px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
-
-        .d-flex.justify-content-between {
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .btn-outline-primary, .btn-outline-secondary, .btn-outline-dark {
+        .d-flex.justify-content-between { gap: 15px; margin-bottom: 30px; }
+        .btn-outline-primary {
             border-radius: 0.5rem;
             font-size: 0.95rem;
             padding: 12px 15px;
             font-weight: 500;
-            border: 1px solid #ced4da;
+            border: 1px solid #667eea;
+            color: #667eea;
             transition: all 0.3s ease;
         }
-
-        .btn-outline-primary {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
         .btn-outline-primary:hover {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-color: transparent;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
-        .btn-outline-secondary {
-            border-color: #6c757d;
-            color: #6c757d;
-        }
-
-        .btn-outline-secondary:hover {
-            background: #6c757d;
-            color: white;
-            border-color: transparent;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-outline-dark {
-            border-color: #343a40;
-            color: #343a40;
-        }
-
-        .btn-outline-dark:hover {
-            background: #343a40;
-            color: white;
-            border-color: transparent;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        form {
-            margin-top: 30px;
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: #495057;
-            margin-bottom: 10px;
-            font-size: 1rem;
-            display: block;
-        }
-
+        .form-label { font-weight: 500; color: #495057; margin-bottom: 10px; font-size: 1rem; }
         .form-control, .form-control[readonly] {
             border-radius: 0.5rem;
             padding: 12px 15px;
             font-size: 0.95rem;
             border: 1px solid #ced4da;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
             width: 100%;
         }
-
-        .form-control:focus {
-            border-color: #86b7fe;
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-        }
-
         .form-control[readonly] {
             background-color: #e9ecef;
             cursor: not-allowed;
             opacity: 0.8;
         }
-
-        .form-control[readonly]:focus {
-            box-shadow: none;
-            border-color: #ced4da;
-        }
-
-        .row.mb-3 {
-            align-items: flex-end;
-            margin-bottom: 20px !important;
-        }
-
-        .col-4.d-flex.align-items-end {
-            justify-content: flex-start;
-            align-items: center;
-            padding-bottom: 10px;
-        }
-
-        .col-4.d-flex.align-items-end span,
-        .col-4.d-flex.align-items-end button {
-            margin: 0;
-            vertical-align: middle;
-        }
-
         .img-thumbnail {
             border-radius: 0.5rem;
             max-width: 180px;
-            height: auto;
             border: 1px solid #dee2e6;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             margin-right: 10px;
             margin-bottom: 10px;
         }
-
-        .img-thumbnail:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .d-flex.justify-content-end.gap-2 {
-            margin-top: 40px;
-            gap: 15px;
-        }
-
+        .d-flex.justify-content-end.gap-2 { margin-top: 40px; gap: 15px; }
         .btn-primary, .btn-secondary {
             border-radius: 0.5rem;
             padding: 12px 25px;
@@ -186,97 +82,30 @@
             border: none;
             transition: all 0.3s ease;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-
         .btn-primary:hover {
             background: linear-gradient(135deg, #5a6fd8 0%, #6a3f92 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
         .btn-secondary {
             background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
             color: white;
         }
-
         .btn-secondary:hover {
             background: linear-gradient(135deg, #5c636a 0%, #767b80 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
         @media (max-width: 992px) {
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-                padding: 15px 15px 15px 0;
-            }
-
-            .container {
-                padding: 25px;
-                margin: 15px 15px 15px 0;
-            }
-
-            h4.text-center {
-                font-size: 1.25rem;
-                padding: 15px;
-                margin-bottom: 20px;
-            }
-
-            .d-flex.justify-content-between {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .btn-outline-primary, .btn-outline-secondary, .btn-outline-dark {
-                width: 100%;
-                text-align: center;
-                padding: 10px;
-            }
-
-            .row.mb-3 {
-                flex-direction: column;
-                gap: 15px;
-                margin-bottom: 15px !important;
-            }
-
-            .col-8, .col-4 {
-                width: 100%;
-            }
-
-            .col-4.d-flex.align-items-end {
-                justify-content: flex-start;
-                padding-bottom: 0;
-            }
-
-            .d-flex.justify-content-end.gap-2 {
-                flex-direction: column;
-                gap: 10px;
-                margin-top: 30px;
-            }
-
-            .btn-primary, .btn-secondary {
-                width: 100%;
-                padding: 10px;
-            }
-
-            .img-thumbnail {
-                max-width: 150px;
-            }
-
-            .form-control, .form-control[readonly] {
-                padding: 10px 12px;
-            }
-
-            .form-label {
-                margin-bottom: 8px;
-            }
+            .main-content { padding: 15px 15px 15px 0; }
+            .container { padding: 25px; margin: 15px 15px 15px 0; }
+            h4.text-center { font-size: 1.25rem; padding: 15px; margin-bottom: 20px; }
+            .d-flex.justify-content-between { flex-direction: column; gap: 10px; }
+            .btn-outline-primary { width: 100%; text-align: center; padding: 10px; }
+            .img-thumbnail { max-width: 150px; }
+            .form-control, .form-control[readonly] { padding: 10px 12px; }
+            .form-label { margin-bottom: 8px; }
         }
-
         .btn-select-product, .btn-select-supplier {
             font-weight: 500;
             transition: all 0.2s ease-in-out;
@@ -286,50 +115,27 @@
             font-size: 0.85rem;
             border-radius: 0.375rem;
         }
-
         .btn-select-product:hover, .btn-select-supplier:hover {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-color: transparent;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
         }
-
-        .btn-select-product i, .btn-select-supplier i {
-            margin-right: 4px;
-        }
-
         .product-image {
             max-width: 80px;
-            height: auto;
             border-radius: 0.375rem;
             border: 1px solid #dee2e6;
             margin-right: 5px;
             margin-bottom: 5px;
         }
-
-        .image-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
+        .image-container { display: flex; flex-wrap: wrap; gap: 10px; }
         .header-section {
             background: white;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 20px;
-            width: 100%;
-            margin: 0;
             border: 1px solid #dee2e6;
             min-height: 110px;
         }
-
-        .header-section .d-flex {
-            flex-direction: column;
-            gap: 5px;
-        }
-
         .header-section h2 {
             font-size: 1.5rem;
             font-weight: 600;
@@ -339,32 +145,67 @@
             align-items: center;
             gap: 10px;
         }
-
-        .header-section .text-muted {
-            font-size: 0.95rem;
-            color: #6c757d;
-        }
-
+        .header-section .text-muted { font-size: 0.95rem; color: #6c757d; }
         @media (max-width: 992px) {
-            .header-section {
-                padding: 15px;
-                margin: 0;
-                min-height: 80px;
-            }
-
-            .header-section h2 {
-                font-size: 1.25rem;
-            }
-
-            .header-section .text-muted {
-                font-size: 0.9rem;
-            }
+            .header-section { padding: 15px; min-height: 80px; }
+            .header-section h2 { font-size: 1.25rem; }
+            .header-section .text-muted { font-size: 0.9rem; }
         }
-
-        .error-message {
-            color: #dc3545;
-            font-size: 0.9rem;
-            margin-top: 5px;
+        .error-message { color: #dc3545; font-size: 0.9rem; margin-top: 5px; }
+        #addProductModal .modal-content {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        #addProductModal .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1rem 1rem 0 0;
+            border: none;
+        }
+        #addProductModal .modal-title {
+            width: 100%;
+            text-align: center;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        #addProductModal .btn-close {
+            filter: invert(1);
+        }
+        #addProductModal .modal-body {
+            min-height: 500px;
+            max-height: 80vh;
+            height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        #addProductModal .form-label {
+            font-weight: 500;
+        }
+        #addProductModal .form-control, #addProductModal .form-select {
+            border-radius: 0.5rem;
+            min-height: 42px;
+        }
+        #addProductModal .d-flex.justify-content-center.gap-3 .btn {
+            min-width: 120px;
+            font-weight: 500;
+        }
+        #addProductModal .invalid-feedback.d-block {
+            min-height: 22px;
+            margin-bottom: 0;
+            display: block;
+        }
+        #addProductModal .modal-dialog {
+            max-width: 900px;
+            width: 900px;
+        }
+        @media (max-width: 992px) {
+            #addProductModal .modal-dialog {
+                max-width: 95vw;
+                width: 95vw;
+            }
         }
     </style>
 </head>
@@ -387,16 +228,18 @@
                 <div class="container">
                     <h4 class="text-center mb-4">Nhập kho</h4>
 
-                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
                         <span th:text="${errorMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
                         <span th:text="${successMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
 
                     <div class="d-flex justify-content-between mb-3">
                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productModal">Chọn sản phẩm</button>
-                        <a class="btn btn-outline-primary btn-sm">Thêm sản phẩm mới</a>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">Thêm sản phẩm mới</button>
                     </div>
 
                     <div th:if="${storageImportDTO != null}">
@@ -420,7 +263,7 @@
                             <div class="mb-3 row">
                                 <div class="col-8">
                                     <label class="form-label">Giá nhập</label>
-                                    <input type="number" step="0.01" class="form-control" th:field="*{cost}">
+                                    <input type="text" class="form-control" th:field="*{cost}" id="costInput" autocomplete="off">
                                     <div th:if="${#fields.hasErrors('cost')}" class="error-message">
                                         <span th:errors="*{cost}"></span>
                                     </div>
@@ -470,11 +313,6 @@
                                         <div th:if="${#fields.hasErrors('supplierId')}" class="error-message">
                                             <span th:errors="*{supplierId}"></span>
                                         </div>
-                                    </div>
-                                    <div class="col-4 d-flex align-items-end">
-                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#supplierModal">
-                                            Chọn NCC
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -544,7 +382,6 @@
                                             data-supplier-name=${i.product.supplier.suplierName}">
                                     <i class="bi bi-check-circle"></i> Chọn
                                 </button>
-
                             </td>
                         </tr>
                         </tbody>
@@ -555,53 +392,99 @@
     </div>
 </div>
 
-<!-- Modal chọn nhà cung cấp -->
-<div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content" style="max-width: 95vw; width: 130%;">
-            <div class="modal-header">
-                <h5 class="modal-title" id="supplierModalLabel">Chọn nhà cung cấp</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal thêm sản phẩm mới -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h4 class="modal-title w-100 text-white text-center m-0" id="addProductModalLabel">
+                    <i class="fas fa-plus me-2"></i>Thêm sản phẩm mới
+                </h4>
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle text-nowrap">
-                        <thead class="table-light">
-                        <tr>
-                            <th>STT</th>
-                            <th>Tên nhà cung cấp</th>
-                            <th>Địa chỉ</th>
-                            <th>Số điện thoại</th>
-                            <th>Email</th>
-                            <th>Chọn</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="s, iterStat : ${suppliers}">
-                            <td th:text="${iterStat.count}" class="text-nowrap"></td>
-                            <td th:text="${s.suplierName}" class="text-nowrap"></td>
-                            <td th:text="${s.address} ?: 'Không có địa chỉ'" class="text-nowrap"></td>
-                            <td th:text="${s.phoneNumber} ?: 'Không có số điện thoại'" class="text-nowrap"></td>
-                            <td th:text="${s.email} ?: 'Không có email'" class="text-nowrap"></td>
-                            <td class="text-nowrap">
-                                <button type="button" class="btn btn-select-supplier"
-                                        th:attr="data-supplier-name=${s.suplierName},data-supplier-id=${s.suplierId}">
-                                    <i class="bi bi-check-circle"></i> Chọn
+            <div class="modal-body p-4">
+                <form id="addProductForm" th:action="@{/storage/create-product}" th:object="${importStorageProduct}" method="post" novalidate>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Tên sản phẩm <span class="required text-danger">*</span></label>
+                                <span th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="text-danger small"></span>
+                            </div>
+                            <input type="text" th:field="*{productName}" class="form-control" placeholder="Nhập tên sản phẩm" maxlength="100" required>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Kích thước màn hình <span class="required text-danger">*</span></label>
+                                <span th:if="${#fields.hasErrors('size')}" th:errors="*{size}" class="text-danger small"></span>
+                            </div>
+                            <input type="text" th:field="*{size}" class="form-control" placeholder="Ví dụ: 6.1 inch" maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Danh mục <span class="required text-danger">*</span></label>
+                                <span th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="text-danger small"></span>
+                            </div>
+                            <select th:field="*{categoryId}" class="form-select" required>
+                                <option value="" disabled selected>-- Chọn danh mục --</option>
+                                <option th:each="c : ${categorys}" th:value="${c.categoryId}" th:text="${c.categoryName}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Nhà cung cấp <span class="required text-danger">*</span></label>
+                                <span th:if="${#fields.hasErrors('supplierId')}" th:errors="*{supplierId}" class="text-danger small"></span>
+                            </div>
+                            <select th:field="*{supplierId}" class="form-select" required>
+                                <option value="" disabled selected>-- Chọn nhà cung cấp --</option>
+                                <option th:each="s : ${suppliers}" th:value="${s.suplierId}" th:text="${s.suplierName}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Camera sau <span class="required text-danger">*</span></label>
+                                <span th:if="${#fields.hasErrors('cameraBack')}" th:errors="*{cameraBack}" class="text-danger small"></span>
+                            </div>
+                            <input type="text" th:field="*{cameraBack}" class="form-control" placeholder="Ví dụ: 48 MP" maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Camera trước <span class="required text-danger">*</span></label>
+                                <span th:if="${#fields.hasErrors('cameraFront')}" th:errors="*{cameraFront}" class="text-danger small"></span>
+                            </div>
+                            <input type="text" th:field="*{cameraFront}" class="form-control" placeholder="Ví dụ: 12 MP" maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">CPU <span class="required text-danger">*</span></label>
+                                <span th:if="${#fields.hasErrors('cpu')}" th:errors="*{cpu}" class="text-danger small"></span>
+                            </div>
+                            <input type="text" th:field="*{cpu}" class="form-control" placeholder="Ví dụ: A15 Bionic" maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Bộ nhớ <span class="required text-danger">*</span></label>
+                                <span th:if="${#fields.hasErrors('memory')}" th:errors="*{memory}" class="text-danger small"></span>
+                            </div>
+                            <input type="text" th:field="*{memory}" class="form-control" placeholder="Ví dụ: 128 GB" maxlength="50">
+                        </div>
+                        <input type="hidden" th:field="*{price}" value="0">
+                        <input type="hidden" th:field="*{quantity}" value="0">
+                        <div class="col-12 pt-2">
+                            <div class="d-flex justify-content-center gap-3">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-save me-1"></i>Lưu sản phẩm
                                 </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <div th:if="${suppliers == null or #lists.isEmpty(suppliers)}" class="alert alert-warning text-center" role="alert">
-                        Không có nhà cung cấp nào trong cơ sở dữ liệu.
+                                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i>Đóng
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
@@ -617,7 +500,7 @@
                 const supplierName = this.getAttribute('data-supplier-name');
 
                 document.querySelector('input[name="productName"]').value = name;
-                document.querySelector('input[name="cost"]').value = Number(cost);
+                document.querySelector('input[name="cost"]').value = Number(cost).toLocaleString('vi-VN');
                 document.querySelector('input[name="productId"]').value = productId;
                 document.querySelector('input[name="supplierName"]').value = supplierName;
                 document.querySelector('input[name="supplierId"]').value = supplierId;
@@ -662,11 +545,23 @@
             });
         });
 
+        const costInput = document.getElementById('costInput');
+
+        costInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\./g, '').replace(/\D/g, '');
+            if (value) {
+                e.target.value = Number(value).toLocaleString('vi-VN');
+            } else {
+                e.target.value = '';
+            }
+        });
+
         document.getElementById('importForm').addEventListener('submit', function (event) {
+            costInput.value = costInput.value.replace(/\./g, '').trim();
             const productId = document.querySelector('input[name="productId"]').value;
             const supplierId = document.querySelector('input[name="supplierId"]').value;
             const importQuantity = document.querySelector('input[name="importQuantity"]').value;
-            const cost = document.querySelector('input[name="cost"]').value;
+            const cost = costInput.value;
 
             if (!productId || !supplierId || !importQuantity || importQuantity <= 0 || !cost || cost < 0) {
                 event.preventDefault();
@@ -674,6 +569,10 @@
             }
         });
     });
+</script>
+<script th:if="${showAddProductModal}">
+    var addProductModal = new bootstrap.Modal(document.getElementById('addProductModal'));
+    addProductModal.show();
 </script>
 </body>
 </html>
