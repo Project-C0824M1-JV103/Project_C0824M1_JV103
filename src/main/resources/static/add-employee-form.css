@@ -1,0 +1,125 @@
+/* FONT & BỐ CỤC CHUNG */
+body {
+    font-family: 'Noto Sans', sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+h2 {
+    color: #0F2D6D;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+/* FORM CONTAINER */
+form {
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+    margin: auto;
+}
+
+/* LABELS */
+label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+/* INPUTS & SELECTS */
+.form-control,
+.form-select {
+    border-radius: 10px;
+    border: 1px solid #ced4da;
+    padding: 10px 14px;
+    font-size: 1rem;
+    margin-bottom: 16px;
+    transition: border-color 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #1E88E5;
+    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+    outline: none;
+}
+
+/* Nút "Thêm" - nút chính */
+.btn-success {
+    background-color: #28a745;
+    color: #ffffff;
+    font-weight: 600;
+    border: none;
+    padding: 10px 28px;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.25s ease;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #000000;
+}
+
+/* Nút "Quay lại" - dạng phụ */
+.btn-secondary {
+    background-color: #ffffff;
+    color: #333333;
+    font-weight: 600;
+    border: 2px solid #ced4da;
+    padding: 10px 28px;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    background-color: #f1f1f1;
+    color: #000000;
+    border-color: #bdbdbd;
+}
+
+/* KHOẢNG CÁCH GIỮA NÚT */
+form .btn + .btn {
+    margin-left: 14px;
+}
+
+/* Căn giữa nội dung form */
+.form-inner {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Căn trái label nhưng giữ input căn giữa */
+.form-inner label {
+    display: block;
+    text-align: left;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+/* Input + Select đồng bộ chiều rộng */
+.form-control,
+.form-select {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+/* Căn giữa nút */
+.text-center .btn {
+    min-width: 100px;
+}
+
+/* Khoảng cách nút */
+.btn + .btn {
+    margin-left: 12px;
+}
+

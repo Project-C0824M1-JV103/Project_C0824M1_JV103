@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Chỉnh sửa nhà cung cấp</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}">
+    <link rel="stylesheet" th:href="@{/admin-common.css}">
+
+    <style>
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .header-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+            text-align: center;
+            border-radius: 0.5rem;
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select,
+        .form-textarea {
+            border-radius: 0.5rem;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s;
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            transition: 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .text-danger {
+            font-size: 0.85em;
+            margin-top: 4px;
+        }
+
+        .alert {
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+
+        .current-image-container {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #dee2e6;
+        }
+
+        .current-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            background-color: white;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            background-color: white;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+
+        .col-md-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .col-md-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+
+        .image-section {
+          display: flex;
+          gap: 20px;
+          align-items: flex-start;
+          margin-top: 10px;
+        }
+        .image-preview-section, .image-upload-section {
+          flex: 1;
+          min-width: 0;
+        }
+        .image-upload-area {
+          border: 2px dashed #dee2e6;
+          border-radius: 8px;
+          padding: 30px 20px 20px 20px;
+          text-align: center;
+          background-color: #f8f9fa;
+          transition: all 0.3s ease;
+          min-height: 220px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+        .image-upload-area:hover {
+          border-color: #667eea;
+          background-color: #f0f2ff;
+        }
+        .image-preview {
+          width: 140px;
+          height: 140px;
+          border-radius: 8px;
+          overflow: visible;
+          border: 2px solid #dee2e6;
+          position: relative;
+          display: inline-block;
+          margin: 5px;
+          background: #fff;
+        }
+        .image-preview img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          background-color: #f8f9fa;
+        }
+        .btn-delete {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: #dc3545;
+          color: white;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          z-index: 2;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        }
+        .btn-delete:hover {
+          background: #c82333;
+        }
+        .btn-primary {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border: none;
+          padding: 12px 30px;
+          border-radius: 8px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+          background: #6c757d;
+          border: none;
+          padding: 12px 30px;
+          border-radius: 8px;
+          font-weight: 600;
+        }
+        .invalid-feedback {
+          display: block;
+          color: #dc3545;
+          font-size: 0.875em;
+          margin-top: 5px;
+        }
+        .required {
+          color: #dc3545;
+        }
+        .alert {
+          border-radius: 8px;
+          margin-bottom: 20px;
+        }
+        @media (max-width: 900px) {
+          .image-section {
+            flex-direction: column;
+          }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Include Admin Navbar -->
+        <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="main-content p-4">
+                <!-- Header Section -->
+                <div class="header-section">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-1">
+                                <i class="fas fa-truck text-primary"></i>
+                                Quản lý nhà cung cấp
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Chỉnh sửa thông tin nhà cung cấp
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông báo -->
+                <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+                <!-- Form chỉnh sửa nhà cung cấp -->
+                <div class="form-section">
+                    <h4 class="section-title"><i class="fas fa-edit"></i> Thông tin nhà cung cấp</h4>
+                    <form th:action="@{/Supplier/save}" th:object="${supplier}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" th:field="*{suplierId}"/>
+
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Tên nhà cung cấp <span class="text-danger"></span></label>
+                                    <input type="text" th:field="*{suplierName}" class="form-control" />
+                                    <div class="text-danger" th:if="${#fields.hasErrors('suplierName')}"
+                                         th:errors="*{suplierName}"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" th:field="*{email}" class="form-control"/>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('email')}"
+                                         th:errors="*{email}"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="text" th:field="*{phoneNumber}" class="form-control"/>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}"
+                                         th:errors="*{phoneNumber}"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                            <textarea th:field="*{address}" class="form-control form-textarea" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Hình ảnh nhà cung cấp <span class="text-danger">*</span></label>
+                            <div class="image-section">
+                              <div class="image-preview-section">
+                                <h6 class="mb-3 text-muted">
+                                  <i class="fas fa-images me-2"></i>Preview ảnh nhà cung cấp
+                                </h6>
+                                <div id="imagePreview">
+                                  <th:block th:if="${supplier.imageUrl}">
+                                    <div class="image-preview" data-file-index="-1">
+                                      <img th:src="${supplier.imageUrl}" alt="Current Image" />
+                                      <button type="button" class="btn-delete" onclick="removeCurrentImage()" title="Xóa ảnh hiện tại">
+                                        <i class="fas fa-times"></i>
+                                      </button>
+                                    </div>
+                                  </th:block>
+                                </div>
+                              </div>
+                              <div class="image-upload-section">
+                                <h6 class="mb-3 text-muted">
+                                  <i class="fas fa-cloud-upload-alt me-2"></i>Upload ảnh mới
+                                </h6>
+                                <div class="image-upload-area">
+                                  <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                  <h6 class="text-muted mb-2">Thêm ảnh nhà cung cấp</h6>
+                                  <p class="text-muted mb-3">
+                                    Kéo thả file ảnh vào đây<br/>hoặc click để chọn
+                                  </p>
+                                  <input
+                                    type="file"
+                                    id="image"
+                                    name="image"
+                                    accept="image/*"
+                                    class="form-control"
+                                    style="display: none"
+                                  />
+                                  <button
+                                    type="button"
+                                    class="btn btn-primary btn-sm mb-3 w-100"
+                                    style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); font-weight:600;"
+                                    onclick="document.getElementById('image').click()"
+                                  >
+                                    <i class="fas fa-plus me-2"></i>Chọn ảnh
+                                  </button>
+                                  <div class="text-center">
+                                    <small class="text-muted">
+                                      <i class="fas fa-info-circle me-1"></i>
+                                      Hỗ trợ: JPG, PNG, GIF<br/>
+                                      Tối đa 5MB mỗi file
+                                    </small>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <input type="hidden" name="removeCurrentImage" id="removeCurrentImage" value="false" />
+                        </div>
+
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Lưu nhà cung cấp
+                            </button>
+                            <a th:href="@{/Supplier}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script xem trước hình ảnh -->
+<script>
+  let selectedFile = null;
+  let hasCurrentImage = !!document.querySelector('.image-preview img');
+  let currentImageUrl = hasCurrentImage ? document.querySelector('.image-preview img')?.getAttribute('src') : null;
+
+  document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      selectedFile = file;
+      updatePreview();
+      // Nếu chọn ảnh mới thì đánh dấu xóa ảnh cũ nếu có
+      if (hasCurrentImage) {
+        document.getElementById('removeCurrentImage').value = 'true';
+      }
+    }
+    // Clear input để chọn lại cùng file nếu muốn
+    e.target.value = '';
+  });
+
+  function updatePreview() {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imgDiv = document.createElement('div');
+        imgDiv.className = 'image-preview';
+        imgDiv.innerHTML = `
+          <img src="${e.target.result}" alt="New Image" />
+          <button type="button" class="btn-delete" onclick="removeFile()" title="Xóa ảnh này">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        preview.appendChild(imgDiv);
+      };
+      reader.readAsDataURL(selectedFile);
+      // Cập nhật text
+      const uploadArea = document.querySelector('.image-upload-area p');
+      uploadArea.textContent = `Đã chọn 1 ảnh`;
+    } else if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {
+      // Nếu chưa chọn file mới, hiển thị lại ảnh hiện tại (nếu chưa xóa)
+      const imgDiv = document.createElement('div');
+      imgDiv.className = 'image-preview';
+      imgDiv.innerHTML = `
+        <img src="${currentImageUrl}" alt="Current Image" />
+        <button type="button" class="btn-delete" onclick="removeCurrentImage()" title="Xóa ảnh hiện tại">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      preview.appendChild(imgDiv);
+      const uploadArea = document.querySelector('.image-upload-area p');
+      uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
+    } else {
+      // Reset upload area text
+      const uploadArea = document.querySelector('.image-upload-area p');
+      uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
+    }
+  }
+
+  function removeFile() {
+    if (confirm('Xóa ảnh này?')) {
+      selectedFile = null;
+      // Nếu có ảnh cũ và chưa xóa, hiện lại ảnh cũ
+      if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {
+        updatePreview();
+      } else {
+        updatePreview();
+      }
+    }
+  }
+
+  function removeCurrentImage() {
+    if (confirm('Xóa ảnh hiện tại?')) {
+      hasCurrentImage = false;
+      document.getElementById('removeCurrentImage').value = 'true';
+      updatePreview();
+    }
+  }
+
+  // Drag and drop functionality
+  const uploadArea = document.querySelector('.image-upload-area');
+  uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.style.backgroundColor = '#f0f2ff';
+    this.style.borderColor = '#667eea';
+  });
+  uploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.style.backgroundColor = '#f8f9fa';
+    this.style.borderColor = '#dee2e6';
+  });
+  uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.style.backgroundColor = '#f8f9fa';
+    this.style.borderColor = '#dee2e6';
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      selectedFile = files[0];
+      updatePreview();
+      if (hasCurrentImage) {
+        document.getElementById('removeCurrentImage').value = 'true';
+      }
+    }
+  });
+
+  // Trước khi submit form, set lại file input nếu có file mới
+  document.querySelector('form').addEventListener('submit', function(e) {
+    if (selectedFile) {
+      const dt = new DataTransfer();
+      dt.items.add(selectedFile);
+      document.getElementById('image').files = dt.files;
+    }
+  });
+</script>
+
+<div class="admin-loading-overlay" id="loading-overlay">
+  <div class="admin-loading-box">
+    <div class="admin-spinner">
+      <i class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+    <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.querySelector('form');
+    if(form) {
+      form.addEventListener('submit', function() {
+        document.getElementById('loading-overlay').style.display = 'flex';
+      });
+    }
+  });
+</script>
+</body>
+</html>

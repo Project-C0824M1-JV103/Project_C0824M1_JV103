@@ -20,18 +20,14 @@ public class ProductImages {
     
     @Column(name = "caption", length = 100)
     private String caption;
-    
-    @Column(name = "display_order")
-    private Integer displayOrder = 0;
-    
+
     // Constructors
     public ProductImages() {}
     
-    public ProductImages(Product product, String imageUrl, String caption, Integer displayOrder) {
+    public ProductImages(Product product, String imageUrl, String caption) {
         this.product = product;
         this.imageUrl = imageUrl;
         this.caption = caption;
-        this.displayOrder = displayOrder;
     }
     
     // Getters and Setters
@@ -65,13 +61,5 @@ public class ProductImages {
     
     public void setCaption(String caption) {
         this.caption = caption;
-    }
-    
-    public Integer getDisplayOrder() {
-        return displayOrder;
-    }
-    
-    public void setDisplayOrder(Integer displayOrder) {
-        this.displayOrder = displayOrder;
     }
 } 

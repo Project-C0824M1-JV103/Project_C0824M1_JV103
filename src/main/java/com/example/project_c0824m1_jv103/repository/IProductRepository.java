@@ -1,7 +1,37 @@
 package com.example.project_c0824m1_jv103.repository;
 
 import com.example.project_c0824m1_jv103.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface IProductRepository extends JpaRepository<Product, Integer> {
+    Page<Product> findByProductNameContainingIgnoreCase(String name, Pageable pageable);
+    
+    // Tìm sản phẩm theo nhà cung cấp
+    List<Product> findBySupplier_SuplierId(Integer supplierId);
+    
+    @Query("SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice")
+    Page<Product> findByPriceBetween(@Param("minPrice") Double minPrice, @Param("maxPrice") Double maxPrice, Pageable pageable);
+    
+    @Query("SELECT p FROM Product p WHERE p.quantity BETWEEN :minQuantity AND :maxQuantity")
+    Page<Product> findByQuantityBetween(@Param("minQuantity") Integer minQuantity, @Param("maxQuantity") Integer maxQuantity, Pageable pageable);
+    
+    @Query("SELECT p FROM Product p WHERE " +
+           "(:productName IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%'))) AND " +
+           "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
+           "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +
+           "(:minQuantity IS NULL OR p.quantity >= :minQuantity) AND " +
+           "(:maxQuantity IS NULL OR p.quantity <= :maxQuantity)")
+    Page<Product> searchProducts(
+            @Param("productName") String productName,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            @Param("minQuantity") Integer minQuantity,
+            @Param("maxQuantity") Integer maxQuantity,
+            Pageable pageable);
 }

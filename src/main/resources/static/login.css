@@ -1,42 +1,129 @@
 body {
     background-color: #eaeaea;
+    margin: 0;
+    font-family: Arial, sans-serif;
 }
+
 .lookup-wrapper {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 .lookup-card {
     background: #fff;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     padding: 40px;
     display: flex;
     gap: 40px;
     align-items: center;
 }
+
 .lookup-form {
     max-width: 400px;
     width: 100%;
 }
+
+/* Input và icon */
 .lookup-input {
     border-radius: 50px;
     padding: 12px 20px;
     border: 1px solid #ccc;
+    height: 48px;
+    box-sizing: border-box;
+    font-size: 1rem;
 }
-.lookup-button {
-    width: 100%;
+
+.lookup-input:focus {
+    border-color: #0d6efd;
+    outline: none;
+}
+
+.input-group-text.lookup-input {
     border-radius: 50px;
-    padding: 12px;
-    background-color: #4285f4;
-    color: white;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    user-select: none;
+    cursor: default;
+}
+
+.input-group > .input-group-text.lookup-input:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+}
+
+.input-group > .lookup-input.border-start-0 {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none;
+}
+
+.input-group > .input-group-text.lookup-input:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none;
+    cursor: pointer;
+}
+
+/* Nút đăng nhập và thoát */
+.btn-primary, .btn-danger {
+    border-radius: 50px;
+    font-weight: 600;
+    padding: 12px 0;
+    font-size: 1rem;
     border: none;
 }
-.lookup-button:hover {
-    background-color: #2f6ad9;
+
+.btn-primary {
+    background-color: #0d6efd;
+    color: white;
 }
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Lỗi nhỏ, đơn giản, luôn giữ chỗ */
+.error-message {
+    color: red;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    padding: 0;
+    min-height: 1em; /* giữ chỗ */
+    visibility: hidden;
+    font-weight: normal;
+}
+
+.error-message.active {
+    visibility: visible;
+}
+
+/* Hình ảnh */
 .lookup-img {
     max-width: 400px;
     width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .lookup-card {
+        flex-direction: column;
+        padding: 30px 20px;
+        gap: 30px;
+    }
+
+    .lookup-img {
+        max-width: 400px;
+        width: 100%;
+        border-radius: 16px;
+    }
+
 }

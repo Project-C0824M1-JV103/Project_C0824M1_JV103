@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}">
+</head>
+<body>
+    <!-- Admin Navbar Fragment -->
+    <div th:fragment="admin-sidebar" class="col-md-3 col-lg-2 px-0">
+        <div class="admin-sidebar d-flex flex-column">
+            <!-- User Info Section -->
+            <div class="p-3 text-center border-bottom user-info-section" th:if="${currentUser}">
+                <div class="user-avatar mb-2">
+                    <i class="fas fa-user-circle fa-3x text-white"></i>
+                </div>
+                <h6 class="text-white mb-1" th:text="${currentUser.fullName}">Admin User</h6>
+                <small class="text-light opacity-75" th:text="${currentUser.email}">admin@email.com</small>
+                <div class="mt-2">
+                    <span class="badge bg-light text-dark px-2 py-1" th:text="${currentUser.role}">ADMIN</span>
+                </div>
+            </div>
+            
+            <!-- Fallback header when no user info -->
+            <div class="p-3 text-center border-bottom" th:unless="${currentUser}">
+                <h4 class="text-white mb-0">
+                    <i class="fas fa-user-shield"></i> Admin Panel
+                </h4>
+            </div>
+            
+            <nav class="nav flex-column p-3">
+
+                <div class="nav-divider my-2"></div>
+                <a href="/" class="nav-link home-link">
+                    <i class="fas fa-home"></i>
+                    Về trang chủ
+                </a>
+                <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a th:href="@{/Customer}" class="nav-link" th:classappend="${currentPage == 'customer'} ? 'active' : ''">
+                    <i class="fas fa-users"></i>
+                    Quản lý khách hàng
+                </a>
+                <a th:href="@{/product}" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
+                    <i class="fas fa-box"></i>
+                    Quản lý sản phẩm
+                </a>
+                <a th:href="@{/Sale}" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
+                    <i class="fas fa-chart-line"></i>
+                    Quản lý bán hàng
+                </a>
+                <a th:href="@{/employees}" class="nav-link" th:classappend="${currentPage == 'employee'} ? 'active' : ''">
+                    <i class="fas fa-user-tie"></i>
+                    Quản lý nhân viên
+                </a>
+                <a th:href="@{/storage/export}" class="nav-link" th:classappend="${currentPage == 'export'} ? 'active' : ''">
+                    <i class="fas fa-dolly"></i>
+                    Xuất sản phẩm
+                </a>
+                <a th:href="@{/storage}" class="nav-link" th:classappend="${currentPage == 'import'} ? 'active' : ''">
+                    <i class="fas fa-dolly"></i>
+                    Nhập kho sản phẩm
+                </a>
+                <a  th:href="@{/Supplier}" class="nav-link" th:classappend="${currentPage == 'supplier'} ? 'active' : ''">
+                    <i class="fas fa-truck"></i>
+                    Nhà cung cấp
+                </a>
+<!--                <a href="/Admin/Category" class="nav-link" th:classappend="${currentPage == 'category'} ? 'active' : ''">-->
+<!--                    <i class="fas fa-tags"></i>-->
+<!--                    Danh mục-->
+<!--                </a>-->
+<!--                <a href="/Admin/Storage" class="nav-link" th:classappend="${currentPage == 'storage'} ? 'active' : ''">-->
+<!--                    <i class="fas fa-warehouse"></i>-->
+<!--                    Kho hàng-->
+<!--                </a>-->
+<!--                <a href="/Admin/Reports" class="nav-link" th:classappend="${currentPage == 'reports'} ? 'active' : ''">-->
+<!--                    <i class="fas fa-chart-bar"></i>-->
+<!--                    Báo cáo-->
+<!--                </a>-->
+<!--                <a href="/Admin/Settings" class="nav-link" th:classappend="${currentPage == 'settings'} ? 'active' : ''">-->
+<!--                    <i class="fas fa-cog"></i>-->
+<!--                    Cài đặt-->
+<!--                </a>-->
+            </nav>
+            
+            <div class="mt-auto p-3 border-top">
+                <a th:href="@{/logout}" class="nav-link text-center logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Đăng xuất
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
