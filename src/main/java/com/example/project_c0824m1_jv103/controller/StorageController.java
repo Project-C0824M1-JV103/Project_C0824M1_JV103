@@ -1,10 +1,7 @@
 package com.example.project_c0824m1_jv103.controller;
 
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
-import com.example.project_c0824m1_jv103.dto.StorageDto;
-import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
-import com.example.project_c0824m1_jv103.dto.ProductDTO;
-import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
+import com.example.project_c0824m1_jv103.dto.*;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
 import com.example.project_c0824m1_jv103.model.Product;
@@ -23,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,9 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/storage")
@@ -110,30 +110,43 @@ public class StorageController extends BaseAdminController {
     }
 
     @PostMapping("/create")
-    public String importProduct(@Valid @ModelAttribute("storageImportDTO") StorageImportDTO importDTO,
-                                BindingResult bindingResult,
-                                RedirectAttributes redirectAttributes,
+    public String importProduct(@Valid @ModelAttribute("storageImportDTO") StorageImportDTO dto,
+                                BindingResult result,
                                 Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("inforStorages", storageService.findAll());
+        if (result.hasErrors()) {
+            Product product = productRepository.findById(dto.getProductId()).orElse(null);
+            if (product != null) {
+                List<String> imageUrls = product.getProductImages().stream()
+                        .map(img -> img.getImageUrl() != null ? img.getImageUrl() : "https://via.placeholder.com/150")
+                        .toList();
+                dto.setProductImages(imageUrls);
+            }
+
+
+            model.addAttribute("storageImportDTO", dto);
+            model.addAttribute("inforStorages", storageService.findAllStorage());
             model.addAttribute("suppliers", supplierService.findAll());
-            model.addAttribute("errorMessage", "Vui lòng kiểm tra lại dữ liệu nhập vào");
+
             return "storage/import-storage";
         }
-
         try {
-            storageService.importProduct(importDTO);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Nhập kho sản phẩm " + importDTO.getProductName() + " thành công");
+            storageService.importProduct(dto);
             return "redirect:/storage";
         } catch (RuntimeException e) {
-            model.addAttribute("inforStorages", storageService.findAll());
-            model.addAttribute("suppliers", supplierService.findAll());
+            Product product = productRepository.findById(dto.getProductId()).orElse(null);
+            if (product != null) {
+                model.addAttribute("product", product);
+                model.addAttribute("productImage", product.getProductImages());
+            }
+
+            model.addAttribute("storage", dto);
             model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("inforStorages", storageService.findAllStorage());
+            model.addAttribute("suppliers", supplierService.findAll());
+
             return "storage/import-storage";
         }
     }
-
 
     @GetMapping("/export")
     public String showExportForm(Model model) {
@@ -229,7 +242,7 @@ public class StorageController extends BaseAdminController {
             return "storage/edit-import-storage";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-            return "redirect:/storage/list";
+            return "redirect:/storage";
         }
     }
 
@@ -256,7 +269,7 @@ public class StorageController extends BaseAdminController {
         try {
             storageService.updateStorage(id, storageDto);
             redirectAttributes.addFlashAttribute("message", "Cập nhật thông tin nhập kho thành công");
-            return "redirect:/storage/list";
+            return "redirect:/storage";
         } catch (RuntimeException e) {
             try {
                 Storage storage = storageService.getStorageById(id);
@@ -267,7 +280,7 @@ public class StorageController extends BaseAdminController {
                 return "storage/edit-import-storage";
             } catch (RuntimeException ex) {
                 redirectAttributes.addFlashAttribute("error", ex.getMessage());
-                return "redirect:/storage/list";
+                return "redirect:/storage";
             }
         }
     }

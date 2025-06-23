@@ -396,7 +396,7 @@
 
                     <div class="d-flex justify-content-between mb-3">
                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productModal">Chọn sản phẩm</button>
-                        <button class="btn btn-outline-secondary btn-sm">Quét mã QR</button>
+                        <a class="btn btn-outline-primary btn-sm">Thêm sản phẩm mới</a>
                     </div>
 
                     <div th:if="${storageImportDTO != null}">
@@ -420,7 +420,7 @@
                             <div class="mb-3 row">
                                 <div class="col-8">
                                     <label class="form-label">Giá nhập</label>
-                                    <input type="number" step="0.01" class="form-control" th:field="*{cost}" readonly>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{cost}">
                                     <div th:if="${#fields.hasErrors('cost')}" class="error-message">
                                         <span th:errors="*{cost}"></span>
                                     </div>
@@ -433,9 +433,22 @@
                             <div class="mb-3">
                                 <label class="form-label">Hình ảnh sản phẩm</label><br>
                                 <div class="image-container" id="productImagesContainer" style="min-height: 150px;">
+                                    <div th:if="${#lists.isEmpty(storageImportDTO.productImages)}">
+                                        <img src="https://via.placeholder.com/150"
+                                             class="img-thumbnail" style="max-height: 150px;" />
+                                    </div>
+                                    <div th:each="img : ${storageImportDTO.productImages}">
+                                        <img th:src="${img}"
+                                             alt="Ảnh sản phẩm"
+                                             class="img-thumbnail me-2 mb-2"
+                                             style="max-height: 150px;" />
+                                    </div>
                                 </div>
-                                <input type="hidden" name="productImages" id="productImagesInput">
+                                <input type="hidden" name="productImagesRaw"
+                                       id="productImagesInput"
+                                       th:value="${#strings.arrayJoin(storageImportDTO.productImages, ',')}" />
                             </div>
+
 
                             <div class="mb-3 row">
                                 <div class="col-8">
@@ -523,9 +536,15 @@
                             <td th:text="${i.product.memory}"></td>
                             <td>
                                 <button type="button" class="btn btn-select-product"
-                                        th:attr="data-product-name=${i.product.productName},data-product-cost=${i.cost},data-product-images=${#strings.arrayJoin(i.product.productImages.![imageUrl], ',')},data-product-id=${i.product.productId}">
+                                        th:attr="data-product-name=${i.product.productName},
+                                            data-product-cost=${i.cost},
+                                            data-product-images=${#strings.arrayJoin(i.product.productImages.![imageUrl], ',')},
+                                            data-product-id=${i.product.productId},
+                                            data-supplier-id=${i.product.supplier.suplierId},
+                                            data-supplier-name=${i.product.supplier.suplierName}">
                                     <i class="bi bi-check-circle"></i> Chọn
                                 </button>
+
                             </td>
                         </tr>
                         </tbody>
@@ -594,10 +613,14 @@
                 const cost = this.getAttribute('data-product-cost');
                 const images = this.getAttribute('data-product-images').split(',').filter(img => img);
                 const productId = this.getAttribute('data-product-id');
+                const supplierId = this.getAttribute('data-supplier-id');
+                const supplierName = this.getAttribute('data-supplier-name');
 
                 document.querySelector('input[name="productName"]').value = name;
                 document.querySelector('input[name="cost"]').value = Number(cost);
                 document.querySelector('input[name="productId"]').value = productId;
+                document.querySelector('input[name="supplierName"]').value = supplierName;
+                document.querySelector('input[name="supplierId"]').value = supplierId;
 
                 const imageContainer = document.querySelector('#productImagesContainer');
                 imageContainer.innerHTML = '';
@@ -645,9 +668,9 @@
             const importQuantity = document.querySelector('input[name="importQuantity"]').value;
             const cost = document.querySelector('input[name="cost"]').value;
 
-            if (!productId || !supplierId || !importQuantity || importQuantity <= 0) {
+            if (!productId || !supplierId || !importQuantity || importQuantity <= 0 || !cost || cost < 0) {
                 event.preventDefault();
-                alert('Vui lòng điền đầy đủ thông tin: Tên sản phẩm, Số lượng nhập, và Nhà cung cấp.');
+                alert('Vui lòng điền đầy đủ thông tin hợp lệ: Tên sản phẩm, Số lượng nhập, Giá nhập, và Nhà cung cấp.');
             }
         });
     });

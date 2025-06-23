@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -143,15 +144,16 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Số lượng nhập phải lớn hơn 0");
         }
 
-        if (importDTO.getCost() != null && importDTO.getCost() <= 0) {
-            throw new RuntimeException("Giá nhập phải lớn hơn 0");
+        if (importDTO.getCost() != null && importDTO.getCost() < 0) {
+            throw new RuntimeException("Giá nhập không hợp lệ");
         }
 
-        Product existingProduct = productRepository.findById(importDTO.getProductId())
+        Product product = productRepository.findById(importDTO.getProductId())
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
-        Supplier selectedSupplier = supplierRepository.findById(importDTO.getSupplierId())
-                .orElseThrow(() -> new RuntimeException("Nhà cung cấp không tồn tại"));
+        if (!product.getSupplier().getSuplierId().equals(importDTO.getSupplierId())) {
+            throw new RuntimeException("Nhà cung cấp không đúng. Hãy thêm sản phẩm mới.");
+        }
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Employee employee = employeeRepository.findByEmail(email);
@@ -159,45 +161,28 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Nhân viên không tồn tại");
         }
 
-        Product productToUse;
+        Optional<Storage> optionalStorage = storageRepository.findByProduct_ProductId(product.getProductId());
 
-        if (!existingProduct.getSupplier().getSuplierId().equals(selectedSupplier.getSuplierId())) {
-            productToUse = new Product(
-                    existingProduct.getProductName(),
-                    existingProduct.getSize(),
-                    existingProduct.getPrice(),
-                    existingProduct.getCameraFront(),
-                    existingProduct.getCameraBack(),
-                    existingProduct.getMemory(),
-                    existingProduct.getCpu(),
-                    existingProduct.getDescription(),
-                    0,
-                    existingProduct.getCategory(),
-                    selectedSupplier
-            );
+        if (optionalStorage.isPresent()) {
+            Storage existingStorage = optionalStorage.get();
+            existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
 
-            List<ProductImages> clonedImages = existingProduct.getProductImages().stream()
-                    .map(img -> new ProductImages(productToUse, img.getImageUrl(), img.getCaption()))
-                    .toList();
+            if (importDTO.getCost() != null) {
+                existingStorage.setCost(importDTO.getCost());
+            }
 
-            productToUse.setProductImages(clonedImages);
-            productRepository.save(productToUse);
-        } else {
-            productToUse = existingProduct;
+            existingStorage.setEmployee(employee);
+            return storageRepository.save(existingStorage);
         }
 
-        productToUse.setQuantity(productToUse.getQuantity() + importDTO.getImportQuantity());
-        productRepository.save(productToUse);
-
-        Storage storage = new Storage();
-        storage.setProduct(productToUse);
-        storage.setQuantity(importDTO.getImportQuantity());
-        storage.setCost(importDTO.getCost() != null ? importDTO.getCost() : productToUse.getPrice());
-        storage.setEmployee(employee);
-
-        return storageRepository.save(storage);
+        Storage newStorage = new Storage();
+        newStorage.setProduct(product);
+        newStorage.setQuantity(importDTO.getImportQuantity());
+        newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
+        newStorage.setEmployee(employee);
+        newStorage.setTransactionDate(LocalDateTime.now());
+        return storageRepository.save(newStorage);
     }
-
 
 
     @Override
