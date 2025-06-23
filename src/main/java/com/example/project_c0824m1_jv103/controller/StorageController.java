@@ -36,6 +36,8 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/storage")
@@ -70,11 +72,15 @@ public class StorageController extends BaseAdminController {
         // Xử lý ngày
         LocalDate start = null;
         LocalDate end = null;
-        if (startDate != null && !startDate.isEmpty()) {
-            start = LocalDate.parse(startDate);
-        }
-        if (endDate != null && !endDate.isEmpty()) {
-            end = LocalDate.parse(endDate);
+        try {
+            if (startDate != null && !startDate.isEmpty()) {
+                start = LocalDate.parse(startDate);
+            }
+            if (endDate != null && !endDate.isEmpty()) {
+                end = LocalDate.parse(endDate);
+            }
+        } catch (DateTimeParseException e) {
+            model.addAttribute("error", "Định dạng ngày không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD.");
         }
 
         List<StorageDto> filteredStorages = storageService.findByCriteria(productName, start, end);
@@ -83,17 +89,13 @@ public class StorageController extends BaseAdminController {
 
         // Đặt tên biến nhất quán (storagePage thay vì storagesPage)
         model.addAttribute("storagePage", storagePage);
-        model.addAttribute("storages", storagePage.getContent());
         model.addAttribute("productName", productName);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-
-        // Các thông tin phân trang
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
         model.addAttribute("totalPages", storagePage.getTotalPages());
         model.addAttribute("totalItems", storagePage.getTotalElements());
-
         model.addAttribute("suppliers", supplierService.findAll(Pageable.unpaged()));
 
         return "storage/list";
