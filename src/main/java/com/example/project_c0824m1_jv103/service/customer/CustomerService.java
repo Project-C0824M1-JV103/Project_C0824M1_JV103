@@ -61,4 +61,12 @@ public class CustomerService implements ICustomerService {
     public Optional<Customer> findByPhone(String phoneNumber) {
         return iCustomerRepository.findByPhoneNumber(phoneNumber);
     }
+
+    @Override
+    public boolean isEmailExists(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return iCustomerRepository.existsByEmailIgnoreCase(email);
+    }
 }

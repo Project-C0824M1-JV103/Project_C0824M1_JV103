@@ -27,6 +27,7 @@ dependencies {
     implementation 'com.cloudinary:cloudinary-http44:1.36.0'
     implementation 'com.itextpdf:itext7-core:8.0.5'
     testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -23,4 +23,6 @@ public interface ICustomerService {
 
     // Find customer by phone number
     Optional<Customer> findByPhone(String phoneNumber);
+
+    boolean isEmailExists(String email);
 }

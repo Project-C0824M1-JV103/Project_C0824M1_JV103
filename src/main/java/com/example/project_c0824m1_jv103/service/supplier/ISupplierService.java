@@ -15,15 +15,18 @@ public interface ISupplierService {
     Optional<Supplier> findById(Integer id);
     void saveSupplier(Supplier supplier, MultipartFile image);
     Page<Supplier> findByCriteria(String suplierName, String phoneNumber, String email, Pageable pageable);
+    List<Supplier> findAll();
 
     Supplier saveSupplier(SupplierDto supplierDto) throws IOException;
 
     // Validation methods
     boolean isEmailExists(String email);
     boolean isPhoneNumberExists(String phoneNumber);
+    boolean isSupplierNameExists(String suplierName);
     boolean isEmailExistsForUpdate(String email, Integer id);
     boolean isPhoneNumberExistsForUpdate(String phoneNumber, Integer id);
 
     // Validation method for new supplier
     String validateNewSupplier(SupplierDto supplierDto);
+
 }

@@ -38,4 +38,8 @@ public interface ICustomerRepository extends JpaRepository<Customer, Integer> {
     Page<Customer> findByPhoneNumberContaining(@Param("phone") String phone, Pageable pageable);
 
     Optional<Customer> findByPhoneNumber(String phoneNumber);
+
+    // Kiểm tra tồn tại theo email (không phân biệt chữ hoa thường)
+    @Query("SELECT COUNT(c) > 0 FROM Customer c WHERE LOWER(c.email) = LOWER(:email)")
+    boolean existsByEmailIgnoreCase(@Param("email") String email);
 }

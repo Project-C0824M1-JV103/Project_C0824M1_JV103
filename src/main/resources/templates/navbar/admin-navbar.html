@@ -44,7 +44,7 @@
                     Quản lý khách hàng
                 </a>
                 <a th:href="@{/product}" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
-                    <i class="fas fa-box-open"></i>
+                    <i class="fas fa-box"></i>
                     Quản lý sản phẩm
                 </a>
                 <a th:href="@{/Sale}" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
@@ -58,6 +58,10 @@
                 <a th:href="@{/storage/export}" class="nav-link" th:classappend="${currentPage == 'export'} ? 'active' : ''">
                     <i class="fas fa-dolly"></i>
                     Xuất sản phẩm
+                </a>
+                <a th:href="@{/storage}" class="nav-link" th:classappend="${currentPage == 'import'} ? 'active' : ''">
+                    <i class="fas fa-dolly"></i>
+                    Nhập kho sản phẩm
                 </a>
                 <a  th:href="@{/Supplier}" class="nav-link" th:classappend="${currentPage == 'supplier'} ? 'active' : ''">
                     <i class="fas fa-truck"></i>

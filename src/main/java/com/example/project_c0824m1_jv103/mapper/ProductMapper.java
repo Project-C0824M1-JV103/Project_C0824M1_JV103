@@ -36,8 +36,11 @@ public class ProductMapper {
             dto.setCategoryId(product.getCategory().getCategoryId());
             dto.setCategoryName(product.getCategory().getCategoryName());
         }
-        
 
+        if (product.getSupplier() != null) {
+            dto.setSupplierId(product.getSupplier().getSuplierId());
+            dto.setSupplierName(product.getSupplier().getSuplierName());
+        }
         
         // Map images
         if (product.getProductImages() != null && !product.getProductImages().isEmpty()) {

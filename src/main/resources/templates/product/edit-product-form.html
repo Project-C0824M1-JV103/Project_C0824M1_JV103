@@ -434,60 +434,60 @@
                     </div>
 
                     <!-- Danh mục -->
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="form-label">
-                          Danh mục <span class="required">*</span>
-                        </label>
-                        <select
-                          th:field="*{categoryId}"
-                          class="form-control"
-                          th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'"
-                          required
-                        >
-                          <option value="">-- Chọn danh mục --</option>
-                          <option
-                            th:each="category : ${categories}"
-                            th:value="${category.categoryId}"
-                            th:text="${category.categoryName}"
-                          ></option>
-                        </select>
-                        <div
-                          th:if="${#fields.hasErrors('categoryId')}"
-                          class="invalid-feedback"
-                        >
-                          <span th:errors="*{categoryId}"></span>
-                        </div>
-                      </div>
-                    </div>
+<!--                    <div class="col-md-6">-->
+<!--                      <div class="form-group">-->
+<!--                        <label class="form-label">-->
+<!--                          Danh mục <span class="required">*</span>-->
+<!--                        </label>-->
+<!--                        <select-->
+<!--                          th:field="*{categoryId}"-->
+<!--                          class="form-control"-->
+<!--                          th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'"-->
+<!--                          required-->
+<!--                        >-->
+<!--                          <option value="">&#45;&#45; Chọn danh mục &#45;&#45;</option>-->
+<!--                          <option-->
+<!--                            th:each="category : ${categories}"-->
+<!--                            th:value="${category.categoryId}"-->
+<!--                            th:text="${category.categoryName}"-->
+<!--                          ></option>-->
+<!--                        </select>-->
+<!--                        <div-->
+<!--                          th:if="${#fields.hasErrors('categoryId')}"-->
+<!--                          class="invalid-feedback"-->
+<!--                        >-->
+<!--                          <span th:errors="*{categoryId}"></span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
 
                     <!-- Nhà cung cấp -->
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="form-label">
-                          Nhà cung cấp <span class="required">*</span>
-                        </label>
-                        <select
-                          th:field="*{supplierId}"
-                          class="form-control"
-                          th:classappend="${#fields.hasErrors('supplierId')} ? 'is-invalid'"
-                          required
-                        >
-                          <option value="">-- Chọn nhà cung cấp --</option>
-                          <option
-                            th:each="supplier : ${suppliers}"
-                            th:value="${supplier.suplierId}"
-                            th:text="${supplier.suplierName}"
-                          ></option>
-                        </select>
-                        <div
-                          th:if="${#fields.hasErrors('supplierId')}"
-                          class="invalid-feedback"
-                        >
-                          <span th:errors="*{supplierId}"></span>
-                        </div>
-                      </div>
-                    </div>
+<!--                    <div class="col-md-6">-->
+<!--                      <div class="form-group">-->
+<!--                        <label class="form-label">-->
+<!--                          Nhà cung cấp <span class="required">*</span>-->
+<!--                        </label>-->
+<!--                        <select-->
+<!--                          th:field="*{supplierId}"-->
+<!--                          class="form-control"-->
+<!--                          th:classappend="${#fields.hasErrors('supplierId')} ? 'is-invalid'"-->
+<!--                          required-->
+<!--                        >-->
+<!--                          <option value="">&#45;&#45; Chọn nhà cung cấp &#45;&#45;</option>-->
+<!--                          <option-->
+<!--                            th:each="supplier : ${suppliers}"-->
+<!--                            th:value="${supplier.suplierId}"-->
+<!--                            th:text="${supplier.suplierName}"-->
+<!--                          ></option>-->
+<!--                        </select>-->
+<!--                        <div-->
+<!--                          th:if="${#fields.hasErrors('supplierId')}"-->
+<!--                          class="invalid-feedback"-->
+<!--                        >-->
+<!--                          <span th:errors="*{supplierId}"></span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
 
                     <!-- Mô tả -->
                     <div class="col-12">
@@ -748,13 +748,6 @@
           const dt = new DataTransfer();
           selectedNewFiles.forEach(file => dt.items.add(file));
           document.getElementById('imageFiles').files = dt.files;
-
-          // Update text
-          const uploadArea = document.querySelector(".image-upload-area p");
-          uploadArea.textContent = `Đã chọn ${selectedNewFiles.length} ảnh`;
-        } else {
-          const uploadArea = document.querySelector(".image-upload-area p");
-          uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
         }
       }
 
@@ -892,6 +885,55 @@
             document.getElementById('loading-overlay').style.display = 'flex';
           });
         }
+      });
+
+      // Add form submit handler
+      document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Log form data before submission
+        console.log('Submitting form...');
+        console.log('Selected new files:', selectedNewFiles);
+        console.log('Deleted URLs:', deletedUrls);
+        
+        // Create FormData object
+        const formData = new FormData(this);
+        
+        // Remove existing files
+        formData.delete('imageFiles');
+        
+        // Add selected files
+        selectedNewFiles.forEach(file => {
+          formData.append('imageFiles', file);
+        });
+        
+        // Update deleted images
+        if (deletedUrls.length > 0) {
+          formData.set('deletedImageUrls', deletedUrls.join(','));
+        }
+        
+        // Show loading overlay
+        document.getElementById('loading-overlay').style.display = 'flex';
+        
+        // Submit form
+        fetch(this.action, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (response.redirected) {
+            window.location.href = response.url;
+          } else {
+            return response.text().then(html => {
+              document.documentElement.innerHTML = html;
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('loading-overlay').style.display = 'none';
+          alert('Có lỗi xảy ra khi cập nhật sản phẩm. Vui lòng thử lại.');
+        });
       });
     </script>
   </body>

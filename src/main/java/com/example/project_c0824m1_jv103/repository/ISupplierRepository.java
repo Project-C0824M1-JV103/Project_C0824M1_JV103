@@ -38,6 +38,10 @@ public interface ISupplierRepository extends JpaRepository<Supplier, Integer> {
     @Query("SELECT COUNT(s) > 0 FROM Supplier s WHERE s.phoneNumber = :phoneNumber")
     boolean existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
+    // Kiểm tra tồn tại theo tên nhà cung cấp (không phân biệt chữ hoa thường)
+    @Query("SELECT COUNT(s) > 0 FROM Supplier s WHERE LOWER(s.suplierName) = LOWER(:suplierName)")
+    boolean existsBySupplierNameIgnoreCase(@Param("suplierName") String suplierName);
+
     // Kiểm tra tồn tại theo email nhưng không phải ID hiện tại (cho update)
     @Query("SELECT COUNT(s) > 0 FROM Supplier s WHERE LOWER(s.email) = LOWER(:email) AND s.suplierId != :id")
     boolean existsByEmailIgnoreCaseAndIdNot(@Param("email") String email, @Param("id") Integer id);

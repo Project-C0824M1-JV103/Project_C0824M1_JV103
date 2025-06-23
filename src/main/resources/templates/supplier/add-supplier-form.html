@@ -103,8 +103,8 @@
     }
 
     .image-preview {
-      width: 200px;
-      height: 200px;
+      width: 120px;
+      height: 120px;
       border-radius: 8px;
       overflow: hidden;
       border: 2px solid #dee2e6;
@@ -116,16 +116,16 @@
     .image-preview img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       background-color: #f8f9fa;
     }
 
     .btn-delete {
       position: absolute;
-      top: -5px;
-      right: -5px;
-      width: 20px;
-      height: 20px;
+      top: 5px;
+      right: 5px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: #dc3545;
       color: white;
@@ -178,6 +178,8 @@
       border-radius: 8px;
       margin-bottom: 20px;
     }
+
+
   </style>
 </head>
 <body>
@@ -338,12 +340,27 @@
                 <div class="col-12">
                   <div class="form-group">
                     <label class="form-label">Hình ảnh nhà cung cấp</label>
+                    
+
+                    
+                    <!-- Image Section with Two Columns -->
                     <div class="image-section">
+                      <!-- Image Preview Section (Left) -->
                       <div class="image-preview-section">
+                        <h6 class="mb-3 text-muted">
+                          <i class="fas fa-images me-2"></i>Preview ảnh nhà cung cấp
+                        </h6>
+
+                        <!-- Preview ảnh được chọn -->
                         <div id="imagePreview"></div>
                       </div>
 
+                      <!-- Image Upload Section (Right) -->
                       <div class="image-upload-section">
+                        <h6 class="mb-3 text-muted">
+                          <i class="fas fa-cloud-upload-alt me-2"></i>Upload ảnh mới
+                        </h6>
+
                         <div class="image-upload-area">
                           <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
                           <h6 class="text-muted mb-2">Thêm ảnh nhà cung cấp</h6>
@@ -405,44 +422,68 @@
 
 <!-- Script xem trước hình ảnh và validation -->
 <script>
+  let selectedFile = null; // Chỉ 1 file
+
   // Preview ảnh được chọn
   document.getElementById('imageFile').addEventListener('change', function(e) {
     const file = e.target.files[0];
-    const preview = document.getElementById('imagePreview');
-    
     if (file) {
-      const reader = new FileReader();
-      
-      reader.onload = function(e) {
-        preview.innerHTML = `
-          <h6 style="margin-top: 15px; margin-bottom: 15px;">Ảnh đã chọn:</h6>
-          <div class="image-preview">
-            <img src="${e.target.result}" alt="Preview Image" />
-            <button type="button" class="btn-delete" onclick="removeImage()" title="Xóa ảnh này">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        `;
-      };
-      
-      reader.readAsDataURL(file);
-      
-      // Cập nhật text
-      const uploadArea = document.querySelector('.image-upload-area p');
-      uploadArea.innerHTML = `Đã chọn: ${file.name}`;
+      selectedFile = file;
     }
+    updatePreview();
+    // Clear input để chọn lại cùng file nếu muốn
+    e.target.value = '';
   });
 
-  function removeImage() {
-    if (confirm('Xóa ảnh này?')) {
-      document.getElementById('imageFile').value = '';
-      document.getElementById('imagePreview').innerHTML = '';
-      
+  function updatePreview() {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+
+    if (selectedFile) {
+      const title = document.createElement('h6');
+      title.textContent = 'Ảnh đã chọn:';
+      title.style.marginTop = '15px';
+      title.style.marginBottom = '15px';
+      preview.appendChild(title);
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imgDiv = document.createElement('div');
+        imgDiv.className = 'image-preview';
+        imgDiv.innerHTML = `
+          <img src="${e.target.result}" alt="Preview Image" />
+          <button type="button" class="btn-delete" onclick="removeFile()" title="Xóa ảnh này">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        preview.appendChild(imgDiv);
+      };
+      reader.readAsDataURL(selectedFile);
+      // Cập nhật text
+      const uploadArea = document.querySelector('.image-upload-area p');
+      uploadArea.innerHTML = `Đã chọn 1 ảnh`;
+    } else {
       // Reset upload area text
       const uploadArea = document.querySelector('.image-upload-area p');
       uploadArea.innerHTML = 'Kéo thả file ảnh vào đây<br/>hoặc click để chọn';
     }
   }
+
+  function removeFile() {
+    if (confirm('Xóa ảnh này?')) {
+      selectedFile = null;
+      updatePreview();
+    }
+  }
+
+  // Before form submit, create new FormData with selected file
+  document.querySelector('form').addEventListener('submit', function(e) {
+    if (selectedFile) {
+      const dt = new DataTransfer();
+      dt.items.add(selectedFile);
+      document.getElementById('imageFile').files = dt.files;
+    }
+  });
 
   // Drag and drop functionality
   const uploadArea = document.querySelector('.image-upload-area');
@@ -463,25 +504,17 @@
     e.preventDefault();
     this.style.backgroundColor = '#f8f9fa';
     this.style.borderColor = '#dee2e6';
-    
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      const file = files[0];
-      
-      // Set file to input element
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      document.getElementById('imageFile').files = dt.files;
-      
-      // Trigger change event
-      const event = new Event('change', { bubbles: true });
-      document.getElementById('imageFile').dispatchEvent(event);
+      selectedFile = files[0];
+      updatePreview();
     }
   });
 
   // Client-side validation for duplicate email and phone number
   let emailValidationTimeout;
   let phoneValidationTimeout;
+  let supplierNameValidationTimeout;
 
   // Validate email format
   function validateEmailFormat() {
@@ -583,6 +616,53 @@
     }
   }
 
+  // Validate supplier name format
+  function validateSupplierNameFormat() {
+    const nameInput = document.querySelector('input[name="suplierName"]');
+    const nameValue = nameInput.value.trim();
+    
+    // Remove existing validation message
+    removeValidationMessage(nameInput);
+    
+    if (nameValue.length > 0) {
+      // Check minimum length
+      if (nameValue.length < 2) {
+        showValidationError(nameInput, 'Tên nhà cung cấp phải có ít nhất 2 ký tự');
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Validate supplier name (format + duplicate check)
+  function validateSupplierName() {
+    const nameInput = document.querySelector('input[name="suplierName"]');
+    const nameValue = nameInput.value.trim();
+    
+    // First validate format
+    if (!validateSupplierNameFormat()) {
+      return;
+    }
+    
+    // Then check for duplicates if format is valid
+    if (nameValue.length >= 2) {
+      clearTimeout(supplierNameValidationTimeout);
+      supplierNameValidationTimeout = setTimeout(() => {
+        fetch('/Supplier/check-name?suplierName=' + encodeURIComponent(nameValue))
+          .then(response => response.json())
+          .then(data => {
+            if (data.exists) {
+              showValidationError(nameInput, 'Tên nhà cung cấp này đã được sử dụng bởi nhà cung cấp khác');
+            }
+          })
+          .catch(error => {
+            console.error('Error checking supplier name:', error);
+          });
+      }, 500);
+    }
+  }
+
   // Helper function to validate email format
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -613,9 +693,15 @@
 
   // Attach event listeners
   document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.querySelector('input[name="suplierName"]');
     const emailInput = document.querySelector('input[name="email"]');
     const phoneInput = document.querySelector('input[name="phoneNumber"]');
     const form = document.querySelector('form');
+    
+    if (nameInput) {
+      nameInput.addEventListener('input', validateSupplierNameFormat);
+      nameInput.addEventListener('blur', validateSupplierName);
+    }
     
     if (emailInput) {
       emailInput.addEventListener('input', validateEmailFormat);
