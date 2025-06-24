@@ -15,6 +15,7 @@ public class EmployeeEditDto {
     @NotBlank(message = "Nhập email đầy đủ!")
     @Email(message = "Email không hợp lệ")
     @Size(max = 50, message = "Email không được vượt quá 50 ký tự")
+    //patern
     private String email;
 
     @Pattern(regexp = "^[0-9]{10,11}$", message = "Số điện thoại phải có 10 hoặc 11 chữ số!")
