@@ -339,34 +339,4 @@ public class StorageController extends BaseAdminController {
         return productRepository.findBySupplier_SuplierId(supplierId);
     }
 
-    @GetMapping("/products/data")
-    @ResponseBody
-    public Object getProductsData(
-            @RequestParam(value = "productName", required = false, defaultValue = "") String productName,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "6") int size
-    ) {
-        Page<Product> productPage = productRepository.findByProductNameContainingIgnoreCase(productName, PageRequest.of(page, size));
-        List<StorageImportModal> content = productPage.getContent().stream().map(product -> {
-            List<String> images = product.getProductImages() != null ?
-                product.getProductImages().stream().map(ProductImages::getImageUrl).toList() :
-                java.util.Collections.emptyList();
-            return new StorageImportModal(
-                product.getProductId(),
-                product.getProductName(),
-                product.getPrice(),
-                product.getCpu(),
-                product.getMemory(),
-                images,
-                product.getSupplier() != null ? product.getSupplier().getSuplierId() : null,
-                product.getSupplier() != null ? product.getSupplier().getSuplierName() : null
-            );
-        }).toList();
-        return new java.util.HashMap<String, Object>() {{
-            put("content", content);
-            put("totalPages", productPage.getTotalPages());
-            put("pageNumber", productPage.getNumber());
-            put("size", productPage.getSize());
-        }};
-    }
 }

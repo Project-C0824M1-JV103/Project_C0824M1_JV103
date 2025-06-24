@@ -374,7 +374,7 @@
                             <th>Chọn</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="productTableBody">
                         <tr th:each="i, l : ${inforStorages}">
                             <td th:text="${l.count}"></td>
                             <td th:text="${i.product.productName}"></td>
