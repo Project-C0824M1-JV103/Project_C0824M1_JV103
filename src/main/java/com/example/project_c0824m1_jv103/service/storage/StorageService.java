@@ -61,6 +61,9 @@ public class StorageService implements IStorageService {
     @Autowired
     private ISupplierRepository supplierRepository;
 
+    @Autowired
+    private IStorageTransactionRepository storageTransactionRepository;
+
     @Override
     @Transactional
     public Storage exportProduct(StorageExportDTO exportDTO) {
@@ -90,7 +93,27 @@ public class StorageService implements IStorageService {
         product.setQuantity(product.getQuantity() + exportDTO.getExportQuantity());
         productRepository.save(product);
 
-        // Return the updated storage object. The transaction record is no longer created.
+        // Create transaction history for export
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Employee employee = employeeRepository.findByEmail(email);
+            
+            StorageTransaction exportTransaction = new StorageTransaction(
+                product,
+                -exportDTO.getExportQuantity(), // Số âm cho xuất kho
+                product.getPrice(),
+                employee,
+                StorageTransaction.TransactionType.EXPORT,
+                "Xuất kho " + exportDTO.getExportQuantity() + " sản phẩm " + product.getProductName()
+            );
+            
+            storageTransactionRepository.save(exportTransaction);
+        } catch (Exception e) {
+            // Log the error but don't fail the main transaction
+            System.err.println("Failed to create export transaction history: " + e.getMessage());
+        }
+
+        // Return the updated storage object
         return storage;
     }
 //    @Override
@@ -127,13 +150,24 @@ public class StorageService implements IStorageService {
 
     @Override
     public Page<Storage> getExportHistory(Pageable pageable) {
-        Page<Storage> all = storageRepository.findAll(pageable);
-        // Lọc các bản ghi xuất kho (quantity < 0)
-        return new PageImpl<>(
-            all.getContent().stream().filter(s -> s.getQuantity() < 0).collect(Collectors.toList()),
-            pageable,
-            all.getTotalElements()
-        );
+        // Sử dụng StorageTransaction để lấy lịch sử xuất kho
+        Page<StorageTransaction> exportTransactions = storageTransactionRepository.findExportHistory(pageable);
+        
+        // Chuyển đổi StorageTransaction thành Storage để tương thích với interface hiện tại
+        List<Storage> storageList = exportTransactions.getContent().stream()
+            .map(transaction -> {
+                Storage storage = new Storage();
+                storage.setStorageId(transaction.getTransactionId());
+                storage.setProduct(transaction.getProduct());
+                storage.setQuantity(transaction.getQuantity()); // Số âm cho xuất kho
+                storage.setCost(transaction.getCost());
+                storage.setEmployee(transaction.getEmployee());
+                storage.setTransactionDate(transaction.getTransactionDate());
+                return storage;
+            })
+            .collect(Collectors.toList());
+        
+        return new PageImpl<>(storageList, pageable, exportTransactions.getTotalElements());
     }
 
     @Override
