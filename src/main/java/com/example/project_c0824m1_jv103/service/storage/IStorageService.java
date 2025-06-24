@@ -6,6 +6,7 @@ import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
 import com.example.project_c0824m1_jv103.model.Storage;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
 import org.springframework.data.domain.Page;
@@ -31,4 +32,6 @@ public interface IStorageService {
     Page<StorageDto> paginateStorageList(List<StorageDto> storageList, Pageable pageable);
 
     void importProduct(com.example.project_c0824m1_jv103.dto.StorageImportId storageImportId);
+
+    Optional<Storage> findByProductId(Integer productId);
 }

@@ -71,24 +71,29 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Số lượng xuất phải lớn hơn 0");
         }
 
-        Product product = productRepository.findById(exportDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        // Find the storage record for the product, which holds the actual warehouse stock
+        Storage storage = storageRepository.findByProduct_ProductId(exportDTO.getProductId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy kho chứa sản phẩm này."));
 
-        if (product.getQuantity() < exportDTO.getExportQuantity()) {
-            throw new RuntimeException("Not enough quantity in stock");
+        // Check if there is enough quantity in storage (warehouse)
+        if (storage.getQuantity() < exportDTO.getExportQuantity()) {
+            throw new RuntimeException("Số lượng trong kho không đủ để xuất.");
         }
 
-        // Update product quantity
-        product.setQuantity(product.getQuantity() - exportDTO.getExportQuantity());
+        // Find the product to update its retail quantity
+        Product product = productRepository.findById(exportDTO.getProductId())
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+
+        // Decrease quantity in storage
+        storage.setQuantity(storage.getQuantity() - exportDTO.getExportQuantity());
+        storageRepository.save(storage);
+
+        // Increase quantity in product (retail)
+        product.setQuantity(product.getQuantity() + exportDTO.getExportQuantity());
         productRepository.save(product);
 
-        // Create storage record for export
-        Storage storage = new Storage();
-        storage.setProduct(product);
-        storage.setQuantity(-exportDTO.getExportQuantity()); // Negative quantity for export
-        storage.setCost(product.getPrice()); // Using product price as cost
-
-        return storageRepository.save(storage);
+        // Return the updated storage object. The transaction record is no longer created.
+        return storage;
     }
 //    @Override
 //    @Transactional
@@ -299,14 +304,13 @@ public class StorageService implements IStorageService {
     }
 
     public Page<StorageDto> paginateStorageList(List<StorageDto> storages, Pageable pageable) {
-        if (storages == null || storages.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList(), pageable, 0);
-        }
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), storages.size());
-        List<StorageDto> subList = start < storages.size() ? storages.subList(start, end) : Collections.emptyList();
-        return new PageImpl<>(subList, pageable, storages.size());
+        return new PageImpl<>(storages.subList(start, end), pageable, storages.size());
     }
 
-
+    @Override
+    public Optional<Storage> findByProductId(Integer productId) {
+        return storageRepository.findByProduct_ProductId(productId);
+    }
 }

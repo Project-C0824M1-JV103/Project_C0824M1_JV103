@@ -236,14 +236,18 @@ public class StorageController extends BaseAdminController {
     @GetMapping("/product/{id}")
     @ResponseBody
     public StorageExportDTO getProductInfo(@PathVariable Integer id) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product == null) throw new RuntimeException("Product not found");
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Storage storage = storageService.findByProductId(id)
+                .orElse(new Storage()); // Tạo storage rỗng nếu không tìm thấy
+
         return new StorageExportDTO(
-            product.getProductId(),
-            product.getProductName(),
-            product.getSupplier().getSuplierName(),
-            product.getQuantity(),
-            null
+                product.getProductId(),
+                product.getProductName(),
+                product.getSupplier() != null ? product.getSupplier().getSuplierName() : "N/A",
+                storage.getQuantity() != null ? storage.getQuantity() : 0, // Lấy số lượng từ storage, mặc định là 0
+                null
         );
     }
 
