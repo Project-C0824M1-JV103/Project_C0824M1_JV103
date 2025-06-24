@@ -149,7 +149,7 @@
         @media (max-width: 992px) {
             .header-section { padding: 15px; min-height: 80px; }
             .header-section h2 { font-size: 1.25rem; }
-            .header-section .text-muted { font-size: 0.9rem; }
+            .header-section .text-danger { font-size: 0.9rem; }
         }
         .error-message { color: #dc3545; font-size: 0.9rem; margin-top: 5px; }
         #addProductModal .modal-content {
@@ -163,7 +163,7 @@
             border: none;
         }
         #addProductModal .modal-title {
-            width: 100%;
+            width: 120%;
             text-align: center;
             color: #fff;
             font-weight: 600;
@@ -173,9 +173,9 @@
             filter: invert(1);
         }
         #addProductModal .modal-body {
-            min-height: 500px;
+            min-height: 600px;
             max-height: 80vh;
-            height: 500px;
+            height: 600px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -198,14 +198,30 @@
             display: block;
         }
         #addProductModal .modal-dialog {
-            max-width: 900px;
-            width: 900px;
+            max-width: 80vw;
+            width: 100%;
         }
         @media (max-width: 992px) {
             #addProductModal .modal-dialog {
                 max-width: 95vw;
                 width: 95vw;
             }
+        }
+        .text-danger.small {
+            font-size: 0.75rem;
+            margin-top: 2px;
+            display: inline;
+        }
+        .error-container {
+            display: inline-flex;
+            flex-wrap: nowrap;
+            gap: 0;
+            align-items: center;
+            white-space: nowrap;
+        }
+        .error-container .text-danger.small:not(:last-child)::after {
+            content: ", ";
+            color: #dc3545;
         }
     </style>
 </head>
@@ -224,10 +240,8 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="container">
                     <h4 class="text-center mb-4">Nhập kho</h4>
-
                     <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
                         <span th:text="${errorMessage}"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -236,26 +250,24 @@
                         <span th:text="${successMessage}"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-
                     <div class="d-flex justify-content-between mb-3">
                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productModal">Chọn sản phẩm</button>
                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">Thêm sản phẩm mới</button>
                     </div>
-
                     <div th:if="${storageImportDTO != null}">
                         <form th:action="@{/storage/create}" th:object="${storageImportDTO}" method="post" id="importForm">
                             <div class="mb-3 row">
                                 <div class="col-8">
                                     <label class="form-label">Tên sản phẩm</label>
                                     <input type="text" class="form-control" th:field="*{productName}" readonly>
-                                    <div th:if="${#fields.hasErrors('productName')}" class="error-message">
-                                        <span th:errors="*{productName}"></span>
+                                    <div th:if="${#fields.hasErrors('productName')}" class="error-container">
+                                        <span th:each="err, stat : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
                                     </div>
                                 </div>
                                 <div class="col-4">
                                     <input type="hidden" th:field="*{productId}" id="productIdInput">
-                                    <div th:if="${#fields.hasErrors('productId')}" class="error-message">
-                                        <span th:errors="*{productId}"></span>
+                                    <div th:if="${#fields.hasErrors('productId')}" class="error-container">
+                                        <span th:each="err, stat : ${#fields.errors('productId')}" th:text="${err}" class="text-danger small"></span>
                                     </div>
                                 </div>
                             </div>
@@ -264,8 +276,8 @@
                                 <div class="col-8">
                                     <label class="form-label">Giá nhập</label>
                                     <input type="text" class="form-control" th:field="*{cost}" id="costInput" autocomplete="off">
-                                    <div th:if="${#fields.hasErrors('cost')}" class="error-message">
-                                        <span th:errors="*{cost}"></span>
+                                    <div th:if="${#fields.hasErrors('cost')}" class="error-container">
+                                        <span th:each="err, stat : ${#fields.errors('cost')}" th:text="${err}" class="text-danger small"></span>
                                     </div>
                                 </div>
                                 <div class="col-4 d-flex align-items-end">
@@ -297,8 +309,8 @@
                                 <div class="col-8">
                                     <label class="form-label">Số lượng nhập</label>
                                     <input type="number" min="1" class="form-control" th:field="*{importQuantity}">
-                                    <div th:if="${#fields.hasErrors('importQuantity')}" class="error-message">
-                                        <span th:errors="*{importQuantity}"></span>
+                                    <div th:if="${#fields.hasErrors('importQuantity')}" class="error-container">
+                                        <span th:each="err, stat : ${#fields.errors('importQuantity')}" th:text="${err}" class="text-danger small"></span>
                                     </div>
                                 </div>
                                 <div class="col-4"></div>
@@ -310,8 +322,8 @@
                                     <div class="col-8">
                                         <input type="text" class="form-control" th:field="*{supplierName}" readonly>
                                         <input type="hidden" th:field="*{supplierId}" id="supplierIdInput">
-                                        <div th:if="${#fields.hasErrors('supplierId')}" class="error-message">
-                                            <span th:errors="*{supplierId}"></span>
+                                        <div th:if="${#fields.hasErrors('supplierId')}" class="error-container">
+                                            <span th:each="err, stat : ${#fields.errors('supplierId')}" th:text="${err}" class="text-danger small"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -335,7 +347,6 @@
         </div>
     </div>
 </div>
-
 <!-- Modal chọn sản phẩm -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -418,7 +429,6 @@
         </div>
     </div>
 </div>
-
 <!-- Modal thêm sản phẩm mới -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -435,21 +445,29 @@
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Tên sản phẩm <span class="required text-danger">*</span></label>
-                                <span th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="text-danger small"></span>
+                                <div th:if="${#fields.hasErrors('productName')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
                             </div>
-                            <input type="text" th:field="*{productName}" class="form-control" placeholder="Nhập tên sản phẩm" maxlength="100" required>
+                            <input type="text" th:field="*{productName}" class="form-control" 
+                                   placeholder="Nhập tên sản phẩm" maxlength="100" required>
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
-                                <label class="form-label mb-0">Kích thước màn hình <span class="required text-danger">*</span></label>
-                                <span th:if="${#fields.hasErrors('size')}" th:errors="*{size}" class="text-danger small"></span>
+                                <label class="form-label mb-0">Kích thước màn hình (inch)<span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('size')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('size')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
                             </div>
-                            <input type="text" th:field="*{size}" class="form-control" placeholder="Ví dụ: 6.1 inch" maxlength="50">
+                            <input type="number" th:field="*{size}" class="form-control" 
+                                   placeholder="Ví dụ: 6.1" maxlength="50" step="0.1">
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Danh mục <span class="required text-danger">*</span></label>
-                                <span th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="text-danger small"></span>
+                                <div th:if="${#fields.hasErrors('categoryId')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('categoryId')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
                             </div>
                             <select th:field="*{categoryId}" class="form-select" required>
                                 <option value="" disabled selected>-- Chọn danh mục --</option>
@@ -459,7 +477,9 @@
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Nhà cung cấp <span class="required text-danger">*</span></label>
-                                <span th:if="${#fields.hasErrors('supplierId')}" th:errors="*{supplierId}" class="text-danger small"></span>
+                                <div th:if="${#fields.hasErrors('supplierId')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('supplierId')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
                             </div>
                             <select th:field="*{supplierId}" class="form-select" required>
                                 <option value="" disabled selected>-- Chọn nhà cung cấp --</option>
@@ -468,31 +488,43 @@
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
-                                <label class="form-label mb-0">Camera sau <span class="required text-danger">*</span></label>
-                                <span th:if="${#fields.hasErrors('cameraBack')}" th:errors="*{cameraBack}" class="text-danger small"></span>
+                                <label class="form-label mb-0">Camera sau (MP)<span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('cameraBack')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('cameraBack')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
                             </div>
-                            <input type="text" th:field="*{cameraBack}" class="form-control" placeholder="Ví dụ: 48 MP" maxlength="50">
+                            <input type="number" th:field="*{cameraBack}" class="form-control" 
+                                   placeholder="Ví dụ: 48" maxlength="50">
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
-                                <label class="form-label mb-0">Camera trước <span class="required text-danger">*</span></label>
-                                <span th:if="${#fields.hasErrors('cameraFront')}" th:errors="*{cameraFront}" class="text-danger small"></span>
+                                <label class="form-label mb-0">Camera trước (MP)<span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('cameraFront')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('cameraFront')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
                             </div>
-                            <input type="text" th:field="*{cameraFront}" class="form-control" placeholder="Ví dụ: 12 MP" maxlength="50">
+                            <input type="number" th:field="*{cameraFront}" class="form-control" 
+                                   placeholder="Ví dụ: 12" maxlength="50">
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">CPU <span class="required text-danger">*</span></label>
-                                <span th:if="${#fields.hasErrors('cpu')}" th:errors="*{cpu}" class="text-danger small"></span>
+                                <div th:if="${#fields.hasErrors('cpu')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('cpu')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
                             </div>
-                            <input type="text" th:field="*{cpu}" class="form-control" placeholder="Ví dụ: A15 Bionic" maxlength="50">
+                            <input type="text" th:field="*{cpu}" class="form-control" 
+                                   placeholder="Ví dụ: A15 Bionic" maxlength="50">
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
-                                <label class="form-label mb-0">Bộ nhớ <span class="required text-danger">*</span></label>
-                                <span th:if="${#fields.hasErrors('memory')}" th:errors="*{memory}" class="text-danger small"></span>
+                                <label class="form-label mb-0">Bộ nhớ (GB)<span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('memory')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('memory')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
                             </div>
-                            <input type="text" th:field="*{memory}" class="form-control" placeholder="Ví dụ: 128 GB" maxlength="50">
+                            <input type="number" th:field="*{memory}" class="form-control" 
+                                   placeholder="Ví dụ: 128" maxlength="50">
                         </div>
                         <input type="hidden" th:field="*{price}" value="0">
                         <input type="hidden" th:field="*{quantity}" value="0">
@@ -597,7 +629,6 @@
         });
     });
 
-    // --- JS tìm kiếm & phân trang sản phẩm giống sale-page.html ---
     function renderProductPagination(totalPages, pageNumber) {
         let html = '';
         if (totalPages > 1) {
@@ -620,8 +651,6 @@
         fetch(`/storage/products/data?${params.toString()}`)
             .then(response => response.json())
             .then(data => {
-                // Cập nhật lại bảng sản phẩm (nếu muốn động, có thể render lại tbody ở đây)
-                // Cập nhật phân trang
                 renderProductPagination(data.totalPages, data.pageNumber);
             })
             .catch(error => {
@@ -657,7 +686,6 @@
                 alert('Có lỗi xảy ra khi làm mới danh sách sản phẩm!');
             });
     }
-    // Tự động load danh sách sản phẩm khi mở modal
     if (document.getElementById('productModal')) {
         document.getElementById('productModal').addEventListener('show.bs.modal', function () {
             refreshProductList();

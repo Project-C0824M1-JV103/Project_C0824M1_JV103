@@ -21,7 +21,7 @@ public class Storage {
 
     @Column(name = "cost", nullable = false)
     @NotNull(message = "Giá nhập không được để trống")
-    @DecimalMin(value = "1000", message = "Giá nhập phải từ 1,000 VND trở lên")
+    @DecimalMin(value = "0", message = "Giá nhập phải từ 1,000 VND trở lên")
     @DecimalMax(value = "1000000000", message = "Giá nhập không vượt quá 1,000,000,000 VND")
     private Double cost;
 

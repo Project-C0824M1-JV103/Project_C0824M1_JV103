@@ -1,6 +1,6 @@
 package com.example.project_c0824m1_jv103.service.storage;
 
-import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
+import com.example.project_c0824m1_jv103.dto.*;
 import com.example.project_c0824m1_jv103.model.*;
 import com.example.project_c0824m1_jv103.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +11,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.example.project_c0824m1_jv103.dto.StorageDto;
-import com.example.project_c0824m1_jv103.dto.StorageDto;
-import com.example.project_c0824m1_jv103.dto.StorageExportDTO;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.model.Product;
@@ -191,13 +189,13 @@ public class StorageService implements IStorageService {
     }
 
     @Override
-    public void importProduct(com.example.project_c0824m1_jv103.dto.StorageImportId storageImportId) {
+    public void importProduct(StorageImportId storageImportId) {
         Storage storage = new Storage();
         Product product = productRepository.findById(storageImportId.getProductId()).orElse(null);
         if (product == null) throw new RuntimeException("Product not found");
         storage.setProduct(product);
-        storage.setCost(1000.0);
-        storage.setQuantity(1);
+        storage.setCost(0.0);
+        storage.setQuantity(0);
         if (storageImportId.getEmployeeId() == null) throw new RuntimeException("EmployeeId is required");
         Employee employee = employeeRepository.findById(storageImportId.getEmployeeId())
             .orElseThrow(() -> new RuntimeException("Employee not found"));

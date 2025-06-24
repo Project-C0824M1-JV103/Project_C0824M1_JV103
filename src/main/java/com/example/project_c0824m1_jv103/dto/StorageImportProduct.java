@@ -8,30 +8,36 @@ import java.util.List;
 public class StorageImportProduct {
     private Integer productId;
 
-    @NotBlank(message = "Không được để trống")
+    @NotBlank(message = " không được để trống")
     @Size(max = 100, message = "Tối đa 100 ký tự")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s\\-_\\.]+$", message = " không được chứa ký tự đặc biệt")
     private String productName;
 
     private Double price;
 
-    @NotBlank(message = "Không được để trống")
+    @NotBlank(message = " không được để trống")
     @Size(max = 50, message = "Tối đa 50 ký tự")
+    @Pattern(regexp = "^[0-9]+(\\.?[0-9]+)?$", message = " chỉ được nhập số")
     private String size;
 
-    @NotBlank(message = "Không được để trống")
+    @NotBlank(message = " không được để trống")
     @Size(max = 50, message = "Tối đa 50 ký tự")
+    @Pattern(regexp = "^[0-9]+$", message = " chỉ được nhập số")
     private String cameraBack;
 
-    @NotBlank(message = "Không được để trống")
+    @NotBlank(message = " không được để trống")
     @Size(max = 50, message = "Tối đa 50 ký tự")
+    @Pattern(regexp = "^[0-9]+$", message = " chỉ được nhập số")
     private String cameraFront;
 
-    @NotBlank(message = "Không được để trống")
+    @NotBlank(message = " không được để trống")
     @Size(max = 50, message = "Tối đa 50 ký tự")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s\\-_\\.]+$", message = " không được chứa ký tự đặc biệt")
     private String cpu;
 
-    @NotBlank(message = "Không được để trống")
+    @NotBlank(message = " không được để trống")
     @Size(max = 50, message = "Tối đa 50 ký tự")
+    @Pattern(regexp = "^[0-9]+$", message = " chỉ được nhập số")
     private String memory;
 
     private Integer quantity;
@@ -55,6 +61,9 @@ public class StorageImportProduct {
         this.supplierId = supplierId;
     }
 
+    public StorageImportProduct() {
+    }
+
     public Integer getCategoryId() {
         return categoryId;
     }
@@ -71,8 +80,6 @@ public class StorageImportProduct {
         this.supplierId = supplierId;
     }
 
-    public StorageImportProduct() {
-    }
 
     public Integer getProductId() {
         return productId;

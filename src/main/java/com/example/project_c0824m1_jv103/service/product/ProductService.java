@@ -341,8 +341,8 @@ public class ProductService implements IProductService {
         }
         Product savedProduct = productRepository.save(product);
         List<ProductImages> images = new ArrayList<>();
-        ProductImages defaultImage1 = new ProductImages(savedProduct, "https://via.placeholder.com/150", "Mặt trước");
-        ProductImages defaultImage2 = new ProductImages(savedProduct, "https://via.placeholder.com/150/0000FF/808080", "Mặt sau");
+        ProductImages defaultImage1 = new ProductImages(savedProduct, null, null);
+        ProductImages defaultImage2 = new ProductImages(savedProduct, null, null);
         images.add(defaultImage1);
         images.add(defaultImage2);
         productImagesRepository.saveAll(images);

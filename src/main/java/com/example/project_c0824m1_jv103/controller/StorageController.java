@@ -24,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -103,15 +102,14 @@ public class StorageController extends BaseAdminController {
     }
 
     @GetMapping("/show-create")
-    public ModelAndView showCreateStorage() {
+    public String showCreateStorage(Model model) {
         LOGGER.info("Handling /storage/show-create request");
-        ModelAndView modelAndView = new ModelAndView("storage/import-storage");
-        modelAndView.addObject("inforStorages", storageService.findAllStorage());
-        modelAndView.addObject("suppliers", supplierService.findAll());
-        modelAndView.addObject("categorys", categoryRepository.findAll());
-        modelAndView.addObject("storageImportDTO", new StorageImportDTO());
-        modelAndView.addObject("importStorageProduct", new StorageImportProduct());
-        return modelAndView;
+        model.addAttribute("inforStorages", storageService.findAllStorage());
+        model.addAttribute("suppliers", supplierService.findAll());
+        model.addAttribute("categorys", categoryRepository.findAll());
+        model.addAttribute("storageImportDTO", new StorageImportDTO());
+        model.addAttribute("importStorageProduct", new StorageImportProduct());
+        return "storage/import-storage";
     }
 
     @PostMapping("/create")
@@ -153,14 +151,18 @@ public class StorageController extends BaseAdminController {
     }
 
     @PostMapping("/create-product")
-    public String createProduct(@Valid @ModelAttribute StorageImportProduct dto, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String createProduct(@Valid @ModelAttribute("importStorageProduct") StorageImportProduct dto, 
+                               BindingResult result, 
+                               RedirectAttributes redirectAttributes, 
+                               Model model) {
         if (result.hasErrors()) {
+            // Thêm lại các attribute cần thiết cho form
             model.addAttribute("inforStorages", storageService.findAllStorage());
             model.addAttribute("suppliers", supplierService.findAll());
             model.addAttribute("categorys", categoryRepository.findAll());
             model.addAttribute("storageImportDTO", new StorageImportDTO());
-            model.addAttribute("importStorageProduct", dto);
-            model.addAttribute("showAddProductModal", true);
+            model.addAttribute("importStorageProduct", dto); // Set lại dto có lỗi
+            model.addAttribute("showAddProductModal", true); // Flag để hiển thị modal
             return "storage/import-storage";
         }
         try {
