@@ -1,4 +1,3 @@
-
 -- Thêm dữ liệu vào bảng Category (chỉ chứa các hãng điện thoại)
 INSERT INTO Category (category_name, image_url)
 VALUES ('Samsung', 'https://res.cloudinary.com/dbfscepll/image/upload/v1749194441/samsung-logo_myw0it.jpg'),
@@ -43,13 +42,13 @@ VALUES ('Samsung Galaxy S21', '6.2', 15000000, '10', '12', '128', 'Exynos 2100',
         2, 1, 15);
 
 -- Thêm dữ liệu vào bảng ProductImages
-INSERT INTO product_images (product_id, image_url, caption, display_order)
+INSERT INTO product_images (product_id, image_url, caption, image_id)
 VALUES (1, 'https://example.com/images/s21_front.jpg', 'Mặt trước Samsung Galaxy S21', 1),
        (1, 'https://example.com/images/s21_back.jpg', 'Mặt sau Samsung Galaxy S21', 2),
-       (2, 'https://example.com/images/iphone13_front.jpg', 'Mặt trước iPhone 13', 1),
-       (2, 'https://example.com/images/iphone13_back.jpg', 'Mặt sau iPhone 13', 2),
-       (3, 'https://example.com/images/xiaomi12pro_front.jpg', 'Mặt trước Xiaomi 12 Pro', 1),
-       (3, 'https://example.com/images/xiaomi12pro_back.jpg', 'Mặt sau Xiaomi 12 Pro', 2);
+       (2, 'https://example.com/images/iphone13_front.jpg', 'Mặt trước iPhone 13', 3),
+       (2, 'https://example.com/images/iphone13_back.jpg', 'Mặt sau iPhone 13', 4),
+       (3, 'https://example.com/images/xiaomi12pro_front.jpg', 'Mặt trước Xiaomi 12 Pro', 5),
+       (3, 'https://example.com/images/xiaomi12pro_back.jpg', 'Mặt sau Xiaomi 12 Pro', 6);
 
 -- Thêm dữ liệu vào bảng Customer
 INSERT INTO Customer (customer_name, phone_number, address, birthday_date, email)
@@ -81,3 +80,17 @@ INSERT INTO Storage (product_id, cost, employee_id, quantity, transaction_date)
 VALUES (1, 12000000, 3, 60, '2025-05-30 08:00:00'),
        (2, 17000000, 3, 40, '2025-05-30 09:00:00'),
        (3, 15000000, 3, 50, '2025-05-31 10:00:00');
+
+-- Tạo bảng storage_transaction cho lịch sử giao dịch kho
+CREATE TABLE IF NOT EXISTS storage_transaction (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL, -- Cho phép số âm (xuất kho) và dương (nhập kho)
+    cost DOUBLE,
+    employee_id INT,
+    transaction_type ENUM('IMPORT', 'EXPORT') NOT NULL,
+    transaction_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    description VARCHAR(255),
+    FOREIGN KEY (product_id) REFERENCES Product(product_id),
+    FOREIGN KEY (employee_id) REFERENCES Employee(employee_id)
+);

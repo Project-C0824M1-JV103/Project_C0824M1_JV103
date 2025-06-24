@@ -434,60 +434,60 @@
                     </div>
 
                     <!-- Danh mục -->
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="form-label">
-                          Danh mục <span class="required">*</span>
-                        </label>
-                        <select
-                          th:field="*{categoryId}"
-                          class="form-control"
-                          th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'"
-                          required
-                        >
-                          <option value="">-- Chọn danh mục --</option>
-                          <option
-                            th:each="category : ${categories}"
-                            th:value="${category.categoryId}"
-                            th:text="${category.categoryName}"
-                          ></option>
-                        </select>
-                        <div
-                          th:if="${#fields.hasErrors('categoryId')}"
-                          class="invalid-feedback"
-                        >
-                          <span th:errors="*{categoryId}"></span>
-                        </div>
-                      </div>
-                    </div>
+<!--                    <div class="col-md-6">-->
+<!--                      <div class="form-group">-->
+<!--                        <label class="form-label">-->
+<!--                          Danh mục <span class="required">*</span>-->
+<!--                        </label>-->
+<!--                        <select-->
+<!--                          th:field="*{categoryId}"-->
+<!--                          class="form-control"-->
+<!--                          th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'"-->
+<!--                          required-->
+<!--                        >-->
+<!--                          <option value="">&#45;&#45; Chọn danh mục &#45;&#45;</option>-->
+<!--                          <option-->
+<!--                            th:each="category : ${categories}"-->
+<!--                            th:value="${category.categoryId}"-->
+<!--                            th:text="${category.categoryName}"-->
+<!--                          ></option>-->
+<!--                        </select>-->
+<!--                        <div-->
+<!--                          th:if="${#fields.hasErrors('categoryId')}"-->
+<!--                          class="invalid-feedback"-->
+<!--                        >-->
+<!--                          <span th:errors="*{categoryId}"></span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
 
                     <!-- Nhà cung cấp -->
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="form-label">
-                          Nhà cung cấp <span class="required">*</span>
-                        </label>
-                        <select
-                          th:field="*{supplierId}"
-                          class="form-control"
-                          th:classappend="${#fields.hasErrors('supplierId')} ? 'is-invalid'"
-                          required
-                        >
-                          <option value="">-- Chọn nhà cung cấp --</option>
-                          <option
-                            th:each="supplier : ${suppliers}"
-                            th:value="${supplier.suplierId}"
-                            th:text="${supplier.suplierName}"
-                          ></option>
-                        </select>
-                        <div
-                          th:if="${#fields.hasErrors('supplierId')}"
-                          class="invalid-feedback"
-                        >
-                          <span th:errors="*{supplierId}"></span>
-                        </div>
-                      </div>
-                    </div>
+<!--                    <div class="col-md-6">-->
+<!--                      <div class="form-group">-->
+<!--                        <label class="form-label">-->
+<!--                          Nhà cung cấp <span class="required">*</span>-->
+<!--                        </label>-->
+<!--                        <select-->
+<!--                          th:field="*{supplierId}"-->
+<!--                          class="form-control"-->
+<!--                          th:classappend="${#fields.hasErrors('supplierId')} ? 'is-invalid'"-->
+<!--                          required-->
+<!--                        >-->
+<!--                          <option value="">&#45;&#45; Chọn nhà cung cấp &#45;&#45;</option>-->
+<!--                          <option-->
+<!--                            th:each="supplier : ${suppliers}"-->
+<!--                            th:value="${supplier.suplierId}"-->
+<!--                            th:text="${supplier.suplierName}"-->
+<!--                          ></option>-->
+<!--                        </select>-->
+<!--                        <div-->
+<!--                          th:if="${#fields.hasErrors('supplierId')}"-->
+<!--                          class="invalid-feedback"-->
+<!--                        >-->
+<!--                          <span th:errors="*{supplierId}"></span>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
 
                     <!-- Mô tả -->
                     <div class="col-12">
