@@ -32,7 +32,7 @@ public class Storage {
 
     @Column(name = "quantity", nullable = false)
     @NotNull(message = "Số lượng không được để trống")
-    @Min(value = 1, message = "Số lượng phải từ 1 trở lên")
+    @Min(value = 0, message = "Số lượng phải từ 1 trở lên")
     @Max(value = 10000, message = "Số lượng không vượt quá 10,000")
     private Integer quantity;
 
