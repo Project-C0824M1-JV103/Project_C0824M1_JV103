@@ -42,4 +42,8 @@ public interface ICustomerRepository extends JpaRepository<Customer, Integer> {
     // Kiểm tra tồn tại theo email (không phân biệt chữ hoa thường)
     @Query("SELECT COUNT(c) > 0 FROM Customer c WHERE LOWER(c.email) = LOWER(:email)")
     boolean existsByEmailIgnoreCase(@Param("email") String email);
+
+    @Query("SELECT COUNT(c) > 0 FROM Customer c WHERE c.phoneNumber = :phoneNumber")
+    boolean existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
 }

@@ -478,6 +478,15 @@ public class SaleController extends BaseAdminController {
         return response;
     }
 
+    @GetMapping("/check-phone")
+    @ResponseBody
+    public Map<String, Boolean> checkPhone(@RequestParam("phoneNumber") String phoneNumber) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = customerService.isEmailExists(phoneNumber);
+        response.put("exists", exists);
+        return response;
+    }
+
     @PostMapping("/send-otp")
     @ResponseBody
     public Map<String, Object> sendOtp(@RequestParam String email) {
