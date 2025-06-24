@@ -31,4 +31,6 @@ public interface IStorageService {
     void importProduct(StorageImportId storageImportId);
 
     Optional<Storage> findByProductId(Integer productId);
+
+    Page<Storage> searchProductsInStorage(String keyword, Pageable pageable);
 }

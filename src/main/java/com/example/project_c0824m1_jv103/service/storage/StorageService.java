@@ -345,4 +345,9 @@ public class StorageService implements IStorageService {
     public Optional<Storage> findByProductId(Integer productId) {
         return storageRepository.findByProduct_ProductId(productId);
     }
+
+    @Override
+    public Page<Storage> searchProductsInStorage(String keyword, Pageable pageable) {
+        return storageRepository.findByProduct_ProductNameContainingIgnoreCase(keyword, pageable);
+    }
 }
