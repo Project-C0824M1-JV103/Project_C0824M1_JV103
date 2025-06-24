@@ -25,4 +25,5 @@ public interface ICustomerService {
     Optional<Customer> findByPhone(String phoneNumber);
 
     boolean isEmailExists(String email);
+    boolean isPhoneExists(String phoneNumber);
 }

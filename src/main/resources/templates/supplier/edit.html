@@ -296,8 +296,8 @@
                         <div class="form-row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="form-label">Tên nhà cung cấp <span class="text-danger">*</span></label>
-                                    <input type="text" th:field="*{suplierName}" class="form-control" required/>
+                                    <label class="form-label">Tên nhà cung cấp <span class="text-danger"></span></label>
+                                    <input type="text" th:field="*{suplierName}" class="form-control" />
                                     <div class="text-danger" th:if="${#fields.hasErrors('suplierName')}"
                                          th:errors="*{suplierName}"></div>
                                 </div>

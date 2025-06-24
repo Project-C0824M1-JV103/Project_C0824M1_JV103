@@ -76,6 +76,11 @@ public class SupplierService implements ISupplierService {
     }
 
     @Override
+    public List<Supplier> findAll() {
+        return supplierRepository.findAll();
+    }
+
+    @Override
     public Supplier saveSupplier(SupplierDto supplierDto) throws IOException {
         System.out.println("=== SUPPLIER CREATION START ===");
         System.out.println("Supplier name: " + supplierDto.getSuplierName());

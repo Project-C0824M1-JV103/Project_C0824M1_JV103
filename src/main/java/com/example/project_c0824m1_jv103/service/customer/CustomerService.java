@@ -69,4 +69,12 @@ public class CustomerService implements ICustomerService {
         }
         return iCustomerRepository.existsByEmailIgnoreCase(email);
     }
+
+    @Override
+    public boolean isPhoneExists(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            return false;
+        }
+        return iCustomerRepository.existsByPhoneNumber(phoneNumber);
+    }
 }
