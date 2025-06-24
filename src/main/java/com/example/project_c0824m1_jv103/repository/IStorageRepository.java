@@ -16,4 +16,6 @@ public interface IStorageRepository extends JpaRepository<Storage, Integer> {
 
     @Query("SELECT s FROM Storage s WHERE s.quantity > 0")
     Page<Storage> findAllImports(Pageable pageable);
+
+    Page<Storage> findByProduct_ProductNameContainingIgnoreCase(String productName, Pageable pageable);
 }
