@@ -311,9 +311,9 @@
                                         <thead>
                                         <tr>
                                             <th>Tên sản phẩm</th>
-                                            <th>Đơn giá (VND)</th>
+                                            <th>Đơn giá (VNĐ)</th>
                                             <th>Số lượng</th>
-                                            <th>Thành tiền</th>
+                                            <th>Thành tiền (VNĐ)</th>
                                             <th>Thao tác</th>
                                         </tr>
                                         </thead>
@@ -332,7 +332,7 @@
                             <div class="col-md-6">
                                 <input type="text" class="form-control" th:field="*{amount}" readonly/>
                             </div>
-                            <div class="col-md-2 d-flex align-items-end">VND</div>
+                            <div class="col-md-2 d-flex align-items-end">VNĐ</div>
                         </div>
                         <div class="row g-2 mb-2 align-items-center">
                             <div class="col-md-3">
@@ -600,7 +600,7 @@
                             <tr>
                                 <th>Tên sản phẩm</th>
                                 <th>Danh mục</th>
-                                <th>Giá</th>
+                                <th>Giá (VNĐ)</th>
                                 <th>Số lượng</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -609,7 +609,7 @@
                             <tr th:each="product : ${products.content}">
                                 <td th:text="${product.productName}">Tên sản phẩm</td>
                                 <td th:text="${product.categoryName}">Danh mục</td>
-                                <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">
+                                <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">
                                     0 VNĐ
                                 </td>
                                 <td th:text="${product.quantity}">0</td>
