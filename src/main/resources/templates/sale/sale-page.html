@@ -1126,7 +1126,7 @@
             const row = document.createElement('tr');
             row.innerHTML = `
             <td>${product.productName}</td>
-            <td>${product.price.toLocaleString('vi-VN')}</td>
+            <td>${product.price.toLocaleString('en-US')}</td>
             <td>
                 <input type="number" 
                        min="1" 
@@ -1137,7 +1137,7 @@
                        onchange="updateProductQuantity(${index}, this.value)"/>
                 <small class="text-muted">(Tối đa: ${product.maxQuantity})</small>
             </td>
-            <td>${(product.price * product.quantity).toLocaleString('vi-VN')}</td>
+            <td>${(product.price * product.quantity).toLocaleString('en-US')}</td>
             <td>
                 <button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(${index})">
                     <i class="fas fa-trash"></i> Xoá
