@@ -234,6 +234,7 @@
                                            th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"/>
                                     <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}"
                                          th:errors="*{phoneNumber}"></div>
+                                    <div class="client-validation-feedback invalid-feedback" style="display:none;"></div>
                                 </div>
 
                                 <div class="col-md-4">
@@ -902,7 +903,7 @@
                 <tr>
                     <td>${product.productName}</td>
                     <td>${product.categoryName || 'N/A'}</td>
-                    <td>${new Intl.NumberFormat('vi-VN').format(product.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}</td>
+                    <td>${new Intl.NumberFormat('en-US').format(product.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}</td>
                     <td>${product.quantity}</td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary btn-select-product"
@@ -1126,7 +1127,7 @@
             const row = document.createElement('tr');
             row.innerHTML = `
             <td>${product.productName}</td>
-            <td>${product.price.toLocaleString('vi-VN')}</td>
+            <td>${product.price.toLocaleString('en-US')}</td>
             <td>
                 <input type="number"
                        min="1"
@@ -1137,7 +1138,7 @@
                        onchange="updateProductQuantity(${index}, this.value)"/>
                 <small class="text-muted">(Tối đa: ${product.maxQuantity})</small>
             </td>
-            <td>${(product.price * product.quantity).toLocaleString('vi-VN')}</td>
+            <td>${(product.price * product.quantity).toLocaleString('en-US')}</td>
             <td>
                 <button type="button" class="btn btn-danger btn-sm" onclick="removeProduct(${index})">
                     <i class="fas fa-trash"></i> Xoá
@@ -1431,7 +1432,7 @@
                         document.getElementById('otpError').style.display = 'none';
                         otpModal.show();
                     } else {
-                        alert(data.message || 'Không thể gửi OTP.');
+                        alert(data.message || 'Không thể gửi OTP!');
                     }
                 })
                 .catch(() => {
@@ -1469,7 +1470,7 @@
                     const otpModal = bootstrap.Modal.getInstance(document.getElementById('otpModal'));
                     otpModal.hide();
                 } else {
-                    otpError.textContent = data.message || 'Mã OTP không đúng hoặc đã hết hạn.';
+                    otpError.textContent = data.message || 'Mã OTP không đúng hoặc đã hết hạn!';
                     otpError.style.display = 'block';
                 }
             })
@@ -1531,7 +1532,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.exists) {
-                            showValidationError(emailInput, 'Email này đã được sử dụng bởi khách hàng khác');
+                            showValidationError(emailInput, 'Email này đã được sử dụng bởi khách hàng khác!');
                         }
                     })
                     .catch(error => {
@@ -1609,6 +1610,72 @@
         // Hide loading on page load (in case left open)
         document.addEventListener('DOMContentLoaded', hideLoading);
     })();
+
+    // --- PHONE VALIDATION ---
+    let phoneValidationTimeout;
+    function isValidPhone(phone) {
+        // 10 hoặc 11 số, không ký tự đặc biệt
+        return /^\d{10,11}$/.test(phone);
+    }
+    function showPhoneValidationError(message) {
+        const phoneInput = document.querySelector('input[name="phoneNumber"]');
+        let feedback = phoneInput.parentNode.querySelector('.client-validation-feedback');
+        if (feedback) {
+            feedback.textContent = message;
+            feedback.style.display = 'block';
+        }
+        phoneInput.classList.add('is-invalid');
+    }
+    function removePhoneValidationError() {
+        const phoneInput = document.querySelector('input[name="phoneNumber"]');
+        let feedback = phoneInput.parentNode.querySelector('.client-validation-feedback');
+        if (feedback) {
+            feedback.textContent = '';
+            feedback.style.display = 'none';
+        }
+        phoneInput.classList.remove('is-invalid');
+    }
+    function validatePhoneFormat() {
+        const phoneInput = document.querySelector('input[name="phoneNumber"]');
+        const phoneValue = phoneInput.value.trim();
+        removePhoneValidationError();
+        if (phoneValue.length > 0 && !isValidPhone(phoneValue)) {
+            showPhoneValidationError('Số điện thoại phải có 10 hoặc 11 chữ số!');
+            return false;
+        }
+        return true;
+    }
+    function validatePhone() {
+        const phoneInput = document.querySelector('input[name="phoneNumber"]');
+        const phoneValue = phoneInput.value.trim();
+        if (!validatePhoneFormat()) return;
+        if (phoneValue.length > 0 && isValidPhone(phoneValue)) {
+            clearTimeout(phoneValidationTimeout);
+            phoneValidationTimeout = setTimeout(() => {
+                fetch('/Sale/check-phone?phone=' + encodeURIComponent(phoneValue))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            showPhoneValidationError('Số điện thoại này đã được sử dụng bởi khách hàng khác!');
+                        }
+                    })
+                    .catch(error => {
+                        // Không báo lỗi network ra giao diện
+                    });
+            }, 500);
+        }
+    }
+    // Gắn event cho input phone
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.querySelector('input[name="phoneNumber"]');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                removePhoneValidationError();
+            });
+            phoneInput.addEventListener('input', validatePhoneFormat);
+            phoneInput.addEventListener('blur', validatePhone);
+        }
+    });
 </script>
 </body>
 </html>
