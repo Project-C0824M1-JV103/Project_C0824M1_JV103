@@ -5,6 +5,8 @@ import com.example.project_c0824m1_jv103.model.Customer;
 import com.example.project_c0824m1_jv103.service.customer.ICustomerService;
 import com.example.project_c0824m1_jv103.service.sale.ISaleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -99,36 +101,62 @@ public class CustomerController extends BaseAdminController  {
 
     @PostMapping("/edit/{id}")
     public String updateCustomer(@PathVariable("id") Integer id,
-                                 @ModelAttribute Customer customer,
+                                 @Valid @ModelAttribute Customer customer,
+                                 BindingResult bindingResult,
                                  RedirectAttributes redirectAttributes,
                                  Model model,
                                  Principal principal) {
         try {
+            // Set customer ID first to ensure proper binding
+            customer.setCustomerId(id);
+            
+            // Check for validation errors first  
+            if (bindingResult.hasErrors()) {
+                // Đếm số đơn hàng của customer để hiển thị
+                Long totalOrders = saleService.countSalesByCustomerId(id);
+                model.addAttribute("totalOrders", totalOrders);
+                model.addAttribute("customer", customer);
+                model.addAttribute("currentPage", "customer");
+                return "admin/editCustomer";
+            }
+            
+            // Variable to track if there are custom validation errors
+            boolean hasCustomErrors = false;
+            
             // Validation for duplicate email across all tables (Customer, Employee, Supplier)
             if (customer.getEmail() != null && !customer.getEmail().trim().isEmpty()) {
                 if (iCustomerService.isEmailExistsForOtherCustomer(customer.getEmail(), id)) {
-                    model.addAttribute("customer", customer);
-                    model.addAttribute("currentPage", "customer");
-                    model.addAttribute("errorMessage", "Email này đã được sử dụng trong hệ thống !");
-                    return "admin/editCustomer";
+                    // Thêm lỗi trực tiếp vào BindingResult để hiển thị cạnh field
+                    bindingResult.rejectValue("email", "duplicate.email", "Email này đã được sử dụng trong hệ thống!");
+                    hasCustomErrors = true;
                 }
             }
 
             // Validation for duplicate phone number
             if (customer.getPhoneNumber() != null && !customer.getPhoneNumber().trim().isEmpty()) {
                 if (iCustomerService.isPhoneExistsForOtherCustomer(customer.getPhoneNumber(), id)) {
-                    model.addAttribute("customer", customer);
-                    model.addAttribute("currentPage", "customer");
-                    model.addAttribute("errorMessage", "Số điện thoại này đã được sử dụng !");
-                    return "admin/editCustomer";
+                    // Thêm lỗi trực tiếp vào BindingResult để hiển thị cạnh field
+                    bindingResult.rejectValue("phoneNumber", "duplicate.phone", "Số điện thoại này đã được sử dụng!");
+                    hasCustomErrors = true;
                 }
             }
+            
+            // If there are custom validation errors, return to form
+            if (hasCustomErrors) {
+                // Đếm số đơn hàng của customer để hiển thị
+                Long totalOrders = saleService.countSalesByCustomerId(id);
+                model.addAttribute("totalOrders", totalOrders);
+                model.addAttribute("customer", customer);
+                model.addAttribute("currentPage", "customer");
+                return "admin/editCustomer";
+            }
 
-            customer.setCustomerId(id);
+            // All validations passed, save the customer
             iCustomerService.save(customer);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin khách hàng thành công!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật thông tin khách hàng!");
+            e.printStackTrace(); // For debugging
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật thông tin khách hàng: " + e.getMessage());
         }
         return "redirect:/Customer";
     }

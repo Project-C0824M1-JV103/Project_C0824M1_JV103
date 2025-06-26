@@ -1,6 +1,7 @@
 package com.example.project_c0824m1_jv103.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,9 +14,13 @@ public class Customer {
     @Column(name = "customer_id")
     private Integer customerId;
     
+    @NotBlank(message = "Tên khách hàng không được để trống")
+    @Size(min = 2, max = 100, message = "Tên khách hàng phải từ 2-100 ký tự")
+    @Pattern(regexp = "^[a-zA-ZÀ-ỹĂăÂâĐđÊêÔôƠơƯư\\s]+$", message = "Tên chỉ được chứa chữ cái và khoảng trắng")
     @Column(name = "customer_name", nullable = false, length = 100)
     private String customerName;
     
+    @Pattern(regexp = "^[0-9]{10,11}$", message = "Số điện thoại phải có 10 hoặc 11 chữ số")
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
     
@@ -25,6 +30,8 @@ public class Customer {
     @Column(name = "birthday_date")
     private LocalDate birthdayDate;
     
+    @Email(message = "Email không đúng định dạng")
+    @Size(max = 255, message = "Email không được quá 255 ký tự")
     @Column(name = "email", length = 255)
     private String email;
     
