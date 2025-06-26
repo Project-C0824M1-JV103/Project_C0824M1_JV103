@@ -170,7 +170,7 @@
         .search-section .form-control {
             border-radius: 8px;
             border: 2px solid #e9ecef;
-            padding: 10px 12px;
+            padding: 8px 12px;
             transition: all 0.3s ease;
         }
 
@@ -200,7 +200,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             border-radius: 8px;
-            padding: 10px 20px;
+            padding: 8px 12px;
             font-weight: 600;
             transition: all 0.3s ease;
         }
@@ -212,7 +212,7 @@
 
         .search-section .btn-outline-secondary {
             border-radius: 8px;
-            padding: 10px 15px;
+            padding: 8px 12px;
             transition: all 0.3s ease;
         }
 
@@ -339,9 +339,10 @@
                 <!-- Search Section -->
                 <div class="search-section">
                     <form th:action="@{/product}" method="get">
+                        <!-- Hàng đầu tiên: Tìm theo tên sản phẩm + Nút tìm kiếm và làm mới -->
                         <div class="row g-3">
                             <!-- Tìm theo tên sản phẩm -->
-                            <div class="col-md-4">
+                            <div class="col-md-8">
                                 <div class="input-group">
                       <span class="input-group-text">
                         <i class="fas fa-box"></i>
@@ -356,8 +357,26 @@
                                 </div>
                             </div>
 
+                            <!-- Nút tìm kiếm và làm mới -->
+                            <div class="col-md-4 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary" style="flex: 1;">
+                                    <i class="fas fa-search"></i> Tìm kiếm
+                                </button>
+                                <a
+                                        th:href="@{/product}"
+                                        class="btn btn-outline-secondary"
+                                        style="flex: 1;"
+                                        title="Làm mới"
+                                >
+                                    <i class="fas fa-refresh"></i> Làm mới
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Hàng thứ hai: Tìm theo giá, số lượng và kết quả tìm kiếm -->
+                        <div class="row g-4 mt-1">
                             <!-- Tìm theo khoảng giá -->
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <div class="input-group">
                       <span class="input-group-text">
                         <i class="fas fa-tag"></i>
@@ -384,7 +403,7 @@
                             </div>
 
                             <!-- Tìm theo số lượng -->
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <div class="input-group">
                       <span class="input-group-text">
                         <i class="fas fa-warehouse"></i>
@@ -411,27 +430,9 @@
                       </span>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Nút tìm kiếm và thông tin kết quả -->
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-4">
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary flex-grow-1">
-                                        <i class="fas fa-search me-1"></i>Tìm kiếm
-                                    </button>
-                                    <a
-                                            th:href="@{/product}"
-                                            class="btn btn-outline-secondary flex-grow-1"
-                                            title="Làm mới"
-                                    >
-                                        <i class="fas fa-refresh me-1"></i>Làm mới
-                                    </a>
-                                </div>
-                            </div>
-
+                            
                             <!-- Hiển thị số kết quả tìm kiếm -->
-                            <div class="col-md-8">
+                            <div class="col-md-2">
                                 <div class="text-muted d-flex align-items-center h-100 justify-content-end">
                                     <small>
                                         <i class="fas fa-info-circle me-1"></i>

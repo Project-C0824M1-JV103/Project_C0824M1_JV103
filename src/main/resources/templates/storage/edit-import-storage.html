@@ -16,7 +16,6 @@
     <link rel="stylesheet" th:href="@{/admin-common.css}" />
 
     <style>
-
         .main-content {
             background-color: #f8f9fa;
             min-height: 100vh;
@@ -53,6 +52,7 @@
         }
 
         .form-label {
+            font-weight: 600;
             margin-bottom: 8px;
             color: #333;
         }
@@ -78,6 +78,7 @@
             right: 15px;
             top: 12px;
             color: #6c757d;
+            font-weight: 600;
             font-size: 14px;
             pointer-events: none;
             z-index: 15;
@@ -95,6 +96,7 @@
             border: none;
             padding: 12px 30px;
             border-radius: 8px;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
 
@@ -108,6 +110,7 @@
             border: none;
             padding: 12px 30px;
             border-radius: 8px;
+            font-weight: 600;
         }
 
         .invalid-feedback {
@@ -138,6 +141,7 @@
 
         .info-value {
             color: #212529;
+            font-size: 1.1em;
         }
 
         /* Style cho hiển thị tổng tiền */
@@ -223,7 +227,7 @@
                 <div class="form-section">
                     <div class="form-header">
                         <h4 class="mb-0" style="text-align: center">
-                            <i class="fas fa-edit"></
+                            <i class="fas fa-edit"></i>
                             Thông tin nhập kho
                         </h4>
                     </div>
@@ -348,10 +352,10 @@
                                         <input
                                                 type="text"
                                                 class="form-control readonly-field"
-                                                value="Warehouse Staff"
+                                                th:value="${currentUser != null ? currentUser.fullName : 'Unknown User'}"
                                                 readonly
                                         />
-                                        <input type="hidden" th:field="*{employeeId}" value="1" />
+                                        <input type="hidden" th:field="*{employeeId}" th:value="${currentUser != null ? currentUser.employeeId : 1}" />
                                     </div>
                                 </div>
 
