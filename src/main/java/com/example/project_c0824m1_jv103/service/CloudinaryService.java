@@ -16,30 +16,11 @@ public class CloudinaryService {
     private Cloudinary cloudinary;
 
     public String uploadImage(MultipartFile file) throws IOException {
-        System.out.println("=== CLOUDINARY UPLOAD START ===");
-        System.out.println("File name: " + file.getOriginalFilename());
-        System.out.println("File size: " + file.getSize() + " bytes");
-        System.out.println("Content type: " + file.getContentType());
-        System.out.println("Uploading to Cloudinary...");
-        
         try {
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-            
-            String imageUrl = uploadResult.get("url").toString();
-            String publicId = uploadResult.get("public_id").toString();
-            
-            System.out.println("UPLOAD SUCCESS!");
-            System.out.println("Public ID: " + publicId);
-            System.out.println("Image URL: " + imageUrl);
-            System.out.println("Upload timestamp: " + new java.util.Date());
-            System.out.println("=== CLOUDINARY UPLOAD END ===");
-            
-            return imageUrl;
-            
+            return uploadResult.get("url").toString();
         } catch (IOException e) {
-            System.err.println("UPLOAD FAILED!");
-            System.err.println("Error: " + e.getMessage());
-            System.err.println("=== CLOUDINARY UPLOAD END ===");
+            System.err.println("Error uploading image: " + e.getMessage());
             throw e;
         }
     }

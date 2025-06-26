@@ -44,13 +44,14 @@
                     Quản lý khách hàng
                 </a>
                 <a th:href="@{/product}" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
-                    <i class="fas fa-box"></i>
+                    <i class="fas fa-box-open"></i>
                     Quản lý sản phẩm
                 </a>
                 <a th:href="@{/Sale}" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
                     <i class="fas fa-chart-line"></i>
                     Quản lý bán hàng
                 </a>
+<!--                <a class="nav-link" th:classappend="${currentPage == 'sale-history' ? 'active' : ''}" th:href="@{/Sale/history}">Lịch Sử Bán Hàng</a>-->
                 <a th:href="@{/employees}" class="nav-link" th:classappend="${currentPage == 'employee'} ? 'active' : ''">
                     <i class="fas fa-user-tie"></i>
                     Quản lý nhân viên
@@ -59,7 +60,7 @@
                     <i class="fas fa-dolly"></i>
                     Xuất sản phẩm
                 </a>
-                <a th:href="@{/storage/list}" class="nav-link" th:classappend="${currentPage == 'import'} ? 'active' : ''">
+                <a th:href="@{/storage}" class="nav-link" th:classappend="${currentPage == 'import'} ? 'active' : ''">
                     <i class="fas fa-dolly"></i>
                     Nhập kho sản phẩm
                 </a>

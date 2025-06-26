@@ -1,446 +1,700 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>Nhập kho</title>-->
-<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
-<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">-->
-<!--    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">-->
-<!--    <link rel="stylesheet" th:href="@{/admin-navbar.css}"/>-->
-<!--    <link rel="stylesheet" th:href="@{/admin-common.css}"/>-->
-<!--    <style>-->
-<!--        body {-->
-<!--            background-color: #f8f9fa;-->
-<!--            padding: 0;-->
-<!--            margin: 0;-->
-<!--            overflow-x: hidden;-->
-<!--        }-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhập kho</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}"/>
+    <link rel="stylesheet" th:href="@{/admin-common.css}"/>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px 20px 20px 0;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 40px;
+            margin: 30px 30px 30px 0;
+            border: 1px solid #dee2e6;
+        }
+        h4.text-center {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .d-flex.justify-content-between { gap: 15px; margin-bottom: 30px; }
+        .btn-outline-primary {
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            padding: 12px 15px;
+            font-weight: 500;
+            border: 1px solid #667eea;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-primary:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        .form-label { font-weight: 500; color: #495057; margin-bottom: 10px; font-size: 1rem; }
+        .form-control, .form-control[readonly] {
+            border-radius: 0.5rem;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            border: 1px solid #ced4da;
+            width: 100%;
+        }
+        .form-control[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .img-thumbnail {
+            border-radius: 0.5rem;
+            max-width: 180px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .d-flex.justify-content-end.gap-2 { margin-top: 40px; gap: 15px; }
+        .btn-primary, .btn-secondary {
+            border-radius: 0.5rem;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a3f92 100%);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5c636a 0%, #767b80 100%);
+        }
+        @media (max-width: 992px) {
+            .main-content { padding: 15px 15px 15px 0; }
+            .container { padding: 25px; margin: 15px 15px 15px 0; }
+            h4.text-center { font-size: 1.25rem; padding: 15px; margin-bottom: 20px; }
+            .d-flex.justify-content-between { flex-direction: column; gap: 10px; }
+            .btn-outline-primary { width: 100%; text-align: center; padding: 10px; }
+            .img-thumbnail { max-width: 150px; }
+            .form-control, .form-control[readonly] { padding: 10px 12px; }
+            .form-label { margin-bottom: 8px; }
+        }
+        .btn-select-product, .btn-select-supplier {
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #667eea;
+            color: #667eea;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            border-radius: 0.375rem;
+        }
+        .btn-select-product:hover, .btn-select-supplier:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        .product-image {
+            max-width: 80px;
+            border-radius: 0.375rem;
+            border: 1px solid #dee2e6;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .image-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .header-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            min-height: 110px;
+        }
+        .header-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-section .text-muted { font-size: 0.95rem; color: #6c757d; }
+        @media (max-width: 992px) {
+            .header-section { padding: 15px; min-height: 80px; }
+            .header-section h2 { font-size: 1.25rem; }
+            .header-section .text-danger { font-size: 0.9rem; }
+        }
+        .error-message { color: #dc3545; font-size: 0.9rem; margin-top: 5px; }
+        #addProductModal .modal-content {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        #addProductModal .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1rem 1rem 0 0;
+            border: none;
+        }
+        #addProductModal .modal-title {
+            width: 120%;
+            text-align: center;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        #addProductModal .btn-close {
+            filter: invert(1);
+        }
+        #addProductModal .modal-body {
+            min-height: 600px;
+            max-height: 80vh;
+            height: 600px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        #addProductModal .form-label {
+            font-weight: 500;
+        }
+        #addProductModal .form-control, #addProductModal .form-select {
+            border-radius: 0.5rem;
+            min-height: 42px;
+        }
+        #addProductModal .d-flex.justify-content-center.gap-3 .btn {
+            min-width: 120px;
+            font-weight: 500;
+        }
+        #addProductModal .invalid-feedback.d-block {
+            min-height: 22px;
+            margin-bottom: 0;
+            display: block;
+        }
+        #addProductModal .modal-dialog {
+            max-width: 80vw;
+            width: 100%;
+        }
+        @media (max-width: 992px) {
+            #addProductModal .modal-dialog {
+                max-width: 95vw;
+                width: 95vw;
+            }
+        }
+        .text-danger.small {
+            font-size: 0.75rem;
+            margin-top: 2px;
+            display: inline;
+        }
+        .error-container {
+            display: inline-flex;
+            flex-wrap: nowrap;
+            gap: 0;
+            align-items: center;
+            white-space: nowrap;
+        }
+        .error-container .text-danger.small:not(:last-child)::after {
+            content: ", ";
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body class="p-0">
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
 
-<!--        .container-fluid {-->
-<!--            padding: 0;-->
-<!--            margin: 0;-->
-<!--        }-->
+        <div class="col-md-9 col-lg-10">
+            <div class="main-content p-4">
+                <div class="header-section">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-1"><i class="fas fa-list text-primary me-2"></i>Danh sách nhập kho</h2>
+                            <p class="text-muted mb-0">Thêm mới nhập kho</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <h4 class="text-center mb-4">Nhập kho</h4>
+                    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <span th:text="${errorMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <span th:text="${successMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productModal">Chọn sản phẩm</button>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">Thêm sản phẩm mới</button>
+                    </div>
+                    <div th:if="${storageImportDTO != null}">
+                        <form th:action="@{/storage/create}" th:object="${storageImportDTO}" method="post" id="importForm">
+                            <div class="mb-3 row">
+                                <div class="col-8">
+                                    <label class="form-label">Tên sản phẩm</label>
+                                    <input type="text" class="form-control" th:field="*{productName}" readonly>
+                                    <div th:if="${#fields.hasErrors('productName')}" class="error-container">
+                                        <span th:each="err, stat : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <input type="hidden" th:field="*{productId}" id="productIdInput">
+                                    <div th:if="${#fields.hasErrors('productId')}" class="error-container">
+                                        <span th:each="err, stat : ${#fields.errors('productId')}" th:text="${err}" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
 
-<!--        .main-content {-->
-<!--            background-color: #f8f9fa;-->
-<!--            min-height: 100vh;-->
-<!--            padding: 20px 20px 20px 0;-->
-<!--        }-->
+                            <div class="mb-3 row">
+                                <div class="col-8">
+                                    <label class="form-label">Giá nhập</label>
+                                    <input type="text" class="form-control" th:field="*{cost}" id="costInput" autocomplete="off">
+                                    <div th:if="${#fields.hasErrors('cost')}" class="error-container">
+                                        <span th:each="err, stat : ${#fields.errors('cost')}" th:text="${err}" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-4 d-flex align-items-end">
+                                    <span class="ms-2">VND</span>
+                                </div>
+                            </div>
 
-<!--        .container {-->
-<!--            background: white;-->
-<!--            border-radius: 10px;-->
-<!--            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);-->
-<!--            padding: 40px;-->
-<!--            max-width: 100%;-->
-<!--            margin: 30px 30px 30px 0;-->
-<!--            border: 1px solid #dee2e6;-->
-<!--        }-->
+                            <div class="mb-3">
+                                <label class="form-label">Hình ảnh sản phẩm</label><br>
+                                <div class="image-container" id="productImagesContainer" style="min-height: 150px;">
+                                    <div th:if="${#lists.isEmpty(storageImportDTO.productImages)}">
+                                        <img src="https://via.placeholder.com/150"
+                                             class="img-thumbnail" style="max-height: 150px;" />
+                                    </div>
+                                    <div th:each="img : ${storageImportDTO.productImages}">
+                                        <img th:src="${img}"
+                                             alt="Ảnh sản phẩm"
+                                             class="img-thumbnail me-2 mb-2"
+                                             style="max-height: 150px;" />
+                                    </div>
+                                </div>
+                                <input type="hidden" name="productImagesRaw"
+                                       id="productImagesInput"
+                                       th:value="${#strings.arrayJoin(storageImportDTO.productImages, ',')}" />
+                            </div>
 
-<!--        h4.text-center {-->
-<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
-<!--            color: white;-->
-<!--            padding: 20px;-->
-<!--            font-weight: 600;-->
-<!--            text-align: center;-->
-<!--            border-radius: 0.5rem;-->
-<!--            margin-bottom: 30px;-->
-<!--            text-transform: uppercase;-->
-<!--            letter-spacing: 1px;-->
-<!--        }-->
 
-<!--        .form-label {-->
-<!--            font-weight: 600;-->
-<!--            color: #333;-->
-<!--            margin-bottom: 8px;-->
-<!--        }-->
+                            <div class="mb-3 row">
+                                <div class="col-8">
+                                    <label class="form-label">Số lượng nhập</label>
+                                    <input type="number" min="1" class="form-control" th:field="*{importQuantity}">
+                                    <div th:if="${#fields.hasErrors('importQuantity')}" class="error-container">
+                                        <span th:each="err, stat : ${#fields.errors('importQuantity')}" th:text="${err}" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-4"></div>
+                            </div>
 
-<!--        .form-control {-->
-<!--            border: 2px solid #e9ecef;-->
-<!--            border-radius: 8px;-->
-<!--            padding: 12px 15px;-->
-<!--            transition: all 0.3s ease;-->
-<!--            font-size: 14px;-->
-<!--        }-->
+                            <div class="mb-3">
+                                <label class="form-label">Nhà cung cấp</label>
+                                <div class="row">
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" th:field="*{supplierName}" readonly>
+                                        <input type="hidden" th:field="*{supplierId}" id="supplierIdInput">
+                                        <div th:if="${#fields.hasErrors('supplierId')}" class="error-container">
+                                            <span th:each="err, stat : ${#fields.errors('supplierId')}" th:text="${err}" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-<!--        .form-control:focus {-->
-<!--            border-color: #667eea;-->
-<!--            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);-->
-<!--        }-->
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Lưu vào kho
+                                </button>
+                                <a th:href="@{/storage}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>Quay lại
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    <div th:if="${storageImportDTO == null}" class="alert alert-danger">
+                        Lỗi: Không thể tải form nhập kho. Vui lòng thử lại.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal chọn sản phẩm -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" style="max-width: 95vw; width: 120%;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Chọn sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="productSearchForm" class="mb-4" onsubmit="event.preventDefault(); searchProducts();">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </span>
+                                <input type="text" name="productName" class="form-control"
+                                       placeholder="Tìm kiếm theo tên sản phẩm..."/>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-primary w-100" onclick="searchProducts()">
+                                <i class="fas fa-search"></i> Tìm kiếm
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="refreshProductList()"
+                                    title="Làm mới">
+                                <i class="fas fa-sync-alt"></i> Làm mới
+                            </button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="page" value="0"/>
+                    <input type="hidden" name="size" value="6"/>
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle text-nowrap">
+                        <thead class="table-light">
+                        <tr>
+                            <th>STT</th>
+                            <th>Hình ảnh (Mặt trước/sau)</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá nhập (VND)</th>
+                            <th>CPU</th>
+                            <th>Lưu trữ (GB)</th>
+                            <th>Chọn</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="i, l : ${inforStorages}">
+                            <td th:text="${l.count}"></td>
+                            <td>
+                                <div class="image-container">
+                                    <img th:each="image : ${i.product.productImages}"
+                                         th:src="${image.imageUrl != null ? image.imageUrl : 'https://via.placeholder.com/80'}"
+                                         alt="Ảnh sản phẩm" class="product-image">
+                                </div>
+                            </td>
+                            <td th:text="${i.product.productName}"></td>
+                            <td th:text="${#numbers.formatDecimal(i.cost, 0, 0)}"></td>
+                            <td th:text="${i.product.cpu}"></td>
+                            <td th:text="${i.product.memory}"></td>
+                            <td>
+                                <button type="button" class="btn btn-select-product"
+                                        th:attr="data-product-name=${i.product.productName},
+                                            data-product-cost=${i.cost},
+                                            data-product-images=${#strings.arrayJoin(i.product.productImages.![imageUrl], ',')},
+                                            data-product-id=${i.product.productId},
+                                            data-supplier-id=${i.product.supplier.suplierId},
+                                            data-supplier-name=${i.product.supplier.suplierName}">
+                                    <i class="bi bi-check-circle"></i> Chọn
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="productPaginationContainer" class="d-flex justify-content-between align-items-center p-3 border-top mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal thêm sản phẩm mới -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h4 class="modal-title w-100 text-white text-center m-0" id="addProductModalLabel">
+                    <i class="fas fa-plus me-2"></i>Thêm sản phẩm mới
+                </h4>
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="addProductForm" th:action="@{/storage/create-product}" th:object="${importStorageProduct}" method="post" novalidate>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Tên sản phẩm <span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('productName')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <input type="text" th:field="*{productName}" class="form-control" 
+                                   placeholder="Nhập tên sản phẩm" maxlength="100" required>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Kích thước màn hình (inch)<span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('size')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('size')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <input type="number" th:field="*{size}" class="form-control" 
+                                   placeholder="Ví dụ: 6.1" maxlength="50" step="0.1">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Danh mục <span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('categoryId')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('categoryId')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <select th:field="*{categoryId}" class="form-select" required>
+                                <option value="" disabled selected>-- Chọn danh mục --</option>
+                                <option th:each="c : ${categorys}" th:value="${c.categoryId}" th:text="${c.categoryName}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Nhà cung cấp <span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('supplierId')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('supplierId')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <select th:field="*{supplierId}" class="form-select" required>
+                                <option value="" disabled selected>-- Chọn nhà cung cấp --</option>
+                                <option th:each="s : ${suppliers}" th:value="${s.suplierId}" th:text="${s.suplierName}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Camera sau (MP)<span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('cameraBack')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('cameraBack')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <input type="number" th:field="*{cameraBack}" class="form-control" 
+                                   placeholder="Ví dụ: 48" maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Camera trước (MP)<span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('cameraFront')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('cameraFront')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <input type="number" th:field="*{cameraFront}" class="form-control" 
+                                   placeholder="Ví dụ: 12" maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">CPU <span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('cpu')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('cpu')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <input type="text" th:field="*{cpu}" class="form-control" 
+                                   placeholder="Ví dụ: A15 Bionic" maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="form-label mb-0">Bộ nhớ (GB)<span class="required text-danger">*</span></label>
+                                <div th:if="${#fields.hasErrors('memory')}" class="error-container">
+                                    <span th:each="err, stat : ${#fields.errors('memory')}" th:text="${err}" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <input type="number" th:field="*{memory}" class="form-control" 
+                                   placeholder="Ví dụ: 128" maxlength="50">
+                        </div>
+                        <input type="hidden" th:field="*{price}" value="0">
+                        <input type="hidden" th:field="*{quantity}" value="0">
+                        <div class="col-12 pt-2">
+                            <div class="d-flex justify-content-center gap-3">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-save me-1"></i>Lưu sản phẩm
+                                </button>
+                                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i>Đóng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!--        .btn-primary {-->
-<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
-<!--            border: none;-->
-<!--            padding: 12px 30px;-->
-<!--            border-radius: 8px;-->
-<!--            font-weight: 600;-->
-<!--            transition: all 0.3s ease;-->
-<!--        }-->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const productButtons = document.querySelectorAll('.btn-select-product');
+        productButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const name = this.getAttribute('data-product-name');
+                const cost = this.getAttribute('data-product-cost');
+                const images = this.getAttribute('data-product-images').split(',').filter(img => img);
+                const productId = this.getAttribute('data-product-id');
+                const supplierId = this.getAttribute('data-supplier-id');
+                const supplierName = this.getAttribute('data-supplier-name');
 
-<!--        .btn-primary:hover {-->
-<!--            transform: translateY(-2px);-->
-<!--            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);-->
-<!--        }-->
+                document.querySelector('input[name="productName"]').value = name;
+                document.querySelector('input[name="cost"]').value = Number(cost).toLocaleString('vi-VN');
+                document.querySelector('input[name="productId"]').value = productId;
+                document.querySelector('input[name="supplierName"]').value = supplierName;
+                document.querySelector('input[name="supplierId"]').value = supplierId;
 
-<!--        .btn-secondary {-->
-<!--            background: #6c757d;-->
-<!--            border: none;-->
-<!--            padding: 12px 30px;-->
-<!--            border-radius: 8px;-->
-<!--            font-weight: 600;-->
-<!--        }-->
+                const imageContainer = document.querySelector('#productImagesContainer');
+                imageContainer.innerHTML = '';
+                if (images.length > 0) {
+                    images.forEach(img => {
+                        const imageElement = document.createElement('img');
+                        imageElement.src = img;
+                        imageElement.alt = 'Ảnh sản phẩm';
+                        imageElement.className = 'img-thumbnail me-2 mb-2';
+                        imageElement.style.maxWidth = '180px';
+                        imageContainer.appendChild(imageElement);
+                    });
+                } else {
+                    const placeholder = document.createElement('img');
+                    placeholder.src = 'https://via.placeholder.com/150';
+                    placeholder.alt = 'Ảnh sản phẩm';
+                    placeholder.className = 'img-thumbnail';
+                    placeholder.style.maxWidth = '180px';
+                    imageContainer.appendChild(placeholder);
+                }
 
-<!--        .btn-outline-dark {-->
-<!--            border: 2px solid #343a40;-->
-<!--            color: #343a40;-->
-<!--            font-weight: 600;-->
-<!--            transition: all 0.3s ease;-->
-<!--        }-->
+                document.querySelector('#productImagesInput').value = images.join(',');
 
-<!--        .btn-outline-dark:hover {-->
-<!--            background: #343a40;-->
-<!--            color: white;-->
-<!--        }-->
+                const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+                if (modal) modal.hide();
+            });
+        });
 
-<!--        .alert {-->
-<!--            border-radius: 8px;-->
-<!--            padding: 15px 20px;-->
-<!--            margin-bottom: 20px;-->
-<!--            border: none;-->
-<!--        }-->
+        const supplierButtons = document.querySelectorAll('.btn-select-supplier');
+        supplierButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const supplierName = this.getAttribute('data-supplier-name');
+                const supplierId = this.getAttribute('data-supplier-id');
+                document.querySelector('input[name="supplierName"]').value = supplierName;
+                document.querySelector('input[name="supplierId"]').value = supplierId;
 
-<!--        .alert-success {-->
-<!--            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);-->
-<!--            color: #155724;-->
-<!--        }-->
+                const modal = bootstrap.Modal.getInstance(document.getElementById('supplierModal'));
+                if (modal) modal.hide();
+            });
+        });
 
-<!--        .alert-danger {-->
-<!--            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);-->
-<!--            color: #721c24;-->
-<!--        }-->
+        const costInput = document.getElementById('costInput');
 
-<!--        .header-section {-->
-<!--            background: white;-->
-<!--            padding: 25px;-->
-<!--            border-radius: 10px;-->
-<!--            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);-->
-<!--            margin-bottom: 25px;-->
-<!--            border-left: 5px solid #667eea;-->
-<!--        }-->
+        costInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\./g, '').replace(/\D/g, '');
+            if (value) {
+                e.target.value = Number(value).toLocaleString('vi-VN');
+            } else {
+                e.target.value = '';
+            }
+        });
 
-<!--        .header-section h2 {-->
-<!--            color: #333;-->
-<!--            font-weight: 700;-->
-<!--            margin-bottom: 5px;-->
-<!--        }-->
+        document.getElementById('importForm').addEventListener('submit', function (event) {
+            costInput.value = costInput.value.replace(/\./g, '').trim();
+            const productId = document.querySelector('input[name="productId"]').value;
+            const supplierId = document.querySelector('input[name="supplierId"]').value;
+            const importQuantity = document.querySelector('input[name="importQuantity"]').value;
+            const cost = costInput.value;
 
-<!--        .header-section .text-muted {-->
-<!--            color: #6c757d;-->
-<!--            font-size: 0.95rem;-->
-<!--        }-->
+            if (!productId || !supplierId || !importQuantity || importQuantity <= 0 || !cost || cost < 0) {
+                event.preventDefault();
+                alert('Vui lòng điền đầy đủ thông tin hợp lệ: Tên sản phẩm, Số lượng nhập, Giá nhập, và Nhà cung cấp.');
+            }
+        });
+    });
 
-<!--        .table-responsive {-->
-<!--            border-radius: 10px;-->
-<!--            overflow: hidden;-->
-<!--            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);-->
-<!--            margin-top: 20px;-->
-<!--        }-->
-
-<!--        .table {-->
-<!--            margin-bottom: 0;-->
-<!--        }-->
-
-<!--        .table thead th {-->
-<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
-<!--            color: white;-->
-<!--            border: none;-->
-<!--            padding: 15px;-->
-<!--            font-weight: 600;-->
-<!--            text-transform: uppercase;-->
-<!--            letter-spacing: 0.5px;-->
-<!--            font-size: 0.85rem;-->
-<!--        }-->
-
-<!--        .table tbody td {-->
-<!--            padding: 15px;-->
-<!--            vertical-align: middle;-->
-<!--            border-color: #e9ecef;-->
-<!--        }-->
-
-<!--        .table tbody tr:hover {-->
-<!--            background-color: #f8f9fa;-->
-<!--        }-->
-
-<!--        .product-image {-->
-<!--            width: 80px;-->
-<!--            height: 80px;-->
-<!--            object-fit: cover;-->
-<!--            border-radius: 8px;-->
-<!--            border: 2px solid #e9ecef;-->
-<!--        }-->
-
-<!--        .btn-select {-->
-<!--            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);-->
-<!--            border: none;-->
-<!--            color: white;-->
-<!--            padding: 8px 16px;-->
-<!--            border-radius: 6px;-->
-<!--            font-weight: 600;-->
-<!--            transition: all 0.3s ease;-->
-<!--        }-->
-
-<!--        .btn-select:hover {-->
-<!--            transform: translateY(-1px);-->
-<!--            box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);-->
-<!--            color: white;-->
-<!--        }-->
-
-<!--        .modal-content {-->
-<!--            border-radius: 15px;-->
-<!--            border: none;-->
-<!--            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);-->
-<!--        }-->
-
-<!--        .modal-header {-->
-<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
-<!--            color: white;-->
-<!--            border-radius: 15px 15px 0 0;-->
-<!--            padding: 20px 25px;-->
-<!--        }-->
-
-<!--        .modal-title {-->
-<!--            font-weight: 700;-->
-<!--            font-size: 1.25rem;-->
-<!--        }-->
-
-<!--        .btn-close {-->
-<!--            filter: brightness(0) invert(1);-->
-<!--        }-->
-
-<!--        .error-message {-->
-<!--            color: #dc3545;-->
-<!--            font-size: 0.9rem;-->
-<!--            margin-top: 5px;-->
-<!--        }-->
-
-<!--        @media (max-width: 992px) {-->
-<!--            .header-section {-->
-<!--                padding: 15px;-->
-<!--                margin: 0;-->
-<!--                min-height: 80px;-->
-<!--            }-->
-
-<!--            .header-section h2 {-->
-<!--                font-size: 1.25rem;-->
-<!--            }-->
-
-<!--            .header-section .text-muted {-->
-<!--                font-size: 0.9rem;-->
-<!--            }-->
-<!--        }-->
-
-<!--        .error-message {-->
-<!--            color: #dc3545;-->
-<!--            font-size: 0.9rem;-->
-<!--            margin-top: 5px;-->
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body class="p-0">-->
-<!--<div class="container-fluid">-->
-<!--    <div class="row">-->
-<!--        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>-->
-
-<!--        <div class="col-md-9 col-lg-10">-->
-<!--            <div class="main-content p-4">-->
-<!--                <div class="header-section">-->
-<!--                    <div class="d-flex flex-column">-->
-<!--                        <h2 class="mb-1">-->
-<!--                            <i class="fas fa-box-open text-primary"></i>-->
-<!--                            Quản lý sản phẩm-->
-<!--                        </h2>-->
-<!--                        <p class="text-muted mb-0">Thêm mới nhập kho</p>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-<!--                <div class="container">-->
-<!--                    <h4 class="text-center mb-4">Nhập kho</h4>-->
-
-<!--                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">-->
-<!--                        <span th:text="${errorMessage}"></span>-->
-<!--                    </div>-->
-<!--                    <div th:if="${successMessage}" class="alert alert-success" role="alert">-->
-<!--                        <span th:text="${successMessage}"></span>-->
-<!--                    </div>-->
-
-<!--                    <div th:if="${storageImportDTO != null}">-->
-<!--                        <form th:action="@{/storage/create}" th:object="${storageImportDTO}" method="post">-->
-<!--                            <div class="mb-3">-->
-<!--                                <label class="form-label">Sản phẩm</label>-->
-<!--                                <div class="row">-->
-<!--                                    <div class="col-8">-->
-<!--                                        <input type="text" class="form-control" th:field="*{productName}" readonly>-->
-<!--                                        <input type="hidden" th:field="*{productId}">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-4">-->
-<!--                                        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#productModal">-->
-<!--                                            Chọn sản phẩm-->
-<!--                                        </button>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-
-<!--                            <div class="mb-3">-->
-<!--                                <label class="form-label">Số lượng nhập</label>-->
-<!--                                <input type="number" class="form-control" th:field="*{importQuantity}" min="1" required>-->
-<!--                            </div>-->
-
-<!--                            <div class="mb-3">-->
-<!--                                <label class="form-label">Giá nhập (VND)</label>-->
-<!--                                <input type="number" class="form-control" th:field="*{cost}" step="1000" min="0">-->
-<!--                            </div>-->
-
-<!--                            <div class="mb-3">-->
-<!--                                <label class="form-label">Nhà cung cấp</label>-->
-<!--                                <div class="row">-->
-<!--                                    <div class="col-8">-->
-<!--                                        <input type="text" class="form-control" th:field="*{supplierName}" readonly>-->
-<!--                                        <input type="hidden" th:field="*{supplierId}">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-4">-->
-<!--                                        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#supplierModal">-->
-<!--                                            Chọn NCC-->
-<!--                                        </button>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-
-<!--                            <div class="d-flex justify-content-end gap-2">-->
-<!--                                <button type="submit" class="btn btn-primary">-->
-<!--                                    <i class="fas fa-save me-1"></i>Lưu vào kho-->
-<!--                                </button>-->
-<!--                                <a th:href="@{/storage}" class="btn btn-secondary">-->
-<!--                                    <i class="fas fa-times me-1"></i>Quay lại-->
-<!--                                </a>-->
-<!--                            </div>-->
-<!--                        </form>-->
-<!--                    </div>-->
-<!--                    <div th:if="${storageImportDTO == null}" class="alert alert-danger">-->
-<!--                        Lỗi: Không thể tải form nhập kho. Vui lòng thử lại.-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; Modal chọn sản phẩm &ndash;&gt;-->
-<!--<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">-->
-<!--    <div class="modal-dialog modal-xl modal-dialog-centered">-->
-<!--        <div class="modal-content" style="max-width: 95vw; width: 120%;">-->
-<!--            <div class="modal-header">-->
-<!--                <h5 class="modal-title" id="productModalLabel">Chọn sản phẩm</h5>-->
-<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--            </div>-->
-<!--            <div class="modal-body">-->
-<!--                <div class="table-responsive">-->
-<!--                    <table class="table table-bordered table-hover align-middle text-nowrap">-->
-<!--                        <thead class="table-light">-->
-<!--                        <tr>-->
-<!--                            <th>STT</th>-->
-<!--                            <th>Hình ảnh (Mặt trước/sau)</th>-->
-<!--                            <th>Tên sản phẩm</th>-->
-<!--                            <th>Giá nhập (VND)</th>-->
-<!--                            <th>CPU</th>-->
-<!--                            <th>Lưu trữ (GB)</th>-->
-<!--                            <th>Chọn</th>-->
-<!--                        </tr>-->
-<!--                        </thead>-->
-<!--                        <tbody>-->
-<!--                        <tr th:each="i, l : ${inforStorages}">-->
-<!--                            <td th:text="${l.count}"></td>-->
-<!--                            <td>-->
-<!--                                <div class="d-flex gap-2">-->
-<!--                                    <img th:src="${i.productId}" class="product-image" alt="Product Image">-->
-<!--                                </div>-->
-<!--                            </td>-->
-<!--                            <td th:text="${i.productId}"></td>-->
-<!--                            <td th:text="${#numbers.formatDecimal(i.cost, 0, 'COMMA', 0, 'POINT')}"></td>-->
-<!--                            <td>N/A</td>-->
-<!--                            <td>N/A</td>-->
-<!--                            <td>-->
-<!--                                <button type="button" class="btn btn-select btn-sm"-->
-<!--                                        th:onclick="'selectProduct(' + ${i.productId} + ', \'' + ${i.productId} + '\')'">-->
-<!--                                    Chọn-->
-<!--                                </button>-->
-<!--                            </td>-->
-<!--                        </tr>-->
-<!--                        </tbody>-->
-<!--                    </table>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; Modal chọn nhà cung cấp &ndash;&gt;-->
-<!--<div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">-->
-<!--    <div class="modal-dialog modal-lg modal-dialog-centered">-->
-<!--        <div class="modal-content">-->
-<!--            <div class="modal-header">-->
-<!--                <h5 class="modal-title" id="supplierModalLabel">Chọn nhà cung cấp</h5>-->
-<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--            </div>-->
-<!--            <div class="modal-body">-->
-<!--                <div class="table-responsive">-->
-<!--                    <table class="table table-bordered table-hover">-->
-<!--                        <thead class="table-light">-->
-<!--                        <tr>-->
-<!--                            <th>STT</th>-->
-<!--                            <th>Tên nhà cung cấp</th>-->
-<!--                            <th>Địa chỉ</th>-->
-<!--                            <th>Chọn</th>-->
-<!--                        </tr>-->
-<!--                        </thead>-->
-<!--                        <tbody>-->
-<!--                        <tr th:each="supplier, stat : ${suppliers}">-->
-<!--                            <td th:text="${stat.count}"></td>-->
-<!--                            <td th:text="${supplier.suplierName}"></td>-->
-<!--                            <td th:text="${supplier.address}"></td>-->
-<!--                            <td>-->
-<!--                                <button type="button" class="btn btn-select btn-sm"-->
-<!--                                        th:onclick="'selectSupplier(' + ${supplier.suplierId} + ', \'' + ${supplier.suplierName} + '\')'">-->
-<!--                                    Chọn-->
-<!--                                </button>-->
-<!--                            </td>-->
-<!--                        </tr>-->
-<!--                        </tbody>-->
-<!--                    </table>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
-<!--<script>-->
-<!--    function selectProduct(productId, productName) {-->
-<!--        document.querySelector('input[name="productId"]').value = productId;-->
-<!--        document.querySelector('input[name="productName"]').value = productName;-->
-<!--        -->
-<!--        // Đóng modal-->
-<!--        const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));-->
-<!--        modal.hide();-->
-<!--    }-->
-
-<!--    function selectSupplier(supplierId, supplierName) {-->
-<!--        document.querySelector('input[name="supplierId"]').value = supplierId;-->
-<!--        document.querySelector('input[name="supplierName"]').value = supplierName;-->
-<!--        -->
-<!--        // Đóng modal-->
-<!--        const modal = bootstrap.Modal.getInstance(document.getElementById('supplierModal'));-->
-<!--        modal.hide();-->
-<!--    }-->
-<!--</script>-->
-<!--</body>-->
-<!--</html>-->
+    function renderProductPagination(totalPages, pageNumber) {
+        let html = '';
+        if (totalPages > 1) {
+            html += '<nav><ul class="pagination pagination-sm mb-0">';
+            for (let i = 0; i < totalPages; i++) {
+                if (i >= pageNumber - 2 && i <= pageNumber + 2) {
+                    html += `<li class="page-item ${i === pageNumber ? 'active' : ''}">` +
+                        `<a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${i})">${i + 1}</a></li>`;
+                }
+            }
+            html += '</ul></nav>';
+        }
+        document.getElementById('productPaginationContainer').innerHTML = html;
+    }
+    function searchProducts() {
+        const form = document.getElementById('productSearchForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        params.set('page', '0');
+        fetch(`/storage/products/data?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                renderProductPagination(data.totalPages, data.pageNumber);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi tìm kiếm sản phẩm!');
+            });
+    }
+    function changeProductPage(page) {
+        const form = document.getElementById('productSearchForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        params.set('page', page);
+        fetch(`/storage/products/data?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                renderProductPagination(data.totalPages, data.pageNumber);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi chuyển trang!');
+            });
+    }
+    function refreshProductList() {
+        const form = document.getElementById('productSearchForm');
+        form.reset();
+        fetch('/storage/products/data?page=0&size=6')
+            .then(response => response.json())
+            .then(data => {
+                renderProductPagination(data.totalPages, data.pageNumber);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi làm mới danh sách sản phẩm!');
+            });
+    }
+    if (document.getElementById('productModal')) {
+        document.getElementById('productModal').addEventListener('show.bs.modal', function () {
+            refreshProductList();
+        });
+    }
+</script>
+<script th:if="${showAddProductModal}">
+    var addProductModal = new bootstrap.Modal(document.getElementById('addProductModal'));
+    addProductModal.show();
+</script>
+</body>
+</html>

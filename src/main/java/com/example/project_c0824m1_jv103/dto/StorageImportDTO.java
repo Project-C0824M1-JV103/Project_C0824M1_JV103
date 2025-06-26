@@ -3,6 +3,8 @@ package com.example.project_c0824m1_jv103.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public class StorageImportDTO {
     @NotNull(message = "ID sản phẩm không được để trống")
     private Integer productId;
@@ -15,14 +17,19 @@ public class StorageImportDTO {
     private Double cost;
     @NotNull(message = "ID nhà cung cấp không được để trống")
     private Integer supplierId;
+    private List<String> productImages;
 
-    public StorageImportDTO() {}
+    public StorageImportDTO() {
+    }
 
-    public StorageImportDTO(Integer productId, String productName, String supplierName, Integer importQuantity) {
+    public StorageImportDTO(Integer productId, String productName, String supplierName, Integer importQuantity, Double cost, Integer supplierId, List<String> productImages) {
         this.productId = productId;
         this.productName = productName;
         this.supplierName = supplierName;
         this.importQuantity = importQuantity;
+        this.cost = cost;
+        this.supplierId = supplierId;
+        this.productImages = productImages;
     }
 
     public Integer getProductId() {
@@ -71,5 +78,13 @@ public class StorageImportDTO {
 
     public void setSupplierId(Integer supplierId) {
         this.supplierId = supplierId;
+    }
+
+    public List<String> getProductImages() {
+        return productImages;
+    }
+
+    public void setProductImages(List<String> productImages) {
+        this.productImages = productImages;
     }
 }

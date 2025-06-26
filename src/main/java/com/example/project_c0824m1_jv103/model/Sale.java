@@ -25,7 +25,7 @@ public class Sale {
     @Column(name = "sale_date", nullable = false)
     private LocalDateTime saleDate = LocalDateTime.now();
 
-    @Column(name = "amount", nullable = false, precision = 10, scale = 2)
+    @Column(name = "amount", nullable = false, precision = 18, scale = 2)
     private BigDecimal amount;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)

@@ -15,6 +15,8 @@ public class StorageDto {
     @NotNull(message = "Vui lòng chọn sản phẩm")
     private Integer productId;
 
+    private String productName;
+
     @NotNull(message = "Số lượng không được để trống")
     @Min(value = 1, message = "Số lượng phải từ 1 trở lên")
     @Max(value = 10000, message = "Số lượng không được vượt quá 10,000")
@@ -28,6 +30,8 @@ public class StorageDto {
     @NotNull(message = "Vui lòng chọn nhân viên")
     private Integer employeeId;
 
+    private String employeeName;
+
     private LocalDateTime transactionDate;
 
     // Getters and Setters
@@ -35,12 +39,16 @@ public class StorageDto {
     public void setStorageId(Integer storageId) { this.storageId = storageId; }
     public Integer getProductId() { return productId; }
     public void setProductId(Integer productId) { this.productId = productId; }
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
     public Double getCost() { return cost; }
     public void setCost(Double cost) { this.cost = cost; }
     public Integer getEmployeeId() { return employeeId; }
     public void setEmployeeId(Integer employeeId) { this.employeeId = employeeId; }
+    public String getEmployeeName() { return employeeName; }
+    public void setEmployeeName(String employeeName) { this.employeeName = employeeName; }
     public LocalDateTime getTransactionDate() { return transactionDate; }
     public void setTransactionDate(LocalDateTime transactionDate) { this.transactionDate = transactionDate; }
 }
