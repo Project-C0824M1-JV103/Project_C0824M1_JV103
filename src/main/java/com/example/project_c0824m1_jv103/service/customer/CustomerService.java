@@ -2,6 +2,8 @@ package com.example.project_c0824m1_jv103.service.customer;
 
 import com.example.project_c0824m1_jv103.model.Customer;
 import com.example.project_c0824m1_jv103.repository.ICustomerRepository;
+import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
+import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,12 @@ import java.util.Optional;
 public class CustomerService implements ICustomerService {
     @Autowired
     private ICustomerRepository iCustomerRepository;
+    
+    @Autowired
+    private IEmployeeService employeeService;
+    
+    @Autowired
+    private ISupplierService supplierService;
 
     @Override
     public List<Customer> findAll() {
@@ -67,7 +75,43 @@ public class CustomerService implements ICustomerService {
         if (email == null || email.trim().isEmpty()) {
             return false;
         }
-        return iCustomerRepository.existsByEmailIgnoreCase(email);
+        
+        // Kiểm tra trùng với Customer
+        boolean existsInCustomer = iCustomerRepository.existsByEmailIgnoreCase(email);
+        
+        // Kiểm tra trùng với Employee
+        boolean existsInEmployee = (employeeService.findByEmail(email) != null);
+        
+        // Kiểm tra trùng với Supplier
+        boolean existsInSupplier = supplierService.isEmailExists(email);
+        
+        return existsInCustomer || existsInEmployee || existsInSupplier;
+    }
+
+    @Override
+    public boolean isEmailExistsForOtherCustomer(String email, Integer customerId) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        
+        // Kiểm tra trùng với Customer khác
+        boolean existsInCustomer = iCustomerRepository.existsByEmailIgnoreCaseAndCustomerIdNot(email, customerId);
+        
+        // Kiểm tra trùng với Employee
+        boolean existsInEmployee = (employeeService.findByEmail(email) != null);
+        
+        // Kiểm tra trùng với Supplier  
+        boolean existsInSupplier = supplierService.isEmailExists(email);
+        
+        return existsInCustomer || existsInEmployee || existsInSupplier;
+    }
+
+    @Override
+    public boolean isPhoneExistsForOtherCustomer(String phoneNumber, Integer customerId) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            return false;
+        }
+        return iCustomerRepository.existsByPhoneNumberAndCustomerIdNot(phoneNumber, customerId);
     }
 
     @Override

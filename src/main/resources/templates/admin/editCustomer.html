@@ -199,7 +199,9 @@
                                                id="phoneNumber"
                                                name="phoneNumber"
                                                th:value="${customer.phoneNumber}"
-                                               placeholder="Nhập số điện thoại">
+                                               placeholder="Nhập số điện thoại"
+                                               pattern="[0-9]{10,11}"
+                                               maxlength="11">
                                         <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
                                     </div>
                                 </div>
@@ -214,7 +216,8 @@
                                                id="email"
                                                name="email"
                                                th:value="${customer.email}"
-                                               placeholder="Nhập địa chỉ email">
+                                               placeholder="Nhập địa chỉ email"
+                                               maxlength="255">
                                         <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                                     </div>
 
@@ -271,7 +274,7 @@
                             <div class="card border-0 bg-light">
                                 <div class="card-body text-center py-3">
                                     <i class="fas fa-shopping-cart fa-lg text-primary mb-1"></i>
-                                    <h6 class="mb-0">0</h6>
+                                    <h6 class="mb-0" th:text="${totalOrders != null ? totalOrders : 0}">0</h6>
                                     <small class="text-muted">Tổng số đơn hàng</small>
                                 </div>
                             </div>
@@ -280,7 +283,7 @@
                             <div class="card border-0 bg-light">
                                 <div class="card-body text-center py-3">
                                     <i class="fas fa-calendar-plus fa-lg text-success mb-1"></i>
-                                    <h6 class="mb-0" style="font-size: 0.8rem;" th:text="${customer.birthdayDate != null ? customer.birthdayDate : 'Chưa cập nhật'}">Chưa cập nhật</h6>
+                                    <h6 class="mb-0" style="font-size: 0.8rem;" th:text="${customer.birthdayDate != null ? #temporals.format(customer.birthdayDate, 'dd/MM/yyyy') : 'Chưa cập nhật'}" >Chưa cập nhật</h6>
                                     <small class="text-muted">Ngày sinh</small>
                                 </div>
                             </div>
@@ -293,7 +296,7 @@
                                     <small class="text-muted">Hạng khách hàng</small>
                                 </div>
                             </div>
-                        </div>
+                          </div>
                     </div>
                 </div>
             </div>
@@ -306,11 +309,29 @@
     // Form validation
     document.querySelector('form').addEventListener('submit', function(e) {
         const customerName = document.getElementById('customerName').value.trim();
+        const phoneNumber = document.getElementById('phoneNumber').value.trim();
+        const email = document.getElementById('email').value.trim();
 
         if (!customerName) {
             e.preventDefault();
             alert('Vui lòng nhập tên khách hàng!');
             document.getElementById('customerName').focus();
+            return false;
+        }
+
+        // Validate phone number format
+        if (phoneNumber && !/^[0-9]{10,11}$/.test(phoneNumber)) {
+            e.preventDefault();
+            alert('Số điện thoại phải có 10 hoặc 11 chữ số!');
+            document.getElementById('phoneNumber').focus();
+            return false;
+        }
+
+        // Validate email format
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            e.preventDefault();
+            alert('Email không đúng định dạng!');
+            document.getElementById('email').focus();
             return false;
         }
 
@@ -320,10 +341,52 @@
     // Phone number formatting
     document.getElementById('phoneNumber').addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 10) {
-            value = value.slice(0, 10);
+        if (value.length > 11) {
+            value = value.slice(0, 11);
         }
         e.target.value = value;
+    });
+
+    // Email validation
+    document.getElementById('email').addEventListener('blur', function(e) {
+        const email = e.target.value.trim();
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            e.target.classList.add('is-invalid');
+            // Add error message if not exists
+            if (!e.target.parentNode.querySelector('.invalid-feedback')) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                errorDiv.textContent = 'Email không đúng định dạng!';
+                e.target.parentNode.appendChild(errorDiv);
+            }
+        } else {
+            e.target.classList.remove('is-invalid');
+            const errorDiv = e.target.parentNode.querySelector('.invalid-feedback');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+    });
+
+    // Phone number validation
+    document.getElementById('phoneNumber').addEventListener('blur', function(e) {
+        const phoneNumber = e.target.value.trim();
+        if (phoneNumber && !/^[0-9]{10,11}$/.test(phoneNumber)) {
+            e.target.classList.add('is-invalid');
+            // Add error message if not exists
+            if (!e.target.parentNode.querySelector('.invalid-feedback')) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                errorDiv.textContent = 'Số điện thoại phải có 10 hoặc 11 chữ số!';
+                e.target.parentNode.appendChild(errorDiv);
+            }
+        } else {
+            e.target.classList.remove('is-invalid');
+            const errorDiv = e.target.parentNode.querySelector('.invalid-feedback');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
     });
 </script>
 </body>
