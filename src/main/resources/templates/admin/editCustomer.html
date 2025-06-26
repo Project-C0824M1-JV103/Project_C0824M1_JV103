@@ -186,6 +186,8 @@
                                                id="customerName"
                                                name="customerName"
                                                th:value="${customer.customerName}"
+                                               pattern="^[a-zA-ZÀ-ỹĂăÂâĐđÊêÔôƠơƯư\s]+$"
+                                               title="Tên chỉ được chứa chữ cái và khoảng trắng"
                                                required>
                                         <div class="text-danger" th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}"></div>
                                     </div>
@@ -319,6 +321,14 @@
             return false;
         }
 
+        // Validate customer name - không cho phép ký tự đặc biệt
+        if (customerName && !/^[a-zA-ZÀ-ỹĂăÂâĐđÊêÔôƠơƯư\s]+$/.test(customerName)) {
+            e.preventDefault();
+            alert('Tên khách hàng chỉ được chứa chữ cái và khoảng trắng!');
+            document.getElementById('customerName').focus();
+            return false;
+        }
+
         // Validate phone number format
         if (phoneNumber && !/^[0-9]{10,11}$/.test(phoneNumber)) {
             e.preventDefault();
@@ -386,6 +396,37 @@
             if (errorDiv) {
                 errorDiv.remove();
             }
+        }
+    });
+
+    // Customer name validation
+    document.getElementById('customerName').addEventListener('blur', function(e) {
+        const customerName = e.target.value.trim();
+        if (customerName && !/^[a-zA-ZÀ-ỹĂăÂâĐđÊêÔôƠơƯư\s]+$/.test(customerName)) {
+            e.target.classList.add('is-invalid');
+            // Add error message if not exists
+            if (!e.target.parentNode.querySelector('.invalid-feedback')) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                errorDiv.textContent = 'Tên chỉ được chứa chữ cái và khoảng trắng!';
+                e.target.parentNode.appendChild(errorDiv);
+            }
+        } else {
+            e.target.classList.remove('is-invalid');
+            const errorDiv = e.target.parentNode.querySelector('.invalid-feedback');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+    });
+
+    // Prevent typing special characters in customer name
+    document.getElementById('customerName').addEventListener('input', function(e) {
+        let value = e.target.value;
+        // Remove any special characters while typing
+        let filteredValue = value.replace(/[^a-zA-ZÀ-ỹĂăÂâĐđÊêÔôƠơƯư\s]/g, '');
+        if (value !== filteredValue) {
+            e.target.value = filteredValue;
         }
     });
 </script>
