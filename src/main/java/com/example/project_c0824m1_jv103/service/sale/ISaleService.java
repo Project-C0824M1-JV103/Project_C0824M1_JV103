@@ -6,4 +6,5 @@ import java.util.Optional;
 public interface ISaleService {
     Sale createSale(Sale sale);
     Optional<Sale> findById(Integer id);
+    Long countSalesByCustomerId(Integer customerId);
 } 

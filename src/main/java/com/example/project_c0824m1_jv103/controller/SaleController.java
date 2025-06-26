@@ -265,6 +265,13 @@ public class SaleController extends BaseAdminController {
             // Tìm hoặc tạo mới khách hàng (chỉ validate, chưa lưu)
             Customer customer = customerService.findByPhone(saleDto.getPhoneNumber())
                     .orElseGet(() -> {
+                        // Validate email trước khi tạo customer mới
+                        if (saleDto.getEmail() != null && !saleDto.getEmail().trim().isEmpty()) {
+                            if (customerService.isEmailExists(saleDto.getEmail())) {
+                                throw new RuntimeException("Email này đã được sử dụng trong hệ thống !");
+                            }
+                        }
+                        
                         Customer newCustomer = new Customer();
                         newCustomer.setCustomerName(saleDto.getCustomerName());
                         newCustomer.setPhoneNumber(saleDto.getPhoneNumber());
@@ -322,6 +329,12 @@ public class SaleController extends BaseAdminController {
         try {
             // Lưu khách hàng nếu là khách hàng mới
             if (customer.getCustomerId() == null) {
+                // Validate email trước khi lưu customer mới  
+                if (customer.getEmail() != null && !customer.getEmail().trim().isEmpty()) {
+                    if (customerService.isEmailExists(customer.getEmail())) {
+                        throw new RuntimeException("Email này đã được sử dụng trong hệ thống (khách hàng, nhân viên hoặc nhà cung cấp khác)!");
+                    }
+                }
                 customer = customerService.save(customer);
             }
 
@@ -473,7 +486,7 @@ public class SaleController extends BaseAdminController {
     @ResponseBody
     public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
         Map<String, Boolean> response = new HashMap<>();
-        boolean exists = customerService.isEmailExists(email);
+        boolean exists = customerService.isEmailExists(email); // Đã được cập nhật để check toàn hệ thống
         response.put("exists", exists);
         return response;
     }

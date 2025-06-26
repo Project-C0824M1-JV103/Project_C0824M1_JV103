@@ -42,4 +42,9 @@ public class SaleService implements ISaleService {
     public Optional<Sale> findById(Integer id) {
         return saleRepository.findById(id);
     }
+
+    @Override
+    public Long countSalesByCustomerId(Integer customerId) {
+        return saleRepository.countSalesByCustomerId(customerId);
+    }
 }
