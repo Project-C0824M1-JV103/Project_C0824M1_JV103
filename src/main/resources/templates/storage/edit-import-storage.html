@@ -352,10 +352,10 @@
                                         <input
                                                 type="text"
                                                 class="form-control readonly-field"
-                                                value="Warehouse Staff"
+                                                th:value="${currentUser != null ? currentUser.fullName : 'Unknown User'}"
                                                 readonly
                                         />
-                                        <input type="hidden" th:field="*{employeeId}" value="1" />
+                                        <input type="hidden" th:field="*{employeeId}" th:value="${currentUser != null ? currentUser.employeeId : 1}" />
                                     </div>
                                 </div>
 
