@@ -111,7 +111,16 @@ public class CustomerService implements ICustomerService {
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
             return false;
         }
-        return iCustomerRepository.existsByPhoneNumberAndCustomerIdNot(phoneNumber, customerId);
+        // Kiểm tra trùng với Customer khác
+        boolean existsInCustomer = iCustomerRepository.existsByPhoneNumberAndCustomerIdNot(phoneNumber, customerId);
+
+        // Kiểm tra trùng với Employee
+        boolean existsInEmployee = (employeeService.findByPhone(phoneNumber) != null);
+
+        // Kiểm tra trùng với Supplier
+        boolean existsInSupplier = supplierService.isPhoneNumberExists(phoneNumber);
+
+        return existsInCustomer || existsInEmployee || existsInSupplier;
     }
 
     @Override
