@@ -19,21 +19,27 @@ public class ProductDTO {
     private Double price;
     
     @Size(max = 50, message = "Kích thước màn hình không được vượt quá 50 ký tự")
+    @NotBlank(message = "Kích thước màn hình không được để trống")
     private String size;
     
     @Size(max = 50, message = "Thông tin camera không được vượt quá 50 ký tự")
+    @NotBlank(message = "Thông tin camera không được để trống")
     private String cameraBack;
     
     @Size(max = 50, message = "Thông tin selfie không được vượt quá 50 ký tự")
+    @NotBlank(message = "Thông tin selfie không được để trống")
     private String cameraFront;
     
     @Size(max = 50, message = "Thông tin CPU không được vượt quá 50 ký tự")
+    @NotBlank(message = "Thông tin CPU không được để trống")
     private String cpu;
     
     @Size(max = 50, message = "Thông tin lưu trữ không được vượt quá 50 ký tự")
+    @NotBlank(message = "Thông tin lưu trữ không được để trống")
     private String memory;
     
     @Size(max = 1000, message = "Mô tả không được vượt quá 1000 ký tự")
+    @NotBlank(message = "Mô tả không được để trống")
     private String description; // Mô tả thêm
     
     @NotNull(message = "Số lượng không được để trống")

@@ -187,12 +187,12 @@ public class EmployeeController extends BaseAdminController {
 
         Employee emailCheck = employeeService.findByEmail(employeeDto.getEmail());
         if (emailCheck != null && !emailCheck.getEmployeeId().equals(employee.getEmployeeId())) {
-            bindingResult.rejectValue("email", "errorMessage", "Email đã được sử dụng.");
+            bindingResult.rejectValue("email", "errorMessage", "Email này đã được sử dụng! Vui lòng nhập email khác!");
         }
 
         Employee phoneCheck = employeeService.findByPhone(employeeDto.getPhone());
         if (phoneCheck != null && !phoneCheck.getEmployeeId().equals(employee.getEmployeeId())) {
-            bindingResult.rejectValue("phone", "errorMessage", "Số điện thoại đã được sử dụng.");
+            bindingResult.rejectValue("phone", "errorMessage", "Số điện thoại này đã được sử dụng! Vui lòng nhập số điện thoại khác!");
         }
 
         if (bindingResult.hasErrors()) {

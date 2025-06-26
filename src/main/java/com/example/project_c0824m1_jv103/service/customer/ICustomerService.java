@@ -25,7 +25,8 @@ public interface ICustomerService {
     Optional<Customer> findByPhone(String phoneNumber);
 
     boolean isEmailExists(String email);
-    
+    boolean isPhoneExists(String phoneNumber);
+
     // Validation methods for edit customer
     boolean isEmailExistsForOtherCustomer(String email, Integer customerId);
     boolean isPhoneExistsForOtherCustomer(String phoneNumber, Integer customerId);

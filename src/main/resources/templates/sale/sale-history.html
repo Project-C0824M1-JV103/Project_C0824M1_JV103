@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch Sử Bán Hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}"/>
+    <link rel="stylesheet" th:href="@{/admin-common.css}"/>
+    <style>
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .header-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .history-table {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center;
+            color: #000 !important;
+        }
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        .pagination .page-link {
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+        .pagination .page-link:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+            color: #495057;
+        }
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        .pagination .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            color: #6c757d;
+        }
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #667eea;
+        }
+        .sort-link {
+            text-decoration: none;
+            color: white;
+        }
+        .sort-link .arrow {
+            display: inline-block;
+            margin-left: 5px;
+        }
+        .product-list ul {
+            padding-left: 0;
+            list-style-type: none;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Include Admin Navbar -->
+        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="main-content p-4">
+                <!-- Header Section -->
+                <div class="header-section">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-1">
+                                <i class="fas fa-history text-primary"></i>
+                                Quản lý lịch sử mua bán
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Danh sách tất cả giao dịch trong hệ thống
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Table -->
+                <div class="history-table">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <a th:href="@{/Sale/history(sortField='saleDate', sortDir=${reverseSortDir})}" class="sort-link">
+                                        Ngày/Thời gian
+                                        <span th:if="${sortField == 'saleDate'}" class="arrow" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a th:href="@{/Sale/history(sortField='customer.customerName', sortDir=${reverseSortDir})}" class="sort-link">
+                                        Họ và tên khách hàng
+                                        <span th:if="${sortField == 'customer.customerName'}" class="arrow" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                    </a>
+                                </th>
+                                <th>Thông tin mua hàng</th>
+                                <th>Phương thức thanh toán</th>
+                                <th>
+                                    <a th:href="@{/Sale/history(sortField='amount', sortDir=${reverseSortDir})}" class="sort-link">
+                                        Tổng tiền
+                                        <span th:if="${sortField == 'amount'}" class="arrow" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                    </a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="sale : ${salePage.content}">
+                                <td th:text="${#temporals.format(sale.saleDate, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td th:text="${sale.customer.customerName}" style="text-align: left;"></td>
+                                <td class="product-list" style="text-align: left;">
+                                    <ul>
+                                        <li th:each="detail : ${sale.saleDetails}"
+                                            th:text="${detail.quantity + ' x ' + detail.product.productName}"></li>
+                                    </ul>
+                                </td>
+                                <td th:text="${sale.paymentMethod}"></td>
+                                <td class="fw-bold" th:text="${#numbers.formatDecimal(sale.amount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                            </tr>
+                            <!-- Empty state message -->
+                            <tr th:if="${#lists.isEmpty(salePage.content)}">
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <div>
+                                            <i class="fas fa-receipt fa-3x text-primary mb-3"></i>
+                                            <h6>
+                                                Chưa có giao dịch nào
+                                            </h6>
+                                            <p class="mb-0">
+                                                Lịch sử giao dịch sẽ được hiển thị tại đây.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Phân trang" class="p-3" th:if="${salePage.totalPages > 0}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${salePage.number == 0} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/Sale/history(page=0, sortField=${sortField}, sortDir=${sortDir})}" tabindex="-1">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${!salePage.hasPrevious()} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/Sale/history(page=${salePage.number - 1}, sortField=${sortField}, sortDir=${sortDir})}" tabindex="-1">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+
+                            <th:block th:each="pageNum : ${#numbers.sequence(0, salePage.totalPages - 1)}">
+                                <li class="page-item" th:classappend="${pageNum == salePage.number} ? 'active' : ''">
+                                    <a class="page-link" th:href="@{/Sale/history(page=${pageNum}, sortField=${sortField}, sortDir=${sortDir})}" th:text="${pageNum + 1}"></a>
+                                </li>
+                            </th:block>
+
+                            <li class="page-item" th:classappend="${!salePage.hasNext()} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/Sale/history(page=${salePage.number + 1}, sortField=${sortField}, sortDir=${sortDir})}" tabindex="-1">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${salePage.number == salePage.totalPages - 1} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/Sale/history(page=${salePage.totalPages - 1}, sortField=${sortField}, sortDir=${sortDir})}" tabindex="-1">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="text-center text-muted mt-2">
+                            Trang <span th:text="${salePage.number + 1}"></span> trong tổng số <span
+                                th:text="${salePage.totalPages}"></span> trang (<span
+                                th:text="${salePage.totalElements}"></span> giao dịch)
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

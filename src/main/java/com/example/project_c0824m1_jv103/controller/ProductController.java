@@ -42,7 +42,7 @@ public class ProductController extends BaseAdminController {
             @RequestParam(value = "maxQuantity", required = false) Integer maxQuantity,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page
     ) {
-        int pageSize = 5;
+        int pageSize = 6;
         // Sắp xếp theo productId giảm dần để sản phẩm mới nhất hiển thị đầu tiên
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "productId"));
         Page<ProductDTO> productPage;

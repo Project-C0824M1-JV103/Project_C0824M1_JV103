@@ -113,4 +113,12 @@ public class CustomerService implements ICustomerService {
         }
         return iCustomerRepository.existsByPhoneNumberAndCustomerIdNot(phoneNumber, customerId);
     }
+
+    @Override
+    public boolean isPhoneExists(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            return false;
+        }
+        return iCustomerRepository.existsByPhoneNumber(phoneNumber);
+    }
 }

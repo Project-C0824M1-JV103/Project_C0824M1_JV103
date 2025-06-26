@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -222,6 +223,30 @@ public class SaleController extends BaseAdminController {
         
         model.addAttribute("sale", sale);
         return "sale/sale-confirmation";
+    }
+
+    @GetMapping("/history")
+    public String showSaleHistory(
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "saleDate") String sortField,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortField).ascending()
+                : Sort.by(sortField).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Sale> salePage = saleService.findAll(pageable);
+
+        model.addAttribute("salePage", salePage);
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
+        model.addAttribute("currentPage", "sale-history");
+
+        return "sale/sale-history";
     }
 
     @GetMapping("/invoice/{saleId}")
@@ -487,6 +512,15 @@ public class SaleController extends BaseAdminController {
     public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
         Map<String, Boolean> response = new HashMap<>();
         boolean exists = customerService.isEmailExists(email); // Đã được cập nhật để check toàn hệ thống
+        response.put("exists", exists);
+        return response;
+    }
+
+    @GetMapping("/check-phone")
+    @ResponseBody
+    public Map<String, Boolean> checkPhone(@RequestParam("phone") String phoneNumber) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = customerService.isPhoneExists(phoneNumber);
         response.put("exists", exists);
         return response;
     }
