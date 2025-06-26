@@ -185,10 +185,6 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public ProductDTO updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> imageFiles, List<String> captions, List<String> deletedImageUrls) throws IOException {
-        System.out.println("=== DEBUG UPDATE PRODUCT ===");
-        System.out.println("Product ID: " + id);
-        System.out.println("Image files count: " + (imageFiles != null ? imageFiles.size() : 0));
-        System.out.println("Deleted images count: " + (deletedImageUrls != null ? deletedImageUrls.size() : 0));
         
         // Tìm product hiện tại
         Product existingProduct = productRepository.findById(id.intValue()).orElse(null);
@@ -198,48 +194,40 @@ public class ProductService implements IProductService {
 
         // Cập nhật thông tin từ DTO
         productMapper.updateEntityFromDTO(productDTO, existingProduct);
+        
+        // Cập nhật category và supplier
+        if (productDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(productDTO.getCategoryId()).orElse(null);
+            existingProduct.setCategory(category);
+        }
+        
+        if (productDTO.getSupplierId() != null) {
+            Supplier supplier = supplierRepository.findById(productDTO.getSupplierId()).orElse(null);
+            existingProduct.setSupplier(supplier);
+        }
 
-        // Xử lý xóa ảnh cũ TRƯỚC
+        // Xử lý xóa ảnh cũ trước
         if (deletedImageUrls != null && !deletedImageUrls.isEmpty()) {
-            System.out.println("Danh sách URL cần xóa: " + deletedImageUrls);
-            
-            // Debug: In ra tất cả URL hiện tại
-            existingProduct.getProductImages().forEach(img -> 
-                System.out.println("URL hiện tại: " + img.getImageUrl() + " (ID: " + img.getImageId() + ")"));
-            
             // Tìm ảnh cần xóa
             List<ProductImages> imagesToDelete = existingProduct.getProductImages().stream()
                 .filter(img -> deletedImageUrls.contains(img.getImageUrl()))
                 .collect(Collectors.toList());
             
-            System.out.println("Tìm thấy " + imagesToDelete.size() + " ảnh để xóa");
-            
             if (!imagesToDelete.isEmpty()) {
-                imagesToDelete.forEach(img -> 
-                    System.out.println("Chuẩn bị xóa ID: " + img.getImageId() + ", URL: " + img.getImageUrl()));
-                
                 try {
-                    // Xóa từng ảnh một để debug
+                    // Xóa ảnh khỏi database
                     for (ProductImages img : imagesToDelete) {
-                        System.out.println("Đang xóa image ID: " + img.getImageId());
                         productImagesRepository.delete(img);
-                        System.out.println("Đã xóa image ID: " + img.getImageId() + " thành công");
                     }
                     
-                    // Cũng xóa khỏi memory
+                    // Xóa khỏi memory
                     existingProduct.getProductImages().removeAll(imagesToDelete);
-                    System.out.println("Đã xóa " + imagesToDelete.size() + " ảnh khỏi database và memory");
-                    
-                    // Verify deletion
-                    System.out.println("Số ảnh còn lại trong memory: " + existingProduct.getProductImages().size());
                     
                 } catch (Exception e) {
                     System.err.println("Lỗi khi xóa ảnh: " + e.getMessage());
                     e.printStackTrace();
                     throw e;
                 }
-            } else {
-                System.out.println("Không tìm thấy ảnh nào để xóa!");
             }
         }
 
@@ -248,18 +236,16 @@ public class ProductService implements IProductService {
 
         // Xử lý ảnh mới (nếu có)
         if (imageFiles != null && !imageFiles.isEmpty()) {
-            System.out.println("Processing " + imageFiles.size() + " image files...");
             List<ProductImages> newProductImages = new ArrayList<>();
             for (int i = 0; i < imageFiles.size(); i++) {
                 MultipartFile file = imageFiles.get(i);
+                
                 if (!file.isEmpty()) {
-                    System.out.println("Processing file: " + file.getOriginalFilename() + " - Size: " + file.getSize());
                     String caption = (captions != null && i < captions.size()) ? captions.get(i) : null;
                     
                     try {
                         // Upload ảnh lên Cloudinary
                         String imageUrl = cloudinaryService.uploadImage(file);
-                        System.out.println("Uploaded to Cloudinary: " + imageUrl);
                         
                         // Tạo ProductImages mới
                         ProductImages productImage = new ProductImages(updatedProduct, imageUrl, caption);
@@ -274,16 +260,16 @@ public class ProductService implements IProductService {
             
             // Lưu ảnh mới
             if (!newProductImages.isEmpty()) {
-                System.out.println("Saving " + newProductImages.size() + " new images to database...");
                 productImagesRepository.saveAll(newProductImages);
-                // Cập nhật danh sách ảnh cho sản phẩm
-                List<ProductImages> allImages = new ArrayList<>(existingProduct.getProductImages());
+                
+                // Cập nhật danh sách ảnh cho sản phẩm và save lại
+                List<ProductImages> allImages = new ArrayList<>(updatedProduct.getProductImages());
                 allImages.addAll(newProductImages);
                 updatedProduct.setProductImages(allImages);
-                System.out.println("Successfully updated product with new images!");
+                
+                // Save lại product với danh sách ảnh mới
+                updatedProduct = productRepository.save(updatedProduct);
             }
-        } else {
-            System.out.println("No image files to process.");
         }
 
         // Convert Entity back to DTO
