@@ -20,7 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/employees")
@@ -213,6 +215,26 @@ public class EmployeeController extends BaseAdminController {
         employeeService.save(employee);
         redirectAttributes.addFlashAttribute("successMessage", "Thay đổi thông tin nhân viên " + employee.getFullName() + " thành công!");
         return "redirect:/employees";
+    }
+
+    // API endpoint để kiểm tra email đã tồn tại
+    @GetMapping("/check-email")
+    @ResponseBody
+    public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = employeeService.findByEmail(email) != null;
+        response.put("exists", exists);
+        return response;
+    }
+
+    // API endpoint để kiểm tra số điện thoại đã tồn tại
+    @GetMapping("/check-phone")
+    @ResponseBody
+    public Map<String, Boolean> checkPhone(@RequestParam("phone") String phone) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = employeeService.findByPhone(phone) != null;
+        response.put("exists", exists);
+        return response;
     }
 }
 
