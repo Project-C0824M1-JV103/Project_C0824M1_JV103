@@ -199,8 +199,14 @@
                     <label class="form-label me-2 mb-0">Email (Thay đổi thì phải đăng nhập lại)</label>
                     <div class="text-danger small" style="font-size: 0.75rem;" th:errors="*{email}"></div>
                 </div>
-                <input type="email" id="email" class="form-control" placeholder="Nhập email"
-                       th:field="*{email}" th:readonly="${!isEditing}"/>
+                <div class="input-group">
+                    <input type="email" id="email" class="form-control" placeholder="Nhập email"
+                           th:field="*{email}" th:readonly="${!isEditing}"/>
+                    <button type="button" class="btn btn-outline-secondary" id="verifyEmailBtn" style="display:none;">Verify</button>
+                    <button type="button" class="btn btn-success" id="verifiedEmailBtn" style="display:none;" disabled>
+                        <i class="bi bi-check-circle-fill"></i> Verified
+                    </button>
+                </div>
             </div>
 
             <div class="mb-3">
@@ -319,6 +325,26 @@
             <div class="modal-footer d-flex justify-content-end">
                 <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
                 <button type="button" class="btn btn-success me-2" id="modalPasswordConfirmBtn">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal nhập OTP xác thực email -->
+<div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="otpModalLabel">Xác thực Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <p>Mã OTP đã được gửi đến email của bạn. Vui lòng nhập mã OTP để xác thực.</p>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="otpInput" placeholder="Nhập mã OTP">
+                    <div class="invalid-feedback" id="otpError" style="display:none;"></div>
+                </div>
+                <button type="button" class="btn btn-primary w-100" id="submitOtpBtn">Xác nhận</button>
             </div>
         </div>
     </div>
@@ -487,6 +513,121 @@
             icon.classList.toggle("bi-eye");
             icon.classList.toggle("bi-eye-slash");
         }
+    }
+
+    // --- EMAIL VERIFY LOGIC ---
+    let emailVerified = false;
+    let lastVerifiedEmail = '';
+    const emailInput = document.getElementById('email');
+    const verifyBtn = document.getElementById('verifyEmailBtn');
+    const verifiedBtn = document.getElementById('verifiedEmailBtn');
+    function updateVerifyButton() {
+        const email = emailInput.value.trim();
+        if (emailVerified && email === lastVerifiedEmail) {
+            verifyBtn.style.display = 'none';
+            verifiedBtn.style.display = 'inline-block';
+        } else if (isValidEmail(email) && !emailInput.readOnly) {
+            verifyBtn.style.display = 'inline-block';
+            verifiedBtn.style.display = 'none';
+        } else {
+            verifyBtn.style.display = 'none';
+            verifiedBtn.style.display = 'none';
+        }
+    }
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    if (emailInput) {
+        emailInput.addEventListener('input', function() {
+            emailVerified = false;
+            lastVerifiedEmail = '';
+            updateVerifyButton();
+        });
+        emailInput.addEventListener('blur', updateVerifyButton);
+    }
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', function() {
+            const email = emailInput.value.trim();
+            if (!isValidEmail(email)) {
+                emailInput.classList.add('is-invalid');
+                return;
+            }
+            verifyBtn.disabled = true;
+            fetch('/personal-info/send-otp?email=' + encodeURIComponent(email), { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    verifyBtn.disabled = false;
+                    if (data.success) {
+                        const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+                        document.getElementById('otpInput').value = '';
+                        document.getElementById('otpError').style.display = 'none';
+                        otpModal.show();
+                    } else {
+                        alert(data.message || 'Không thể gửi OTP!');
+                    }
+                })
+                .catch(() => {
+                    verifyBtn.disabled = false;
+                    alert('Có lỗi khi gửi OTP!');
+                });
+        });
+    }
+    const submitOtpBtn = document.getElementById('submitOtpBtn');
+    if (submitOtpBtn) {
+        submitOtpBtn.addEventListener('click', function() {
+            const otp = document.getElementById('otpInput').value.trim();
+            const email = emailInput.value.trim();
+            const otpError = document.getElementById('otpError');
+            if (!otp) {
+                otpError.textContent = 'Vui lòng nhập mã OTP.';
+                otpError.style.display = 'block';
+                return;
+            }
+            submitOtpBtn.disabled = true;
+            fetch('/personal-info/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, otp: otp })
+            })
+            .then(response => response.json())
+            .then(data => {
+                submitOtpBtn.disabled = false;
+                if (data.verified) {
+                    emailVerified = true;
+                    lastVerifiedEmail = email;
+                    updateVerifyButton();
+                    const otpModal = bootstrap.Modal.getInstance(document.getElementById('otpModal'));
+                    otpModal.hide();
+                } else {
+                    otpError.textContent = data.message || 'Mã OTP không đúng hoặc đã hết hạn!';
+                    otpError.style.display = 'block';
+                }
+            })
+            .catch(() => {
+                submitOtpBtn.disabled = false;
+                otpError.textContent = 'Có lỗi khi xác thực OTP!';
+                otpError.style.display = 'block';
+            });
+        });
+    }
+    const otpModalEl = document.getElementById('otpModal');
+    if (otpModalEl) {
+        otpModalEl.addEventListener('shown.bs.modal', function () {
+            document.getElementById('otpInput').focus();
+        });
+    }
+    document.addEventListener('DOMContentLoaded', updateVerifyButton);
+    // Ngăn submit nếu email chưa verify khi bị thay đổi
+    if (personalForm) {
+        personalForm.addEventListener('submit', function (event) {
+            const email = emailInput.value.trim();
+            if (isEditing && email !== originalValues['email'] && !(emailVerified && email === lastVerifiedEmail)) {
+                alert('Vui lòng xác thực email trước khi xác nhận!');
+                event.preventDefault();
+                return;
+            }
+        }, true);
     }
 </script>
 </body>

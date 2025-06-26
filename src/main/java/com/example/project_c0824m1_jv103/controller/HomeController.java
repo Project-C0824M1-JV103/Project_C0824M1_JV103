@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.ResponseEntity;
 
 import java.security.Principal;
 import java.util.List;
@@ -31,6 +32,9 @@ public class HomeController {
 
     @Autowired
     IEmployeeService employeeService;
+
+    @Autowired
+    private com.example.project_c0824m1_jv103.service.EmailService emailService;
 
     @GetMapping("")
     public String showHome() {
@@ -149,5 +153,29 @@ public class HomeController {
         redirectAttributes.addFlashAttribute("passwordMessage", "Đổi mật khẩu thành công!");
         redirectAttributes.addFlashAttribute("messageType", "success");
         return "redirect:/login";
+    }
+
+    // --- API gửi OTP xác thực email ---
+    @PostMapping("/personal-info/send-otp")
+    @ResponseBody
+    public java.util.Map<String, Object> sendOtp(@RequestParam String email) {
+        java.util.Map<String, Object> res = new java.util.HashMap<>();
+        boolean sent = emailService.sendOtp(email);
+        res.put("success", sent);
+        res.put("message", sent ? "Đã gửi OTP đến email." : "Không thể gửi OTP. Vui lòng thử lại.");
+        return res;
+    }
+
+    // --- API xác thực OTP ---
+    @PostMapping("/personal-info/verify-otp")
+    @ResponseBody
+    public java.util.Map<String, Object> verifyOtp(@RequestBody java.util.Map<String, String> body) {
+        String email = body.get("email");
+        String otp = body.get("otp");
+        boolean verified = emailService.verifyOtp(email, otp);
+        java.util.Map<String, Object> res = new java.util.HashMap<>();
+        res.put("verified", verified);
+        res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
+        return res;
     }
 }
