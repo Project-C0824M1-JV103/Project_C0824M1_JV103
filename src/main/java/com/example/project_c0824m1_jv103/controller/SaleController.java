@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -224,6 +225,30 @@ public class SaleController extends BaseAdminController {
         return "sale/sale-confirmation";
     }
 
+    @GetMapping("/history")
+    public String showSaleHistory(
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "saleDate") String sortField,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortField).ascending()
+                : Sort.by(sortField).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Sale> salePage = saleService.findAll(pageable);
+
+        model.addAttribute("salePage", salePage);
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
+        model.addAttribute("currentPage", "sale-history");
+
+        return "sale/sale-history";
+    }
+
     @GetMapping("/invoice/{saleId}")
     public ResponseEntity<byte[]> downloadInvoice(@PathVariable Integer saleId) {
         Sale sale = saleService.findById(saleId)
@@ -265,6 +290,13 @@ public class SaleController extends BaseAdminController {
             // Tìm hoặc tạo mới khách hàng (chỉ validate, chưa lưu)
             Customer customer = customerService.findByPhone(saleDto.getPhoneNumber())
                     .orElseGet(() -> {
+                        // Validate email trước khi tạo customer mới
+                        if (saleDto.getEmail() != null && !saleDto.getEmail().trim().isEmpty()) {
+                            if (customerService.isEmailExists(saleDto.getEmail())) {
+                                throw new RuntimeException("Email này đã được sử dụng trong hệ thống !");
+                            }
+                        }
+                        
                         Customer newCustomer = new Customer();
                         newCustomer.setCustomerName(saleDto.getCustomerName());
                         newCustomer.setPhoneNumber(saleDto.getPhoneNumber());
@@ -322,6 +354,12 @@ public class SaleController extends BaseAdminController {
         try {
             // Lưu khách hàng nếu là khách hàng mới
             if (customer.getCustomerId() == null) {
+                // Validate email trước khi lưu customer mới  
+                if (customer.getEmail() != null && !customer.getEmail().trim().isEmpty()) {
+                    if (customerService.isEmailExists(customer.getEmail())) {
+                        throw new RuntimeException("Email này đã được sử dụng trong hệ thống (khách hàng, nhân viên hoặc nhà cung cấp khác)!");
+                    }
+                }
                 customer = customerService.save(customer);
             }
 
@@ -473,7 +511,16 @@ public class SaleController extends BaseAdminController {
     @ResponseBody
     public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
         Map<String, Boolean> response = new HashMap<>();
-        boolean exists = customerService.isEmailExists(email);
+        boolean exists = customerService.isEmailExists(email); // Đã được cập nhật để check toàn hệ thống
+        response.put("exists", exists);
+        return response;
+    }
+
+    @GetMapping("/check-phone")
+    @ResponseBody
+    public Map<String, Boolean> checkPhone(@RequestParam("phone") String phoneNumber) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = customerService.isPhoneExists(phoneNumber);
         response.put("exists", exists);
         return response;
     }

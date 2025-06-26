@@ -6,6 +6,7 @@ import com.example.project_c0824m1_jv103.dto.EmployeePersonalPasswordDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.service.EmailService;
 import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
+import com.example.project_c0824m1_jv103.service.security.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -18,8 +19,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -159,23 +162,25 @@ public class HomeController {
         return "redirect:/login";
     }
 
+    // --- API gửi OTP xác thực email ---
     @PostMapping("/personal-info/send-otp")
     @ResponseBody
-    public Map<String, Object> sendOtp(@RequestParam String email) {
-        Map<String, Object> res = new HashMap<>();
+    public java.util.Map<String, Object> sendOtp(@RequestParam String email) {
+        java.util.Map<String, Object> res = new java.util.HashMap<>();
         boolean sent = emailService.sendOtp(email);
         res.put("success", sent);
         res.put("message", sent ? "Đã gửi OTP đến email." : "Không thể gửi OTP. Vui lòng thử lại.");
         return res;
     }
 
+    // --- API xác thực OTP ---
     @PostMapping("/personal-info/verify-otp")
     @ResponseBody
-    public Map<String, Object> verifyOtp(@RequestBody Map<String, String> body) {
+    public java.util.Map<String, Object> verifyOtp(@RequestBody java.util.Map<String, String> body) {
         String email = body.get("email");
         String otp = body.get("otp");
         boolean verified = emailService.verifyOtp(email, otp);
-        Map<String, Object> res = new HashMap<>();
+        java.util.Map<String, Object> res = new java.util.HashMap<>();
         res.put("verified", verified);
         res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
         return res;

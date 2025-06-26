@@ -206,11 +206,15 @@ public class StorageController extends BaseAdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model) {
-        Page<ProductDTO> products = productService.searchProducts(keyword, "productName", PageRequest.of(page, size));
-        model.addAttribute("products", products.getContent());
+        Page<Storage> storagePage = storageService.searchProductsInStorage(keyword, PageRequest.of(page, size));
+        
+        // Chuyển đổi Page<Storage> thành Page<Product> để tương thích với view
+        Page<Product> productPage = storagePage.map(Storage::getProduct);
+
+        model.addAttribute("products", productPage.getContent());
         model.addAttribute("keyword", keyword);
         model.addAttribute("page", page);
-        model.addAttribute("totalPages", products.getTotalPages());
+        model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("currentPage", "export");
         return "storage/product-selection";
     }
