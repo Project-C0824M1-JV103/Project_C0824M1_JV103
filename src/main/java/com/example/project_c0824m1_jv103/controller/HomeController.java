@@ -4,8 +4,8 @@ import com.example.project_c0824m1_jv103.common.EncryptPasswordUtils;
 import com.example.project_c0824m1_jv103.dto.EmployeePersonalDto;
 import com.example.project_c0824m1_jv103.dto.EmployeePersonalPasswordDto;
 import com.example.project_c0824m1_jv103.model.Employee;
+import com.example.project_c0824m1_jv103.service.EmailService;
 import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
-import com.example.project_c0824m1_jv103.service.security.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -18,12 +18,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.security.Principal;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -31,6 +30,9 @@ public class HomeController {
 
     @Autowired
     IEmployeeService employeeService;
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("")
     public String showHome() {
@@ -127,16 +129,22 @@ public class HomeController {
         }
 
         if (!EncryptPasswordUtils.ParseEncrypt(passwordDto.getOldPassword(), employee.getPassword())) {
-            model.addAttribute("passwordMessage", "Mật khẩu hiện tại không đúng!");
-            model.addAttribute("messageType", "danger");
+            bindingResult.rejectValue("oldPassword", "error.password", "Mật khẩu hiện tại không đúng!");
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
         }
 
         if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
-            model.addAttribute("passwordMessage", "Mật khẩu xác nhận không khớp!");
-            model.addAttribute("messageType", "danger");
+            bindingResult.rejectValue("confirmPassword", "error.password", "Mật khẩu xác nhận không khớp!");
+            model.addAttribute("hasError", true);
+            model.addAttribute("passwordDto", passwordDto);
+            return "homePage/personal_info";
+        }
+
+        if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword()) &&
+            passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
+            bindingResult.rejectValue("newPassword", "error.password", "Mật khẩu mới không được giống với mật khẩu cũ!");
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -149,5 +157,27 @@ public class HomeController {
         redirectAttributes.addFlashAttribute("passwordMessage", "Đổi mật khẩu thành công!");
         redirectAttributes.addFlashAttribute("messageType", "success");
         return "redirect:/login";
+    }
+
+    @PostMapping("/personal-info/send-otp")
+    @ResponseBody
+    public Map<String, Object> sendOtp(@RequestParam String email) {
+        Map<String, Object> res = new HashMap<>();
+        boolean sent = emailService.sendOtp(email);
+        res.put("success", sent);
+        res.put("message", sent ? "Đã gửi OTP đến email." : "Không thể gửi OTP. Vui lòng thử lại.");
+        return res;
+    }
+
+    @PostMapping("/personal-info/verify-otp")
+    @ResponseBody
+    public Map<String, Object> verifyOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String otp = body.get("otp");
+        boolean verified = emailService.verifyOtp(email, otp);
+        Map<String, Object> res = new HashMap<>();
+        res.put("verified", verified);
+        res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
+        return res;
     }
 }

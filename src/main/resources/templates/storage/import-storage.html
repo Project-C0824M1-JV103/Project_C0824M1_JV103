@@ -375,23 +375,7 @@
                         </tr>
                         </thead>
                         <tbody id="productTableBody">
-                        <tr th:each="i, l : ${inforStorages}">
-                            <td th:text="${l.count}"></td>
-                            <td th:text="${i.product.productName}"></td>
-                            <td th:text="${#numbers.formatDecimal(i.cost, 0, 0)}"></td>
-                            <td th:text="${i.product.cpu}"></td>
-                            <td th:text="${i.product.memory}"></td>
-                            <td>
-                                <button type="button" class="btn btn-select-product"
-                                        th:attr="data-product-name=${i.product.productName},
-                                            data-product-cost=${i.cost},
-                                            data-product-id=${i.product.productId},
-                                            data-supplier-id=${i.product.supplier.suplierId},
-                                            data-supplier-name=${i.product.supplier.suplierName}">
-                                    <i class="bi bi-check-circle"></i> Chọn
-                                </button>
-                            </td>
-                        </tr>
+                        <!-- Nội dung sẽ được render động bằng JS -->
                         </tbody>
                     </table>
                 </div>
@@ -577,6 +561,50 @@
         });
     });
 
+    function renderProductTable(data) {
+        const tbody = document.getElementById('productTableBody');
+        tbody.innerHTML = data.products.length
+            ? data.products.map((p, i) => `
+                <tr>
+                    <td>${i + 1 + data.pageNumber * data.pageSize}</td>
+                    <td>${p.productName}</td>
+                    <td>${Number(p.price).toLocaleString('vi-VN')}</td>
+                    <td>${p.cpu || ''}</td>
+                    <td>${p.memory || ''}</td>
+                    <td>
+                        <button type="button" class="btn btn-select-product"
+                            data-product-name="${p.productName}"
+                            data-product-cost="${p.price}"
+                            data-product-id="${p.productId}"
+                            data-supplier-id="${p.supplierId || ''}"
+                            data-supplier-name="${p.supplierName || ''}">
+                            <i class="bi bi-check-circle"></i> Chọn
+                        </button>
+                    </td>
+                </tr>
+            `).join('')
+            : `<tr><td colspan="6" class="text-center">Không tìm thấy sản phẩm nào</td></tr>`;
+        attachSelectProductEvents();
+        renderProductPagination(data.totalPages, data.pageNumber);
+    }
+
+    function fetchProducts(page = 0) {
+        const form = document.getElementById('productSearchForm');
+        const params = new URLSearchParams(new FormData(form));
+        params.set('page', page);
+        fetch(`/storage/products/data?${params}`)
+            .then(res => res.json())
+            .then(renderProductTable)
+            .catch(() => alert('Có lỗi khi tải sản phẩm!'));
+    }
+
+    document.getElementById('productSearchForm').onsubmit = e => { e.preventDefault(); fetchProducts(0); };
+    document.querySelector('button[onclick="refreshProductList()"]') && (document.querySelector('button[onclick="refreshProductList()"]').onclick = () => { 
+        document.getElementById('productSearchForm').reset(); fetchProducts(0); 
+    });
+    window.changeProductPage = fetchProducts;
+    document.getElementById('productModal').addEventListener('show.bs.modal', () => fetchProducts(0));
+
     function renderProductPagination(totalPages, pageNumber) {
         let html = '';
         if (totalPages > 1) {
@@ -590,54 +618,6 @@
             html += '</ul></nav>';
         }
         document.getElementById('productPaginationContainer').innerHTML = html;
-    }
-    function searchProducts() {
-        const form = document.getElementById('productSearchForm');
-        const formData = new FormData(form);
-        const params = new URLSearchParams(formData);
-        params.set('page', '0');
-        fetch(`/storage/products/data?${params.toString()}`)
-            .then(response => response.json())
-            .then(data => {
-                renderProductPagination(data.totalPages, data.pageNumber);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi tìm kiếm sản phẩm!');
-            });
-    }
-    function changeProductPage(page) {
-        const form = document.getElementById('productSearchForm');
-        const formData = new FormData(form);
-        const params = new URLSearchParams(formData);
-        params.set('page', page);
-        fetch(`/storage/products/data?${params.toString()}`)
-            .then(response => response.json())
-            .then(data => {
-                renderProductPagination(data.totalPages, data.pageNumber);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi chuyển trang!');
-            });
-    }
-    function refreshProductList() {
-        const form = document.getElementById('productSearchForm');
-        form.reset();
-        fetch('/storage/products/data?page=0&size=6')
-            .then(response => response.json())
-            .then(data => {
-                renderProductPagination(data.totalPages, data.pageNumber);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi làm mới danh sách sản phẩm!');
-            });
-    }
-    if (document.getElementById('productModal')) {
-        document.getElementById('productModal').addEventListener('show.bs.modal', function () {
-            refreshProductList();
-        });
     }
 </script>
 <script th:if="${showAddProductModal}">

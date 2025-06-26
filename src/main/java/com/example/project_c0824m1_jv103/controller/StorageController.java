@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/storage")
@@ -339,4 +341,32 @@ public class StorageController extends BaseAdminController {
         return productRepository.findBySupplier_SuplierId(supplierId);
     }
 
+    @GetMapping("/products/data")
+    @ResponseBody
+    public Map<String, Object> getProductsData(
+            @RequestParam(required = false) String productName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductDTO> products;
+        boolean isSearch = false;
+
+        if (productName != null && !productName.isEmpty()) {
+            products = productService.searchProducts(productName, "productName", pageable);
+            isSearch = true;
+        } else {
+            products = productService.findAll(pageable);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("products", products.getContent());
+        response.put("pageNumber", page);
+        response.put("pageSize", size);
+        response.put("totalPages", products.getTotalPages());
+        response.put("totalElements", products.getTotalElements());
+        response.put("isSearch", isSearch);
+
+        return response;
+    }
 }
