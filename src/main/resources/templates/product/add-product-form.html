@@ -586,6 +586,111 @@
 
 <!-- Script xem trước hình ảnh -->
 <script>
+  const MAX_IMAGES = 10; // Hoặc số lượng tối đa bạn muốn
+  document.getElementById('imageFiles').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+
+    // Validate new images
+    const validation = validateNewImages(files);
+    if (validation.error) {
+      alert(validation.error);
+      e.target.value = ''; // Clear input
+      return;
+    }
+
+    // Add valid files to selectedFiles array
+    files.forEach(file => {
+      selectedFiles.push(file);
+    });
+
+    updatePreview();
+    e.target.value = ''; // Clear input
+  });function validateNewImages(newFiles) {
+    // Count existing images (not deleted)
+    const existingImages = document.querySelectorAll('.image-preview[data-image-url]');
+    const existingCount = Array.from(existingImages).filter(img =>
+            img.style.display !== 'none'
+    ).length;
+
+    const currentNewCount = selectedFiles.filter(file => !file.hasOwnProperty('imageUrl')).length;
+    const incomingCount = newFiles.length;
+    const totalCount = existingCount + currentNewCount + incomingCount;
+
+    // Check total count limit
+    if (totalCount > MAX_IMAGES) {
+      return {
+        error: `Tổng số ảnh không được vượt quá ${MAX_IMAGES} ảnh. Hiện tại có ${existingCount} ảnh cũ + ${currentNewCount} ảnh mới đã chọn, bạn đang chọn thêm ${incomingCount} ảnh.`
+      };
+    }
+
+    // Get existing image names from data attributes
+    const existingImageNames = [];
+    existingImages.forEach(img => {
+      if (img.style.display !== 'none') {
+        const imageUrl = img.getAttribute('data-image-url');
+        if (imageUrl) {
+          const fileName = imageUrl.split('/').pop().toLowerCase();
+          existingImageNames.push(fileName);
+        }
+      }
+    });
+
+    // Get already selected new file names
+    const selectedNewFileNames = selectedFiles
+            .filter(file => !file.hasOwnProperty('imageUrl'))
+            .map(file => file.name.toLowerCase());
+
+    // Check for duplicate files
+    const newFileNames = [];
+    for (let i = 0; i < newFiles.length; i++) {
+      const fileName = newFiles[i].name.toLowerCase();
+
+      // Check if already exists in current product
+      const fileNameOnly = fileName.split('.')[0];
+      const existingMatch = existingImageNames.some(existingName =>
+              existingName.includes(fileNameOnly) || fileNameOnly.includes(existingName.split('.')[0])
+      );
+
+      if (existingMatch) {
+        return {
+          error: `Ảnh "${newFiles[i].name}" có tên tương tự với ảnh hiện tại của sản phẩm.`
+        };
+      }
+
+      // Check if already selected in new files
+      if (selectedNewFileNames.includes(fileName)) {
+        return {
+          error: `Ảnh "${newFiles[i].name}" đã được chọn trước đó.`
+        };
+      }
+
+      // Check for duplicates in current batch
+      if (newFileNames.includes(fileName)) {
+        return {
+          error: `Bạn đang chọn ảnh "${newFiles[i].name}" nhiều lần.`
+        };
+      }
+
+      newFileNames.push(fileName);
+
+      // Check file size (5MB max)
+      if (newFiles[i].size > 5 * 1024 * 1024) {
+        return {
+          error: `Ảnh "${newFiles[i].name}" có kích thước quá lớn (tối đa 5MB).`
+        };
+      }
+
+      // Check file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(newFiles[i].type)) {
+        return {
+          error: `Ảnh "${newFiles[i].name}" không đúng định dạng. Chỉ chấp nhận JPG, PNG, GIF.`
+        };
+      }
+    }
+
+    return { error: null }; // Valid
+  }
   let selectedFiles = []; // Track selected files
 
   // Preview ảnh được chọn
@@ -730,7 +835,10 @@
         document.getElementById('loading-overlay').style.display = 'flex';
       });
     }
-  });
+
+  }
+  );
+
 </script>
 
 <!-- Loading Popup (Đẹp & đồng bộ admin) -->
