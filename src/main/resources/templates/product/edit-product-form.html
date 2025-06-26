@@ -176,7 +176,58 @@
       display: block;
       color: #dc3545;
       font-size: 0.875em;
-      margin-top: 5px;
+      flex-shrink: 0;
+    }
+
+    /* Error message inline with label */
+    .label-with-error {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .label-text {
+      margin: 0;
+    }
+
+    .inline-error {
+      color: #dc3545;
+      font-size: 0.75em;
+      margin: 0;
+      padding: 4px 8px;
+
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* Special handling for currency input */
+    .form-group-with-error .currency-input {
+      flex: 1;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .label-with-error {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      
+      .inline-error {
+        margin-top: 5px;
+        white-space: normal;
+      }
+    }
+
+    /* Ensure error message stays aligned with input, not label */
+    .form-group {
+      position: relative;
+    }
+
+    .form-label {
+      margin-bottom: 8px;
+      display: block;
     }
 
     .currency-input {
@@ -258,9 +309,17 @@
                 <!-- Tên sản phẩm -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">
-                      Tên sản phẩm <span class="required">*</span>
-                    </label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">
+                        Tên sản phẩm <span class="required">*</span>
+                      </label>
+                      <div
+                              th:if="${#fields.hasErrors('productName')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{productName}"></span>
+                      </div>
+                    </div>
                     <input
                             type="text"
                             th:field="*{productName}"
@@ -268,21 +327,23 @@
                             th:classappend="${#fields.hasErrors('productName')} ? 'is-invalid'"
                             placeholder="Nhập tên sản phẩm"
                     />
-                    <div
-                            th:if="${#fields.hasErrors('productName')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{productName}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Giá -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">
-                      Giá <span class="required">*</span>
-                    </label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">
+                        Giá <span class="required">*</span>
+                      </label>
+                      <div
+                              th:if="${#fields.hasErrors('price')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{price}"></span>
+                      </div>
+                    </div>
                     <div class="currency-input">
                       <input
                               type="text"
@@ -295,19 +356,21 @@
                       />
                       <span class="currency-symbol">VNĐ</span>
                     </div>
-                    <div
-                            th:if="${#fields.hasErrors('price')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{price}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Kích thước màn hình -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">Kích thước màn hình(inch) <span class="required">*</span></label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">Kích thước màn hình(inch) <span class="required">*</span></label>
+                      <div
+                              th:if="${#fields.hasErrors('size')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{size}"></span>
+                      </div>
+                    </div>
                     <input
                             type="text"
                             th:field="*{size}"
@@ -316,19 +379,21 @@
                             placeholder="Ví dụ: 6.1"
                             required
                     />
-                    <div
-                            th:if="${#fields.hasErrors('size')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{size}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- CPU -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">CPU <span class="required">*</span></label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">CPU <span class="required">*</span></label>
+                      <div
+                              th:if="${#fields.hasErrors('cpu')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{cpu}"></span>
+                      </div>
+                    </div>
                     <input
                             type="text"
                             th:field="*{cpu}"
@@ -337,19 +402,21 @@
                             placeholder="Ví dụ: A15 Bionic"
                             required
                     />
-                    <div
-                            th:if="${#fields.hasErrors('cpu')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{cpu}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Camera sau -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">Camera sau (MP) <span class="required">*</span></label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">Camera sau (MP) <span class="required">*</span></label>
+                      <div
+                              th:if="${#fields.hasErrors('cameraBack')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{cameraBack}"></span>
+                      </div>
+                    </div>
                     <input
                             type="text"
                             th:field="*{cameraBack}"
@@ -358,19 +425,21 @@
                             placeholder="Ví dụ: 48"
                             required
                     />
-                    <div
-                            th:if="${#fields.hasErrors('cameraBack')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{cameraBack}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Camera trước -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">Camera trước (MP) <span class="required">*</span></label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">Camera trước (MP) <span class="required">*</span></label>
+                      <div
+                              th:if="${#fields.hasErrors('cameraFront')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{cameraFront}"></span>
+                      </div>
+                    </div>
                     <input
                             type="text"
                             th:field="*{cameraFront}"
@@ -379,19 +448,21 @@
                             placeholder="Ví dụ: 12"
                             required
                     />
-                    <div
-                            th:if="${#fields.hasErrors('cameraFront')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{cameraFront}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Bộ nhớ -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">Bộ nhớ (GB) <span class="required">*</span></label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">Bộ nhớ (GB) <span class="required">*</span></label>
+                      <div
+                              th:if="${#fields.hasErrors('memory')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{memory}"></span>
+                      </div>
+                    </div>
                     <input
                             type="text"
                             th:field="*{memory}"
@@ -400,21 +471,23 @@
                             placeholder="Ví dụ: 128"
                             required
                     />
-                    <div
-                            th:if="${#fields.hasErrors('memory')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{memory}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Số lượng -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">
-                      Số lượng <span class="required">*</span>
-                    </label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">
+                        Số lượng <span class="required">*</span>
+                      </label>
+                      <div
+                              th:if="${#fields.hasErrors('quantity')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{quantity}"></span>
+                      </div>
+                    </div>
                     <input
                             type="number"
                             th:field="*{quantity}"
@@ -424,21 +497,23 @@
                             placeholder="0"
                             required
                     />
-                    <div
-                            th:if="${#fields.hasErrors('quantity')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{quantity}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Danh mục -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">
-                      Danh mục <span class="required">*</span>
-                    </label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">
+                        Danh mục <span class="required">*</span>
+                      </label>
+                      <div
+                              th:if="${#fields.hasErrors('categoryId')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{categoryId}"></span>
+                      </div>
+                    </div>
                     <select
                             th:field="*{categoryId}"
                             class="form-control"
@@ -452,21 +527,23 @@
                               th:text="${category.categoryName}"
                       ></option>
                     </select>
-                    <div
-                            th:if="${#fields.hasErrors('categoryId')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{categoryId}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Nhà cung cấp -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">
-                      Nhà cung cấp <span class="required">*</span>
-                    </label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">
+                        Nhà cung cấp <span class="required">*</span>
+                      </label>
+                      <div
+                              th:if="${#fields.hasErrors('supplierId')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{supplierId}"></span>
+                      </div>
+                    </div>
                     <select
                             th:field="*{supplierId}"
                             class="form-control"
@@ -480,19 +557,21 @@
                               th:text="${supplier.suplierName}"
                       ></option>
                     </select>
-                    <div
-                            th:if="${#fields.hasErrors('supplierId')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{supplierId}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Mô tả -->
                 <div class="col-12">
                   <div class="form-group">
-                    <label class="form-label">Mô tả sản phẩm <span class="required">*</span></label>
+                    <div class="label-with-error">
+                      <label class="form-label label-text">Mô tả sản phẩm <span class="required">*</span></label>
+                      <div
+                              th:if="${#fields.hasErrors('description')}"
+                              class="inline-error"
+                      >
+                        <span th:errors="*{description}"></span>
+                      </div>
+                    </div>
                     <textarea
                             id="description"
                             th:field="*{description}"
@@ -503,12 +582,6 @@
                             required
                             style="display: none;"
                     ></textarea>
-                    <div
-                            th:if="${#fields.hasErrors('description')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{description}"></span>
-                    </div>
                   </div>
                 </div>
 
@@ -879,6 +952,13 @@
         // Sync CKEditor data just before submission
         if (descriptionEditor) {
           document.querySelector('#description').value = descriptionEditor.getData();
+        }
+
+        // Ensure files are properly set before submission
+        if (selectedNewFiles.length > 0) {
+          const dt = new DataTransfer();
+          selectedNewFiles.forEach(file => dt.items.add(file));
+          document.getElementById('imageFiles').files = dt.files;
         }
 
         // Also show loading overlay
