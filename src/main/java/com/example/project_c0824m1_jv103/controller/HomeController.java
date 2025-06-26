@@ -147,7 +147,7 @@ public class HomeController {
 
         if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword()) &&
             passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
-            bindingResult.rejectValue("newPassword", "error.password", "Mật khẩu mới không được giống với mật khẩu cũ!");
+            bindingResult.rejectValue("newPassword", "error.password", "Mật khẩu mới không được trùng với mật khẩu cũ!");
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
