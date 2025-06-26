@@ -223,14 +223,8 @@
                         <span th:each="err, stat : ${#fields.errors('email')}" th:text="${err}" class="text-danger small"></span>
                     </div>
                 </div>
-                <div class="input-group">
-                    <input type="email" id="email" class="form-control" placeholder="Nhập email"
-                           th:field="*{email}" th:readonly="${!isEditing}"/>
-                    <button type="button" class="btn btn-outline-secondary" id="verifyEmailBtn" style="display:none;">Verify</button>
-                    <button type="button" class="btn btn-success" id="verifiedEmailBtn" style="display:none;" disabled>
-                        <i class="bi bi-check-circle"></i> Verified
-                    </button>
-                </div>
+                <input type="email" id="email" class="form-control" placeholder="Nhập email"
+                       th:field="*{email}" th:readonly="${!isEditing}"/>
             </div>
 
             <div class="mb-3">
@@ -379,7 +373,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
-document.addEventListener("DOMContentLoaded", function() {
     const fields = ["fullName", "email", "phone"];
     const editBtn = document.getElementById("editBtn");
     const confirmBtn = document.getElementById("confirmBtn");
@@ -387,57 +380,50 @@ document.addEventListener("DOMContentLoaded", function() {
     const personalForm = document.getElementById("personalForm");
     const passwordForm = document.getElementById("passwordForm");
     const savePasswordBtn = document.getElementById("savePasswordBtn");
-    const confirmModalEl = document.getElementById("confirmModal");
-    const confirmModal = new bootstrap.Modal(confirmModalEl);
+    const confirmModal = new bootstrap.Modal(document.getElementById("confirmModal"));
     const passwordConfirmModal = new bootstrap.Modal(document.getElementById("passwordConfirmModal"));
     const modalConfirmBtn = document.getElementById("modalConfirmBtn");
     const modalPasswordConfirmBtn = document.getElementById("modalPasswordConfirmBtn");
     const confirmMessage = document.getElementById("confirmMessage");
     const passwordConfirmMessage = document.getElementById("passwordConfirmMessage");
-    const otpModalEl = document.getElementById("otpModal");
-    const otpModal = new bootstrap.Modal(otpModalEl);
-    const submitOtpBtn = document.getElementById('submitOtpBtn');
-    const otpInput = document.getElementById('otpInput');
-    const otpError = document.getElementById('otpError');
-    const emailInput = document.getElementById('email');
-    const verifyBtn = document.getElementById('verifyEmailBtn');
-    const verifiedBtn = document.getElementById('verifiedEmailBtn');
+
     let isEditing = formCard.dataset.isEditing === 'true';
     let hasError = formCard.dataset.hasError === 'true';
-    const originalValues = {};
-    let otpVerified = false;
-    let emailVerified = false;
-    let lastVerifiedEmail = '';
 
-    // Cấu hình trạng thái input
-    fields.forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            originalValues[id] = input.value;
-            input.readOnly = !(isEditing || hasError);
+    const originalValues = {};
+
+    window.addEventListener("DOMContentLoaded", () => {
+        // Cấu hình trạng thái input
+        fields.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                originalValues[id] = input.value;
+                input.readOnly = !(isEditing || hasError);
+            }
+        });
+
+        if (confirmBtn) {
+            confirmBtn.disabled = !(isEditing || hasError);
+        }
+        if (editBtn) {
+            editBtn.textContent = (isEditing || hasError) ? "Hủy" : "Thay đổi";
+        }
+
+        const personalMessage = /*[[${personalInfoMessage}]]*/ null;
+        const passwordMessage = /*[[${passwordMessage}]]*/ null;
+        const messageType = /*[[${messageType}]]*/ 'success';
+
+        if (personalMessage) {
+            showAlert(personalMessage, messageType, 'jsSuccessAlertContainer');
+        }
+        if (passwordMessage) {
+            showAlert(passwordMessage, messageType, 'jsPasswordAlertContainer');
+        }
+
+        if (hasError) {
+            showAlert('Có lỗi trong thông tin bạn nhập. Vui lòng kiểm tra lại.', 'danger', 'jsSuccessAlertContainer');
         }
     });
-
-    if (confirmBtn) {
-        confirmBtn.disabled = !(isEditing || hasError);
-    }
-    if (editBtn) {
-        editBtn.textContent = (isEditing || hasError) ? "Hủy" : "Thay đổi";
-    }
-
-    const personalMessage = /*[[${personalInfoMessage}]]*/ null;
-    const passwordMessage = /*[[${passwordMessage}]]*/ null;
-    const messageType = /*[[${messageType}]]*/ 'success';
-
-    if (personalMessage) {
-        showAlert(personalMessage, messageType, 'jsSuccessAlertContainer');
-    }
-    if (passwordMessage) {
-        showAlert(passwordMessage, messageType, 'jsPasswordAlertContainer');
-    }
-    if (hasError) {
-        showAlert('Có lỗi trong thông tin bạn nhập. Vui lòng kiểm tra lại.', 'danger', 'jsSuccessAlertContainer');
-    }
 
     if (editBtn) {
         editBtn.addEventListener("click", () => {
@@ -460,6 +446,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 formCard.dataset.hasError = 'false';
                 return;
             }
+
             isEditing = true;
             fields.forEach(id => {
                 const input = document.getElementById(id);
@@ -475,74 +462,31 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Khi submit form, chỉ hiện modal xác nhận thay đổi
     if (personalForm) {
         personalForm.addEventListener('submit', function (event) {
             event.preventDefault();
+            const emailInput = document.getElementById('email');
+            const originalEmail = originalValues['email'];
+            let message = 'Bạn có muốn thay đổi không?';
+            if (emailInput && emailInput.value !== originalEmail) {
+                message += '\nLưu ý: Thay đổi email sẽ yêu cầu đăng nhập lại.';
+            }
             if (confirmMessage) {
-                confirmMessage.textContent = 'Bạn có muốn thay đổi không?';
+                confirmMessage.textContent = message;
             }
             confirmModal.show();
         });
     }
 
-    // Khi nhấn xác nhận trong modal xác nhận thay đổi, gửi OTP và hiện modal nhập OTP
     if (modalConfirmBtn) {
         modalConfirmBtn.addEventListener('click', function () {
             confirmModal.hide();
-            // Gửi OTP
-            const email = document.getElementById('email').value;
-            fetch('/personal-info/send-otp?email=' + encodeURIComponent(email), { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        otpInput.value = '';
-                        otpError.style.display = 'none';
-                        otpModal.show();
-                    } else {
-                        alert(data.message || 'Không thể gửi OTP.');
-                    }
-                })
-                .catch(() => {
-                    alert('Có lỗi khi gửi OTP!');
-                });
-        });
-    }
-
-    // Xác thực OTP khi nhấn nút trong modal OTP
-    if (submitOtpBtn) {
-        submitOtpBtn.addEventListener('click', function () {
-            const otp = otpInput.value.trim();
-            const email = document.getElementById('email').value.trim();
-            if (!otp) {
-                otpError.textContent = 'Vui lòng nhập mã OTP.';
-                otpError.style.display = 'block';
-                return;
+            if (personalForm) {
+                personalForm.submit();
             }
-            fetch('/personal-info/verify-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, otp: otp })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.verified) {
-                    otpVerified = true;
-                    otpModal.hide();
-                    personalForm.submit();
-                } else {
-                    otpError.textContent = data.message || 'Mã OTP không đúng hoặc đã hết hạn.';
-                    otpError.style.display = 'block';
-                }
-            })
-            .catch(() => {
-                otpError.textContent = 'Có lỗi khi xác thực OTP!';
-                otpError.style.display = 'block';
-            });
         });
     }
 
-    // Password change modal logic giữ nguyên
     if (passwordForm) {
         passwordForm.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -552,6 +496,7 @@ document.addEventListener("DOMContentLoaded", function() {
             passwordConfirmModal.show();
         });
     }
+
     if (modalPasswordConfirmBtn) {
         modalPasswordConfirmBtn.addEventListener('click', function () {
             passwordConfirmModal.hide();
@@ -569,6 +514,7 @@ document.addEventListener("DOMContentLoaded", function() {
             alertDiv.setAttribute('role', 'alert');
             alertDiv.textContent = message;
             alertContainer.appendChild(alertDiv);
+
             setTimeout(() => {
                 alertDiv.style.transition = "opacity 0.5s ease";
                 alertDiv.style.opacity = '0';
@@ -587,110 +533,58 @@ document.addEventListener("DOMContentLoaded", function() {
             icon.classList.toggle("bi-eye-slash");
         }
     }
+    // Gửi OTP khi người dùng nhấn nút "Xác nhận" thay đổi thông tin cá nhân
+document.getElementById('confirmBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    // Gửi request gửi OTP về email hiện tại
+    const email = document.getElementById('email').value;
+    fetch('/personal-info/send-otp?email=' + encodeURIComponent(email), { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Hiển thị modal nhập OTP
+                const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+                document.getElementById('otpInput').value = '';
+                document.getElementById('otpError').style.display = 'none';
+                otpModal.show();
+            } else {
+                alert(data.message || 'Không thể gửi OTP.');
+            }
+        })
+        .catch(() => {
+            alert('Có lỗi khi gửi OTP!');
+        });
+});
 
-    function updateVerifyButton() {
-        const email = emailInput.value.trim();
-        if (emailVerified && email === lastVerifiedEmail) {
-            verifyBtn.style.display = 'none';
-            verifiedBtn.style.display = 'inline-block';
-        } else if (isValidEmail(email)) {
-            verifyBtn.style.display = 'inline-block';
-            verifiedBtn.style.display = 'none';
+// Xác thực OTP khi người dùng nhấn nút "Xác nhận" trong modal
+document.getElementById('submitOtpBtn').addEventListener('click', function () {
+    const otp = document.getElementById('otpInput').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const otpError = document.getElementById('otpError');
+    if (!otp) {
+        otpError.textContent = 'Vui lòng nhập mã OTP.';
+        otpError.style.display = 'block';
+        return;
+    }
+    fetch('/personal-info/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, otp: otp })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.verified) {
+            // Gửi form cập nhật thông tin cá nhân
+            document.getElementById('personalForm').submit();
         } else {
-            verifyBtn.style.display = 'none';
-            verifiedBtn.style.display = 'none';
+            otpError.textContent = data.message || 'Mã OTP không đúng hoặc đã hết hạn.';
+            otpError.style.display = 'block';
         }
-    }
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-    if (emailInput) {
-        emailInput.addEventListener('input', function() {
-            emailVerified = false;
-            lastVerifiedEmail = '';
-            updateVerifyButton();
-        });
-        emailInput.addEventListener('blur', updateVerifyButton);
-    }
-    if (verifyBtn) {
-        verifyBtn.addEventListener('click', function() {
-            const email = emailInput.value.trim();
-            if (!isValidEmail(email)) {
-                alert('Email phải có định dạng hợp lệ (ví dụ: example@domain.com)');
-                return;
-            }
-            verifyBtn.disabled = true;
-            fetch('/personal-info/send-otp?email=' + encodeURIComponent(email), { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    verifyBtn.disabled = false;
-                    if (data.success) {
-                        // Mở modal nhập OTP
-                        const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
-                        document.getElementById('otpInput').value = '';
-                        document.getElementById('otpError').style.display = 'none';
-                        otpModal.show();
-                    } else {
-                        alert(data.message || 'Không thể gửi OTP.');
-                    }
-                })
-                .catch(() => {
-                    verifyBtn.disabled = false;
-                    alert('Có lỗi khi gửi OTP!');
-                });
-        });
-    }
-    if (submitOtpBtn) {
-        submitOtpBtn.addEventListener('click', function () {
-            const otp = document.getElementById('otpInput').value.trim();
-            const email = emailInput.value.trim();
-            const otpError = document.getElementById('otpError');
-            if (!otp) {
-                otpError.textContent = 'Vui lòng nhập mã OTP.';
-                otpError.style.display = 'block';
-                return;
-            }
-            submitOtpBtn.disabled = true;
-            fetch('/personal-info/verify-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, otp: otp })
-            })
-            .then(response => response.json())
-            .then(data => {
-                submitOtpBtn.disabled = false;
-                if (data.verified) {
-                    emailVerified = true;
-                    lastVerifiedEmail = email;
-                    updateVerifyButton();
-                    const otpModal = bootstrap.Modal.getInstance(document.getElementById('otpModal'));
-                    otpModal.hide();
-                } else {
-                    otpError.textContent = data.message || 'Mã OTP không đúng hoặc đã hết hạn.';
-                    otpError.style.display = 'block';
-                }
-            })
-            .catch(() => {
-                submitOtpBtn.disabled = false;
-                otpError.textContent = 'Có lỗi khi xác thực OTP!';
-                otpError.style.display = 'block';
-            });
-        });
-    }
-    if (emailInput) {
-        updateVerifyButton();
-    }
-    // Khi submit form, kiểm tra đã xác thực email chưa
-    if (personalForm) {
-        personalForm.addEventListener('submit', function (event) {
-            if (!emailVerified || emailInput.value.trim() !== lastVerifiedEmail) {
-                alert('Vui lòng xác thực email trước khi lưu thay đổi!');
-                event.preventDefault();
-                return;
-            }
-        });
-    }
+    })
+    .catch(() => {
+        otpError.textContent = 'Có lỗi khi xác thực OTP!';
+        otpError.style.display = 'block';
+    });
 });
 </script>
 </body>
