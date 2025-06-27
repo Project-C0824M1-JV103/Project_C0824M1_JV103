@@ -410,7 +410,7 @@
                                     </a>
                                 </li>
                             </ul>
-                            <div class="text-center text-muted mt-2">
+                            <div class="text-center text-muted mt-2" th:if="${suppliers.totalElements != 0}">
                                 Trang <span th:text="${suppliers.number + 1}"></span> trong tổng số <span th:text="${suppliers.totalPages}"></span> trang (<span th:text="${suppliers.totalElements}"></span> nhà cung cấp)
                             </div>
                         </nav>

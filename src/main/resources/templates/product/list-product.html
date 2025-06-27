@@ -567,7 +567,7 @@
                                 </a>
                             </li>
                         </ul>
-                        <div class="text-center text-muted mt-2">
+                        <div class="text-center text-muted mt-2" th:if="${productPage.totalElements != 0}">
                             Trang <span th:text="${productPage.number + 1}"></span> trong tổng số <span
                                 th:text="${productPage.totalPages}"></span> trang (<span
                                 th:text="${productPage.totalElements}"></span> sản phẩm)

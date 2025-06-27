@@ -438,7 +438,7 @@
                                 </a>
                             </li>
                         </ul>
-                        <div class="text-center text-muted mt-2">
+                        <div class="text-center text-muted mt-2" th:unless="${#lists.isEmpty(customers)}">
                             Trang <span th:text="${pageNumber + 1}"></span> trong tổng số <span
                                 th:text="${totalPages}"></span> trang (<span th:text="${totalElements}"></span> khách
                             hàng)

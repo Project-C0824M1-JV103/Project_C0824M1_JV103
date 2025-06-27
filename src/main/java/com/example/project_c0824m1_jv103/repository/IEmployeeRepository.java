@@ -35,4 +35,12 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> findByRole (Employee.Role role);
     @Query("SELECT e FROM Employee e WHERE e.role != com.example.project_c0824m1_jv103.model.Employee.Role.Admin")
     Page<Employee> findAllNonAdminWithPaging(Pageable pageable);
+
+    // Kiểm tra tồn tại theo email nhưng loại trừ employee hiện tại
+    @Query("SELECT COUNT(e) > 0 FROM Employee e WHERE LOWER(e.email) = LOWER(:email) AND e.employeeId != :employeeId")
+    boolean existsByEmailIgnoreCaseAndCustomerIdNot(@Param("email") String email, @Param("employeeId") Integer employeeId);
+
+    // Kiểm tra tồn tại theo số điện thoại nhưng loại trừ employee hiện tại
+    @Query("SELECT COUNT(e) > 0 FROM Employee e WHERE e.phone = :phoneNumber AND e.employeeId != :employeeId")
+    boolean existsByPhoneNumberAndCustomerIdNot(@Param("phoneNumber") String phoneNumber, @Param("employeeId") Integer employeeId);
 }
