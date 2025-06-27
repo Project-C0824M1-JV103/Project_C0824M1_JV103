@@ -32,4 +32,4 @@ public class VNPayConfig {
     public String getVnp_ReturnUrl() {
         return vnp_ReturnUrl;
     }
-} 
+}
