@@ -347,9 +347,6 @@
                     <div class="image-section">
                       <!-- Image Preview Section (Left) -->
                       <div class="image-preview-section">
-                        <h6 class="mb-3 text-muted">
-                          <i class="fas fa-images me-2"></i>Preview ảnh nhà cung cấp
-                        </h6>
 
                         <!-- Preview ảnh được chọn -->
                         <div id="imagePreview"></div>
@@ -365,13 +362,14 @@
                           <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
                           <h6 class="text-muted mb-2">Thêm ảnh nhà cung cấp</h6>
                           <p class="text-muted mb-3">
-                            Kéo thả file ảnh vào đây<br/>hoặc click để chọn
+                            Kéo thả file ảnh vào đây<br/>hoặc click để chọn<br/>
+                            <strong>Chỉ chấp nhận file ảnh</strong>
                           </p>
                           <input
                             type="file"
                             id="imageFile"
                             th:field="*{imageFile}"
-                            accept="image/*"
+                            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                             class="form-control"
                             style="display: none"
                           />
@@ -385,7 +383,7 @@
                           <div class="text-center">
                             <small class="text-muted">
                               <i class="fas fa-info-circle me-1"></i>
-                              Hỗ trợ: JPG, PNG, GIF<br/>
+                              Chỉ chấp nhận: JPG, JPEG, PNG<br/>
                               Tối đa 5MB mỗi file
                             </small>
                           </div>
@@ -428,6 +426,20 @@
   document.getElementById('imageFile').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
+      // Validate file type
+      if (!isValidImageFile(file)) {
+        alert('Chỉ chấp nhận file ảnh (JPG, JPEG, PNG, GIF, WEBP)!');
+        e.target.value = '';
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Kích thước file không được vượt quá 5MB!');
+        e.target.value = '';
+        return;
+      }
+      
       selectedFile = file;
     }
     updatePreview();
@@ -479,6 +491,19 @@
   // Before form submit, create new FormData with selected file
   document.querySelector('form').addEventListener('submit', function(e) {
     if (selectedFile) {
+      // Final validation before submit
+      if (!isValidImageFile(selectedFile)) {
+        e.preventDefault();
+        alert('File được chọn không phải là ảnh hợp lệ!');
+        return false;
+      }
+      
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        e.preventDefault();
+        alert('Kích thước file ảnh quá lớn (tối đa 5MB)!');
+        return false;
+      }
+      
       const dt = new DataTransfer();
       dt.items.add(selectedFile);
       document.getElementById('imageFile').files = dt.files;
@@ -506,7 +531,21 @@
     this.style.borderColor = '#dee2e6';
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      selectedFile = files[0];
+      const file = files[0];
+      
+      // Validate file type
+      if (!isValidImageFile(file)) {
+        alert('Chỉ chấp nhận file ảnh (JPG, JPEG, PNG, GIF, WEBP)!');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Kích thước file không được vượt quá 5MB!');
+        return;
+      }
+      
+      selectedFile = file;
       updatePreview();
     }
   });
@@ -667,6 +706,19 @@
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+
+  // Helper function to validate image file type
+  function isValidImageFile(file) {
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'image/gif',
+      'image/webp'
+    ];
+    
+    return allowedTypes.includes(file.type.toLowerCase());
   }
 
   // Show validation error
