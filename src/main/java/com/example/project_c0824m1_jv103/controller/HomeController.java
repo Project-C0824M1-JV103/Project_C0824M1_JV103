@@ -167,8 +167,8 @@ public class HomeController {
     // --- API gửi OTP xác thực email ---
     @PostMapping("/personal-info/send-otp")
     @ResponseBody
-    public java.util.Map<String, Object> sendOtp(@RequestParam String email) {
-        java.util.Map<String, Object> res = new java.util.HashMap<>();
+    public Map<String, Object> sendOtp(@RequestParam String email) {
+        Map<String, Object> res = new HashMap<>();
         boolean sent = emailService.sendOtp(email);
         res.put("success", sent);
         res.put("message", sent ? "Đã gửi OTP đến email." : "Không thể gửi OTP. Vui lòng thử lại.");
@@ -178,11 +178,11 @@ public class HomeController {
     // --- API xác thực OTP ---
     @PostMapping("/personal-info/verify-otp")
     @ResponseBody
-    public java.util.Map<String, Object> verifyOtp(@RequestBody java.util.Map<String, String> body) {
+    public Map<String, Object> verifyOtp(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         String otp = body.get("otp");
         boolean verified = emailService.verifyOtp(email, otp);
-        java.util.Map<String, Object> res = new java.util.HashMap<>();
+        Map<String, Object> res = new java.util.HashMap<>();
         res.put("verified", verified);
         res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
         return res;
