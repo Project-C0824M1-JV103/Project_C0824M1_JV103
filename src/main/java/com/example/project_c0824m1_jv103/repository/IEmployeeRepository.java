@@ -35,4 +35,8 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> findByRole (Employee.Role role);
     @Query("SELECT e FROM Employee e WHERE e.role != com.example.project_c0824m1_jv103.model.Employee.Role.Admin")
     Page<Employee> findAllNonAdminWithPaging(Pageable pageable);
+    
+    // Validation methods for edit employee (excluding current employee)
+    boolean existsByEmailIgnoreCaseAndEmployeeIdNot(String email, Integer employeeId);
+    boolean existsByPhoneAndEmployeeIdNot(String phone, Integer employeeId);
 }

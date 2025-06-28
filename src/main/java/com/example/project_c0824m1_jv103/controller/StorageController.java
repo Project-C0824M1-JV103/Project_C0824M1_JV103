@@ -37,6 +37,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/storage")
@@ -353,22 +354,38 @@ public class StorageController extends BaseAdminController {
             @RequestParam(defaultValue = "6") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductDTO> products;
+        Page<Storage> storages;
         boolean isSearch = false;
 
         if (productName != null && !productName.isEmpty()) {
-            products = productService.searchProducts(productName, "productName", pageable);
+            storages = storageService.searchProductsInStorage(productName, pageable);
             isSearch = true;
         } else {
-            products = productService.findAll(pageable);
+            storages = storageService.getAllStorageRecords(pageable);
         }
 
+        // Chuyển đổi Storage thành ProductDTO để tương thích với frontend
+        List<Map<String, Object>> products = storages.getContent().stream()
+            .map(storage -> {
+                Map<String, Object> product = new HashMap<>();
+                product.put("productId", storage.getProduct().getProductId());
+                product.put("productName", storage.getProduct().getProductName());
+                product.put("price", storage.getCost() != null ? storage.getCost() : storage.getProduct().getPrice());
+                product.put("cpu", storage.getProduct().getCpu());
+                product.put("memory", storage.getProduct().getMemory());
+                product.put("supplierId", storage.getProduct().getSupplier() != null ? storage.getProduct().getSupplier().getSuplierId() : null);
+                product.put("supplierName", storage.getProduct().getSupplier() != null ? storage.getProduct().getSupplier().getSuplierName() : null);
+                product.put("quantity", storage.getQuantity());
+                return product;
+            })
+            .collect(Collectors.toList());
+
         Map<String, Object> response = new HashMap<>();
-        response.put("products", products.getContent());
+        response.put("products", products);
         response.put("pageNumber", page);
         response.put("pageSize", size);
-        response.put("totalPages", products.getTotalPages());
-        response.put("totalElements", products.getTotalElements());
+        response.put("totalPages", storages.getTotalPages());
+        response.put("totalElements", storages.getTotalElements());
         response.put("isSearch", isSearch);
 
         return response;

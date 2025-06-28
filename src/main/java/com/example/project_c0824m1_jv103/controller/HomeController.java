@@ -68,14 +68,16 @@ public class HomeController {
 
         Employee currentEmployee = employeeService.findByEmail(userDetails.getUsername());
 
-        Employee emailCheck = employeeService.findByEmail(dto.getEmail());
-        if (emailCheck != null && !emailCheck.getEmployeeId().equals(currentEmployee.getEmployeeId())) {
-            bindingResult.rejectValue("email", "error.employee", "Email đã được sử dụng.");
+        if (!dto.getEmail().equalsIgnoreCase(currentEmployee.getEmail())) {
+            if (employeeService.isEmailExistsForOtherEmployee(dto.getEmail(), currentEmployee.getEmployeeId())) {
+                bindingResult.rejectValue("email", "error.employee", "Email đã được sử dụng.");
+            }
         }
 
-        Employee phoneCheck = employeeService.findByPhone(dto.getPhone());
-        if (phoneCheck != null && !phoneCheck.getEmployeeId().equals(currentEmployee.getEmployeeId())) {
-            bindingResult.rejectValue("phone", "error.employee", "Số điện thoại đã được sử dụng.");
+        if (!dto.getPhone().equals(currentEmployee.getPhone())) {
+            if (employeeService.isPhoneExistsForOtherEmployee(dto.getPhone(), currentEmployee.getEmployeeId())) {
+                bindingResult.rejectValue("phone", "error.employee", "Số điện thoại đã được sử dụng.");
+            }
         }
 
         if (bindingResult.hasErrors()) {

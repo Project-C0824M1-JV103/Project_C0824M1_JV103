@@ -5,6 +5,7 @@ import com.example.project_c0824m1_jv103.repository.ICustomerRepository;
 import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
 import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class CustomerService implements ICustomerService {
     private ICustomerRepository iCustomerRepository;
     
     @Autowired
+    @Lazy
     private IEmployeeService employeeService;
     
     @Autowired

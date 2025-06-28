@@ -24,4 +24,8 @@ public interface IEmployeeService {
     Employee findByPhone(String phone);
 
     Page<Employee> findAllNonAdminWithPaging(Pageable pageable); // Thêm phương thức mới
+    
+    // Validation methods for edit employee (excluding current employee)
+    boolean isEmailExistsForOtherEmployee(String email, Integer employeeId);
+    boolean isPhoneExistsForOtherEmployee(String phone, Integer employeeId);
 }
