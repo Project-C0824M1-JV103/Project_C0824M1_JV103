@@ -230,6 +230,32 @@ public class EmployeeController extends BaseAdminController {
         return "redirect:/employees";
     }
 
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestParam("employeeId") Integer employeeId,
+                               RedirectAttributes redirectAttributes,
+                               Principal principal) {
+        try {
+            Employee employee = employeeService.findById(employeeId);
+            if (employee == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy nhân viên!");
+                return "redirect:/employees";
+            }
+
+            // Tạo mật khẩu mặc định
+            String newPassword = "123456";
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            
+            // Cập nhật mật khẩu
+            employee.setPassword(encodedPassword);
+            employeeService.save(employee);
+            redirectAttributes.addFlashAttribute("successMessage", "Reset mật khẩu nhân viên " + employee.getFullName() + " thành công!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi reset mật khẩu: " + e.getMessage());
+        }
+        return "redirect:/employees";
+    }
+
     // API endpoint để kiểm tra email đã tồn tại
     @GetMapping("/check-email")
     @ResponseBody
@@ -249,5 +275,6 @@ public class EmployeeController extends BaseAdminController {
         response.put("exists", exists);
         return response;
     }
+
 }
 
