@@ -133,6 +133,12 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Page<ProductDTO> findAll(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAll(pageable);
+        return productPage.map(productMapper::toDTO);
+    }
+
+    @Override
     public Page<ProductDTO> searchProducts(
             String productName,
             Double minPrice,
