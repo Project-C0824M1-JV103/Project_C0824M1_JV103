@@ -28,4 +28,7 @@ public interface IEmployeeService {
     // Validation methods for edit employee (excluding current employee)
     boolean isEmailExistsForOtherEmployee(String email, Integer employeeId);
     boolean isPhoneExistsForOtherEmployee(String phone, Integer employeeId);
+
+    boolean isEmailExists(String email, Integer employeeId);
+    boolean isPhoneExists(String phoneNumber, Integer employeeId);
 }

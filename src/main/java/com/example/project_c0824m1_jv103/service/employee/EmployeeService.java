@@ -2,6 +2,7 @@ package com.example.project_c0824m1_jv103.service.employee;
 
 import com.example.project_c0824m1_jv103.dto.EmployeePersonalDto;
 import com.example.project_c0824m1_jv103.model.Employee;
+import com.example.project_c0824m1_jv103.repository.ICustomerRepository;
 import com.example.project_c0824m1_jv103.repository.IEmployeeRepository;
 import com.example.project_c0824m1_jv103.service.customer.ICustomerService;
 import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
@@ -25,6 +26,9 @@ public class EmployeeService implements IEmployeeService {
     
     @Autowired
     private ISupplierService supplierService;
+
+   @Autowired
+   private ICustomerRepository customerRepository;
 
     @Override
     public void deleteEmployeesByIds(List<Integer> employeeIds) {
@@ -67,6 +71,41 @@ public class EmployeeService implements IEmployeeService {
     @Override
     public Page<Employee> findAllNonAdminWithPaging(Pageable pageable) {
         return employeeRepository.findAllNonAdminWithPaging(pageable);
+    }
+
+    @Override
+    public boolean isEmailExists(String email, Integer employeeId) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        // Kiểm tra trùng với Customer khác
+        boolean existsInCustomer = customerRepository.existsByEmailIgnoreCase(email);
+
+        // Kiểm tra trùng với Employee
+        boolean existsInEmployee = employeeRepository.existsByEmailIgnoreCaseAndCustomerIdNot(email, employeeId);
+
+        // Kiểm tra trùng với Supplier
+        boolean existsInSupplier = supplierService.isEmailExists(email);
+
+        return existsInCustomer || existsInEmployee || existsInSupplier;
+    }
+
+    @Override
+    public boolean isPhoneExists(String phoneNumber, Integer employeeId) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            return false;
+        }
+        // Kiểm tra trùng với Customer khác
+        boolean existsInCustomer = customerRepository.existsByPhoneNumber(phoneNumber);
+
+        // Kiểm tra trùng với Employee
+        boolean existsInEmployee = (employeeRepository.existsByPhoneNumberAndCustomerIdNot(phoneNumber, employeeId));
+
+        // Kiểm tra trùng với Supplier
+        boolean existsInSupplier = supplierService.isPhoneNumberExists(phoneNumber);
+
+        return existsInCustomer || existsInEmployee || existsInSupplier;
+
     }
 //    @Override
 //    public Page<Employee> findAllWithPaging(Pageable pageable) {

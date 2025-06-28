@@ -63,7 +63,13 @@ public class StorageController extends BaseAdminController {
     @Autowired
     private ICategoryRepository categoryRepository;
 
-    @GetMapping("")
+    @GetMapping
+    public String storage(Model model) {
+        model.addAttribute("currentPage", "storage");
+        return "storage/storage-page";
+    }
+
+    @GetMapping("/list-import")
     public String showStorageList(
             @RequestParam(value = "productName", required = false) String productName,
             @RequestParam(value = "startDate", required = false) String startDate,

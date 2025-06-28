@@ -187,15 +187,28 @@ public class EmployeeController extends BaseAdminController {
                                Principal principal) {
         Employee employee = employeeService.findById(employeeDto.getEmployeeId());
 
-        Employee emailCheck = employeeService.findByEmail(employeeDto.getEmail());
-        if (emailCheck != null && !emailCheck.getEmployeeId().equals(employee.getEmployeeId())) {
-            bindingResult.rejectValue("email", "errorMessage", "Email này đã được sử dụng! Vui lòng nhập email khác!");
+//        Employee emailCheck = employeeService.findByEmail(employeeDto.getEmail());
+//        if (emailCheck != null && !emailCheck.getEmployeeId().equals(employee.getEmployeeId())) {
+//            bindingResult.rejectValue("email", "errorMessage", "Email này đã được sử dụng! Vui lòng nhập email khác!");
+//        }
+
+        if(employeeDto.getEmail() != null || !employeeDto.getEmail().isEmpty()) {
+            if(employeeService.isEmailExists(employeeDto.getEmail(),employeeDto.getEmployeeId())) {
+                bindingResult.rejectValue("email", "errorMessage", "Email này đã được sử dụng! Vui lòng nhập email khác!");
+            }
         }
 
-        Employee phoneCheck = employeeService.findByPhone(employeeDto.getPhone());
-        if (phoneCheck != null && !phoneCheck.getEmployeeId().equals(employee.getEmployeeId())) {
-            bindingResult.rejectValue("phone", "errorMessage", "Số điện thoại này đã được sử dụng! Vui lòng nhập số điện thoại khác!");
+//        Employee phoneCheck = employeeService.findByPhone(employeeDto.getPhone());
+//        if (phoneCheck != null && !phoneCheck.getEmployeeId().equals(employee.getEmployeeId())) {
+//            bindingResult.rejectValue("phone", "errorMessage", "Số điện thoại này đã được sử dụng! Vui lòng nhập số điện thoại khác!");
+//        }
+
+        if(employeeDto.getPhone() != null || !employeeDto.getPhone().isEmpty()) {
+            if(employeeService.isPhoneExists(employeeDto.getPhone(),employeeDto.getEmployeeId())) {
+                bindingResult.rejectValue("phone", "errorMessage", "Số điện thoại này đã được sử dụng! Vui lòng nhập số điện thoại khác!");
+            }
         }
+
 
         if (bindingResult.hasErrors()) {
             List<Employee.Role> allRoles = Arrays.asList(Employee.Role.values());
