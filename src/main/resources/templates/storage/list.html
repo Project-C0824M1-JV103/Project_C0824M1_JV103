@@ -249,12 +249,13 @@
               <thead>
               <tr>
                 <th>STT</th>
+                <th>Ngày nhập</th>
                 <th>Sản phẩm</th>
                 <th>Số lượng</th>
                 <th>Giá nhập (VND)</th>
 
                 <th>Nhân viên</th>
-                <th>Ngày nhập</th>
+
                 <th>Thành tiền (VND)</th>
                 <th>Thao tác</th>
               </tr>
@@ -262,11 +263,12 @@
               <tbody>
               <tr th:each="storage, stat : ${storagePage.content}">
                 <td th:text="${stat.count}"></td>
+                <td th:text="${#temporals.format(storage.transactionDate, 'dd/MM/yyyy HH:mm')}"></td>
                 <td th:text="${storage.productName}"></td>
                 <td th:text="${storage.quantity}"></td>
                 <td th:text="${storage.cost != null ? #numbers.formatDecimal(storage.cost, 0, 'COMMA', 0, 'POINT') : 'N/A'}"></td>
                 <td th:text="${storage.employeeName}"></td>
-                <td th:text="${#temporals.format(storage.transactionDate, 'dd/MM/yyyy HH:mm')}"></td>
+
                 <td th:text="${storage.quantity != null && storage.cost != null ? #numbers.formatDecimal(storage.quantity * storage.cost, 0, 'COMMA', 0, 'POINT') : 'N/A'}"></td>
 
                 <td>
