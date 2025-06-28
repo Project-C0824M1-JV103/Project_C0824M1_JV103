@@ -380,7 +380,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="productPaginationContainer" class="d-flex justify-content-between align-items-center p-3 border-top mt-3"></div>
+                <div id="productPaginationContainer" class="d-flex justify-content-end align-items-center p-3 border-top mt-3"></div>
             </div>
         </div>
     </div>
@@ -606,12 +606,101 @@
         let html = '';
         if (totalPages > 1) {
             html += '<nav><ul class="pagination pagination-sm mb-0">';
-            for (let i = 0; i < totalPages; i++) {
-                if (i >= pageNumber - 2 && i <= pageNumber + 2) {
-                    html += `<li class="page-item ${i === pageNumber ? 'active' : ''}">` +
-                        `<a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${i})">${i + 1}</a></li>`;
+            
+            // Nút First (đầu trang)
+            if (pageNumber > 0) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(0)" title="Trang đầu">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-angle-double-left"></i>
+                    </span>
+                </li>`;
+            }
+            
+            // Nút Previous (trước)
+            if (pageNumber > 0) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${pageNumber - 1})" title="Trang trước">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i>
+                    </span>
+                </li>`;
+            }
+            
+            // Các trang số với logic thông minh
+            let startPage = Math.max(0, pageNumber - 2);
+            let endPage = Math.min(totalPages - 1, pageNumber + 2);
+            
+            // Hiển thị trang đầu nếu cần
+            if (startPage > 0) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(0)">1</a>
+                </li>`;
+                if (startPage > 1) {
+                    html += `<li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>`;
                 }
             }
+            
+            // Hiển thị các trang xung quanh trang hiện tại
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<li class="page-item ${i === pageNumber ? 'active' : ''}">` +
+                    `<a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${i})">${i + 1}</a></li>`;
+            }
+            
+            // Hiển thị trang cuối nếu cần
+            if (endPage < totalPages - 1) {
+                if (endPage < totalPages - 2) {
+                    html += `<li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>`;
+                }
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${totalPages - 1})">${totalPages}</a>
+                </li>`;
+            }
+            
+            // Nút Next (sau)
+            if (pageNumber < totalPages - 1) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${pageNumber + 1})" title="Trang sau">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>`;
+            }
+            
+            // Nút Last (cuối trang)
+            if (pageNumber < totalPages - 1) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${totalPages - 1})" title="Trang cuối">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-angle-double-right"></i>
+                    </span>
+                </li>`;
+            }
+            
             html += '</ul></nav>';
         }
         document.getElementById('productPaginationContainer').innerHTML = html;
