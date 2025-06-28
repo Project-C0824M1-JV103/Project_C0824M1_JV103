@@ -41,7 +41,7 @@ public class EmployeeController extends BaseAdminController {
                 .filter(role -> role != Employee.Role.Admin)
                 .toList();
 
-        model.addAttribute("employee", new Employee());
+        model.addAttribute("employee", new EmployeeCreateDto());
         model.addAttribute("roles", filteredRoles);
         model.addAttribute("statuses", Employee.Status.values());
         model.addAttribute("currentPage", "employee");
@@ -89,7 +89,10 @@ public class EmployeeController extends BaseAdminController {
                                  RedirectAttributes redirectAttributes,
                                  Principal principal) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("roles", Employee.Role.values());
+            List<Employee.Role> filteredRoles = Arrays.stream(Employee.Role.values())
+                    .filter(role -> role != Employee.Role.Admin)
+                    .toList();
+            model.addAttribute("roles", filteredRoles);
             model.addAttribute("currentPage", "employee");
             model.addAttribute("errorMessage", "Vui lòng kiểm tra lại thông tin nhập vào!");
             return "employee/add-employee-form";
@@ -97,13 +100,19 @@ public class EmployeeController extends BaseAdminController {
         // Kiểm tra trùng email
         if (employeeService.findByEmail(employeeDto.getEmail()) != null) {
             model.addAttribute("errorMessage", "Email đã tồn tại, vui lòng nhập email khác!");
-            model.addAttribute("roles", Employee.Role.values());
+            List<Employee.Role> filteredRoles = Arrays.stream(Employee.Role.values())
+                    .filter(role -> role != Employee.Role.Admin)
+                    .toList();
+            model.addAttribute("roles", filteredRoles);
             model.addAttribute("currentPage", "employee");
             return "employee/add-employee-form";
         }
         Employee employee = new Employee();
         org.springframework.beans.BeanUtils.copyProperties(employeeDto, employee);
-        employee.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
+        // Set default password if not provided
+        String password = (employeeDto.getPassword() == null || employeeDto.getPassword().trim().isEmpty()) 
+                ? "123456" : employeeDto.getPassword();
+        employee.setPassword(passwordEncoder.encode(password));
         if (employeeDto.getRole() != null) {
             employee.setRole(Employee.Role.valueOf(employeeDto.getRole()));
         }

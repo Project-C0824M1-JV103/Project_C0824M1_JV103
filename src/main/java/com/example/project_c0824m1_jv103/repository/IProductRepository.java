@@ -10,6 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface IProductRepository extends JpaRepository<Product, Integer> {
+    @Query("SELECT p FROM Product p WHERE p.price > 0 and p.quantity > 0")
+    Page<Product> findAllWithQuantityAndPrice(Pageable pageable);
+
     Page<Product> findByProductNameContainingIgnoreCase(String name, Pageable pageable);
     
     // Tìm sản phẩm theo nhà cung cấp

@@ -17,7 +17,7 @@ public interface IProductService {
     ProductDTO createProduct(ProductDTO productDTO, List<MultipartFile> imageFiles, List<String> captions) throws IOException;
 
     // Lấy danh sách sản phẩm với phân trang
-    Page<ProductDTO> findAll(Pageable pageable);
+    Page<ProductDTO> findAllWithQuantityAndPrice(Pageable pageable);
 
     // Tìm kiếm sản phẩm với nhiều điều kiện
     Page<ProductDTO> searchProducts(
