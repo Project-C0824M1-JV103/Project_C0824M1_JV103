@@ -265,300 +265,234 @@
             >
               <div class="row">
                 <!-- Tên sản phẩm -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">
-                      Tên sản phẩm <span class="required">*</span>
-                    </label>
-                    <input
-                            type="text"
-                            th:field="*{productName}"
-                            class="form-control"
-                            th:classappend="${#fields.hasErrors('productName')} ? 'is-invalid'"
-                            placeholder="Nhập tên sản phẩm"
-                            required
-                    />
-                    <div
-                            th:if="${#fields.hasErrors('productName')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{productName}"></span>
+
+                  <!-- Tên sản phẩm -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Tên sản phẩm <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('productName')}"
+                             th:errors="*{productName}"></div>
+                      </div>
+                      <input type="text" th:field="*{productName}" class="form-control"
+                             th:classappend="${#fields.hasErrors('productName')} ? 'is-invalid'"
+                             placeholder="Nhập tên sản phẩm"/>
                     </div>
                   </div>
-                </div>
 
-                <!-- Giá -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">
-                      Giá <span class="required">*</span>
-                    </label>
-                    <div class="currency-input">
-                      <input
-                              type="number"
-                              th:field="*{price}"
-                              class="form-control"
-                              th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'"
-                              step="1000"
-                              placeholder="0"
-                              style="padding-right: 50px"
-                              required
-                      />
-                      <span class="currency-symbol">VNĐ</span>
-                    </div>
-                    <div
-                            th:if="${#fields.hasErrors('price')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{price}"></span>
+                  <!-- Giá -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Giá <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('price')}"
+                             th:errors="*{price}"></div>
+                      </div>
+                      <div class="currency-input">
+                        <input type="text" inputmode="numeric" th:field="*{price}" class="form-control"
+                               th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'"
+                               placeholder="0"
+                               style="padding-right: 50px"/>
+                        <span class="currency-symbol">VNĐ</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Số lượng -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">
-                      Số lượng <span class="required">*</span>
-                    </label>
-                    <input
-                            type="number"
-                            th:field="*{quantity}"
-                            class="form-control"
-                            th:classappend="${#fields.hasErrors('quantity')} ? 'is-invalid'"
-                            min="0"
-                            placeholder="0"
-                            required
-                    />
-                    <div
-                            th:if="${#fields.hasErrors('quantity')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{quantity}"></span>
+                  <!-- Kích thước màn hình -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Kích thước màn hình (inch) <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('size')}"
+                             th:errors="*{size}"></div>
+                      </div>
+                      <input type="text" th:field="*{size}" class="form-control"
+                             th:classappend="${#fields.hasErrors('size')} ? 'is-invalid'"
+                             placeholder="Ví dụ: 6.1"/>
                     </div>
                   </div>
-                </div>
 
-                <!-- Kích thước màn hình -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">Kích thước màn hình(inch) <span class="required">*</span></label>
-                    <input
-                            type="number"
-                            th:field="*{size}"
-                            class="form-control"
-                            th:classappend="${#fields.hasErrors('size')} ? 'is-invalid'"
-                            placeholder="Ví dụ: 6.1 "
-                            required
-                    />
-                    <div
-                            th:if="${#fields.hasErrors('size')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{size}"></span>
+                  <!-- CPU -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">CPU <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('cpu')}"
+                             th:errors="*{cpu}"></div>
+                      </div>
+                      <input type="text" th:field="*{cpu}" class="form-control"
+                             th:classappend="${#fields.hasErrors('cpu')} ? 'is-invalid'"
+                             placeholder="Ví dụ: A15 Bionic"/>
                     </div>
                   </div>
-                </div>
 
-                <!-- Danh mục -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">
-                      Danh mục <span class="required">*</span>
-                    </label>
-                    <select th:field="*{categoryId}" class="form-select" required>
-                      <option value="">-- Chọn danh mục --</option>
-                      <option th:each="category : ${categories}"
-                              th:value="${category.categoryId}"
-                              th:text="${category.categoryName}"/>
-                    </select>
-                    <div class="text-danger" th:if="${#fields.hasErrors('categoryId')}"
-                         th:errors="*{categoryId}"></div>
-                  </div>
-                </div>
-
-                <!-- Nhà cung cấp -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">
-                      Nhà cung cấp <span class="required">*</span>
-                    </label>
-                    <select th:field="*{supplierId}" class="form-select" required>
-                      <option value="">-- Chọn nhà cung cấp --</option>
-                      <option th:each="supplier : ${suppliers}"
-                              th:value="${supplier.suplierId}"
-                              th:text="${supplier.suplierName}"/>
-                    </select>
-                    <div class="text-danger" th:if="${#fields.hasErrors('supplierId')}"
-                         th:errors="*{supplierId}"></div>
-                  </div>
-                </div>
-
-                <!-- CPU -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">CPU <span class="required">*</span></label>
-                    <input
-                            type="text"
-                            th:field="*{cpu}"
-                            class="form-control"
-                            th:classappend="${#fields.hasErrors('cpu')} ? 'is-invalid'"
-                            placeholder="Ví dụ: A15 Bionic"
-                            required
-                    />
-                    <div
-                            th:if="${#fields.hasErrors('cpu')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{cpu}"></span>
+                  <!-- Camera sau -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Camera sau (MP) <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('cameraBack')}"
+                             th:errors="*{cameraBack}"></div>
+                      </div>
+                      <input type="text" th:field="*{cameraBack}" class="form-control"
+                             th:classappend="${#fields.hasErrors('cameraBack')} ? 'is-invalid'"
+                             placeholder="Ví dụ: 48"/>
                     </div>
                   </div>
-                </div>
 
-                <!-- Bộ nhớ -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">Bộ nhớ (GB)<span class="required">*</span></label>
-                    <input
-                            type="number"
-                            th:field="*{memory}"
-                            class="form-control"
-                            th:classappend="${#fields.hasErrors('memory')} ? 'is-invalid'"
-                            placeholder="Ví dụ: 128"
-                            required
-                    />
-                    <div
-                            th:if="${#fields.hasErrors('memory')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{memory}"></span>
+                  <!-- Camera trước -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Camera trước (MP) <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('cameraFront')}"
+                             th:errors="*{cameraFront}"></div>
+                      </div>
+                      <input type="text" th:field="*{cameraFront}" class="form-control"
+                             th:classappend="${#fields.hasErrors('cameraFront')} ? 'is-invalid'"
+                             placeholder="Ví dụ: 12"/>
                     </div>
                   </div>
-                </div>
 
-                <!-- Camera sau -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">Camera sau(MP) <span class="required">*</span></label>
-                    <input
-                            type="number"
-                            th:field="*{cameraBack}"
-                            class="form-control"
-                            th:classappend="${#fields.hasErrors('cameraBack')} ? 'is-invalid'"
-                            placeholder="Ví dụ: 48"
-                            required
-                    />
-                    <div
-                            th:if="${#fields.hasErrors('cameraBack')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{cameraBack}"></span>
+                  <!-- Bộ nhớ -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Bộ nhớ (GB) <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('memory')}"
+                             th:errors="*{memory}"></div>
+                      </div>
+                      <input type="text" th:field="*{memory}" class="form-control"
+                             th:classappend="${#fields.hasErrors('memory')} ? 'is-invalid'"
+                             placeholder="Ví dụ: 128"/>
                     </div>
                   </div>
-                </div>
 
-                <!-- Camera trước -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-label">Camera trước(MP) <span class="required">*</span></label>
-                    <input
-                            type="number"
-                            th:field="*{cameraFront}"
-                            class="form-control"
-                            th:classappend="${#fields.hasErrors('cameraFront')} ? 'is-invalid'"
-                            placeholder="Ví dụ: 12"
-                            required
-                    />
-                    <div
-                            th:if="${#fields.hasErrors('cameraFront')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{cameraFront}"></span>
+                  <!-- Số lượng -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Số lượng <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('quantity')}"
+                             th:errors="*{quantity}"></div>
+                      </div>
+                      <input type="number" th:field="*{quantity}" class="form-control"
+                             th:classappend="${#fields.hasErrors('quantity')} ? 'is-invalid'"
+                             min="0"
+                             placeholder="0"/>
                     </div>
                   </div>
-                </div>
 
-                <!-- Mô tả -->
-                <div class="col-12">
-                  <div class="form-group">
-                    <label class="form-label">Mô tả sản phẩm <span class="required">*</span></label>
-                    <textarea
-                            id="description"
-                            th:field="*{description}"
-                            class="form-control"
-                            th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"
-                            rows="4"
-                            placeholder="Nhập mô tả chi tiết về sản phẩm..."
-                            required
-                            style="display: none;"
-                    ></textarea>
-                    <div
-                            th:if="${#fields.hasErrors('description')}"
-                            class="invalid-feedback"
-                    >
-                      <span th:errors="*{description}"></span>
+                  <!-- Danh mục -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Danh mục <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('categoryId')}"
+                             th:errors="*{categoryId}"></div>
+                      </div>
+                      <select th:field="*{categoryId}" class="form-control"
+                              th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'">
+                        <option value="">-- Chọn danh mục --</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.categoryId}"
+                                th:text="${category.categoryName}"></option>
+                      </select>
                     </div>
                   </div>
-                </div>
 
-                <!-- Hình ảnh -->
-                <div class="col-12">
-                  <div class="form-group">
-                    <label class="form-label">Hình ảnh sản phẩm</label>
+                  <!-- Nhà cung cấp -->
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Nhà cung cấp <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('supplierId')}"
+                             th:errors="*{supplierId}"></div>
+                      </div>
+                      <select th:field="*{supplierId}" class="form-control"
+                              th:classappend="${#fields.hasErrors('supplierId')} ? 'is-invalid'">
+                        <option value="">-- Chọn nhà cung cấp --</option>
+                        <option th:each="supplier : ${suppliers}"
+                                th:value="${supplier.suplierId}"
+                                th:text="${supplier.suplierName}"></option>
+                      </select>
+                    </div>
+                  </div>
 
-                    <!-- Image Section with Two Columns -->
-                    <div class="image-section">
-                      <!-- Image Preview Section (Left) -->
-                      <div class="image-preview-section">
-                        <h6 class="mb-3 text-muted">
-                          <i class="fas fa-images me-2"></i>Preview ảnh sản phẩm
-                        </h6>
+                  <!-- Mô tả -->
+                  <div class="col-12">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Mô tả sản phẩm <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('description')}"
+                             th:errors="*{description}"></div>
+                      </div>
+                      <textarea id="description" th:field="*{description}" class="form-control"
+                                th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"
+                                rows="4"
+                                placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
+                    </div>
+                  </div>
 
-                        <!-- Preview ảnh được chọn -->
-                        <div id="imagePreview"></div>
+                  <!-- Hình ảnh -->
+                  <div class="col-12">
+                    <div class="form-group mb-3">
+                      <div class="d-flex align-items-center">
+                        <label class="form-label mb-0 me-2">Hình ảnh sản phẩm <span class="text-danger">*</span></label>
+                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                             th:if="${#fields.hasErrors('imageFiles')}"
+                             th:errors="*{imageFiles}"></div>
                       </div>
 
-                      <!-- Image Upload Section (Right) -->
-                      <div class="image-upload-section">
-                        <h6 class="mb-3 text-muted">
-                          <i class="fas fa-cloud-upload-alt me-2"></i>Upload ảnh mới
-                        </h6>
+                      <div class="image-section">
+                        <!-- Image Preview Section -->
+                        <div class="image-preview-section">
+                          <h6 class="mb-3 text-muted">
+                            <i class="fas fa-images me-2"></i>Preview ảnh sản phẩm
+                          </h6>
+                          <div id="imagePreview"></div>
+                        </div>
 
-                        <div class="image-upload-area">
-                          <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                          <h6 class="text-muted mb-2">Thêm ảnh sản phẩm</h6>
-                          <p class="text-muted mb-3">
-                            Kéo thả file ảnh vào đây<br/>hoặc click để chọn
-                          </p>
-                          <input
-                                  type="file"
-                                  id="imageFiles"
-                                  name="imageFiles"
-                                  multiple
-                                  accept="image/*"
-                                  class="form-control"
-                                  style="display: none"
-                          />
-                          <button
-                                  type="button"
-                                  class="btn btn-primary btn-sm mb-3"
-                                  onclick="document.getElementById('imageFiles').click()"
-                          >
-                            <i class="fas fa-plus me-2"></i>Chọn ảnh
-                          </button>
-                          <div class="text-center">
-                            <small class="text-muted">
-                              <i class="fas fa-info-circle me-1"></i>
-                              Hỗ trợ: JPG, PNG, GIF<br/>
-                              Tối đa 5MB mỗi file
-                            </small>
+                        <!-- Image Upload Section -->
+                        <div class="image-upload-section">
+                          <h6 class="mb-3 text-muted">
+                            <i class="fas fa-cloud-upload-alt me-2"></i>Upload ảnh mới
+                          </h6>
+                          <div class="image-upload-area">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted mb-2">Thêm ảnh sản phẩm</h6>
+                            <p class="text-muted mb-3">
+                              Kéo thả file ảnh vào đây<br/>hoặc click để chọn
+                            </p>
+                            <input type="file" id="imageFiles" name="imageFiles" multiple accept="image/*" class="form-control" style="display: none"/>
+                            <button type="button" class="btn btn-primary btn-sm mb-3" onclick="document.getElementById('imageFiles').click()">
+                              <i class="fas fa-plus me-2"></i>Chọn ảnh
+                            </button>
+                            <div class="text-center">
+                              <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Hỗ trợ: JPG, PNG, GIF<br/>
+                                Tối đa 4 ảnh, 5MB mỗi file
+                              </small>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+
 
               <!-- Action Buttons -->
               <div class="row mt-4">
