@@ -359,14 +359,17 @@ public class StorageController extends BaseAdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        // Sắp xếp theo storageId giảm dần (mới nhất lên đầu)
+        Pageable pageable = PageRequest.of(page, size, Sort.by("storageId").descending());
         Page<Storage> storages;
         boolean isSearch = false;
 
         if (productName != null && !productName.isEmpty()) {
+            // Tìm kiếm với sắp xếp giảm dần
             storages = storageService.searchProductsInStorage(productName, pageable);
             isSearch = true;
         } else {
+            // Lấy tất cả với sắp xếp giảm dần
             storages = storageService.getAllStorageRecords(pageable);
         }
 
