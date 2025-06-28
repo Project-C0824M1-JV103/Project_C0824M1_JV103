@@ -176,8 +176,8 @@ public class StorageService implements IStorageService {
     @Override
     @Transactional
     public Storage importProduct(StorageImportDTO importDTO) {
-        if (importDTO.getImportQuantity() == null || importDTO.getImportQuantity() <= 0) {
-            throw new RuntimeException("Số lượng nhập phải lớn hơn 0");
+        if (importDTO.getImportQuantity() == null || importDTO.getImportQuantity() < 0) {
+            throw new RuntimeException("Số lượng nhập phải lớn hơn hoặc bằng 0");
         }
 
         if (importDTO.getCost() != null && importDTO.getCost() < 0) {
@@ -197,27 +197,38 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Nhân viên không tồn tại");
         }
 
-        Optional<Storage> optionalStorage = storageRepository.findByProduct_ProductId(product.getProductId());
-
-        if (optionalStorage.isPresent()) {
-            Storage existingStorage = optionalStorage.get();
-            existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
-
-            if (importDTO.getCost() != null) {
-                existingStorage.setCost(importDTO.getCost());
+        // Nếu quantity = 0: có quyền ghi đè storage hiện tại
+        if (importDTO.getImportQuantity() == 0) {
+            Optional<Storage> optionalStorage = storageRepository.findByProduct_ProductId(product.getProductId());
+            
+            if (optionalStorage.isPresent()) {
+                // Ghi đè storage hiện tại
+                Storage existingStorage = optionalStorage.get();
+                existingStorage.setQuantity(0);
+                existingStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
+                existingStorage.setEmployee(employee);
+                existingStorage.setTransactionDate(LocalDateTime.now());
+                return storageRepository.save(existingStorage);
+            } else {
+                // Tạo mới storage với quantity = 0
+                Storage newStorage = new Storage();
+                newStorage.setProduct(product);
+                newStorage.setQuantity(0);
+                newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
+                newStorage.setEmployee(employee);
+                newStorage.setTransactionDate(LocalDateTime.now());
+                return storageRepository.save(newStorage);
             }
-
-            existingStorage.setEmployee(employee);
-            return storageRepository.save(existingStorage);
+        } else {
+            // Nếu quantity > 0: luôn tạo mới storage record
+            Storage newStorage = new Storage();
+            newStorage.setProduct(product);
+            newStorage.setQuantity(importDTO.getImportQuantity());
+            newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
+            newStorage.setEmployee(employee);
+            newStorage.setTransactionDate(LocalDateTime.now());
+            return storageRepository.save(newStorage);
         }
-
-        Storage newStorage = new Storage();
-        newStorage.setProduct(product);
-        newStorage.setQuantity(importDTO.getImportQuantity());
-        newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
-        newStorage.setEmployee(employee);
-        newStorage.setTransactionDate(LocalDateTime.now());
-        return storageRepository.save(newStorage);
     }
 
     @Override

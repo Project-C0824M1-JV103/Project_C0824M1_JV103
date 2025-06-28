@@ -68,14 +68,16 @@ public class HomeController {
 
         Employee currentEmployee = employeeService.findByEmail(userDetails.getUsername());
 
-        Employee emailCheck = employeeService.findByEmail(dto.getEmail());
-        if (emailCheck != null && !emailCheck.getEmployeeId().equals(currentEmployee.getEmployeeId())) {
-            bindingResult.rejectValue("email", "error.employee", "Email đã được sử dụng.");
+        if (!dto.getEmail().equalsIgnoreCase(currentEmployee.getEmail())) {
+            if (employeeService.isEmailExistsForOtherEmployee(dto.getEmail(), currentEmployee.getEmployeeId())) {
+                bindingResult.rejectValue("email", "error.employee", "Email đã được sử dụng.");
+            }
         }
 
-        Employee phoneCheck = employeeService.findByPhone(dto.getPhone());
-        if (phoneCheck != null && !phoneCheck.getEmployeeId().equals(currentEmployee.getEmployeeId())) {
-            bindingResult.rejectValue("phone", "error.employee", "Số điện thoại đã được sử dụng.");
+        if (!dto.getPhone().equals(currentEmployee.getPhone())) {
+            if (employeeService.isPhoneExistsForOtherEmployee(dto.getPhone(), currentEmployee.getEmployeeId())) {
+                bindingResult.rejectValue("phone", "error.employee", "Số điện thoại đã được sử dụng.");
+            }
         }
 
         if (bindingResult.hasErrors()) {
@@ -165,8 +167,8 @@ public class HomeController {
     // --- API gửi OTP xác thực email ---
     @PostMapping("/personal-info/send-otp")
     @ResponseBody
-    public java.util.Map<String, Object> sendOtp(@RequestParam String email) {
-        java.util.Map<String, Object> res = new java.util.HashMap<>();
+    public Map<String, Object> sendOtp(@RequestParam String email) {
+        Map<String, Object> res = new HashMap<>();
         boolean sent = emailService.sendOtp(email);
         res.put("success", sent);
         res.put("message", sent ? "Đã gửi OTP đến email." : "Không thể gửi OTP. Vui lòng thử lại.");
@@ -176,11 +178,11 @@ public class HomeController {
     // --- API xác thực OTP ---
     @PostMapping("/personal-info/verify-otp")
     @ResponseBody
-    public java.util.Map<String, Object> verifyOtp(@RequestBody java.util.Map<String, String> body) {
+    public Map<String, Object> verifyOtp(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         String otp = body.get("otp");
         boolean verified = emailService.verifyOtp(email, otp);
-        java.util.Map<String, Object> res = new java.util.HashMap<>();
+        Map<String, Object> res = new java.util.HashMap<>();
         res.put("verified", verified);
         res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
         return res;

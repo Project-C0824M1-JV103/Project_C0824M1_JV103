@@ -308,7 +308,7 @@
                 </li>
                 <li class="page-item" th:classappend="${storagePage.totalElements == 0 || !storagePage.hasPrevious()} ? 'disabled' : ''">
                   <a class="page-link"
-                     th:href="@{/storage(page=${storagePage.number - 1},productName=${productName},startDate=${startDate},endDate=${endDate})}">
+                     th:href="@{/storage/list-import(page=${storagePage.number - 1},productName=${productName},startDate=${startDate},endDate=${endDate})}">
                     <i class="fas fa-angle-left"></i>
                   </a>
                 </li>

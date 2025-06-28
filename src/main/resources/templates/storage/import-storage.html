@@ -258,7 +258,7 @@
                         <form th:action="@{/storage/create}" th:object="${storageImportDTO}" method="post" id="importForm">
                             <div class="mb-3 row">
                                 <div class="col-8">
-                                    <label class="form-label">Tên sản phẩm</label>
+                                    <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label></label>
                                     <input type="text" class="form-control" th:field="*{productName}" readonly>
                                     <div th:if="${#fields.hasErrors('productName')}" class="error-container">
                                         <span th:each="err, stat : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
@@ -274,20 +274,17 @@
 
                             <div class="mb-3 row">
                                 <div class="col-8">
-                                    <label class="form-label">Giá nhập</label>
+                                    <label class="form-label">Giá nhập (VNĐ) <span class="text-danger">*</span></label></label>
                                     <input type="text" class="form-control" th:field="*{cost}" id="costInput" autocomplete="off">
                                     <div th:if="${#fields.hasErrors('cost')}" class="error-container">
                                         <span th:each="err, stat : ${#fields.errors('cost')}" th:text="${err}" class="text-danger small"></span>
                                     </div>
                                 </div>
-                                <div class="col-4 d-flex align-items-end">
-                                    <span class="ms-2">VND</span>
-                                </div>
                             </div>
 
                             <div class="mb-3 row">
                                 <div class="col-8">
-                                    <label class="form-label">Số lượng nhập</label>
+                                    <label class="form-label">Số lượng nhập <span class="text-danger">*</span></label></label>
                                     <input type="number" min="1" class="form-control" th:field="*{importQuantity}">
                                     <div th:if="${#fields.hasErrors('importQuantity')}" class="error-container">
                                         <span th:each="err, stat : ${#fields.errors('importQuantity')}" th:text="${err}" class="text-danger small"></span>
@@ -297,7 +294,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Nhà cung cấp</label>
+                                <label class="form-label">Nhà cung cấp <span class="text-danger">*</span></label></label>
                                 <div class="row">
                                     <div class="col-8">
                                         <input type="text" class="form-control" th:field="*{supplierName}" readonly>
@@ -369,6 +366,7 @@
                             <th>STT</th>
                             <th>Tên sản phẩm</th>
                             <th>Giá nhập (VND)</th>
+                            <th>Số lượng trong kho</th>
                             <th>CPU</th>
                             <th>Lưu trữ (GB)</th>
                             <th>Chọn</th>
@@ -379,7 +377,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="productPaginationContainer" class="d-flex justify-content-between align-items-center p-3 border-top mt-3"></div>
+                <div id="productPaginationContainer" class="d-flex justify-content-end align-items-center p-3 border-top mt-3"></div>
             </div>
         </div>
     </div>
@@ -503,52 +501,21 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const productButtons = document.querySelectorAll('.btn-select-product');
-        productButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const name = this.getAttribute('data-product-name');
-                const cost = this.getAttribute('data-product-cost');
-                const productId = this.getAttribute('data-product-id');
-                const supplierId = this.getAttribute('data-supplier-id');
-                const supplierName = this.getAttribute('data-supplier-name');
-
-                document.querySelector('input[name="productName"]').value = name;
-                document.querySelector('input[name="cost"]').value = Number(cost).toLocaleString('vi-VN');
-                document.querySelector('input[name="productId"]').value = productId;
-                document.querySelector('input[name="supplierName"]').value = supplierName;
-                document.querySelector('input[name="supplierId"]').value = supplierId;
-
-                const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
-                if (modal) modal.hide();
-            });
-        });
-
-        const supplierButtons = document.querySelectorAll('.btn-select-supplier');
-        supplierButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const supplierName = this.getAttribute('data-supplier-name');
-                const supplierId = this.getAttribute('data-supplier-id');
-                document.querySelector('input[name="supplierName"]').value = supplierName;
-                document.querySelector('input[name="supplierId"]').value = supplierId;
-
-                const modal = bootstrap.Modal.getInstance(document.getElementById('supplierModal'));
-                if (modal) modal.hide();
-            });
-        });
-
         const costInput = document.getElementById('costInput');
 
         costInput.addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\./g, '').replace(/\D/g, '');
+            // Loại bỏ cả dấu chấm và dấu phẩy, chỉ giữ lại số
+            let value = e.target.value.replace(/[.,]/g, '').replace(/\D/g, '');
             if (value) {
-                e.target.value = Number(value).toLocaleString('vi-VN');
+                e.target.value = Number(value).toLocaleString('en-US');
             } else {
                 e.target.value = '';
             }
         });
 
         document.getElementById('importForm').addEventListener('submit', function (event) {
-            costInput.value = costInput.value.replace(/\./g, '').trim();
+            // Loại bỏ cả dấu chấm và dấu phẩy từ giá trị cost
+            costInput.value = costInput.value.replace(/[.,]/g, '').trim();
             const productId = document.querySelector('input[name="productId"]').value;
             const supplierId = document.querySelector('input[name="supplierId"]').value;
             const importQuantity = document.querySelector('input[name="importQuantity"]').value;
@@ -561,6 +528,28 @@
         });
     });
 
+    function attachSelectProductEvents() {
+        const productButtons = document.querySelectorAll('.btn-select-product');
+        productButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const name = this.getAttribute('data-product-name');
+                const cost = this.getAttribute('data-product-cost');
+                const productId = this.getAttribute('data-product-id');
+                const supplierId = this.getAttribute('data-supplier-id');
+                const supplierName = this.getAttribute('data-supplier-name');
+
+                document.querySelector('input[name="productName"]').value = name;
+                document.querySelector('input[name="cost"]').value = Number(cost).toLocaleString('en-US');
+                document.querySelector('input[name="productId"]').value = productId;
+                document.querySelector('input[name="supplierName"]').value = supplierName;
+                document.querySelector('input[name="supplierId"]').value = supplierId;
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+                if (modal) modal.hide();
+            });
+        });
+    }
+
     function renderProductTable(data) {
         const tbody = document.getElementById('productTableBody');
         tbody.innerHTML = data.products.length
@@ -568,7 +557,8 @@
                 <tr>
                     <td>${i + 1 + data.pageNumber * data.pageSize}</td>
                     <td>${p.productName}</td>
-                    <td>${Number(p.price).toLocaleString('vi-VN')}</td>
+                    <td>${Number(p.price).toLocaleString('en-US')}</td>
+                    <td>${p.quantity || 0}</td>
                     <td>${p.cpu || ''}</td>
                     <td>${p.memory || ''}</td>
                     <td>
@@ -583,7 +573,7 @@
                     </td>
                 </tr>
             `).join('')
-            : `<tr><td colspan="6" class="text-center">Không tìm thấy sản phẩm nào</td></tr>`;
+            : `<tr><td colspan="7" class="text-center">Không tìm thấy sản phẩm nào</td></tr>`;
         attachSelectProductEvents();
         renderProductPagination(data.totalPages, data.pageNumber);
     }
@@ -598,10 +588,16 @@
             .catch(() => alert('Có lỗi khi tải sản phẩm!'));
     }
 
+    function searchProducts() {
+        fetchProducts(0);
+    }
+
+    function refreshProductList() {
+        document.getElementById('productSearchForm').reset();
+        fetchProducts(0);
+    }
+
     document.getElementById('productSearchForm').onsubmit = e => { e.preventDefault(); fetchProducts(0); };
-    document.querySelector('button[onclick="refreshProductList()"]') && (document.querySelector('button[onclick="refreshProductList()"]').onclick = () => { 
-        document.getElementById('productSearchForm').reset(); fetchProducts(0); 
-    });
     window.changeProductPage = fetchProducts;
     document.getElementById('productModal').addEventListener('show.bs.modal', () => fetchProducts(0));
 
@@ -609,12 +605,101 @@
         let html = '';
         if (totalPages > 1) {
             html += '<nav><ul class="pagination pagination-sm mb-0">';
-            for (let i = 0; i < totalPages; i++) {
-                if (i >= pageNumber - 2 && i <= pageNumber + 2) {
-                    html += `<li class="page-item ${i === pageNumber ? 'active' : ''}">` +
-                        `<a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${i})">${i + 1}</a></li>`;
+            
+            // Nút First (đầu trang)
+            if (pageNumber > 0) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(0)" title="Trang đầu">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-angle-double-left"></i>
+                    </span>
+                </li>`;
+            }
+            
+            // Nút Previous (trước)
+            if (pageNumber > 0) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${pageNumber - 1})" title="Trang trước">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i>
+                    </span>
+                </li>`;
+            }
+            
+            // Các trang số với logic thông minh
+            let startPage = Math.max(0, pageNumber - 2);
+            let endPage = Math.min(totalPages - 1, pageNumber + 2);
+            
+            // Hiển thị trang đầu nếu cần
+            if (startPage > 0) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(0)">1</a>
+                </li>`;
+                if (startPage > 1) {
+                    html += `<li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>`;
                 }
             }
+            
+            // Hiển thị các trang xung quanh trang hiện tại
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<li class="page-item ${i === pageNumber ? 'active' : ''}">` +
+                    `<a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${i})">${i + 1}</a></li>`;
+            }
+            
+            // Hiển thị trang cuối nếu cần
+            if (endPage < totalPages - 1) {
+                if (endPage < totalPages - 2) {
+                    html += `<li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>`;
+                }
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${totalPages - 1})">${totalPages}</a>
+                </li>`;
+            }
+            
+            // Nút Next (sau)
+            if (pageNumber < totalPages - 1) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${pageNumber + 1})" title="Trang sau">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>`;
+            }
+            
+            // Nút Last (cuối trang)
+            if (pageNumber < totalPages - 1) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${totalPages - 1})" title="Trang cuối">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-angle-double-right"></i>
+                    </span>
+                </li>`;
+            }
+            
             html += '</ul></nav>';
         }
         document.getElementById('productPaginationContainer').innerHTML = html;
