@@ -156,106 +156,106 @@
         }
 
         .image-section {
-          display: flex;
-          gap: 20px;
-          align-items: flex-start;
-          margin-top: 10px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-top: 10px;
         }
         .image-preview-section, .image-upload-section {
-          flex: 1;
-          min-width: 0;
+            flex: 1;
+            min-width: 0;
         }
         .image-upload-area {
-          border: 2px dashed #dee2e6;
-          border-radius: 8px;
-          padding: 30px 20px 20px 20px;
-          text-align: center;
-          background-color: #f8f9fa;
-          transition: all 0.3s ease;
-          min-height: 220px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 30px 20px 20px 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         .image-upload-area:hover {
-          border-color: #667eea;
-          background-color: #f0f2ff;
+            border-color: #667eea;
+            background-color: #f0f2ff;
         }
         .image-preview {
-          width: 140px;
-          height: 140px;
-          border-radius: 8px;
-          overflow: visible;
-          border: 2px solid #dee2e6;
-          position: relative;
-          display: inline-block;
-          margin: 5px;
-          background: #fff;
+            width: 140px;
+            height: 140px;
+            border-radius: 8px;
+            overflow: visible;
+            border: 2px solid #dee2e6;
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+            background: #fff;
         }
         .image-preview img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          background-color: #f8f9fa;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #f8f9fa;
         }
         .btn-delete {
-          position: absolute;
-          top: 5px;
-          right: 5px;
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          background: #dc3545;
-          color: white;
-          border: none;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 14px;
-          z-index: 2;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            z-index: 2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
         }
         .btn-delete:hover {
-          background: #c82333;
+            background: #c82333;
         }
         .btn-primary {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border: none;
-          padding: 12px 30px;
-          border-radius: 8px;
-          font-weight: 600;
-          transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
         .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
         .btn-secondary {
-          background: #6c757d;
-          border: none;
-          padding: 12px 30px;
-          border-radius: 8px;
-          font-weight: 600;
+            background: #6c757d;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
         }
         .invalid-feedback {
-          display: block;
-          color: #dc3545;
-          font-size: 0.875em;
-          margin-top: 5px;
+            display: block;
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 5px;
         }
         .required {
-          color: #dc3545;
+            color: #dc3545;
         }
         .alert {
-          border-radius: 8px;
-          margin-bottom: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
         @media (max-width: 900px) {
-          .image-section {
-            flex-direction: column;
-          }
+            .image-section {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -295,89 +295,103 @@
 
                         <div class="form-row">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Tên nhà cung cấp <span class="text-danger"></span></label>
+                                <div class="form-group mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <label class="form-label mb-0 me-2">Tên nhà cung cấp <span class="text-danger">*</span></label>
+                                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                                             th:if="${#fields.hasErrors('suplierName')}"
+                                             th:errors="*{suplierName}"></div>
+                                    </div>
                                     <input type="text" th:field="*{suplierName}" class="form-control" />
-                                    <div class="text-danger" th:if="${#fields.hasErrors('suplierName')}"
-                                         th:errors="*{suplierName}"></div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                                <div class="form-group mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <label class="form-label mb-0 me-2">Email <span class="text-danger">*</span></label>
+                                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                                             th:if="${#fields.hasErrors('email')}"
+                                             th:errors="*{email}"></div>
+                                    </div>
                                     <input type="email" th:field="*{email}" class="form-control"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('email')}"
-                                         th:errors="*{email}"></div>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <div class="form-group mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <label class="form-label mb-0 me-2">Số điện thoại <span class="text-danger">*</span></label>
+                                        <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                                             th:if="${#fields.hasErrors('phoneNumber')}"
+                                             th:errors="*{phoneNumber}"></div>
+                                    </div>
                                     <input type="text" th:field="*{phoneNumber}" class="form-control"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}"
-                                         th:errors="*{phoneNumber}"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                        <div class="form-group mb-3">
+                            <div class="d-flex align-items-center">
+                                <label class="form-label mb-0 me-2">Địa chỉ <span class="text-danger">*</span></label>
+                                <div class="text-danger small ms-2" style="font-size: 0.75rem;"
+                                     th:if="${#fields.hasErrors('address')}"
+                                     th:errors="*{address}"></div>
+                            </div>
                             <textarea th:field="*{address}" class="form-control form-textarea" rows="3"></textarea>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Hình ảnh nhà cung cấp <span class="text-danger">*</span></label>
                             <div class="image-section">
-                              <div class="image-preview-section">
-                                <h6 class="mb-3 text-muted">
-                                  <i class="fas fa-images me-2"></i>Preview ảnh nhà cung cấp
-                                </h6>
-                                <div id="imagePreview">
-                                  <th:block th:if="${supplier.imageUrl}">
-                                    <div class="image-preview" data-file-index="-1">
-                                      <img th:src="${supplier.imageUrl}" alt="Current Image" />
-                                      <button type="button" class="btn-delete" onclick="removeCurrentImage()" title="Xóa ảnh hiện tại">
-                                        <i class="fas fa-times"></i>
-                                      </button>
+                                <div class="image-preview-section">
+                                    <h6 class="mb-3 text-muted">
+
+                                    </h6>
+                                    <div id="imagePreview">
+                                        <th:block th:if="${supplier.imageUrl}">
+                                            <div class="image-preview" data-file-index="-1">
+                                                <img th:src="${supplier.imageUrl}" alt="Current Image" />
+                                                <button type="button" class="btn-delete" onclick="removeCurrentImage()" title="Xóa ảnh hiện tại">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </th:block>
                                     </div>
-                                  </th:block>
                                 </div>
-                              </div>
-                              <div class="image-upload-section">
-                                <h6 class="mb-3 text-muted">
-                                  <i class="fas fa-cloud-upload-alt me-2"></i>Upload ảnh mới
-                                </h6>
-                                <div class="image-upload-area">
-                                  <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                  <h6 class="text-muted mb-2">Thêm ảnh nhà cung cấp</h6>
-                                  <p class="text-muted mb-3">
-                                    Kéo thả file ảnh vào đây<br/>hoặc click để chọn
-                                  </p>
-                                  <input
-                                    type="file"
-                                    id="image"
-                                    name="image"
-                                    accept="image/*"
-                                    class="form-control"
-                                    style="display: none"
-                                  />
-                                  <button
-                                    type="button"
-                                    class="btn btn-primary btn-sm mb-3 w-100"
-                                    style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); font-weight:600;"
-                                    onclick="document.getElementById('image').click()"
-                                  >
-                                    <i class="fas fa-plus me-2"></i>Chọn ảnh
-                                  </button>
-                                  <div class="text-center">
-                                    <small class="text-muted">
-                                      <i class="fas fa-info-circle me-1"></i>
-                                      Hỗ trợ: JPG, PNG, GIF<br/>
-                                      Tối đa 5MB mỗi file
-                                    </small>
-                                  </div>
+                                <div class="image-upload-section">
+                                    <h6 class="mb-3 text-muted">
+                                        <i class="fas fa-cloud-upload-alt me-2"></i>Upload ảnh mới
+                                    </h6>
+                                    <div class="image-upload-area">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                        <h6 class="text-muted mb-2">Thêm ảnh nhà cung cấp</h6>
+                                        <p class="text-muted mb-3">
+                                            Kéo thả file ảnh vào đây<br/>hoặc click để chọn
+                                        </p>
+                                        <input
+                                                type="file"
+                                                id="image"
+                                                name="image"
+                                                accept="image/*"
+                                                class="form-control"
+                                                style="display: none"
+                                        />
+                                        <button
+                                                type="button"
+                                                class="btn btn-primary btn-sm mb-3 w-100"
+                                                style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); font-weight:600;"
+                                                onclick="document.getElementById('image').click()"
+                                        >
+                                            <i class="fas fa-plus me-2"></i>Chọn ảnh
+                                        </button>
+                                        <div class="text-center">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Hỗ trợ: JPG, PNG, GIF<br/>
+                                                Tối đa 5MB mỗi file
+                                            </small>
+                                        </div>
+                                    </div>
                                 </div>
-                              </div>
                             </div>
                             <input type="hidden" name="removeCurrentImage" id="removeCurrentImage" value="false" />
                         </div>
@@ -402,137 +416,191 @@
 
 <!-- Script xem trước hình ảnh -->
 <script>
-  let selectedFile = null;
-  let hasCurrentImage = !!document.querySelector('.image-preview img');
-  let currentImageUrl = hasCurrentImage ? document.querySelector('.image-preview img')?.getAttribute('src') : null;
+    function validateImage(file) {
+        // Kiểm tra kích thước file (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            return {
+                error: `Ảnh "${file.name}" có kích thước quá lớn (tối đa 5MB).`
+            };
+        }
 
-  document.getElementById('image').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-      selectedFile = file;
-      updatePreview();
-      // Nếu chọn ảnh mới thì đánh dấu xóa ảnh cũ nếu có
-      if (hasCurrentImage) {
-        document.getElementById('removeCurrentImage').value = 'true';
-      }
+        // Kiểm tra định dạng file
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+            return {
+                error: `Ảnh "${file.name}" không đúng định dạng. Chỉ chấp nhận JPG, PNG, GIF.`
+            };
+        }
+
+        return { error: null }; // Hợp lệ
     }
-    // Clear input để chọn lại cùng file nếu muốn
-    e.target.value = '';
-  });
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
 
-  function updatePreview() {
-    const preview = document.getElementById('imagePreview');
-    preview.innerHTML = '';
-    if (selectedFile) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const imgDiv = document.createElement('div');
-        imgDiv.className = 'image-preview';
-        imgDiv.innerHTML = `
+        // Validate image
+        const validation = validateImage(file);
+        if (validation.error) {
+            alert(validation.error);
+            e.target.value = ''; // Clear input
+            return;
+        }
+
+        selectedFile = file;
+        updatePreview();
+
+        // Nếu chọn ảnh mới thì đánh dấu xóa ảnh cũ nếu có
+        if (hasCurrentImage) {
+            document.getElementById('removeCurrentImage').value = 'true';
+        }
+
+        e.target.value = ''; // Clear input
+    });
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = '#f8f9fa';
+        this.style.borderColor = '#dee2e6';
+
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+
+        // Validate image
+        const validation = validateImage(file);
+        if (validation.error) {
+            alert(validation.error);
+            return;
+        }
+
+        selectedFile = file;
+        updatePreview();
+
+        if (hasCurrentImage) {
+            document.getElementById('removeCurrentImage').value = 'true';
+        }
+    });
+    let selectedFile = null;
+    let hasCurrentImage = !!document.querySelector('.image-preview img');
+    let currentImageUrl = hasCurrentImage ? document.querySelector('.image-preview img')?.getAttribute('src') : null;
+
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            selectedFile = file;
+            updatePreview();
+            // Nếu chọn ảnh mới thì đánh dấu xóa ảnh cũ nếu có
+            if (hasCurrentImage) {
+                document.getElementById('removeCurrentImage').value = 'true';
+            }
+        }
+        // Clear input để chọn lại cùng file nếu muốn
+        e.target.value = '';
+    });
+
+    function updatePreview() {
+        const preview = document.getElementById('imagePreview');
+        preview.innerHTML = '';
+        if (selectedFile) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'image-preview';
+                imgDiv.innerHTML = `
           <img src="${e.target.result}" alt="New Image" />
           <button type="button" class="btn-delete" onclick="removeFile()" title="Xóa ảnh này">
             <i class="fas fa-times"></i>
           </button>
         `;
-        preview.appendChild(imgDiv);
-      };
-      reader.readAsDataURL(selectedFile);
-      // Cập nhật text
-      const uploadArea = document.querySelector('.image-upload-area p');
-      uploadArea.textContent = `Đã chọn 1 ảnh`;
-    } else if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {
-      // Nếu chưa chọn file mới, hiển thị lại ảnh hiện tại (nếu chưa xóa)
-      const imgDiv = document.createElement('div');
-      imgDiv.className = 'image-preview';
-      imgDiv.innerHTML = `
+                preview.appendChild(imgDiv);
+            };
+            reader.readAsDataURL(selectedFile);
+            // Cập nhật text
+            const uploadArea = document.querySelector('.image-upload-area p');
+            uploadArea.textContent = `Đã chọn 1 ảnh`;
+        } else if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {
+            // Nếu chưa chọn file mới, hiển thị lại ảnh hiện tại (nếu chưa xóa)
+            const imgDiv = document.createElement('div');
+            imgDiv.className = 'image-preview';
+            imgDiv.innerHTML = `
         <img src="${currentImageUrl}" alt="Current Image" />
         <button type="button" class="btn-delete" onclick="removeCurrentImage()" title="Xóa ảnh hiện tại">
           <i class="fas fa-times"></i>
         </button>
       `;
-      preview.appendChild(imgDiv);
-      const uploadArea = document.querySelector('.image-upload-area p');
-      uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
-    } else {
-      // Reset upload area text
-      const uploadArea = document.querySelector('.image-upload-area p');
-      uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
+            preview.appendChild(imgDiv);
+            const uploadArea = document.querySelector('.image-upload-area p');
+            uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
+        } else {
+            // Reset upload area text
+            const uploadArea = document.querySelector('.image-upload-area p');
+            uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
+        }
     }
-  }
 
-  function removeFile() {
-    if (confirm('Xóa ảnh này?')) {
-      selectedFile = null;
-      // Nếu có ảnh cũ và chưa xóa, hiện lại ảnh cũ
-      if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {
-        updatePreview();
-      } else {
-        updatePreview();
-      }
+    function removeFile() {
+        if (confirm('Xóa ảnh này?')) {
+            selectedFile = null;
+            // Nếu có ảnh cũ và chưa xóa, hiện lại ảnh cũ
+            if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {
+                updatePreview();
+            } else {
+                updatePreview();
+            }
+        }
     }
-  }
 
-  function removeCurrentImage() {
-    if (confirm('Xóa ảnh hiện tại?')) {
-      hasCurrentImage = false;
-      document.getElementById('removeCurrentImage').value = 'true';
-      updatePreview();
+    function removeCurrentImage() {
+        if (confirm('Xóa ảnh hiện tại?')) {
+            hasCurrentImage = false;
+            document.getElementById('removeCurrentImage').value = 'true';
+            updatePreview();
+        }
     }
-  }
 
-  // Drag and drop functionality
-  const uploadArea = document.querySelector('.image-upload-area');
-  uploadArea.addEventListener('dragover', function(e) {
-    e.preventDefault();
-    this.style.backgroundColor = '#f0f2ff';
-    this.style.borderColor = '#667eea';
-  });
-  uploadArea.addEventListener('dragleave', function(e) {
-    e.preventDefault();
-    this.style.backgroundColor = '#f8f9fa';
-    this.style.borderColor = '#dee2e6';
-  });
-  uploadArea.addEventListener('drop', function(e) {
-    e.preventDefault();
-    this.style.backgroundColor = '#f8f9fa';
-    this.style.borderColor = '#dee2e6';
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      selectedFile = files[0];
-      updatePreview();
-      if (hasCurrentImage) {
-        document.getElementById('removeCurrentImage').value = 'true';
-      }
-    }
-  });
+    // Drag and drop functionality
+    const uploadArea = document.querySelector('.image-upload-area');
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = '#f0f2ff';
+        this.style.borderColor = '#667eea';
+    });
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = '#f8f9fa';
+        this.style.borderColor = '#dee2e6';
+    });
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = '#f8f9fa';
+        this.style.borderColor = '#dee2e6';
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            selectedFile = files[0];
+            updatePreview();
+            if (hasCurrentImage) {
+                document.getElementById('removeCurrentImage').value = 'true';
+            }
+        }
+    });
 
-  // Trước khi submit form, set lại file input nếu có file mới
-  document.querySelector('form').addEventListener('submit', function(e) {
-    if (selectedFile) {
-      const dt = new DataTransfer();
-      dt.items.add(selectedFile);
-      document.getElementById('image').files = dt.files;
-    }
-  });
+    // Trước khi submit form, set lại file input nếu có file mới
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (selectedFile) {
+            const dt = new DataTransfer();
+            dt.items.add(selectedFile);
+            document.getElementById('image').files = dt.files;
+        }
+    });
 </script>
 
 <div class="admin-loading-overlay" id="loading-overlay">
-  <div class="admin-loading-box">
-    <div class="admin-spinner">
-      <i class="fas fa-spinner fa-spin fa-2x"></i>
+    <div class="admin-loading-box">
+        <div class="admin-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+        </div>
+        <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
     </div>
-    <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
-  </div>
 </div>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var form = document.querySelector('form');
-    if(form) {
-      form.addEventListener('submit', function() {
-        document.getElementById('loading-overlay').style.display = 'flex';
-      });
-    }
-  });
-</script>
+
+
 </body>
 </html>
