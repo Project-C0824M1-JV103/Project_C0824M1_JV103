@@ -51,5 +51,5 @@ public interface IProductService {
     void createProductFromImport(StorageImportProductDTO dto);
 
     // Tạo sản phẩm mới từ modal nhập kho, trả về Product vừa tạo
-    Product createProductFromImportReturnProduct(StorageImportProductDTO dto);
+    Product createProductFromImportReturnProduct(StorageImportProductDTO dto, List<MultipartFile> imageFiles);
 }

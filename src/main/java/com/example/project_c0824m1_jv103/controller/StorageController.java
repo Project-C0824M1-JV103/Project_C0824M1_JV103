@@ -30,6 +30,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,6 +127,7 @@ public class StorageController extends BaseAdminController {
     public String importProduct(HttpServletRequest request,
                                 @ModelAttribute("storageImportDTO") StorageImportDTO dto,
                                 BindingResult result,
+                                @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
                                 Model model,
                                 RedirectAttributes redirectAttributes) {
         String isNewProduct = request.getParameter("isNewProduct");
@@ -183,7 +185,6 @@ public class StorageController extends BaseAdminController {
                 hasError = true;
             }
             if (hasError) {
-                // Tạo lại đối tượng productTemp để giữ dữ liệu modal
                 StorageImportProductDTO productTemp = new StorageImportProductDTO();
                 productTemp.setProductName(newProductName);
                 productTemp.setSize(size);
@@ -193,13 +194,11 @@ public class StorageController extends BaseAdminController {
                 productTemp.setMemory(memory);
                 if (categoryIdStr != null && !categoryIdStr.isEmpty()) productTemp.setCategoryId(Integer.parseInt(categoryIdStr));
                 if (supplierIdStr != null && !supplierIdStr.isEmpty()) productTemp.setSupplierId(Integer.parseInt(supplierIdStr));
-
-                model.addAttribute("storageImportDTO", dto);
                 model.addAttribute("inforStorages", storageService.findAllStorage());
                 model.addAttribute("suppliers", supplierService.findAll());
                 model.addAttribute("categorys", categoryRepository.findAll());
-                model.addAttribute("productTemp", productTemp); // truyền lại dữ liệu modal
-                model.addAttribute("showAddProductModal", true); // mở lại modal
+                model.addAttribute("productTemp", productTemp);
+                model.addAttribute("showAddProductModal", true);
                 return "storage/import-storage";
             }
             StorageImportProductDTO productDTO = new StorageImportProductDTO();
@@ -211,7 +210,8 @@ public class StorageController extends BaseAdminController {
             productDTO.setMemory(memory);
             productDTO.setCategoryId(Integer.parseInt(categoryIdStr));
             productDTO.setSupplierId(Integer.parseInt(supplierIdStr));
-            Product newProduct = productService.createProductFromImportReturnProduct(productDTO);
+            productDTO.setImageFiles(imageFiles);
+            Product newProduct = productService.createProductFromImportReturnProduct(productDTO, imageFiles);
             StorageImportDTO importDTO = new StorageImportDTO();
             importDTO.setProductId(newProduct.getProductId());
             importDTO.setProductName(newProduct.getProductName());
@@ -229,27 +229,27 @@ public class StorageController extends BaseAdminController {
                 model.addAttribute("suppliers", supplierService.findAll());
                 model.addAttribute("categorys", categoryRepository.findAll());
                 model.addAttribute("productDTO", new StorageImportProductDTO());
-                return "storage/import-storage";
-            }
-            try {
-                storageService.importProduct(dto);
+            return "storage/import-storage";
+        }
+        try {
+            storageService.importProduct(dto);
                 redirectAttributes.addFlashAttribute("successMessage", "Nhập kho thành công!");
                 return "redirect:/storage/list-import";
-            } catch (RuntimeException e) {
+        } catch (RuntimeException e) {
                 model.addAttribute("storageImportDTO", dto);
-                model.addAttribute("errorMessage", e.getMessage());
-                model.addAttribute("inforStorages", storageService.findAllStorage());
-                model.addAttribute("suppliers", supplierService.findAll());
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("inforStorages", storageService.findAllStorage());
+            model.addAttribute("suppliers", supplierService.findAll());
                 model.addAttribute("categorys", categoryRepository.findAll());
                 model.addAttribute("productDTO", new StorageImportProductDTO());
-                return "storage/import-storage";
+            return "storage/import-storage";
             }
         }
     }
 
     @PostMapping("/create-product")
     public String createProduct(@Valid @ModelAttribute("productDTO") StorageImportProductDTO productDTO,
-                               BindingResult result,
+                               BindingResult result, 
                                Model model,
                                RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {

@@ -330,7 +330,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product createProductFromImportReturnProduct(StorageImportProductDTO dto) {
+    public Product createProductFromImportReturnProduct(StorageImportProductDTO dto, List<MultipartFile> imageFiles) {
         Product product = new Product();
         product.setProductName(dto.getProductName());
         product.setSize(dto.getSize());
@@ -348,6 +348,22 @@ public class ProductService implements IProductService {
             Supplier supplier = supplierRepository.findById(dto.getSupplierId()).orElse(null);
             product.setSupplier(supplier);
         }
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            List<ProductImages> productImages = new ArrayList<>();
+            for (MultipartFile file : imageFiles) {
+                if (!file.isEmpty()) {
+                    String originalFilename = file.getOriginalFilename();
+                    ProductImages productImage = new ProductImages(savedProduct, originalFilename, null);
+                    productImages.add(productImage);
+                }
+            }
+            if (!productImages.isEmpty()) {
+                productImagesRepository.saveAll(productImages);
+                savedProduct.setProductImages(productImages);
+            }
+        }
+        return savedProduct;
     }
 }

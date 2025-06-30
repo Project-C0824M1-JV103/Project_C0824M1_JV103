@@ -1,6 +1,8 @@
 package com.example.project_c0824m1_jv103.dto;
 
 import jakarta.validation.constraints.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 public class StorageImportProductDTO {
     @NotBlank(message = "Tên sản phẩm không được để trống")
@@ -39,6 +41,8 @@ public class StorageImportProductDTO {
     @NotNull(message = "Nhà cung cấp không được để trống")
     private Integer supplierId;
 
+    private List<MultipartFile> imageFiles;
+
     // Getters and Setters
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }
@@ -56,4 +60,6 @@ public class StorageImportProductDTO {
     public void setCategoryId(Integer categoryId) { this.categoryId = categoryId; }
     public Integer getSupplierId() { return supplierId; }
     public void setSupplierId(Integer supplierId) { this.supplierId = supplierId; }
+    public List<MultipartFile> getImageFiles() { return imageFiles; }
+    public void setImageFiles(List<MultipartFile> imageFiles) { this.imageFiles = imageFiles; }
 }
