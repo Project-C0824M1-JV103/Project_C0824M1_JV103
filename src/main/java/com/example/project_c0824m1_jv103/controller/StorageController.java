@@ -3,6 +3,7 @@ package com.example.project_c0824m1_jv103.controller;
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.dto.*;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
+import com.example.project_c0824m1_jv103.dto.StorageImportProductDTO;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.ProductImages;
@@ -13,6 +14,7 @@ import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
 import com.example.project_c0824m1_jv103.service.product.IProductService;
 import com.example.project_c0824m1_jv103.service.storage.IStorageService;
 import com.example.project_c0824m1_jv103.service.supplier.ISupplierService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -112,86 +114,155 @@ public class StorageController extends BaseAdminController {
 
     @GetMapping("/show-create")
     public String showCreateStorage(Model model) {
-        LOGGER.info("Handling /storage/show-create request");
         model.addAttribute("inforStorages", storageService.findAllStorage());
         model.addAttribute("suppliers", supplierService.findAll());
         model.addAttribute("categorys", categoryRepository.findAll());
         model.addAttribute("storageImportDTO", new StorageImportDTO());
-        model.addAttribute("importStorageProduct", new StorageImportProduct());
+        model.addAttribute("productDTO", new StorageImportProductDTO());
         return "storage/import-storage";
     }
 
     @PostMapping("/create")
-    public String importProduct(@Valid @ModelAttribute("storageImportDTO") StorageImportDTO dto,
+    public String importProduct(HttpServletRequest request,
+                                @ModelAttribute("storageImportDTO") StorageImportDTO dto,
                                 BindingResult result,
-                                Model model) {
-        if (result.hasErrors()) {
-            Product product = productRepository.findById(dto.getProductId()).orElse(null);
-            if (product != null) {
-                List<String> imageUrls = product.getProductImages().stream()
-                        .map(img -> img.getImageUrl() != null ? img.getImageUrl() : "https://via.placeholder.com/150")
-                        .toList();
-                dto.setProductImages(imageUrls);
-            }
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
+        String isNewProduct = request.getParameter("isNewProduct");
+        if ("true".equals(isNewProduct)) {
+            String newProductName = request.getParameter("newProductName");
+            String size = request.getParameter("size");
+            String cameraBack = request.getParameter("cameraBack");
+            String cameraFront = request.getParameter("cameraFront");
+            String cpu = request.getParameter("cpu");
+            String memory = request.getParameter("memory");
+            String categoryIdStr = request.getParameter("categoryId");
+            String supplierIdStr = request.getParameter("supplierId");
+            String importQuantityStr = request.getParameter("importQuantity");
+            String costStr = request.getParameter("cost");
 
-            model.addAttribute("storageImportDTO", dto);
-            model.addAttribute("inforStorages", storageService.findAllStorage());
-            model.addAttribute("suppliers", supplierService.findAll());
-            model.addAttribute("importStorageProduct", new StorageImportProduct());
-            return "storage/import-storage";
-        }
-        try {
-            storageService.importProduct(dto);
-            return "redirect:/storage";
-        } catch (RuntimeException e) {
-            Product product = productRepository.findById(dto.getProductId()).orElse(null);
-            if (product != null) {
-                model.addAttribute("product", product);
-                model.addAttribute("productImage", product.getProductImages());
+            boolean hasError = false;
+            if (newProductName == null || newProductName.trim().isEmpty()) {
+                model.addAttribute("errorMessage", "Tên sản phẩm không được để trống");
+                hasError = true;
             }
+            if (size == null || size.trim().isEmpty()) {
+                model.addAttribute("errorMessage", "Kích thước màn hình không được để trống");
+                hasError = true;
+            }
+            if (cameraBack == null || cameraBack.trim().isEmpty()) {
+                model.addAttribute("errorMessage", "Camera sau không được để trống");
+                hasError = true;
+            }
+            if (cameraFront == null || cameraFront.trim().isEmpty()) {
+                model.addAttribute("errorMessage", "Camera trước không được để trống");
+                hasError = true;
+            }
+            if (cpu == null || cpu.trim().isEmpty()) {
+                model.addAttribute("errorMessage", "CPU không được để trống");
+                hasError = true;
+            }
+            if (memory == null || memory.trim().isEmpty()) {
+                model.addAttribute("errorMessage", "Bộ nhớ không được để trống");
+                hasError = true;
+            }
+            if (categoryIdStr == null || categoryIdStr.trim().isEmpty()) {
+                model.addAttribute("errorMessage", "Danh mục không được để trống");
+                hasError = true;
+            }
+            if (supplierIdStr == null || supplierIdStr.trim().isEmpty()) {
+                model.addAttribute("errorMessage", "Nhà cung cấp không được để trống");
+                hasError = true;
+            }
+            if (importQuantityStr == null || importQuantityStr.trim().isEmpty() || Integer.parseInt(importQuantityStr) < 1) {
+                model.addAttribute("errorMessage", "Số lượng nhập phải lớn hơn 0");
+                hasError = true;
+            }
+            if (costStr == null || costStr.trim().isEmpty() || Double.parseDouble(costStr) < 0) {
+                model.addAttribute("errorMessage", "Giá nhập phải lớn hơn hoặc bằng 0");
+                hasError = true;
+            }
+            if (hasError) {
+                // Tạo lại đối tượng productTemp để giữ dữ liệu modal
+                StorageImportProductDTO productTemp = new StorageImportProductDTO();
+                productTemp.setProductName(newProductName);
+                productTemp.setSize(size);
+                productTemp.setCameraBack(cameraBack);
+                productTemp.setCameraFront(cameraFront);
+                productTemp.setCpu(cpu);
+                productTemp.setMemory(memory);
+                if (categoryIdStr != null && !categoryIdStr.isEmpty()) productTemp.setCategoryId(Integer.parseInt(categoryIdStr));
+                if (supplierIdStr != null && !supplierIdStr.isEmpty()) productTemp.setSupplierId(Integer.parseInt(supplierIdStr));
 
-            model.addAttribute("storage", dto);
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("inforStorages", storageService.findAllStorage());
-            model.addAttribute("suppliers", supplierService.findAll());
-            model.addAttribute("importStorageProduct", new StorageImportProduct());
-            return "storage/import-storage";
+                model.addAttribute("storageImportDTO", dto);
+                model.addAttribute("inforStorages", storageService.findAllStorage());
+                model.addAttribute("suppliers", supplierService.findAll());
+                model.addAttribute("categorys", categoryRepository.findAll());
+                model.addAttribute("productTemp", productTemp); // truyền lại dữ liệu modal
+                model.addAttribute("showAddProductModal", true); // mở lại modal
+                return "storage/import-storage";
+            }
+            StorageImportProductDTO productDTO = new StorageImportProductDTO();
+            productDTO.setProductName(newProductName);
+            productDTO.setSize(size);
+            productDTO.setCameraBack(cameraBack);
+            productDTO.setCameraFront(cameraFront);
+            productDTO.setCpu(cpu);
+            productDTO.setMemory(memory);
+            productDTO.setCategoryId(Integer.parseInt(categoryIdStr));
+            productDTO.setSupplierId(Integer.parseInt(supplierIdStr));
+            Product newProduct = productService.createProductFromImportReturnProduct(productDTO);
+            StorageImportDTO importDTO = new StorageImportDTO();
+            importDTO.setProductId(newProduct.getProductId());
+            importDTO.setProductName(newProduct.getProductName());
+            importDTO.setSupplierId(newProduct.getSupplier().getSuplierId());
+            importDTO.setSupplierName(newProduct.getSupplier().getSuplierName());
+            importDTO.setImportQuantity(Integer.parseInt(importQuantityStr));
+            importDTO.setCost(Double.parseDouble(costStr));
+            storageService.importProduct(importDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm mới và nhập kho thành công!");
+            return "redirect:/storage/list-import";
+        } else {
+            if (result.hasErrors()) {
+                model.addAttribute("storageImportDTO", dto);
+                model.addAttribute("inforStorages", storageService.findAllStorage());
+                model.addAttribute("suppliers", supplierService.findAll());
+                model.addAttribute("categorys", categoryRepository.findAll());
+                model.addAttribute("productDTO", new StorageImportProductDTO());
+                return "storage/import-storage";
+            }
+            try {
+                storageService.importProduct(dto);
+                redirectAttributes.addFlashAttribute("successMessage", "Nhập kho thành công!");
+                return "redirect:/storage/list-import";
+            } catch (RuntimeException e) {
+                model.addAttribute("storageImportDTO", dto);
+                model.addAttribute("errorMessage", e.getMessage());
+                model.addAttribute("inforStorages", storageService.findAllStorage());
+                model.addAttribute("suppliers", supplierService.findAll());
+                model.addAttribute("categorys", categoryRepository.findAll());
+                model.addAttribute("productDTO", new StorageImportProductDTO());
+                return "storage/import-storage";
+            }
         }
     }
 
     @PostMapping("/create-product")
-    public String createProduct(@Valid @ModelAttribute("importStorageProduct") StorageImportProduct dto, 
-                               BindingResult result, 
-                               RedirectAttributes redirectAttributes, 
-                               Model model) {
+    public String createProduct(@Valid @ModelAttribute("productDTO") StorageImportProductDTO productDTO,
+                               BindingResult result,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            // Thêm lại các attribute cần thiết cho form
+            model.addAttribute("productDTO", productDTO);
+            model.addAttribute("showAddProductModal", true);
             model.addAttribute("inforStorages", storageService.findAllStorage());
             model.addAttribute("suppliers", supplierService.findAll());
             model.addAttribute("categorys", categoryRepository.findAll());
             model.addAttribute("storageImportDTO", new StorageImportDTO());
-            model.addAttribute("importStorageProduct", dto); // Set lại dto có lỗi
-            model.addAttribute("showAddProductModal", true); // Flag để hiển thị modal
             return "storage/import-storage";
         }
         try {
-            dto.setPrice(0.0);
-            dto.setQuantity(0);
-            var product = productService.createProductFromImport(dto);
-            Integer employeeId = null;
-            try {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
-                    String email = authentication.getName();
-                    Employee employee = employeeService.findByEmail(email);
-                    if (employee != null) {
-                        employeeId = employee.getEmployeeId();
-                    }
-                }
-            } catch (Exception ex) {
-                employeeId = null;
-            }
-            storageService.importProduct(new StorageImportId(product.getProductId(), employeeId));
+            productService.createProductFromImport(productDTO);
             redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm mới thành công!");
             return "redirect:/storage/show-create";
         } catch (Exception e) {

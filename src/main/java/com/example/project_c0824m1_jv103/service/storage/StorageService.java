@@ -42,6 +42,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import com.example.project_c0824m1_jv103.repository.IProductImagesRepository;
 
 @Service
 public class StorageService implements IStorageService {
@@ -63,6 +65,12 @@ public class StorageService implements IStorageService {
 
     @Autowired
     private IStorageTransactionRepository storageTransactionRepository;
+
+    @Autowired
+    private ICategoryRepository categoryRepository;
+
+    @Autowired
+    private IProductImagesRepository productImagesRepository;
 
     @Override
     @Transactional
@@ -116,26 +124,6 @@ public class StorageService implements IStorageService {
         // Return the updated storage object
         return storage;
     }
-//    @Override
-//    @Transactional
-//    public Storage importProduct(StorageImportDTO importDTO) {
-//        Product product = productRepository.findById(importDTO.getProductId())
-//                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
-//
-//        Employee employee = employeeRepository.findById(importDTO.getEmployeeId())
-//                .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại"));
-//
-//        product.setQuantity(product.getQuantity() + importDTO.getImportQuantity());
-//        productRepository.save(product);
-//
-//        Storage storage = new Storage();
-//        storage.setProduct(product);
-//        storage.setQuantity(importDTO.getImportQuantity());
-//        storage.setCost(importDTO.getCost());
-//        storage.setEmployee(employee);
-//
-//        return storageRepository.save(storage);
-//    }
 
     @Override
     public Page<Storage> getAllStorageRecords(Pageable pageable) {
@@ -178,81 +166,38 @@ public class StorageService implements IStorageService {
     @Override
     @Transactional
     public Storage importProduct(StorageImportDTO importDTO) {
-        if (importDTO.getImportQuantity() == null || importDTO.getImportQuantity() < 0) {
-            throw new RuntimeException("Số lượng nhập phải lớn hơn hoặc bằng 0");
+        if (importDTO.getProductId() == null) {
+            throw new RuntimeException("Vui lòng chọn sản phẩm để nhập kho");
         }
-
-        if (importDTO.getCost() != null && importDTO.getCost() < 0) {
+        if (importDTO.getImportQuantity() == null || importDTO.getImportQuantity() < 1) {
+            throw new RuntimeException("Số lượng nhập phải lớn hơn 0");
+        }
+        if (importDTO.getCost() == null || importDTO.getCost() < 0) {
             throw new RuntimeException("Giá nhập không hợp lệ");
         }
-
         Product product = productRepository.findById(importDTO.getProductId())
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
-
         if (!product.getSupplier().getSuplierId().equals(importDTO.getSupplierId())) {
             throw new RuntimeException("Nhà cung cấp không đúng. Hãy thêm sản phẩm mới.");
         }
-
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Employee employee = employeeRepository.findByEmail(email);
         if (employee == null) {
             throw new RuntimeException("Nhân viên không tồn tại");
         }
-
-        // Nếu quantity = 0: có quyền ghi đè storage hiện tại
-        if (importDTO.getImportQuantity() == 0) {
-            Optional<Storage> optionalStorage = storageRepository.findByProduct_ProductId(product.getProductId());
-            
-            if (optionalStorage.isPresent()) {
-                // Ghi đè storage hiện tại
-                Storage existingStorage = optionalStorage.get();
-                existingStorage.setQuantity(0);
-                existingStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
-                existingStorage.setEmployee(employee);
-                existingStorage.setTransactionDate(LocalDateTime.now());
-                return storageRepository.save(existingStorage);
-            } else {
-                // Tạo mới storage với quantity = 0
-                Storage newStorage = new Storage();
-                newStorage.setProduct(product);
-                newStorage.setQuantity(0);
-                newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
-                newStorage.setEmployee(employee);
-                newStorage.setTransactionDate(LocalDateTime.now());
-                return storageRepository.save(newStorage);
-            }
-        } else {
-            // Nếu quantity > 0: luôn tạo mới storage record
-            Storage newStorage = new Storage();
-            newStorage.setProduct(product);
-            newStorage.setQuantity(importDTO.getImportQuantity());
-            newStorage.setCost(importDTO.getCost() != null ? importDTO.getCost() : product.getPrice());
-            newStorage.setEmployee(employee);
-            newStorage.setTransactionDate(LocalDateTime.now());
-            return storageRepository.save(newStorage);
-        }
-    }
-
-    @Override
-    public void importProduct(StorageImportId storageImportId) {
-        Storage storage = new Storage();
-        Product product = productRepository.findById(storageImportId.getProductId()).orElse(null);
-        if (product == null) throw new RuntimeException("Product not found");
-        storage.setProduct(product);
-        storage.setCost(0.0);
-        storage.setQuantity(0);
-        if (storageImportId.getEmployeeId() == null) throw new RuntimeException("EmployeeId is required");
-        Employee employee = employeeRepository.findById(storageImportId.getEmployeeId())
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
-        storage.setEmployee(employee);
-        storageRepository.save(storage);
+        Storage newStorage = new Storage();
+        newStorage.setProduct(product);
+        newStorage.setQuantity(importDTO.getImportQuantity());
+        newStorage.setCost(importDTO.getCost());
+        newStorage.setEmployee(employee);
+        newStorage.setTransactionDate(java.time.LocalDateTime.now());
+        return storageRepository.save(newStorage);
     }
 
     @Override
     public Page<Storage> getImportHistory(Pageable pageable) {
         return storageRepository.findAllImports(pageable);
     }
-
 
     @Override
     @Transactional

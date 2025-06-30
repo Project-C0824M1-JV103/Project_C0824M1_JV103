@@ -1,7 +1,6 @@
 package com.example.project_c0824m1_jv103.service.product;
 
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
-import com.example.project_c0824m1_jv103.dto.StorageImportProduct;
 import com.example.project_c0824m1_jv103.mapper.ProductMapper;
 import com.example.project_c0824m1_jv103.model.Category;
 import com.example.project_c0824m1_jv103.model.Product;
@@ -30,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.example.project_c0824m1_jv103.dto.StorageImportProductDTO;
 
 @Service
 public class ProductService implements IProductService {
@@ -307,16 +308,16 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product createProductFromImport(StorageImportProduct dto) {
+    public void createProductFromImport(StorageImportProductDTO dto) {
         Product product = new Product();
         product.setProductName(dto.getProductName());
-        product.setPrice(0.0);
-        product.setQuantity(0);
         product.setSize(dto.getSize());
         product.setCameraBack(dto.getCameraBack());
         product.setCameraFront(dto.getCameraFront());
         product.setCpu(dto.getCpu());
         product.setMemory(dto.getMemory());
+        product.setPrice(0.0);
+        product.setQuantity(0);
         if (dto.getCategoryId() != null) {
             Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
             product.setCategory(category);
@@ -325,14 +326,28 @@ public class ProductService implements IProductService {
             Supplier supplier = supplierRepository.findById(dto.getSupplierId()).orElse(null);
             product.setSupplier(supplier);
         }
-        Product savedProduct = productRepository.save(product);
-        List<ProductImages> images = new ArrayList<>();
-        ProductImages defaultImage1 = new ProductImages(savedProduct, "", null);
-        ProductImages defaultImage2 = new ProductImages(savedProduct, "", null);
-        images.add(defaultImage1);
-        images.add(defaultImage2);
-        productImagesRepository.saveAll(images);
-        savedProduct.setProductImages(images);
-        return savedProduct;
+        productRepository.save(product);
+    }
+
+    @Override
+    public Product createProductFromImportReturnProduct(StorageImportProductDTO dto) {
+        Product product = new Product();
+        product.setProductName(dto.getProductName());
+        product.setSize(dto.getSize());
+        product.setCameraBack(dto.getCameraBack());
+        product.setCameraFront(dto.getCameraFront());
+        product.setCpu(dto.getCpu());
+        product.setMemory(dto.getMemory());
+        product.setPrice(0.0);
+        product.setQuantity(0);
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+            product.setCategory(category);
+        }
+        if (dto.getSupplierId() != null) {
+            Supplier supplier = supplierRepository.findById(dto.getSupplierId()).orElse(null);
+            product.setSupplier(supplier);
+        }
+        return productRepository.save(product);
     }
 }
