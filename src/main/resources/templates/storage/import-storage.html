@@ -718,6 +718,8 @@
         document.querySelector('input[name="supplierName"]').value = newProductTemp['supplierName'] || '';
         document.querySelector('input[name="supplierId"]').value = newProductTemp['supplierId'] || '';
         document.querySelector('input[name="productId"]').value = '';
+        document.querySelector('input[name="cost"]').removeAttribute('readonly');
+        document.querySelector('input[name="cost"]').value = '';
 
         // Đóng modal
         bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
@@ -767,6 +769,7 @@
 
                 document.querySelector('input[name="productName"]').value = name;
                 document.querySelector('input[name="cost"]').value = formatNumber(cost);
+                document.querySelector('input[name="cost"]').setAttribute('readonly', true);
                 document.querySelector('input[name="productId"]').value = productId;
                 document.querySelector('input[name="supplierName"]').value = supplierName;
                 document.querySelector('input[name="supplierId"]').value = supplierId;
