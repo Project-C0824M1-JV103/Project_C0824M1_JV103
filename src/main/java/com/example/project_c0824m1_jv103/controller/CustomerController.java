@@ -4,6 +4,7 @@ import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.model.Customer;
 import com.example.project_c0824m1_jv103.service.customer.ICustomerService;
 import com.example.project_c0824m1_jv103.service.sale.ISaleService;
+import com.example.project_c0824m1_jv103.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import jakarta.validation.Valid;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -29,6 +32,9 @@ public class CustomerController extends BaseAdminController  {
     
     @Autowired
     private ISaleService saleService;
+    
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping()
     public String showListCustomer(Model model,
@@ -171,4 +177,27 @@ public class CustomerController extends BaseAdminController  {
         }
         return "redirect:/Customer";
     }
+
+    // API endpoints for email verification
+    @PostMapping("/send-otp")
+    @ResponseBody
+    public Map<String, Object> sendOtp(@RequestParam String email) {
+        Map<String, Object> res = new HashMap<>();
+        boolean sent = emailService.sendOtp(email);
+        res.put("success", sent);
+        res.put("message", sent ? "Đã gửi OTP đến email." : "Không thể gửi OTP. Vui lòng thử lại.");
+        return res;
     }
+
+    @PostMapping("/verify-otp")
+    @ResponseBody
+    public Map<String, Object> verifyOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String otp = body.get("otp");
+        boolean verified = emailService.verifyOtp(email, otp);
+        Map<String, Object> res = new HashMap<>();
+        res.put("verified", verified);
+        res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
+        return res;
+    }
+}

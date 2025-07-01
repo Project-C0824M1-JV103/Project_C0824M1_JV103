@@ -10,6 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface IProductRepository extends JpaRepository<Product, Integer> {
+    @Query("SELECT p FROM Product p WHERE p.price > 0 and p.quantity > 0")
+    Page<Product> findAllWithQuantityAndPrice(Pageable pageable);
+
     Page<Product> findByProductNameContainingIgnoreCase(String name, Pageable pageable);
     
     // Tìm sản phẩm theo nhà cung cấp
@@ -21,7 +24,7 @@ public interface IProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.quantity BETWEEN :minQuantity AND :maxQuantity")
     Page<Product> findByQuantityBetween(@Param("minQuantity") Integer minQuantity, @Param("maxQuantity") Integer maxQuantity, Pageable pageable);
     
-    @Query("SELECT p FROM Product p WHERE " +
+    @Query("SELECT p FROM Product p WHERE p.price > 0 and p.quantity > 0 AND" +
            "(:productName IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%'))) AND " +
            "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
            "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +

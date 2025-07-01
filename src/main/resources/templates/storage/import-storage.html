@@ -3,63 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <title>Nhập kho</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/admin-navbar.css}"/>
     <link rel="stylesheet" th:href="@{/admin-common.css}"/>
-<!--    <link rel="stylesheet" th:href="@{/import-storage.css}"/>-->
     <style>
-        body {
-            background-color: #f8f9fa;
-            overflow-x: hidden;
-        }
         .main-content {
             background-color: #f8f9fa;
             min-height: 100vh;
-            padding: 20px 20px 20px 0;
         }
-        .container {
+        .form-section {
             background: white;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 2rem 1rem;
-            margin: 1.5rem 0;
-            border: 1px solid #dee2e6;
-            max-width: 100%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
-        h4.text-center {
+
+        .form-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin: 0;
         }
+
+        .form-body {
+            padding: 30px;
+        }
+
         .d-flex.justify-content-between { gap: 15px; margin-bottom: 30px; }
+        .btn, .btn-primary, .btn-secondary, .btn-outline-primary {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a3f92 100%);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+            color: white;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5c636a 0%, #767b80 100%);
+        }
         .btn-outline-primary {
-            border-radius: 0.5rem;
-            font-size: 0.95rem;
-            padding: 12px 15px;
-            font-weight: 500;
-            border: 1px solid #667eea;
+            border: 2px solid #667eea;
             color: #667eea;
-            transition: all 0.3s ease;
+            background: white;
         }
         .btn-outline-primary:hover {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-color: transparent;
         }
-        .form-label { font-weight: 500; color: #495057; margin-bottom: 10px; font-size: 1rem; }
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
         .form-control, .form-control[readonly] {
-            border-radius: 0.5rem;
+            border-radius: 8px;
             padding: 12px 15px;
-            font-size: 0.95rem;
-            border: 1px solid #ced4da;
+            font-size: 1rem;
+            border: 2px solid #e9ecef;
             width: 100%;
         }
         .form-control[readonly] {
@@ -76,36 +90,12 @@
             margin-bottom: 10px;
         }
         .d-flex.justify-content-end.gap-2 { margin-top: 40px; gap: 15px; }
-        .btn-primary, .btn-secondary {
-            border-radius: 0.5rem;
-            padding: 12px 25px;
-            font-size: 1rem;
-            font-weight: 500;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a3f92 100%);
-        }
-        .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
-            color: white;
-        }
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #5c636a 0%, #767b80 100%);
-        }
-        @media (max-width: 992px) {
-            .main-content { padding: 15px 15px 15px 0; }
-            .container { padding: 1rem 0.5rem; margin: 0.5rem 0; }
+        @media (max-width: 768px) {
+            /*.container { padding: 25px; margin: 15px 15px 15px 0; }*/
             h4.text-center { font-size: 1.25rem; padding: 15px; margin-bottom: 20px; }
             .d-flex.justify-content-between { flex-direction: column; gap: 10px; }
-            .btn-outline-primary { width: 100%; text-align: center; padding: 10px; }
-            .img-thumbnail { max-width: 150px; }
-            .form-control, .form-control[readonly] { padding: 10px 12px; }
+            .btn, .btn-primary, .btn-secondary, .btn-outline-primary { font-size: 0.95rem; padding: 8px 12px; }
+            .form-control, .form-control[readonly] { padding: 10px 12px; font-size: 0.95rem; }
             .form-label { margin-bottom: 8px; }
         }
         .btn-select-product, .btn-select-supplier {
@@ -132,27 +122,14 @@
         .image-container { display: flex; flex-wrap: wrap; gap: 10px; }
         .header-section {
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 20px;
-            border: 1px solid #dee2e6;
-            min-height: 110px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
-        .header-section h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #343a40;
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+
         .header-section .text-muted { font-size: 0.95rem; color: #6c757d; }
-        @media (max-width: 992px) {
-            .header-section { padding: 15px; min-height: 80px; }
-            .header-section h2 { font-size: 1.25rem; }
-            .header-section .text-danger { font-size: 0.9rem; }
-        }
+
         .error-message { color: #dc3545; font-size: 0.9rem; margin-top: 5px; }
         #addProductModal .modal-content {
             border-radius: 1rem;
@@ -180,7 +157,9 @@
             filter: invert(1);
         }
         #addProductModal .modal-body {
+            /* min-height: 600px; */
             max-height: 80vh;
+            /* height: 600px; */
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -286,135 +265,112 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.12);
         }
         .btn-delete:hover { background: #c82333; }
-    @media (max-width: 992px) {
-        #addProductModal .modal-dialog {
-            max-width: 98vw !important;
-            width: 98vw !important;
-            margin: 0 auto;
+
+        .required {
+            color: #dc3545;
         }
-        #addProductModal .modal-content {
-            padding: 0.5rem;
-        }
-        #addProductModal .col-md-6 {
-            flex: 0 0 100%;
-            max-width: 100%;
-        }
-        #addProductImagePreview .image-preview {
-            width: 80px;
-            height: 80px;
-        }
-    }
-    #addProductModal .modal-body {
-        overflow-x: auto;
-    }
     </style>
 </head>
-<body class="p-0">
+<body>
 <div class="container-fluid">
     <div class="row">
+        <!-- Sidebar -->
         <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
 
+        <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
+                <!-- Header Section -->
                 <div class="header-section">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h2 class="mb-1"><i class="fas fa-list text-primary me-2"></i>Danh sách nhập kho</h2>
-                            <p class="text-muted mb-0">Thêm mới nhập kho</p>
+                            <h2 class="mb-1">
+                                <i class="fas fa-boxes text-primary"></i>
+                                Quản lý nhập kho
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Thêm mới nhập kho
+                            </p>
                         </div>
                     </div>
                 </div>
-                <div class="container">
-                    <h4 class="text-center mb-4">Nhập kho</h4>
-                    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <span th:text="${errorMessage}"></span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="form-section">
+                    <div class="form-header">
+                        <h4 class="mb-0" style="text-align: center">
+                            <i class="fas fa-clipboard-list"></i> Nhập kho
+                        </h4>
                     </div>
-                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-                        <span th:text="${successMessage}"></span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productModal">Chọn sản phẩm</button>
-                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">Thêm sản phẩm mới</button>
-                    </div>
-                    <div th:if="${storageImportDTO != null}">
-                        <form th:action="@{/storage/create}" th:object="${storageImportDTO}" method="post" id="importForm" enctype="multipart/form-data">
-                            <div class="mb-3 row">
-                                <div class="col-8">
-                                    <label class="form-label">Tên sản phẩm</label>
-                                    <input type="text" class="form-control" th:field="*{productName}" readonly>
-                                    <div th:if="${#fields.hasErrors('productName')}">
-                                        <span th:each="err : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
+                    <div class="form-body">
+                        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span th:text="${errorMessage}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span th:text="${successMessage}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productModal">Chọn sản phẩm trong kho</button>
+                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">Thêm sản phẩm mới</button>
+                        </div>
+                        <div th:if="${storageImportDTO != null}">
+                            <form th:action="@{/storage/create}" th:object="${storageImportDTO}" method="post" id="importForm" enctype="multipart/form-data">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tên sản phẩm</label>
+                                        <input type="text" class="form-control" th:field="*{productName}" readonly>
+                                        <div th:if="${#fields.hasErrors('productName')}">
+                                            <span th:each="err : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-4">
-                                    <input type="hidden" th:field="*{productId}" id="productIdInput">
-                                    <div th:if="${#fields.hasErrors('productId')}">
-                                        <span th:each="err : ${#fields.errors('productId')}" th:text="${err}" class="text-danger small"></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-3 row">
-                                <div class="col-8">
-                                    <label class="form-label">Giá nhập (VND)</label>
-                                    <input type="text" class="form-control" th:field="*{cost}" id="costInput" autocomplete="off">
-                                    <div th:if="${#fields.hasErrors('cost')}">
-                                        <span th:each="err : ${#fields.errors('cost')}" th:text="${err}" class="text-danger small"></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-3 row">
-                                <div class="col-8">
-                                    <label class="form-label">Số lượng nhập</label>
-                                    <input type="number" min="1" class="form-control" th:field="*{importQuantity}">
-                                    <div th:if="${#fields.hasErrors('importQuantity')}">
-                                        <span th:each="err : ${#fields.errors('importQuantity')}" th:text="${err}" class="text-danger small"></span>
-                                    </div>
-                                </div>
-                                <div class="col-4"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Nhà cung cấp</label>
-                                <div class="row">
-                                    <div class="col-8">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nhà cung cấp</label>
                                         <input type="text" class="form-control" th:field="*{supplierName}" readonly>
                                         <input type="hidden" th:field="*{supplierId}" id="supplierIdInput">
-                                        <div th:if="${#fields.hasErrors('supplierId')}">
-                                            <span th:each="err : ${#fields.errors('supplierId')}" th:text="${err}" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Giá nhập (VNĐ) <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{cost}" id="costInput" autocomplete="off" min="1">
+                                        <div th:if="${#fields.hasErrors('cost')}">
+                                            <span th:each="err : ${#fields.errors('cost')}" th:text="${err}" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Số lượng nhập <span class="required">*</span></label>
+                                        <input type="number" min="1" class="form-control" th:field="*{importQuantity}">
+                                        <div th:if="${#fields.hasErrors('importQuantity')}">
+                                            <span th:each="err : ${#fields.errors('importQuantity')}" th:text="${err}" class="text-danger small"></span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <input type="hidden" name="isNewProduct" value="false">
-                            <input type="hidden" name="newProductName">
-                            <input type="hidden" name="size">
-                            <input type="hidden" name="cameraBack">
-                            <input type="hidden" name="cameraFront">
-                            <input type="hidden" name="cpu">
-                            <input type="hidden" name="memory">
-                            <input type="hidden" name="categoryId">
-                            <input type="hidden" name="supplierId">
-
-                            <input type="file" name="imageFiles" id="addProductImageFilesHidden" multiple style="display:none">
-
-                            <div class="d-flex justify-content-end gap-2">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-1"></i>Lưu vào kho
-                                </button>
-                                <a th:href="@{/storage/list-import}" class="btn btn-secondary">
-                                    <i class="fas fa-times me-1"></i>Quay lại
-                                </a>
-                            </div>
-                        </form>
+                                <input type="hidden" th:field="*{productId}" id="productIdInput">
+                                <input type="hidden" name="isNewProduct" value="false">
+                                <input type="hidden" name="newProductName">
+                                <input type="hidden" name="size">
+                                <input type="hidden" name="cameraBack">
+                                <input type="hidden" name="cameraFront">
+                                <input type="hidden" name="cpu">
+                                <input type="hidden" name="memory">
+                                <input type="hidden" name="categoryId">
+                                <input type="hidden" name="supplierId">
+                                <input type="file" name="imageFiles" id="addProductImageFilesHidden" multiple style="display:none">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i>Lưu vào kho
+                                    </button>
+                                    <a th:href="@{/storage/list-import}" class="btn btn-secondary">
+                                        <i class="fas fa-times me-1"></i>Quay lại
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                        <div th:if="${storageImportDTO == null}" class="alert alert-danger">
+                            Lỗi: Không thể tải form nhập kho. Vui lòng thử lại.
+                        </div>
                     </div>
-                    <div th:if="${storageImportDTO == null}" class="alert alert-danger">
-                        Lỗi: Không thể tải form nhập kho. Vui lòng thử lại.
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -557,9 +513,6 @@
                                 <div class="image-section">
                                     <!-- Preview Section -->
                                     <div class="image-preview-section">
-                                        <h6 class="mb-3 text-muted">
-                                            <i class="fas fa-images me-2"></i>Preview ảnh sản phẩm
-                                        </h6>
                                         <div id="addProductImagePreview"></div>
                         </div>
                                     <!-- Upload Section -->

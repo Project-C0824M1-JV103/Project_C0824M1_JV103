@@ -61,7 +61,7 @@ public class ProductController extends BaseAdminController {
                 pageable
             );
         } else {
-            productPage = productService.findAll(pageable);
+            productPage = productService.findAllWithQuantityAndPrice(pageable);
         }
 
         // Thêm các thuộc tính vào model

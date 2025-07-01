@@ -316,11 +316,11 @@
                                 Danh sách sản phẩm
                             </p>
                         </div>
-                        <div class="col-auto">
-                            <a href="/product/add" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Thêm sản phẩm
-                            </a>
-                        </div>
+<!--                        <div class="col-auto">-->
+<!--                            <a href="/product/add" class="btn btn-primary">-->
+<!--                                <i class="fas fa-plus"></i> Thêm sản phẩm-->
+<!--                            </a>-->
+<!--                        </div>-->
                     </div>
                 </div>
 
@@ -479,8 +479,7 @@
                                     </div>
                                 </td>
                                 <td style="border: none !important;">
-                        <span class="fw-bold text-success"
-                              th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span>
+                                    <span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span>
                                 </td>
                                 <td style="border: none !important;">
                                     <span th:text="${product.cpu ?: 'N/A'}" class="text-muted"></span>

@@ -12,7 +12,6 @@ public class EmployeeCreateDto {
     @NotBlank(message = "Nhập email người dùng!")
     private String email;
 
-    @NotBlank(message = "Nhập mật khẩu!")
     private String password;
 
     @NotBlank(message = "Nhập số điện thoại!")

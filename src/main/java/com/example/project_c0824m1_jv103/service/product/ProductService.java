@@ -128,6 +128,12 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Page<ProductDTO> findAllWithQuantityAndPrice(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAllWithQuantityAndPrice(pageable);
+        return productPage.map(productMapper::toDTO);
+    }
+
+    @Override
     public Page<ProductDTO> findAll(Pageable pageable) {
         Page<Product> productPage = productRepository.findAll(pageable);
         return productPage.map(productMapper::toDTO);
@@ -151,7 +157,7 @@ public class ProductService implements IProductService {
         // Nếu không có điều kiện tìm kiếm nào được chỉ định
         if (productName == null && minPrice == 0.0 && maxPrice == Double.MAX_VALUE 
             && minQuantity == 0 && maxQuantity == Integer.MAX_VALUE) {
-            return findAll(pageable);
+            return findAllWithQuantityAndPrice(pageable);
         }
         
         // Thực hiện tìm kiếm với tất cả các điều kiện

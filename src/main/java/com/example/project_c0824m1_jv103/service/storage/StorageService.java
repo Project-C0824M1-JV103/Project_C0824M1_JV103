@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import com.example.project_c0824m1_jv103.dto.StorageDto;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
@@ -40,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import com.example.project_c0824m1_jv103.repository.IProductImagesRepository;
@@ -276,6 +274,8 @@ public class StorageService implements IStorageService {
                     })
                     .collect(Collectors.toList());
         }
+        // Sắp xếp theo transactionDate giảm dần (mới nhất lên đầu)
+        storages.sort(Comparator.comparing(Storage::getTransactionDate, Comparator.reverseOrder()));
 
         return storages.stream().map(storage -> {
             StorageDto dto = new StorageDto();
