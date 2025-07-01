@@ -179,6 +179,26 @@
       margin-bottom: 20px;
     }
 
+    .error-container {
+      display: inline-flex;
+      flex-wrap: nowrap;
+      gap: 0;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .error-container .text-danger.small:not(:last-child)::after {
+      content: ", ";
+      color: #dc3545;
+      margin-right: 4px;
+    }
+
+    .text-danger.small {
+      font-size: 0.75rem;
+      margin-top: 2px;
+      display: inline;
+    }
+
 
   </style>
 </head>
@@ -245,9 +265,14 @@
                 <!-- Tên nhà cung cấp -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">
-                      Tên nhà cung cấp <span class="required">*</span>
-                    </label>
+                    <div class="d-flex align-items-center mb-1">
+                      <label class="form-label me-2 mb-0">
+                        Tên nhà cung cấp <span class="required">*</span>
+                      </label>
+                      <div th:if="${#fields.hasErrors('suplierName')}" class="error-container">
+                        <span th:each="err, stat : ${#fields.errors('suplierName')}" th:text="${err}" class="text-danger small"></span>
+                      </div>
+                    </div>
                     <input
                       type="text"
                       th:field="*{suplierName}"
@@ -256,21 +281,20 @@
                       placeholder="Nhập tên nhà cung cấp"
                       required
                     />
-                    <div
-                      th:if="${#fields.hasErrors('suplierName')}"
-                      class="invalid-feedback"
-                    >
-                      <span th:errors="*{suplierName}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Email -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">
-                      Email <span class="required">*</span>
-                    </label>
+                    <div class="d-flex align-items-center mb-1">
+                      <label class="form-label me-2 mb-0">
+                        Email <span class="required">*</span>
+                      </label>
+                      <div th:if="${#fields.hasErrors('email')}" class="error-container">
+                        <span th:each="err, stat : ${#fields.errors('email')}" th:text="${err}" class="text-danger small"></span>
+                      </div>
+                    </div>
                     <input
                       type="email"
                       th:field="*{email}"
@@ -279,21 +303,20 @@
                       placeholder="Nhập email nhà cung cấp"
                       required
                     />
-                    <div
-                      th:if="${#fields.hasErrors('email')}"
-                      class="invalid-feedback"
-                    >
-                      <span th:errors="*{email}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Số điện thoại -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">
-                      Số điện thoại <span class="required">*</span>
-                    </label>
+                    <div class="d-flex align-items-center mb-1">
+                      <label class="form-label me-2 mb-0">
+                        Số điện thoại <span class="required">*</span>
+                      </label>
+                      <div th:if="${#fields.hasErrors('phoneNumber')}" class="error-container">
+                        <span th:each="err, stat : ${#fields.errors('phoneNumber')}" th:text="${err}" class="text-danger small"></span>
+                      </div>
+                    </div>
                     <input
                       type="tel"
                       th:field="*{phoneNumber}"
@@ -302,21 +325,20 @@
                       placeholder="Nhập số điện thoại"
                       required
                     />
-                    <div
-                      th:if="${#fields.hasErrors('phoneNumber')}"
-                      class="invalid-feedback"
-                    >
-                      <span th:errors="*{phoneNumber}"></span>
-                    </div>
                   </div>
                 </div>
 
                 <!-- Địa chỉ -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-label">
-                      Địa chỉ <span class="required">*</span>
-                    </label>
+                    <div class="d-flex align-items-center mb-1">
+                      <label class="form-label me-2 mb-0">
+                        Địa chỉ <span class="required">*</span>
+                      </label>
+                      <div th:if="${#fields.hasErrors('address')}" class="error-container">
+                        <span th:each="err, stat : ${#fields.errors('address')}" th:text="${err}" class="text-danger small"></span>
+                      </div>
+                    </div>
                     <textarea
                       th:field="*{address}"
                       class="form-control"
@@ -325,12 +347,6 @@
                       rows="3"
                       required
                     ></textarea>
-                    <div
-                      th:if="${#fields.hasErrors('address')}"
-                      class="invalid-feedback"
-                    >
-                      <span th:errors="*{address}"></span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -725,21 +741,36 @@
   function showValidationError(inputElement, message) {
     inputElement.classList.add('is-invalid');
     
-    let feedback = inputElement.parentNode.querySelector('.client-validation-feedback');
-    if (!feedback) {
-      feedback = document.createElement('div');
-      feedback.classList.add('client-validation-feedback', 'invalid-feedback');
-      inputElement.parentNode.appendChild(feedback);
+    // Find the label container
+    const formGroup = inputElement.closest('.form-group');
+    const labelContainer = formGroup.querySelector('.d-flex.align-items-center');
+    
+    // Remove existing client validation error
+    let existingError = labelContainer.querySelector('.client-validation-error');
+    if (existingError) {
+      existingError.remove();
     }
-    feedback.textContent = message;
+    
+    // Create new error container
+    const errorContainer = document.createElement('div');
+    errorContainer.classList.add('client-validation-error', 'error-container');
+    
+    const errorSpan = document.createElement('span');
+    errorSpan.classList.add('text-danger', 'small');
+    errorSpan.textContent = message;
+    
+    errorContainer.appendChild(errorSpan);
+    labelContainer.appendChild(errorContainer);
   }
 
   // Remove validation message
   function removeValidationMessage(inputElement) {
     inputElement.classList.remove('is-invalid');
-    const feedback = inputElement.parentNode.querySelector('.client-validation-feedback');
-    if (feedback) {
-      feedback.remove();
+    const formGroup = inputElement.closest('.form-group');
+    const labelContainer = formGroup.querySelector('.d-flex.align-items-center');
+    const clientError = labelContainer.querySelector('.client-validation-error');
+    if (clientError) {
+      clientError.remove();
     }
   }
 
@@ -768,7 +799,7 @@
     // Form submission validation
     if (form) {
       form.addEventListener('submit', function(e) {
-        const hasClientErrors = document.querySelectorAll('.client-validation-feedback').length > 0;
+        const hasClientErrors = document.querySelectorAll('.client-validation-error').length > 0;
         const alertDiv = document.getElementById('clientValidationAlert');
         
         if (hasClientErrors) {

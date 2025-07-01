@@ -6,15 +6,15 @@ public class EmployeeCreateDto {
 
     private Integer employeeId;
 
-    @NotBlank(message = "Nhập tên đầy đủ!")
+    @NotBlank(message = "Vui lòng nhập tên đầy đủ")
     private String fullName;
 
-    @NotBlank(message = "Nhập email người dùng!")
+    @NotBlank(message = "Vui lòng nhập email người dùng")
     private String email;
 
     private String password;
 
-    @NotBlank(message = "Nhập số điện thoại!")
+    @NotBlank(message = "Vui lòng nhập số điện thoại")
     private String phone;
 
     @NotBlank(message = "Chọn vị trí")

@@ -82,46 +82,27 @@ public class SupplierService implements ISupplierService {
 
     @Override
     public Supplier saveSupplier(SupplierDto supplierDto) throws IOException {
-        System.out.println("=== SUPPLIER CREATION START ===");
-        System.out.println("Supplier name: " + supplierDto.getSuplierName());
-        System.out.println("Email: " + supplierDto.getEmail());
-        System.out.println("Phone: " + supplierDto.getPhoneNumber());
-
         // Validate trước khi lưu
         String validationError = validateNewSupplier(supplierDto);
         if (validationError != null) {
-            System.err.println("Validation failed: " + validationError);
             throw new RuntimeException(validationError);
         }
-        System.out.println("Validation passed");
 
         // Tạo supplier từ DTO bằng mapper
         Supplier supplier = supplierMapper.toEntity(supplierDto);
 
         // Upload ảnh nếu có
         if (supplierDto.getImageFile() != null && !supplierDto.getImageFile().isEmpty()) {
-            System.out.println("Image file detected - Starting upload process...");
             try {
                 String imageUrl = cloudinaryService.uploadImage(supplierDto.getImageFile());
                 supplier.setImageUrl(imageUrl);
-                System.out.println("Image uploaded successfully and linked to supplier");
             } catch (IOException e) {
-                System.err.println("Image upload failed: " + e.getMessage());
                 throw new IOException("Lỗi khi tải ảnh lên: " + e.getMessage());
             }
-        } else {
-            System.out.println("No image file provided - Skipping upload");
         }
 
         // Lưu supplier vào database
-        System.out.println("Saving supplier to database...");
         Supplier savedSupplier = supplierRepository.save(supplier);
-
-        System.out.println("SUPPLIER CREATED SUCCESSFULLY!");
-        System.out.println("Supplier ID: " + savedSupplier.getSuplierId());
-        System.out.println("Image URL: " + (savedSupplier.getImageUrl() != null ? savedSupplier.getImageUrl() : "No image"));
-        System.out.println("Created at: " + new java.util.Date());
-        System.out.println("=== SUPPLIER CREATION END ===\n");
 
         return savedSupplier;
     }
