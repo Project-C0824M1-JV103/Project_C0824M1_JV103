@@ -131,6 +131,36 @@
         .header-section .text-muted { font-size: 0.95rem; color: #6c757d; }
 
         .error-message { color: #dc3545; font-size: 0.9rem; margin-top: 5px; }
+
+        #productModal .modal-content {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        #productModal .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1rem 1rem 0 0;
+            border: none;
+            padding: 10px 16px;
+            min-height: 40px;
+        }
+
+        #productModal .modal-title {
+            width: 120%;
+            text-align: center;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 1.15rem;
+            line-height: 1.5;
+            padding: 0;
+        }
+
+        #productModal .btn-close {
+            filter: invert(1);
+        }
+
         #addProductModal .modal-content {
             border-radius: 1rem;
             border: none;
@@ -144,13 +174,13 @@
             min-height: 40px;
         }
         #addProductModal .modal-title {
-            width: 100%;
+            width: 120%;
             text-align: center;
             color: #fff;
             font-weight: 600;
             letter-spacing: 1px;
             font-size: 1.15rem;
-            line-height: 1.2;
+            line-height: 1.5;
             padding: 0;
         }
         #addProductModal .btn-close {
@@ -390,9 +420,9 @@
 <!-- Modal chọn sản phẩm -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content" style="max-width: 95vw; width: 120%;">
+        <div class="modal-content" style="max-width: 95vw; width: 100%;">
             <div class="modal-header">
-                <h5 class="modal-title" id="productModalLabel">Chọn sản phẩm</h5>
+                <h4 class="modal-title" id="productModalLabel">Chọn sản phẩm</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
