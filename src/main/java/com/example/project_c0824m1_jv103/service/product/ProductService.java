@@ -128,6 +128,16 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Product findProductById(Integer id) {
+        return productRepository.findByProductId(id);
+    }
+
+    @Override
+    public void updateProductRetail(Product product) {
+        productRepository.save(product);
+    }
+
+    @Override
     public Page<ProductDTO> findAllWithQuantityAndPrice(Pageable pageable) {
         Page<Product> productPage = productRepository.findAllWithQuantityAndPrice(pageable);
         return productPage.map(productMapper::toDTO);

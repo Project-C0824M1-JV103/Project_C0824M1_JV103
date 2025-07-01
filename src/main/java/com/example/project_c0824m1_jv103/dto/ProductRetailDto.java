@@ -1,20 +1,34 @@
 package com.example.project_c0824m1_jv103.dto;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class ProductRetailDto {
     private Integer productId;
 
+    @NotBlank(message = "Vui lòng chọn sản phẩm!")
     private String productName;
 
+    @NotNull(message = "Vui lòng chọn sản phẩm!")
     private Double price;
 
+    @NotNull(message = "Vui lòng nhập giá")
+    @DecimalMin(value = "10000", message = "Giá nhập phải từ 10,000 VND trở lên")
+    @DecimalMax(value = "1000000000", message = "Giá nhập không được vượt quá 1,000,000,000 VND")
     private Double retailPrice;
 
+    @NotBlank(message = "Vui lòng chọn sản phẩm!")
     private String memory;
 
+    @NotNull(message = "Vui lòng chọn sản phẩm!")
     private Integer quantity;
 
+    @NotBlank(message = "Vui lòng chọn sản phẩm!")
     private String categoryName;
 
+    @NotBlank(message = "Vui lòng chọn sản phẩm!")
     private String supplierName;
 
     public ProductRetailDto() {

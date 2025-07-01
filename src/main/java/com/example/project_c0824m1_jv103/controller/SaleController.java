@@ -188,7 +188,7 @@ public class SaleController extends BaseAdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("productId").descending());
         Page<ProductDTO> products;
         boolean isSearch = false;
 

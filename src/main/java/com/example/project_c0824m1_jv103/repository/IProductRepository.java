@@ -14,7 +14,9 @@ public interface IProductRepository extends JpaRepository<Product, Integer> {
     Page<Product> findAllWithQuantityAndPrice(Pageable pageable);
 
     Page<Product> findByProductNameContainingIgnoreCase(String name, Pageable pageable);
-    
+
+    Product findByProductId(Integer productId);
+
     // Tìm sản phẩm theo nhà cung cấp
     List<Product> findBySupplier_SuplierId(Integer supplierId);
     

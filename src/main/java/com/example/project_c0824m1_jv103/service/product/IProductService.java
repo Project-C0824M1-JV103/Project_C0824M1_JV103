@@ -16,6 +16,10 @@ public interface IProductService {
     // Tạo sản phẩm mới với DTO
     ProductDTO createProduct(ProductDTO productDTO, List<MultipartFile> imageFiles, List<String> captions) throws IOException;
 
+    Product findProductById(Integer id);
+
+    void updateProductRetail(Product product);
+
     // Lấy danh sách sản phẩm với phân trang và có giá và số lượng lớn hơn 0
     Page<ProductDTO> findAllWithQuantityAndPrice(Pageable pageable);
 

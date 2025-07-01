@@ -231,6 +231,16 @@
                     </div>
                 </div>
 
+                <!-- Success/Error Messages -->
+                <div th:if="${message}" class="alert alert-success" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span th:text="${message}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
                 <!-- Form Section -->
                 <div class="form-section">
                     <div class="form-header">
@@ -241,18 +251,13 @@
                     </div>
 
                     <div class="form-body">
-                        <!-- Success/Error Messages -->
-                        <div th:if="${error}" class="alert alert-danger" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <span th:text="${error}"></span>
-                        </div>
-
                         <form
-                                th:action="@{/Business/update/{id}(id=${productRetailDTO.productId})}"
-                                th:object="${productRetailDTO}"
+                                th:action="@{/Business/retail/update}"
+                                th:object="${productRetailDto}"
                                 method="post"
                                 novalidate
                         >
+                            <input type="hidden" th:field="*{productId}" name="productId" />
                             <!-- Nút chọn sản phẩm -->
                             <div class="text-center mb-4">
                                 <button type="button" class="btn btn-primary btn-select-product" data-bs-toggle="modal"
@@ -550,7 +555,7 @@
         const params = new URLSearchParams(formData);
         params.set('page', page);
 
-        fetch(`/Sale/products/data?${params.toString()}`)
+        fetch(`/Business/products/data?${params.toString()}`)
             .then(response => response.json())
             .then(data => updateProductTable(data))
             .catch(error => {
@@ -564,7 +569,7 @@
         const formData = new FormData(form);
         const params = new URLSearchParams(formData);
         params.set('page', '0');
-        fetch(`/Sale/products/data?${params.toString()}`)
+        fetch(`/Business/products/data?${params.toString()}`)
             .then(response => response.json())
             .then(data => updateProductTable(data))
             .catch(error => {
@@ -575,7 +580,7 @@
     function refreshProductList() {
         const form = document.getElementById('productSearchForm');
         form.reset();
-        fetch('/Sale/products/data?page=0&size=6')
+        fetch('/Business/products/data?page=0&size=6')
             .then(response => response.json())
             .then(data => updateProductTable(data))
             .catch(error => {
@@ -594,9 +599,10 @@
 
     // Khi chọn sản phẩm, gán vào các input (trừ retailPrice)
     function selectProduct(productId) {
-        fetch(`/Sale/products/${productId}`)
+        fetch(`/Business/products/${productId}`)
             .then(response => response.json())
             .then(product => {
+                document.querySelector('input[name="productId"]').value = product.productId || '';
                 document.querySelector('input[name="productName"]').value = product.productName || '';
                 document.querySelector('input[name="memory"]').value = product.memory || '';
                 document.querySelector('input[name="price"]').value = product.price || '';
