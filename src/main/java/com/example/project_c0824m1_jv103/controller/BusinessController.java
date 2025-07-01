@@ -79,7 +79,7 @@ public class BusinessController extends BaseAdminController {
     }
 
     @PostMapping("/retail/update")
-    public String UpdateRetail(@RequestParam(value = "productId", required = false) Integer id,
+    public String updateRetail(@RequestParam(value = "productId", required = false) Integer id,
                                @Valid @ModelAttribute("productRetailDto") ProductRetailDto productRetailDto,
                                BindingResult bindingResult,
                                Model model,

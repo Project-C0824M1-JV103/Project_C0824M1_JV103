@@ -290,13 +290,11 @@ public class StorageController extends BaseAdminController {
             Model model) {
         Page<Storage> storagePage = storageService.searchProductsInStorage(keyword, PageRequest.of(page, size));
         
-        // Chuyển đổi Page<Storage> thành Page<Product> để tương thích với view
-        Page<Product> productPage = storagePage.map(Storage::getProduct);
-
-        model.addAttribute("products", productPage.getContent());
+        // Truyền Storage objects thay vì Product để có thể truy cập storageId
+        model.addAttribute("storages", storagePage.getContent());
         model.addAttribute("keyword", keyword);
         model.addAttribute("page", page);
-        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalPages", storagePage.getTotalPages());
         model.addAttribute("currentPage", "storage");
         return "storage/product-selection";
     }
@@ -323,20 +321,18 @@ public class StorageController extends BaseAdminController {
         return "redirect:/storage/export";
     }
 
-    @GetMapping("/product/{id}")
+    @GetMapping("/storage/{id}")
     @ResponseBody
-    public StorageExportDTO getProductInfo(@PathVariable Integer id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        Storage storage = storageService.findByProductId(id)
-                .orElse(new Storage()); // Tạo storage rỗng nếu không tìm thấy
+    public StorageExportDTO getStorageInfo(@PathVariable Integer id) {
+        Storage storage = storageService.getStorageById(id);
+        Product product = storage.getProduct();
 
         return new StorageExportDTO(
+                storage.getStorageId(),
                 product.getProductId(),
                 product.getProductName(),
                 product.getSupplier() != null ? product.getSupplier().getSuplierName() : "N/A",
-                storage.getQuantity() != null ? storage.getQuantity() : 0, // Lấy số lượng từ storage, mặc định là 0
+                storage.getQuantity() != null ? storage.getQuantity() : 0,
                 null
         );
     }
@@ -454,6 +450,7 @@ public class StorageController extends BaseAdminController {
         List<Map<String, Object>> products = storages.getContent().stream()
             .map(storage -> {
                 Map<String, Object> product = new HashMap<>();
+                product.put("storageId", storage.getStorageId());
                 product.put("productId", storage.getProduct().getProductId());
                 product.put("productName", storage.getProduct().getProductName());
                 product.put("price", storage.getCost() != null ? storage.getCost() : storage.getProduct().getPrice());

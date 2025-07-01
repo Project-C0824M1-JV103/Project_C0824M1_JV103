@@ -39,4 +39,5 @@ public interface IProductRepository extends JpaRepository<Product, Integer> {
             @Param("minQuantity") Integer minQuantity,
             @Param("maxQuantity") Integer maxQuantity,
             Pageable pageable);
+
 }

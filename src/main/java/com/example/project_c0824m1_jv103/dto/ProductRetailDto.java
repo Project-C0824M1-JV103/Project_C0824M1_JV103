@@ -8,10 +8,8 @@ import jakarta.validation.constraints.NotNull;
 public class ProductRetailDto {
     private Integer productId;
 
-    @NotBlank(message = "Vui lòng chọn sản phẩm!")
     private String productName;
 
-    @NotNull(message = "Vui lòng chọn sản phẩm!")
     private Double price;
 
     @NotNull(message = "Vui lòng nhập giá")
@@ -19,16 +17,12 @@ public class ProductRetailDto {
     @DecimalMax(value = "1000000000", message = "Giá nhập không được vượt quá 1,000,000,000 VND")
     private Double retailPrice;
 
-    @NotBlank(message = "Vui lòng chọn sản phẩm!")
     private String memory;
 
-    @NotNull(message = "Vui lòng chọn sản phẩm!")
     private Integer quantity;
 
-    @NotBlank(message = "Vui lòng chọn sản phẩm!")
     private String categoryName;
 
-    @NotBlank(message = "Vui lòng chọn sản phẩm!")
     private String supplierName;
 
     public ProductRetailDto() {

@@ -78,18 +78,17 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Số lượng xuất phải lớn hơn 0");
         }
 
-        // Find the storage record for the product, which holds the actual warehouse stock
-        Storage storage = storageRepository.findByProduct_ProductId(exportDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy kho chứa sản phẩm này."));
+        // Find the specific storage record by storageId
+        Storage storage = storageRepository.findById(exportDTO.getStorageId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lô hàng này trong kho."));
 
-        // Check if there is enough quantity in storage (warehouse)
+        // Check if there is enough quantity in this specific storage batch
         if (storage.getQuantity() < exportDTO.getExportQuantity()) {
-            throw new RuntimeException("Số lượng trong kho không đủ để xuất.");
+            throw new RuntimeException("Số lượng trong lô hàng này không đủ để xuất. Chỉ còn " + storage.getQuantity() + " sản phẩm.");
         }
 
-        // Find the product to update its retail quantity
-        Product product = productRepository.findById(exportDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+        // Get the product to update its retail quantity
+        Product product = storage.getProduct();
 
         // Decrease quantity in storage
         storage.setQuantity(storage.getQuantity() - exportDTO.getExportQuantity());
@@ -107,10 +106,10 @@ public class StorageService implements IStorageService {
             StorageTransaction exportTransaction = new StorageTransaction(
                 product,
                 -exportDTO.getExportQuantity(), // Số âm cho xuất kho
-                product.getPrice(),
+                storage.getCost(), // Sử dụng giá nhập của lô cụ thể
                 employee,
                 StorageTransaction.TransactionType.EXPORT,
-                "Xuất kho " + exportDTO.getExportQuantity() + " sản phẩm " + product.getProductName()
+                "Xuất kho " + exportDTO.getExportQuantity() + " sản phẩm " + product.getProductName() + " từ lô " + storage.getStorageId()
             );
             
             storageTransactionRepository.save(exportTransaction);
