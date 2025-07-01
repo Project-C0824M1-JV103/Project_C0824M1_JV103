@@ -10,7 +10,7 @@ public class SupplierDto {
     private Integer suplierId;
     
     @NotBlank(message = "Tên nhà cung cấp không được để trống")
-    @Size(min = 2, max = 100, message = "Tên nhà cung cấp phải từ 2-100 ký tự")
+    @Size(min = 2, max = 50, message = "Tên nhà cung cấp quá dài")
     private String suplierName;
     
     @NotBlank(message = "Địa chỉ không được để trống")
