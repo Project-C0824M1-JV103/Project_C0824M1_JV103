@@ -78,7 +78,7 @@ public class StorageController extends BaseAdminController {
             @RequestParam(value = "startDate", required = false) String startDate,
             @RequestParam(value = "endDate", required = false) String endDate,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "6") int size,
             Model model) {
 
         // Xử lý ngày
@@ -104,7 +104,7 @@ public class StorageController extends BaseAdminController {
         model.addAttribute("productName", productName);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-        model.addAttribute("currentPage", page);
+        model.addAttribute("currentPage", "storage");
         model.addAttribute("pageSize", size);
         model.addAttribute("totalPages", storagePage.getTotalPages());
         model.addAttribute("totalItems", storagePage.getTotalElements());
@@ -120,6 +120,7 @@ public class StorageController extends BaseAdminController {
         model.addAttribute("categorys", categoryRepository.findAll());
         model.addAttribute("storageImportDTO", new StorageImportDTO());
         model.addAttribute("productDTO", new StorageImportProductDTO());
+        model.addAttribute("currentPage", "storage");
         return "storage/import-storage";
     }
 
@@ -199,6 +200,7 @@ public class StorageController extends BaseAdminController {
                 model.addAttribute("categorys", categoryRepository.findAll());
                 model.addAttribute("productTemp", productTemp);
                 model.addAttribute("showAddProductModal", true);
+                model.addAttribute("currentPage", "storage");
                 return "storage/import-storage";
             }
             StorageImportProductDTO productDTO = new StorageImportProductDTO();
@@ -229,6 +231,7 @@ public class StorageController extends BaseAdminController {
                 model.addAttribute("suppliers", supplierService.findAll());
                 model.addAttribute("categorys", categoryRepository.findAll());
                 model.addAttribute("productDTO", new StorageImportProductDTO());
+                model.addAttribute("currentPage", "storage");
             return "storage/import-storage";
         }
         try {
@@ -254,6 +257,7 @@ public class StorageController extends BaseAdminController {
                                RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("productDTO", productDTO);
+            model.addAttribute("currentPage", "storage");
             model.addAttribute("showAddProductModal", true);
             model.addAttribute("inforStorages", storageService.findAllStorage());
             model.addAttribute("suppliers", supplierService.findAll());
@@ -274,7 +278,7 @@ public class StorageController extends BaseAdminController {
     @GetMapping("/export")
     public String showExportForm(Model model) {
         model.addAttribute("exportDTO", new StorageExportDTO());
-        model.addAttribute("currentPage", "export");
+        model.addAttribute("currentPage", "storage");
         return "storage/export-form";
     }
 
@@ -293,7 +297,7 @@ public class StorageController extends BaseAdminController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("page", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
-        model.addAttribute("currentPage", "export");
+        model.addAttribute("currentPage", "storage");
         return "storage/product-selection";
     }
 
@@ -347,7 +351,7 @@ public class StorageController extends BaseAdminController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", exportRecords.getTotalPages());
         model.addAttribute("totalElements", exportRecords.getTotalElements());
-        model.addAttribute("currentPage", "export");
+        model.addAttribute("currentPage", "storage");
         return "storage/export-history";
     }
 
@@ -367,6 +371,7 @@ public class StorageController extends BaseAdminController {
 
             model.addAttribute("storageDto", storageDto);
             model.addAttribute("storage", storage);
+            model.addAttribute("currentPage", "storage");
             model.addAttribute("suppliers", supplierService.findAll());
             model.addAttribute("employees", employeeService.findAll());
 
@@ -387,6 +392,7 @@ public class StorageController extends BaseAdminController {
             try {
                 Storage storage = storageService.getStorageById(id);
                 model.addAttribute("storage", storage);
+                model.addAttribute("currentPage", "storage");
                 model.addAttribute("suppliers", supplierService.findAll());
                 model.addAttribute("employees", employeeService.findAll());
                 model.addAttribute("error", "Vui lòng kiểm tra lại dữ liệu nhập vào");
