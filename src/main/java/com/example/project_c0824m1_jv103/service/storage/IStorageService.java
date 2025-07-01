@@ -28,8 +28,6 @@ public interface IStorageService {
     Storage updateStorage(Integer storageId, StorageDto storageDto);
     Page<StorageDto> paginateStorageList(List<StorageDto> storageList, Pageable pageable);
 
-    void importProduct(StorageImportId storageImportId);
-
     Optional<Storage> findByProductId(Integer productId);
 
     Page<Storage> searchProductsInStorage(String keyword, Pageable pageable);

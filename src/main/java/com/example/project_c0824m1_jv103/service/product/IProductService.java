@@ -1,7 +1,7 @@
 package com.example.project_c0824m1_jv103.service.product;
 
 import com.example.project_c0824m1_jv103.dto.ProductDTO;
-import com.example.project_c0824m1_jv103.dto.StorageImportProduct;
+import com.example.project_c0824m1_jv103.dto.StorageImportProductDTO;
 import com.example.project_c0824m1_jv103.model.Category;
 import com.example.project_c0824m1_jv103.model.Product;
 import com.example.project_c0824m1_jv103.model.Supplier;
@@ -49,6 +49,9 @@ public interface IProductService {
     List<Category> getAllCategories();
     List<Supplier> getAllSuppliers();
 
-    // Tạo sản phẩm mới từ ImportStorageProduct
-    Product createProductFromImport(StorageImportProduct dto);
+    // Tạo sản phẩm mới từ modal nhập kho
+    void createProductFromImport(StorageImportProductDTO dto);
+
+    // Tạo sản phẩm mới từ modal nhập kho, trả về Product vừa tạo
+    Product createProductFromImportReturnProduct(StorageImportProductDTO dto, List<MultipartFile> imageFiles);
 }

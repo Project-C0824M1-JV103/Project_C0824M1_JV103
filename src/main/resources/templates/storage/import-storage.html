@@ -8,240 +8,30 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/admin-navbar.css}"/>
     <link rel="stylesheet" th:href="@{/admin-common.css}"/>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            overflow-x: hidden;
-        }
-        .main-content {
-            background-color: #f8f9fa;
-            min-height: 100vh;
-            padding: 20px 20px 20px 0;
-        }
-        .container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 40px;
-            margin: 30px 30px 30px 0;
-            border: 1px solid #dee2e6;
-        }
-        h4.text-center {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-        .d-flex.justify-content-between { gap: 15px; margin-bottom: 30px; }
-        .btn-outline-primary {
-            border-radius: 0.5rem;
-            font-size: 0.95rem;
-            padding: 12px 15px;
-            font-weight: 500;
-            border: 1px solid #667eea;
-            color: #667eea;
-            transition: all 0.3s ease;
-        }
-        .btn-outline-primary:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: transparent;
-        }
-        .form-label { font-weight: 500; color: #495057; margin-bottom: 10px; font-size: 1rem; }
-        .form-control, .form-control[readonly] {
-            border-radius: 0.5rem;
-            padding: 12px 15px;
-            font-size: 0.95rem;
-            border: 1px solid #ced4da;
-            width: 100%;
-        }
-        .form-control[readonly] {
-            background-color: #e9ecef;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-        .img-thumbnail {
-            border-radius: 0.5rem;
-            max-width: 180px;
-            border: 1px solid #dee2e6;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        .d-flex.justify-content-end.gap-2 { margin-top: 40px; gap: 15px; }
-        .btn-primary, .btn-secondary {
-            border-radius: 0.5rem;
-            padding: 12px 25px;
-            font-size: 1rem;
-            font-weight: 500;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a3f92 100%);
-        }
-        .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
-            color: white;
-        }
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #5c636a 0%, #767b80 100%);
-        }
-        @media (max-width: 992px) {
-            .main-content { padding: 15px 15px 15px 0; }
-            .container { padding: 25px; margin: 15px 15px 15px 0; }
-            h4.text-center { font-size: 1.25rem; padding: 15px; margin-bottom: 20px; }
-            .d-flex.justify-content-between { flex-direction: column; gap: 10px; }
-            .btn-outline-primary { width: 100%; text-align: center; padding: 10px; }
-            .img-thumbnail { max-width: 150px; }
-            .form-control, .form-control[readonly] { padding: 10px 12px; }
-            .form-label { margin-bottom: 8px; }
-        }
-        .btn-select-product, .btn-select-supplier {
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-            border: 1px solid #667eea;
-            color: #667eea;
-            padding: 6px 10px;
-            font-size: 0.85rem;
-            border-radius: 0.375rem;
-        }
-        .btn-select-product:hover, .btn-select-supplier:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: transparent;
-        }
-        .product-image {
-            max-width: 80px;
-            border-radius: 0.375rem;
-            border: 1px solid #dee2e6;
-            margin-right: 5px;
-            margin-bottom: 5px;
-        }
-        .image-container { display: flex; flex-wrap: wrap; gap: 10px; }
-        .header-section {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            border: 1px solid #dee2e6;
-            min-height: 110px;
-        }
-        .header-section h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #343a40;
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .header-section .text-muted { font-size: 0.95rem; color: #6c757d; }
-        @media (max-width: 992px) {
-            .header-section { padding: 15px; min-height: 80px; }
-            .header-section h2 { font-size: 1.25rem; }
-            .header-section .text-danger { font-size: 0.9rem; }
-        }
-        .error-message { color: #dc3545; font-size: 0.9rem; margin-top: 5px; }
-        #addProductModal .modal-content {
-            border-radius: 1rem;
-            border: none;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-        }
-        #addProductModal .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 1rem 1rem 0 0;
-            border: none;
-        }
-        #addProductModal .modal-title {
-            width: 120%;
-            text-align: center;
-            color: #fff;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-        #addProductModal .btn-close {
-            filter: invert(1);
-        }
-        #addProductModal .modal-body {
-            min-height: 600px;
-            max-height: 80vh;
-            height: 600px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        #addProductModal .form-label {
-            font-weight: 500;
-        }
-        #addProductModal .form-control, #addProductModal .form-select {
-            border-radius: 0.5rem;
-            min-height: 42px;
-        }
-        #addProductModal .d-flex.justify-content-center.gap-3 .btn {
-            min-width: 120px;
-            font-weight: 500;
-        }
-        #addProductModal .invalid-feedback.d-block {
-            min-height: 22px;
-            margin-bottom: 0;
-            display: block;
-        }
-        #addProductModal .modal-dialog {
-            max-width: 80vw;
-            width: 100%;
-        }
-        @media (max-width: 992px) {
-            #addProductModal .modal-dialog {
-                max-width: 95vw;
-                width: 95vw;
-            }
-        }
-        .text-danger.small {
-            font-size: 0.75rem;
-            margin-top: 2px;
-            display: inline;
-        }
-        .error-container {
-            display: inline-flex;
-            flex-wrap: nowrap;
-            gap: 0;
-            align-items: center;
-            white-space: nowrap;
-        }
-        .error-container .text-danger.small:not(:last-child)::after {
-            content: ", ";
-            color: #dc3545;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/import-storage.css}"/>
 </head>
-<body class="p-0">
+<body>
 <div class="container-fluid">
     <div class="row">
         <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
 
-        <div class="col-md-9 col-lg-10">
-            <div class="main-content p-4">
+        <div class="col-md-9 col-lg-10 ms-sm-auto">
+            <div class="main-content">
                 <div class="header-section">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h2 class="mb-1"><i class="fas fa-list text-primary me-2"></i>Danh sách nhập kho</h2>
-                            <p class="text-muted mb-0">Thêm mới nhập kho</p>
+                            <h2 class="mb-1">
+                                <i class="fas fa-boxes text-primary me-2"></i>
+                                Quản lý nhập kho
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Thêm mới nhập kho
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="container">
-                    <h4 class="text-center mb-4">Nhập kho</h4>
+                    <h4 class="text-center mb-4"><i class="fas fa-clipboard-list"></i> Nhập kho</h4>
                     <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
                         <span th:text="${errorMessage}"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -255,62 +45,74 @@
                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addProductModal">Thêm sản phẩm mới</button>
                     </div>
                     <div th:if="${storageImportDTO != null}">
-                        <form th:action="@{/storage/create}" th:object="${storageImportDTO}" method="post" id="importForm">
+                        <form th:action="@{/storage/create}" th:object="${storageImportDTO}" method="post" id="importForm" enctype="multipart/form-data">
                             <div class="mb-3 row">
                                 <div class="col-8">
-                                    <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label></label>
+                                    <label class="form-label">Tên sản phẩm</label>
                                     <input type="text" class="form-control" th:field="*{productName}" readonly>
-                                    <div th:if="${#fields.hasErrors('productName')}" class="error-container">
-                                        <span th:each="err, stat : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
+                                    <div th:if="${#fields.hasErrors('productName')}">
+                                        <span th:each="err : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
                                     </div>
                                 </div>
                                 <div class="col-4">
                                     <input type="hidden" th:field="*{productId}" id="productIdInput">
-                                    <div th:if="${#fields.hasErrors('productId')}" class="error-container">
-                                        <span th:each="err, stat : ${#fields.errors('productId')}" th:text="${err}" class="text-danger small"></span>
+                                    <div th:if="${#fields.hasErrors('productId')}">
+                                        <span th:each="err : ${#fields.errors('productId')}" th:text="${err}" class="text-danger small"></span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
                                 <div class="col-8">
-                                    <label class="form-label">Giá nhập (VNĐ) <span class="text-danger">*</span></label></label>
+                                    <label class="form-label">Giá nhập (VND)</label>
                                     <input type="text" class="form-control" th:field="*{cost}" id="costInput" autocomplete="off">
-                                    <div th:if="${#fields.hasErrors('cost')}" class="error-container">
-                                        <span th:each="err, stat : ${#fields.errors('cost')}" th:text="${err}" class="text-danger small"></span>
+                                    <div th:if="${#fields.hasErrors('cost')}">
+                                        <span th:each="err : ${#fields.errors('cost')}" th:text="${err}" class="text-danger small"></span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
                                 <div class="col-8">
-                                    <label class="form-label">Số lượng nhập <span class="text-danger">*</span></label></label>
+                                    <label class="form-label">Số lượng nhập</label>
                                     <input type="number" min="1" class="form-control" th:field="*{importQuantity}">
-                                    <div th:if="${#fields.hasErrors('importQuantity')}" class="error-container">
-                                        <span th:each="err, stat : ${#fields.errors('importQuantity')}" th:text="${err}" class="text-danger small"></span>
+                                    <div th:if="${#fields.hasErrors('importQuantity')}">
+                                        <span th:each="err : ${#fields.errors('importQuantity')}" th:text="${err}" class="text-danger small"></span>
                                     </div>
                                 </div>
                                 <div class="col-4"></div>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Nhà cung cấp <span class="text-danger">*</span></label></label>
+                                <label class="form-label">Nhà cung cấp</label>
                                 <div class="row">
                                     <div class="col-8">
                                         <input type="text" class="form-control" th:field="*{supplierName}" readonly>
                                         <input type="hidden" th:field="*{supplierId}" id="supplierIdInput">
-                                        <div th:if="${#fields.hasErrors('supplierId')}" class="error-container">
-                                            <span th:each="err, stat : ${#fields.errors('supplierId')}" th:text="${err}" class="text-danger small"></span>
+                                        <div th:if="${#fields.hasErrors('supplierId')}">
+                                            <span th:each="err : ${#fields.errors('supplierId')}" th:text="${err}" class="text-danger small"></span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            <input type="hidden" name="isNewProduct" value="false">
+                            <input type="hidden" name="newProductName">
+                            <input type="hidden" name="size">
+                            <input type="hidden" name="cameraBack">
+                            <input type="hidden" name="cameraFront">
+                            <input type="hidden" name="cpu">
+                            <input type="hidden" name="memory">
+                            <input type="hidden" name="categoryId">
+                            <input type="hidden" name="supplierId">
+
+                            <input type="file" name="imageFiles" id="addProductImageFilesHidden" multiple style="display:none">
+
                             <div class="d-flex justify-content-end gap-2">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save me-1"></i>Lưu vào kho
                                 </button>
-                                <a th:href="@{/storage}" class="btn btn-secondary">
+                                <a th:href="@{/storage/list-import}" class="btn btn-secondary">
                                     <i class="fas fa-times me-1"></i>Quay lại
                                 </a>
                             </div>
@@ -372,9 +174,7 @@
                             <th>Chọn</th>
                         </tr>
                         </thead>
-                        <tbody id="productTableBody">
-                        <!-- Nội dung sẽ được render động bằng JS -->
-                        </tbody>
+                        <tbody id="productTableBody"></tbody>
                     </table>
                 </div>
                 <div id="productPaginationContainer" class="d-flex justify-content-end align-items-center p-3 border-top mt-3"></div>
@@ -393,97 +193,108 @@
                 <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="addProductForm" th:action="@{/storage/create-product}" th:object="${importStorageProduct}" method="post" novalidate>
+                <form id="addProductForm" novalidate>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Tên sản phẩm <span class="required text-danger">*</span></label>
-                                <div th:if="${#fields.hasErrors('productName')}" class="error-container">
-                                    <span th:each="err, stat : ${#fields.errors('productName')}" th:text="${err}" class="text-danger small"></span>
+                                <div class="error-container" id="error-productName"></div>
                                 </div>
-                            </div>
-                            <input type="text" th:field="*{productName}" class="form-control" 
-                                   placeholder="Nhập tên sản phẩm" maxlength="100" required>
+                            <input type="text" name="productName" class="form-control" placeholder="Nhập tên sản phẩm" maxlength="100" required th:value="${productTemp != null ? productTemp.productName : ''}">
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Kích thước màn hình (inch)<span class="required text-danger">*</span></label>
-                                <div th:if="${#fields.hasErrors('size')}" class="error-container">
-                                    <span th:each="err, stat : ${#fields.errors('size')}" th:text="${err}" class="text-danger small"></span>
+                                <div class="error-container" id="error-size"></div>
                                 </div>
-                            </div>
-                            <input type="number" th:field="*{size}" class="form-control" 
-                                   placeholder="Ví dụ: 6.1" maxlength="50" step="0.1">
+                            <input type="text" name="size" class="form-control" placeholder="Ví dụ: 6.1" maxlength="50" th:value="${productTemp != null ? productTemp.size : ''}">
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Danh mục <span class="required text-danger">*</span></label>
-                                <div th:if="${#fields.hasErrors('categoryId')}" class="error-container">
-                                    <span th:each="err, stat : ${#fields.errors('categoryId')}" th:text="${err}" class="text-danger small"></span>
+                                <div class="error-container" id="error-categoryId"></div>
                                 </div>
-                            </div>
-                            <select th:field="*{categoryId}" class="form-select" required>
-                                <option value="" disabled selected>-- Chọn danh mục --</option>
-                                <option th:each="c : ${categorys}" th:value="${c.categoryId}" th:text="${c.categoryName}"></option>
+                            <select name="categoryId" class="form-select" required>
+                                <option value="" disabled th:selected="${productTemp == null || productTemp.categoryId == null}">-- Chọn danh mục --</option>
+                                <option th:each="c : ${categorys}" th:value="${c.categoryId}" th:text="${c.categoryName}" th:selected="${productTemp != null and productTemp.categoryId != null and c.categoryId == productTemp.categoryId}"></option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Nhà cung cấp <span class="required text-danger">*</span></label>
-                                <div th:if="${#fields.hasErrors('supplierId')}" class="error-container">
-                                    <span th:each="err, stat : ${#fields.errors('supplierId')}" th:text="${err}" class="text-danger small"></span>
+                                <div class="error-container" id="error-supplierId"></div>
                                 </div>
-                            </div>
-                            <select th:field="*{supplierId}" class="form-select" required>
-                                <option value="" disabled selected>-- Chọn nhà cung cấp --</option>
-                                <option th:each="s : ${suppliers}" th:value="${s.suplierId}" th:text="${s.suplierName}"></option>
+                            <select name="supplierId" class="form-select" required>
+                                <option value="" disabled th:selected="${productTemp == null || productTemp.supplierId == null}">-- Chọn nhà cung cấp --</option>
+                                <option th:each="s : ${suppliers}" th:value="${s.suplierId}" th:text="${s.suplierName}" th:selected="${productTemp != null and productTemp.supplierId != null and s.suplierId == productTemp.supplierId}"></option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Camera sau (MP)<span class="required text-danger">*</span></label>
-                                <div th:if="${#fields.hasErrors('cameraBack')}" class="error-container">
-                                    <span th:each="err, stat : ${#fields.errors('cameraBack')}" th:text="${err}" class="text-danger small"></span>
+                                <div class="error-container" id="error-cameraBack"></div>
                                 </div>
-                            </div>
-                            <input type="number" th:field="*{cameraBack}" class="form-control" 
-                                   placeholder="Ví dụ: 48" maxlength="50">
+                            <input type="text" name="cameraBack" class="form-control" placeholder="Ví dụ: 48" maxlength="50" th:value="${productTemp != null ? productTemp.cameraBack : ''}">
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Camera trước (MP)<span class="required text-danger">*</span></label>
-                                <div th:if="${#fields.hasErrors('cameraFront')}" class="error-container">
-                                    <span th:each="err, stat : ${#fields.errors('cameraFront')}" th:text="${err}" class="text-danger small"></span>
+                                <div class="error-container" id="error-cameraFront"></div>
                                 </div>
-                            </div>
-                            <input type="number" th:field="*{cameraFront}" class="form-control" 
-                                   placeholder="Ví dụ: 12" maxlength="50">
+                            <input type="text" name="cameraFront" class="form-control" placeholder="Ví dụ: 12" maxlength="50" th:value="${productTemp != null ? productTemp.cameraFront : ''}">
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">CPU <span class="required text-danger">*</span></label>
-                                <div th:if="${#fields.hasErrors('cpu')}" class="error-container">
-                                    <span th:each="err, stat : ${#fields.errors('cpu')}" th:text="${err}" class="text-danger small"></span>
+                                <div class="error-container" id="error-cpu"></div>
                                 </div>
-                            </div>
-                            <input type="text" th:field="*{cpu}" class="form-control" 
-                                   placeholder="Ví dụ: A15 Bionic" maxlength="50">
+                            <input type="text" name="cpu" class="form-control" placeholder="Ví dụ: A15 Bionic" maxlength="50" th:value="${productTemp != null ? productTemp.cpu : ''}">
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center gap-2">
                                 <label class="form-label mb-0">Bộ nhớ (GB)<span class="required text-danger">*</span></label>
-                                <div th:if="${#fields.hasErrors('memory')}" class="error-container">
-                                    <span th:each="err, stat : ${#fields.errors('memory')}" th:text="${err}" class="text-danger small"></span>
+                                <div class="error-container" id="error-memory"></div>
+                                </div>
+                            <input type="text" name="memory" class="form-control" placeholder="Ví dụ: 128" maxlength="50" th:value="${productTemp != null ? productTemp.memory : ''}">
+                            </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label">Hình ảnh sản phẩm</label>
+                                <div class="image-section">
+                                    <!-- Preview Section -->
+                                    <div class="image-preview-section">
+                                        <div id="addProductImagePreview"></div>
+                        </div>
+                                    <!-- Upload Section -->
+                                    <div class="image-upload-section">
+                                        <h6 class="mb-3 text-muted">
+                                            <i class="fas fa-cloud-upload-alt me-2"></i>Upload ảnh mới
+                                        </h6>
+                                        <div class="image-upload-area" id="addProductImageUploadArea">
+                                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                            <h6 class="text-muted mb-2">Thêm ảnh sản phẩm</h6>
+                                            <p class="text-muted mb-3" id="addProductImageUploadText">
+                                                Kéo thả file ảnh vào đây<br/>hoặc click để chọn
+                                            </p>
+                                            <input type="file" id="addProductImageFiles" name="addProductImageFiles" multiple accept="image/*" class="form-control" style="display: none" />
+                                            <button type="button" class="btn btn-primary btn-sm mb-3" onclick="document.getElementById('addProductImageFiles').click()">
+                                                <i class="fas fa-plus me-2"></i>Chọn ảnh
+                                            </button>
+                                            <div class="text-center">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-info-circle me-1"></i>
+                                                    Hỗ trợ: JPG, PNG, GIF<br/>
+                                                    Tối đa 5MB mỗi file
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <input type="number" th:field="*{memory}" class="form-control" 
-                                   placeholder="Ví dụ: 128" maxlength="50">
                         </div>
-                        <input type="hidden" th:field="*{price}" value="0">
-                        <input type="hidden" th:field="*{quantity}" value="0">
                         <div class="col-12 pt-2">
                             <div class="d-flex justify-content-center gap-3">
-                                <button type="submit" class="btn btn-primary px-4">
+                                <button type="button" class="btn btn-primary px-4" id="saveNewProductBtn" onclick="saveNewProductTemp()">
                                     <i class="fas fa-save me-1"></i>Lưu sản phẩm
                                 </button>
                                 <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
@@ -500,38 +311,163 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const costInput = document.getElementById('costInput');
+    let newProductTemp = null;
 
-        costInput.addEventListener('input', function (e) {
-            // Loại bỏ cả dấu chấm và dấu phẩy, chỉ giữ lại số
-            let value = e.target.value.replace(/[.,]/g, '').replace(/\D/g, '');
-            if (value) {
-                e.target.value = Number(value).toLocaleString('en-US');
-            } else {
-                e.target.value = '';
+    function resetAddProductModal() {
+        document.getElementById('addProductForm').reset();
+        newProductTemp = null;
+    }
+
+    function clearFieldErrors() {
+        document.querySelectorAll('#addProductForm .error-container').forEach(div => div.innerHTML = '');
+    }
+
+    function saveNewProductTemp() {
+        clearFieldErrors();
+        const form = document.getElementById('addProductForm');
+        const formData = new FormData(form);
+        let hasError = false;
+
+        // Validate giống DTO
+        const productName = formData.get('productName');
+        if (!productName || productName.trim() === '') {
+            document.getElementById('error-productName').innerHTML = '<span class="text-danger small">Tên sản phẩm không được để trống</span>';
+            hasError = true;
+        } else if (productName.length > 100) {
+            document.getElementById('error-productName').innerHTML = '<span class="text-danger small">Tên sản phẩm tối đa 100 ký tự</span>';
+            hasError = true;
+        } else if (!/^[a-zA-Z0-9\s\-_.]+$/.test(productName)) {
+            document.getElementById('error-productName').innerHTML = '<span class="text-danger small">Tên sản phẩm không được chứa ký tự đặc biệt</span>';
+            hasError = true;
+        }
+
+        const size = formData.get('size');
+        if (!size || size.trim() === '') {
+            document.getElementById('error-size').innerHTML = '<span class="text-danger small">Kích thước màn hình không được để trống</span>';
+            hasError = true;
+        } else if (size.length > 50) {
+            document.getElementById('error-size').innerHTML = '<span class="text-danger small">Kích thước màn hình tối đa 50 ký tự</span>';
+            hasError = true;
+        } else if (!/^[0-9]+(\.[0-9]+)?$/.test(size)) {
+            document.getElementById('error-size').innerHTML = '<span class="text-danger small">Kích thước màn hình chỉ được nhập số</span>';
+            hasError = true;
+        }
+
+        const cameraBack = formData.get('cameraBack');
+        if (!cameraBack || cameraBack.trim() === '') {
+            document.getElementById('error-cameraBack').innerHTML = '<span class="text-danger small">Camera sau không được để trống</span>';
+            hasError = true;
+        } else if (cameraBack.length > 50) {
+            document.getElementById('error-cameraBack').innerHTML = '<span class="text-danger small">Camera sau tối đa 50 ký tự</span>';
+            hasError = true;
+        } else if (!/^[0-9]+$/.test(cameraBack)) {
+            document.getElementById('error-cameraBack').innerHTML = '<span class="text-danger small">Camera sau chỉ được nhập số</span>';
+            hasError = true;
+        }
+
+        const cameraFront = formData.get('cameraFront');
+        if (!cameraFront || cameraFront.trim() === '') {
+            document.getElementById('error-cameraFront').innerHTML = '<span class="text-danger small">Camera trước không được để trống</span>';
+            hasError = true;
+        } else if (cameraFront.length > 50) {
+            document.getElementById('error-cameraFront').innerHTML = '<span class="text-danger small">Camera trước tối đa 50 ký tự</span>';
+            hasError = true;
+        } else if (!/^[0-9]+$/.test(cameraFront)) {
+            document.getElementById('error-cameraFront').innerHTML = '<span class="text-danger small">Camera trước chỉ được nhập số</span>';
+            hasError = true;
+        }
+
+        const cpu = formData.get('cpu');
+        if (!cpu || cpu.trim() === '') {
+            document.getElementById('error-cpu').innerHTML = '<span class="text-danger small">CPU không được để trống</span>';
+            hasError = true;
+        } else if (cpu.length > 50) {
+            document.getElementById('error-cpu').innerHTML = '<span class="text-danger small">CPU tối đa 50 ký tự</span>';
+            hasError = true;
+        } else if (!/^[a-zA-Z0-9\s\-_.]+$/.test(cpu)) {
+            document.getElementById('error-cpu').innerHTML = '<span class="text-danger small">CPU không được chứa ký tự đặc biệt</span>';
+            hasError = true;
+        }
+
+        const memory = formData.get('memory');
+        if (!memory || memory.trim() === '') {
+            document.getElementById('error-memory').innerHTML = '<span class="text-danger small">Bộ nhớ không được để trống</span>';
+            hasError = true;
+        } else if (memory.length > 50) {
+            document.getElementById('error-memory').innerHTML = '<span class="text-danger small">Bộ nhớ tối đa 50 ký tự</span>';
+            hasError = true;
+        } else if (!/^[0-9]+$/.test(memory)) {
+            document.getElementById('error-memory').innerHTML = '<span class="text-danger small">Bộ nhớ chỉ được nhập số</span>';
+            hasError = true;
+        }
+
+        const categoryId = formData.get('categoryId');
+        if (!categoryId) {
+            document.getElementById('error-categoryId').innerHTML = '<span class="text-danger small">Danh mục không được để trống</span>';
+            hasError = true;
+        }
+        const supplierId = formData.get('supplierId');
+        if (!supplierId) {
+            document.getElementById('error-supplierId').innerHTML = '<span class="text-danger small">Nhà cung cấp không được để trống</span>';
+            hasError = true;
+        }
+
+        if (hasError) return;
+
+        // Nếu hợp lệ, lưu vào biến tạm
+        newProductTemp = {};
+        for (let [key, value] of formData.entries()) {
+            newProductTemp[key] = value;
+        }
+        const supplierSelect = form.querySelector('select[name="supplierId"]');
+        const supplierName = supplierSelect.options[supplierSelect.selectedIndex].text;
+        newProductTemp['supplierName'] = supplierName;
+        // Gán vào form nhập kho chính
+        document.querySelector('input[name="productName"]').value = newProductTemp['productName'] || '';
+        document.querySelector('input[name="supplierName"]').value = newProductTemp['supplierName'] || '';
+        document.querySelector('input[name="supplierId"]').value = newProductTemp['supplierId'] || '';
+        document.querySelector('input[name="productId"]').value = '';
+
+        // Đóng modal
+        bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+    }
+
+    // Khi submit form nhập kho chính
+    document.getElementById('importForm').addEventListener('submit', function (event) {
+        // Nếu có sản phẩm mới tạm, gán các trường vào form trước khi submit
+        if (newProductTemp) {
+            this.querySelector('input[name="isNewProduct"]').value = 'true';
+            this.querySelector('input[name="newProductName"]').value = newProductTemp['productName'] || '';
+            this.querySelector('input[name="size"]').value = newProductTemp['size'] || '';
+            this.querySelector('input[name="cameraBack"]').value = newProductTemp['cameraBack'] || '';
+            this.querySelector('input[name="cameraFront"]').value = newProductTemp['cameraFront'] || '';
+            this.querySelector('input[name="cpu"]').value = newProductTemp['cpu'] || '';
+            this.querySelector('input[name="memory"]').value = newProductTemp['memory'] || '';
+            this.querySelector('input[name="categoryId"]').value = newProductTemp['categoryId'] || '';
+            this.querySelector('input[name="supplierId"]').value = newProductTemp['supplierId'] || '';
+        } else {
+            this.querySelector('input[name="isNewProduct"]').value = 'false';
+        }
+        const costInput = this.querySelector('input[name="cost"]');
+        if (costInput) {
+            costInput.value = costInput.value.replace(/[^0-9]/g, '');
+            if (costInput.value) {
+                costInput.value = Number(costInput.value);
             }
-        });
-
-        document.getElementById('importForm').addEventListener('submit', function (event) {
-            // Loại bỏ cả dấu chấm và dấu phẩy từ giá trị cost
-            costInput.value = costInput.value.replace(/[.,]/g, '').trim();
-            const productId = document.querySelector('input[name="productId"]').value;
-            const supplierId = document.querySelector('input[name="supplierId"]').value;
-            const importQuantity = document.querySelector('input[name="importQuantity"]').value;
-            const cost = costInput.value;
-
-            if (!productId || !supplierId || !importQuantity || importQuantity <= 0 || !cost || cost < 0) {
-                event.preventDefault();
-                alert('Vui lòng điền đầy đủ thông tin hợp lệ: Tên sản phẩm, Số lượng nhập, Giá nhập, và Nhà cung cấp.');
-            }
-        });
+        }
+        if (typeof addProductSelectedFiles !== 'undefined' && newProductTemp && addProductSelectedFiles.length > 0) {
+            const dataTransfer = new DataTransfer();
+            addProductSelectedFiles.forEach(file => dataTransfer.items.add(file));
+            document.getElementById('addProductImageFilesHidden').files = dataTransfer.files;
+        }
     });
 
     function attachSelectProductEvents() {
         const productButtons = document.querySelectorAll('.btn-select-product');
         productButtons.forEach(button => {
             button.addEventListener('click', function () {
+                resetAddProductModal();
+
                 const name = this.getAttribute('data-product-name');
                 const cost = this.getAttribute('data-product-cost');
                 const productId = this.getAttribute('data-product-id');
@@ -539,7 +475,7 @@
                 const supplierName = this.getAttribute('data-supplier-name');
 
                 document.querySelector('input[name="productName"]').value = name;
-                document.querySelector('input[name="cost"]').value = Number(cost).toLocaleString('en-US');
+                document.querySelector('input[name="cost"]').value = formatNumber(cost);
                 document.querySelector('input[name="productId"]').value = productId;
                 document.querySelector('input[name="supplierName"]').value = supplierName;
                 document.querySelector('input[name="supplierId"]').value = supplierId;
@@ -550,6 +486,33 @@
         });
     }
 
+    function formatNumber(value) {
+        if (!value) return '';
+        let num = Number(value.toString().replace(/[^0-9.]/g, ''));
+        if (isNaN(num)) return '';
+        return num.toLocaleString('en-US');
+    }
+
+    const costInput = document.getElementById('costInput');
+    if (costInput) {
+        costInput.addEventListener('input', function () {
+            let val = this.value.replace(/[^0-9]/g, '');
+            if (val) {
+                this.value = Number(val).toLocaleString('en-US');
+            } else {
+                this.value = '';
+            }
+        });
+        costInput.addEventListener('blur', function () {
+            let val = this.value.replace(/[^0-9]/g, '');
+            if (val) {
+                this.value = Number(val).toLocaleString('en-US');
+            } else {
+                this.value = '';
+            }
+        });
+    }
+
     function renderProductTable(data) {
         const tbody = document.getElementById('productTableBody');
         tbody.innerHTML = data.products.length
@@ -557,7 +520,7 @@
                 <tr>
                     <td>${i + 1 + data.pageNumber * data.pageSize}</td>
                     <td>${p.productName}</td>
-                    <td>${Number(p.price).toLocaleString('en-US')}</td>
+                    <td>${formatNumber(p.price)}</td>
                     <td>${p.quantity || 0}</td>
                     <td>${p.cpu || ''}</td>
                     <td>${p.memory || ''}</td>
@@ -605,105 +568,148 @@
         let html = '';
         if (totalPages > 1) {
             html += '<nav><ul class="pagination pagination-sm mb-0">';
-            
             // Nút First (đầu trang)
-            if (pageNumber > 0) {
-                html += `<li class="page-item">
-                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(0)" title="Trang đầu">
+            html += `<li class="page-item${pageNumber === 0 ? ' disabled' : ''}">
+                <a class="page-link" href="javascript:void(0)" onclick="${pageNumber === 0 ? '' : `changeProductPage(0)`}" title="Trang đầu">
                         <i class="fas fa-angle-double-left"></i>
                     </a>
                 </li>`;
-            } else {
-                html += `<li class="page-item disabled">
-                    <span class="page-link">
-                        <i class="fas fa-angle-double-left"></i>
-                    </span>
+            // Nút Previous (trang trước)
+            html += `<li class="page-item${pageNumber === 0 ? ' disabled' : ''}">
+                <a class="page-link" href="javascript:void(0)" onclick="${pageNumber === 0 ? '' : `changeProductPage(${pageNumber - 1})`}" title="Trang trước">
+                    <i class="fas fa-angle-left"></i>
+                </a>
                 </li>`;
-            }
-            
-            // Nút Previous (trước)
-            if (pageNumber > 0) {
-                html += `<li class="page-item">
-                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${pageNumber - 1})" title="Trang trước">
-                        <i class="fas fa-chevron-left"></i>
+            // Các trang trung gian
+            for (let i = 0; i < totalPages; i++) {
+                html += `<li class="page-item${i === pageNumber ? ' active' : ''}">
+                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${i})">
+                        ${i + 1}
                     </a>
                 </li>`;
-            } else {
-                html += `<li class="page-item disabled">
-                    <span class="page-link">
-                        <i class="fas fa-chevron-left"></i>
-                    </span>
-                </li>`;
             }
-            
-            // Các trang số với logic thông minh
-            let startPage = Math.max(0, pageNumber - 2);
-            let endPage = Math.min(totalPages - 1, pageNumber + 2);
-            
-            // Hiển thị trang đầu nếu cần
-            if (startPage > 0) {
-                html += `<li class="page-item">
-                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(0)">1</a>
+            // Nút Next (trang sau)
+            html += `<li class="page-item${pageNumber === totalPages - 1 ? ' disabled' : ''}">
+                <a class="page-link" href="javascript:void(0)" onclick="${pageNumber === totalPages - 1 ? '' : `changeProductPage(${pageNumber + 1})`}" title="Trang sau">
+                    <i class="fas fa-angle-right"></i>
+                </a>
                 </li>`;
-                if (startPage > 1) {
-                    html += `<li class="page-item disabled">
-                        <span class="page-link">...</span>
-                    </li>`;
-                }
-            }
-            
-            // Hiển thị các trang xung quanh trang hiện tại
-            for (let i = startPage; i <= endPage; i++) {
-                html += `<li class="page-item ${i === pageNumber ? 'active' : ''}">` +
-                    `<a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${i})">${i + 1}</a></li>`;
-            }
-            
-            // Hiển thị trang cuối nếu cần
-            if (endPage < totalPages - 1) {
-                if (endPage < totalPages - 2) {
-                    html += `<li class="page-item disabled">
-                        <span class="page-link">...</span>
-                    </li>`;
-                }
-                html += `<li class="page-item">
-                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${totalPages - 1})">${totalPages}</a>
-                </li>`;
-            }
-            
-            // Nút Next (sau)
-            if (pageNumber < totalPages - 1) {
-                html += `<li class="page-item">
-                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${pageNumber + 1})" title="Trang sau">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
-                </li>`;
-            } else {
-                html += `<li class="page-item disabled">
-                    <span class="page-link">
-                        <i class="fas fa-chevron-right"></i>
-                    </span>
-                </li>`;
-            }
-            
             // Nút Last (cuối trang)
-            if (pageNumber < totalPages - 1) {
-                html += `<li class="page-item">
-                    <a class="page-link" href="javascript:void(0)" onclick="changeProductPage(${totalPages - 1})" title="Trang cuối">
-                        <i class="fas fa-angle-double-right"></i>
-                    </a>
-                </li>`;
-            } else {
-                html += `<li class="page-item disabled">
-                    <span class="page-link">
-                        <i class="fas fa-angle-double-right"></i>
-                    </span>
-                </li>`;
-            }
-            
+            html += `<li class="page-item${pageNumber === totalPages - 1 ? ' disabled' : ''}">
+                <a class="page-link" href="javascript:void(0)" onclick="${pageNumber === totalPages - 1 ? '' : `changeProductPage(${totalPages - 1})`}" title="Trang cuối">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+                    </li>`;
             html += '</ul></nav>';
         }
         document.getElementById('productPaginationContainer').innerHTML = html;
     }
+
+    const ADD_PRODUCT_MAX_IMAGES = 10;
+    let addProductSelectedFiles = [];
+
+    document.getElementById('addProductImageFiles').addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        const validation = addProductValidateNewImages(files);
+        if (validation.error) {
+            alert(validation.error);
+            e.target.value = '';
+            return;
+        }
+        files.forEach(file => addProductSelectedFiles.push(file));
+        addProductUpdatePreview();
+        e.target.value = '';
+    });
+
+    function addProductValidateNewImages(newFiles) {
+        const totalCount = addProductSelectedFiles.length + newFiles.length;
+        if (totalCount > ADD_PRODUCT_MAX_IMAGES) {
+            return { error: `Tổng số ảnh không được vượt quá ${ADD_PRODUCT_MAX_IMAGES} ảnh.` };
+        }
+        const selectedNames = addProductSelectedFiles.map(f => f.name.toLowerCase());
+        const newNames = [];
+        for (let i = 0; i < newFiles.length; i++) {
+            const fileName = newFiles[i].name.toLowerCase();
+            if (selectedNames.includes(fileName)) {
+                return { error: `Ảnh "${newFiles[i].name}" đã được chọn trước đó.` };
+            }
+            if (newNames.includes(fileName)) {
+                return { error: `Bạn đang chọn ảnh "${newFiles[i].name}" nhiều lần.` };
+            }
+            newNames.push(fileName);
+            if (newFiles[i].size > 5 * 1024 * 1024) {
+                return { error: `Ảnh "${newFiles[i].name}" có kích thước quá lớn (tối đa 5MB).` };
+            }
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(newFiles[i].type)) {
+                return { error: `Ảnh "${newFiles[i].name}" không đúng định dạng. Chỉ chấp nhận JPG, PNG, GIF.` };
+            }
+        }
+        return { error: null };
+    }
+
+    function addProductUpdatePreview() {
+        const preview = document.getElementById('addProductImagePreview');
+        preview.innerHTML = '';
+        if (addProductSelectedFiles.length > 0) {
+            const title = document.createElement('h6');
+            title.textContent = 'Ảnh đã chọn:';
+            title.style.marginTop = '15px';
+            title.style.marginBottom = '15px';
+            preview.appendChild(title);
+            addProductSelectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgDiv = document.createElement('div');
+                    imgDiv.className = 'image-preview';
+                    imgDiv.setAttribute('data-file-index', index);
+                    imgDiv.innerHTML = `
+                        <img src="${e.target.result}" alt="New Image" />
+                        <button type="button" class="btn-delete" onclick="addProductRemoveFile(${index})" title="Xóa ảnh này">
+                          <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    preview.appendChild(imgDiv);
+                };
+                reader.readAsDataURL(file);
+            });
+            document.getElementById('addProductImageUploadText').textContent = `Đã chọn ${addProductSelectedFiles.length} ảnh`;
+            } else {
+            document.getElementById('addProductImageUploadText').textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
+        }
+    }
+
+    function addProductRemoveFile(index) {
+        if (confirm('Xóa ảnh này?')) {
+            addProductSelectedFiles.splice(index, 1);
+            addProductUpdatePreview();
+        }
+    }
+
+    const addProductUploadArea = document.getElementById('addProductImageUploadArea');
+    addProductUploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = '#f0f2ff';
+        this.style.borderColor = '#667eea';
+    });
+    addProductUploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = '#f8f9fa';
+        this.style.borderColor = '#dee2e6';
+    });
+    addProductUploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = '#f8f9fa';
+        this.style.borderColor = '#dee2e6';
+        const files = Array.from(e.dataTransfer.files);
+        const validation = addProductValidateNewImages(files);
+        if (validation.error) {
+            alert(validation.error);
+            return;
+        }
+        files.forEach(file => addProductSelectedFiles.push(file));
+        addProductUpdatePreview();
+    });
 </script>
 <script th:if="${showAddProductModal}">
     var addProductModal = new bootstrap.Modal(document.getElementById('addProductModal'));
