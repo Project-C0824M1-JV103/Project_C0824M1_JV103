@@ -474,7 +474,7 @@
                         <tr>
                             <th>Tên sản phẩm</th>
                             <th>Bộ nhớ</th>
-                            <th>Giá nhập</th>
+                            <th>Giá nhập (VNĐ)</th>
                             <th>Số lượng</th>
                             <th>Danh mục</th>
                             <th>Nhà cung cấp</th>
@@ -487,7 +487,7 @@
                 <tr>
                     <td>${product.productName}</td>
                     <td>${product.memory || ''}</td>
-                    <td>${product.price.toLocaleString('vi-VN')} VNĐ</td>
+                    <td>${product.price.toLocaleString('en-US')}</td>
                     <td>${product.quantity}</td>
                     <td>${product.categoryName || ''}</td>
                     <td>${product.supplierName || ''}</td>

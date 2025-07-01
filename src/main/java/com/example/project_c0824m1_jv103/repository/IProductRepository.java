@@ -13,6 +13,9 @@ public interface IProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.price > 0 and p.quantity > 0")
     Page<Product> findAllWithQuantityAndPrice(Pageable pageable);
 
+    @Query("SELECT p FROM Product p WHERE p.quantity > 0")
+    Page<Product> findAllWithQuantity(Pageable pageable);
+
     Page<Product> findByProductNameContainingIgnoreCase(String name, Pageable pageable);
 
     Product findByProductId(Integer productId);
@@ -40,4 +43,9 @@ public interface IProductRepository extends JpaRepository<Product, Integer> {
             @Param("maxQuantity") Integer maxQuantity,
             Pageable pageable);
 
+    @Query("SELECT p FROM Product p WHERE p.quantity > 0 AND" +
+            "(:productName IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%')))")
+    Page<Product> searchProducts(
+            @Param("productName") String productName,
+            Pageable pageable);
 }

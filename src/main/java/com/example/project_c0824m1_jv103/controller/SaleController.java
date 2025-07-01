@@ -70,7 +70,7 @@ public class SaleController extends BaseAdminController {
     @GetMapping("")
     public String showSalePage(Model model) {
         Page<Customer> customers = customerService.findAll(PageRequest.of(0, 6, Sort.by("customerId").descending()));
-        Page<ProductDTO> products = productService.findAll(PageRequest.of(0, 6, Sort.by("productId").descending()));
+        Page<ProductDTO> products = productService.findAllWithQuantityAndPrice(PageRequest.of(0, 6, Sort.by("productId").descending()));
 
         model.addAttribute("customers", customers.getContent());
         model.addAttribute("customerName", null);
@@ -193,10 +193,11 @@ public class SaleController extends BaseAdminController {
         boolean isSearch = false;
 
         if ((productName != null && !productName.isEmpty())) {
-            products = productService.searchProducts(productName, "productName", pageable);
+//            products = productService.searchProducts(productName, "productName", pageable);
+            products = productService.searchProducts(productName, null,null,1,null, pageable);
             isSearch = true;
         } else {
-            products = productService.findAll(pageable);
+            products = productService.findAllWithQuantityAndPrice(pageable);
         }
 
         Map<String, Object> response = new HashMap<>();

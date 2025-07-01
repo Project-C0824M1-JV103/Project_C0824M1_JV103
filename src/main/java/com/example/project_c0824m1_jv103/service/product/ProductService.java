@@ -144,6 +144,13 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Page<ProductDTO> findAllWithQuantity(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAllWithQuantity(pageable);
+        productPage.forEach(p -> System.out.println("Product: " + p.getProductName() + ", price: " + p.getPrice() + ", quantity: " + p.getQuantity()));
+        return productPage.map(productMapper::toDTO);
+    }
+
+    @Override
     public Page<ProductDTO> findAll(Pageable pageable) {
         Page<Product> productPage = productRepository.findAll(pageable);
         return productPage.map(productMapper::toDTO);
@@ -309,7 +316,7 @@ public class ProductService implements IProductService {
     @Override
     public Page<ProductDTO> searchProducts(String productName, String searchType, Pageable pageable) {
         // Tìm kiếm sản phẩm chỉ theo tên
-        Page<Product> productPage = productRepository.findByProductNameContainingIgnoreCase(productName, pageable);
+        Page<Product> productPage = productRepository.searchProducts(productName, pageable);
         return productPage.map(productMapper::toDTO);
     }
 

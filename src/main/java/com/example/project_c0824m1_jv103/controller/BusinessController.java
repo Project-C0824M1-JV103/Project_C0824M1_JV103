@@ -35,7 +35,7 @@ public class BusinessController extends BaseAdminController {
 
     @GetMapping("/retail")
     public String RetailPage(Model model) {
-        Page<ProductDTO> products = productService.findAll(PageRequest.of(0, 6, Sort.by("productId").descending()));
+        Page<ProductDTO> products = productService.findAllWithQuantity(PageRequest.of(0, 6, Sort.by("productId").descending()));
         model.addAttribute("productRetailDto", new ProductRetailDto());
         model.addAttribute("products", products);
         model.addAttribute("currentPage", "business");
@@ -58,7 +58,7 @@ public class BusinessController extends BaseAdminController {
             products = productService.searchProducts(productName, "productName", pageable);
             isSearch = true;
         } else {
-            products = productService.findAll(pageable);
+            products = productService.findAllWithQuantity(pageable);
         }
 
         Map<String, Object> response = new HashMap<>();
