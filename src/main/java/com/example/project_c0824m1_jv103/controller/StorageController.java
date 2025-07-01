@@ -78,7 +78,7 @@ public class StorageController extends BaseAdminController {
             @RequestParam(value = "startDate", required = false) String startDate,
             @RequestParam(value = "endDate", required = false) String endDate,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "6") int size,
             Model model) {
 
         // Xử lý ngày
