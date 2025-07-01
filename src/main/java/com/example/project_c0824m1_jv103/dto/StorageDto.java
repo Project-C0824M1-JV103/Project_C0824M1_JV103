@@ -23,7 +23,7 @@ public class StorageDto {
     private Integer quantity;
 
     @NotNull(message = "Giá nhập không được để trống")
-    @DecimalMin(value = "1000", message = "Giá nhập phải từ 1,000 VND trở lên")
+    @DecimalMin(value = "10000", message = "Giá nhập phải từ 10,000 VND trở lên")
     @DecimalMax(value = "1000000000", message = "Giá nhập không được vượt quá 1,000,000,000 VND")
     private Double cost;
 

@@ -125,7 +125,7 @@ public class StorageController extends BaseAdminController {
 
     @PostMapping("/create")
     public String importProduct(HttpServletRequest request,
-                                @ModelAttribute("storageImportDTO") StorageImportDTO dto,
+                                @Valid @ModelAttribute("storageImportDTO") StorageImportDTO dto,
                                 BindingResult result,
                                 @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
                                 Model model,
@@ -180,8 +180,8 @@ public class StorageController extends BaseAdminController {
                 model.addAttribute("errorMessage", "Số lượng nhập phải lớn hơn 0");
                 hasError = true;
             }
-            if (costStr == null || costStr.trim().isEmpty() || Double.parseDouble(costStr) < 0) {
-                model.addAttribute("errorMessage", "Giá nhập phải lớn hơn hoặc bằng 0");
+            if (costStr == null || costStr.trim().isEmpty() || Double.parseDouble(costStr) <= 9999) {
+                model.addAttribute("errorMessage", "Giá nhập phải lớn hơn hoặc bằng 10,000 VNĐ");
                 hasError = true;
             }
             if (hasError) {
@@ -373,7 +373,7 @@ public class StorageController extends BaseAdminController {
             return "storage/edit-import-storage";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-            return "redirect:/storage";
+            return "redirect:/storage/list-import";
         }
     }
 
@@ -393,14 +393,14 @@ public class StorageController extends BaseAdminController {
                 return "storage/edit-import-storage";
             } catch (RuntimeException e) {
                 redirectAttributes.addFlashAttribute("error", e.getMessage());
-                return "redirect:/storage";
+                return "redirect:/storage/list-import";
             }
         }
 
         try {
             storageService.updateStorage(id, storageDto);
             redirectAttributes.addFlashAttribute("message", "Cập nhật thông tin nhập kho thành công");
-            return "redirect:/storage";
+            return "redirect:/storage/list-import";
         } catch (RuntimeException e) {
             try {
                 Storage storage = storageService.getStorageById(id);
@@ -411,7 +411,7 @@ public class StorageController extends BaseAdminController {
                 return "storage/edit-import-storage";
             } catch (RuntimeException ex) {
                 redirectAttributes.addFlashAttribute("error", ex.getMessage());
-                return "redirect:/storage";
+                return "redirect:/storage/list-import";
             }
         }
     }

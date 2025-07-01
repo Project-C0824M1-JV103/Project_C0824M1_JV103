@@ -20,7 +20,8 @@ public class StorageImportDTO {
     private Integer importQuantity;
 
     @NotNull(message = "Giá nhập không được để trống")
-    @Min(value = 0, message = "Giá nhập phải lớn hơn hoặc bằng 0")
+    @DecimalMin(value = "10000", message = "Giá nhập phải từ 10,000 VND trở lên")
+    @DecimalMax(value = "1000000000", message = "Giá nhập không được vượt quá 1,000,000,000 VND")
     private Double cost;
 
     // Getters and Setters
