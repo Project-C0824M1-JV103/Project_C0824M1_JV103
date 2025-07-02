@@ -330,7 +330,7 @@
                   </a>
                 </li>
               </ul>
-              <div class="text-center text-muted mt-2">
+              <div class="text-center text-muted mt-2" th:if="${storagePage.totalElements} != 0">
                 Trang <span th:text="${storagePage.number + 1}"></span> trong tổng số
                 <span th:text="${storagePage.totalPages}"></span> trang
                 (<span th:text="${storagePage.totalElements}"></span> bản ghi nhập kho)
