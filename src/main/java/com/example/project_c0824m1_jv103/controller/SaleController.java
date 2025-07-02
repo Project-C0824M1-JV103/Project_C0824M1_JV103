@@ -245,7 +245,7 @@ public class SaleController extends BaseAdminController {
         model.addAttribute("sortField", sortField);
         model.addAttribute("sortDir", sortDir);
         model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
-        model.addAttribute("currentPage", "sale-history");
+        model.addAttribute("currentPage", "business");
 
         return "sale/sale-history";
     }
