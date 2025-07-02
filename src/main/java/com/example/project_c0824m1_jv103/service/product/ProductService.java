@@ -382,9 +382,13 @@ public class ProductService implements IProductService {
             List<ProductImages> productImages = new ArrayList<>();
             for (MultipartFile file : imageFiles) {
                 if (!file.isEmpty()) {
-                    String originalFilename = file.getOriginalFilename();
-                    ProductImages productImage = new ProductImages(savedProduct, originalFilename, null);
-                    productImages.add(productImage);
+                    try {
+                        String imageUrl = cloudinaryService.uploadImage(file);
+                        ProductImages productImage = new ProductImages(savedProduct, imageUrl, null);
+                        productImages.add(productImage);
+                    } catch (Exception e) {
+                        System.err.println("Error uploading file " + file.getOriginalFilename() + ": " + e.getMessage());
+                    }
                 }
             }
             if (!productImages.isEmpty()) {

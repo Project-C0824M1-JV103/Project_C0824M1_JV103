@@ -182,13 +182,40 @@ public class StorageService implements IStorageService {
         if (employee == null) {
             throw new RuntimeException("Nhân viên không tồn tại");
         }
-        Storage newStorage = new Storage();
-        newStorage.setProduct(product);
-        newStorage.setQuantity(importDTO.getImportQuantity());
-        newStorage.setCost(importDTO.getCost());
-        newStorage.setEmployee(employee);
-        newStorage.setTransactionDate(java.time.LocalDateTime.now());
-        return storageRepository.save(newStorage);
+        Optional<Storage> existingStorageOpt = storageRepository.findByProduct_ProductId(importDTO.getProductId());
+        Storage savedStorage;
+        if (existingStorageOpt.isPresent()) {
+            Storage existingStorage = existingStorageOpt.get();
+            existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
+            existingStorage.setCost(importDTO.getCost()); // cập nhật giá nhập mới nhất
+            existingStorage.setEmployee(employee);
+            existingStorage.setTransactionDate(java.time.LocalDateTime.now());
+            savedStorage = storageRepository.save(existingStorage);
+        } else {
+            Storage newStorage = new Storage();
+            newStorage.setProduct(product);
+            newStorage.setQuantity(importDTO.getImportQuantity());
+            newStorage.setCost(importDTO.getCost());
+            newStorage.setEmployee(employee);
+            newStorage.setTransactionDate(java.time.LocalDateTime.now());
+            savedStorage = storageRepository.save(newStorage);
+        }
+
+        try {
+            StorageTransaction importTransaction = new StorageTransaction(
+                product,
+                importDTO.getImportQuantity(),
+                importDTO.getCost(),
+                employee,
+                StorageTransaction.TransactionType.IMPORT,
+                "Nhập kho " + importDTO.getImportQuantity() + " sản phẩm " + product.getProductName()
+            );
+            storageTransactionRepository.save(importTransaction);
+        } catch (Exception e) {
+            System.err.println("Failed to create import transaction history: " + e.getMessage());
+        }
+
+        return savedStorage;
     }
 
     @Override
