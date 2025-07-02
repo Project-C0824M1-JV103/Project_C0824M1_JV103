@@ -47,6 +47,7 @@ public class BusinessController extends BaseAdminController {
     public Map<String, Object> getProductsData(
             @RequestParam(required = false) String productName,
             @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) String filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size
     ) {
@@ -54,11 +55,19 @@ public class BusinessController extends BaseAdminController {
         Page<ProductDTO> products;
         boolean isSearch = false;
 
-        if ((productName != null && !productName.isEmpty())) {
-            products = productService.searchProducts(productName, "productName", pageable);
+        if (productName != null && !productName.isEmpty()) {
+            if ("zeroPrice".equals(filter)) {
+                products = productService.searchProductsWithQuantityAndZeroPrice(productName, pageable);
+            } else {
+                products = productService.searchProductsWithQuantity(productName, pageable);
+            }
             isSearch = true;
         } else {
-            products = productService.findAllWithQuantity(pageable);
+            if ("zeroPrice".equals(filter)) {
+                products = productService.findAllWithQuantityAndZeroPrice(pageable);
+            } else {
+                products = productService.findAllWithQuantity(pageable);
+            }
         }
 
         Map<String, Object> response = new HashMap<>();

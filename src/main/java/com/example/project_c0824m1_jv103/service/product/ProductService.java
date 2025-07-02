@@ -146,7 +146,12 @@ public class ProductService implements IProductService {
     @Override
     public Page<ProductDTO> findAllWithQuantity(Pageable pageable) {
         Page<Product> productPage = productRepository.findAllWithQuantity(pageable);
-        productPage.forEach(p -> System.out.println("Product: " + p.getProductName() + ", price: " + p.getPrice() + ", quantity: " + p.getQuantity()));
+        return productPage.map(productMapper::toDTO);
+    }
+
+    @Override
+    public Page<ProductDTO> findAllWithQuantityAndZeroPrice(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAllWithQuantityAndZeroPrice(pageable);
         return productPage.map(productMapper::toDTO);
     }
 
@@ -388,5 +393,17 @@ public class ProductService implements IProductService {
             }
         }
         return savedProduct;
+    }
+
+    @Override
+    public Page<ProductDTO> searchProductsWithQuantity(String productName, Pageable pageable) {
+        Page<Product> productPage = productRepository.searchProductsWithQuantity(productName, pageable);
+        return productPage.map(productMapper::toDTO);
+    }
+
+    @Override
+    public Page<ProductDTO> searchProductsWithQuantityAndZeroPrice(String productName, Pageable pageable) {
+        Page<Product> productPage = productRepository.searchProductsWithQuantityAndZeroPrice(productName, pageable);
+        return productPage.map(productMapper::toDTO);
     }
 }

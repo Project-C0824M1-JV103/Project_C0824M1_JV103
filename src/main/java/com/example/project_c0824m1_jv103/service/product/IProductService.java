@@ -23,7 +23,11 @@ public interface IProductService {
     // Lấy danh sách sản phẩm với phân trang và có giá và số lượng lớn hơn 0
     Page<ProductDTO> findAllWithQuantityAndPrice(Pageable pageable);
 
+    // Lấy danh sách sản phẩm có quantity > 0
     Page<ProductDTO> findAllWithQuantity(Pageable pageable);
+
+    // Lấy danh sách sản phẩm có quantity > 0 và price = 0
+    Page<ProductDTO> findAllWithQuantityAndZeroPrice(Pageable pageable);
 
     Page<ProductDTO> findAll(Pageable pageable);
 
@@ -60,4 +64,7 @@ public interface IProductService {
 
     // Tạo sản phẩm mới từ modal nhập kho, trả về Product vừa tạo
     Product createProductFromImportReturnProduct(StorageImportProductDTO dto, List<MultipartFile> imageFiles);
+
+    Page<ProductDTO> searchProductsWithQuantity(String productName, Pageable pageable);
+    Page<ProductDTO> searchProductsWithQuantityAndZeroPrice(String productName, Pageable pageable);
 }

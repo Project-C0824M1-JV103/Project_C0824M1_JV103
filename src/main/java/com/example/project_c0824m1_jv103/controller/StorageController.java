@@ -288,7 +288,7 @@ public class StorageController extends BaseAdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model) {
-        Page<Storage> storagePage = storageService.searchProductsInStorage(keyword, PageRequest.of(page, size));
+        Page<Storage> storagePage = storageService.searchProductsInStorage(keyword, PageRequest.of(page, size, Sort.by("storageId").descending()));
         
         // Truyền Storage objects thay vì Product để có thể truy cập storageId
         model.addAttribute("storages", storagePage.getContent());
