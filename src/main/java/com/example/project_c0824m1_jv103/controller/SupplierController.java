@@ -71,6 +71,7 @@ public class SupplierController extends BaseAdminController {
         Optional<Supplier> supplier = supplierService.findById(id);
         if (supplier.isPresent()) {
             model.addAttribute("supplier", supplier.get());
+            model.addAttribute("currentPage", "supplier");
             return "supplier/edit";
         } else {
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp!");
@@ -98,6 +99,7 @@ public class SupplierController extends BaseAdminController {
     @GetMapping("/add")
     public String showAddSupplierForm(Model model) {
         model.addAttribute("supplierDto", new SupplierDto());
+        model.addAttribute("currentPage", "supplier");
         return "supplier/add-supplier-form";
     }
 
@@ -111,6 +113,7 @@ public class SupplierController extends BaseAdminController {
             // Kiểm tra validation errors cơ bản
             if (bindingResult.hasErrors()) {
                 model.addAttribute("error", "Vui lòng kiểm tra lại thông tin đã nhập");
+                model.addAttribute("currentPage", "supplier");
                 return "supplier/add-supplier-form";
             }
 
@@ -118,6 +121,7 @@ public class SupplierController extends BaseAdminController {
             String validationError = supplierService.validateNewSupplier(supplierDto);
             if (validationError != null) {
                 model.addAttribute("error", validationError);
+                model.addAttribute("currentPage", "supplier");
                 return "supplier/add-supplier-form";
             }
 

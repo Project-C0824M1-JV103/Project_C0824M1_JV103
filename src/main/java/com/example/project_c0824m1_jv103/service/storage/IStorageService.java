@@ -6,6 +6,7 @@ import com.example.project_c0824m1_jv103.model.Storage;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.project_c0824m1_jv103.model.StorageTransaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,4 +32,7 @@ public interface IStorageService {
     Optional<Storage> findByProductId(Integer productId);
 
     Page<Storage> searchProductsInStorage(String keyword, Pageable pageable);
+    void saveStorage(StorageTransaction storage);
+    Page<StorageTransaction> findAll(Pageable pageable);
+    Page<StorageTransaction> findByCriteria(String productName, LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

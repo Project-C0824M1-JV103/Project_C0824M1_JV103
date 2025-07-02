@@ -45,6 +45,8 @@ import com.example.project_c0824m1_jv103.repository.IProductImagesRepository;
 
 @Service
 public class StorageService implements IStorageService {
+    @Autowired
+    private IStorageTransactionRepository TRstorageRepository;
 
     @Autowired
     private IStorageRepository storageRepository;
@@ -331,5 +333,67 @@ public class StorageService implements IStorageService {
     @Override
     public Page<Storage> searchProductsInStorage(String keyword, Pageable pageable) {
         return storageRepository.findByProduct_ProductNameContainingIgnoreCase(keyword, pageable);
+    }
+    @Override
+    @Transactional
+    public void saveStorage(StorageTransaction storage) {
+        Product product = productRepository.findById(storage.getProduct().getProductId())
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+        Employee employee = storage.getEmployee() != null ? employeeRepository.findById(storage.getEmployee().getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại")) : null;
+
+        storage.setProduct(product);
+        storage.setEmployee(employee);
+        if (storage.getTransactionType() == StorageTransaction.TransactionType.IMPORT) {
+            product.setQuantity(product.getQuantity() + storage.getQuantity());
+        } else if (storage.getTransactionType() == StorageTransaction.TransactionType.EXPORT) {
+            product.setQuantity(product.getQuantity() - storage.getQuantity());
+        }
+        productRepository.save(product);
+
+        TRstorageRepository.save(storage);
+    }
+
+    @Override
+    public Page<StorageTransaction> findAll(Pageable pageable) {
+        return TRstorageRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<StorageTransaction> findByCriteria(String productName, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        List<StorageTransaction> storages = TRstorageRepository.findAll();
+
+        // Áp dụng điều kiện lọc linh hoạt
+        if (productName != null && !productName.isEmpty()) {
+            storages = storages.stream()
+                    .filter(storage -> storage.getProduct().getProductName().toLowerCase().contains(productName.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        if (startDate != null || endDate != null) {
+            storages = storages.stream()
+                    .filter(storage -> {
+                        LocalDate transactionDate = storage.getTransactionDate().toLocalDate();
+                        boolean isAfterStart = startDate == null || !transactionDate.isBefore(startDate);
+                        boolean isBeforeEnd = endDate == null || !transactionDate.isAfter(endDate);
+                        return isAfterStart && isBeforeEnd;
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        // Lọc chỉ nhập kho (IMPORT)
+        storages = storages.stream()
+                .filter(storage -> storage.getTransactionType() == StorageTransaction.TransactionType.IMPORT)
+                .collect(Collectors.toList());
+
+        // Sắp xếp theo transactionDate giảm dần (mới nhất lên đầu)
+        storages.sort(Comparator.comparing(StorageTransaction::getTransactionDate, Comparator.reverseOrder()));
+
+        // Phân trang
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), storages.size());
+        List<StorageTransaction> pagedStorages = storages.subList(start, end);
+
+        return new PageImpl<>(pagedStorages, pageable, storages.size());
     }
 }

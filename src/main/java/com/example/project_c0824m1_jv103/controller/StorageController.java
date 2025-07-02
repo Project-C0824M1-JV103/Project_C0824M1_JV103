@@ -4,10 +4,7 @@ import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.dto.*;
 import com.example.project_c0824m1_jv103.dto.StorageImportDTO;
 import com.example.project_c0824m1_jv103.dto.StorageImportProductDTO;
-import com.example.project_c0824m1_jv103.model.Employee;
-import com.example.project_c0824m1_jv103.model.Product;
-import com.example.project_c0824m1_jv103.model.ProductImages;
-import com.example.project_c0824m1_jv103.model.Storage;
+import com.example.project_c0824m1_jv103.model.*;
 import com.example.project_c0824m1_jv103.repository.ICategoryRepository;
 import com.example.project_c0824m1_jv103.repository.IProductRepository;
 import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
@@ -72,46 +69,81 @@ public class StorageController extends BaseAdminController {
         return "storage/storage-page";
     }
 
-    @GetMapping("/list-import")
-    public String showStorageList(
-            @RequestParam(value = "productName", required = false) String productName,
-            @RequestParam(value = "startDate", required = false) String startDate,
-            @RequestParam(value = "endDate", required = false) String endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
-            Model model) {
+//    @GetMapping("/list-import")
+//    public String showStorageList(
+//            @RequestParam(value = "productName", required = false) String productName,
+//            @RequestParam(value = "startDate", required = false) String startDate,
+//            @RequestParam(value = "endDate", required = false) String endDate,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            Model model) {
+//
+//        // Xử lý ngày
+//        LocalDate start = null;
+//        LocalDate end = null;
+//        try {
+//            if (startDate != null && !startDate.isEmpty()) {
+//                start = LocalDate.parse(startDate);
+//            }
+//            if (endDate != null && !endDate.isEmpty()) {
+//                end = LocalDate.parse(endDate);
+//            }
+//        } catch (DateTimeParseException e) {
+//            model.addAttribute("error", "Định dạng ngày không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD.");
+//        }
+//
+//        List<StorageDto> filteredStorages = storageService.findByCriteria(productName, start, end);
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+//        Page<StorageDto> storagePage = storageService.paginateStorageList(filteredStorages, pageable);
+//
+//        // Đặt tên biến nhất quán (storagePage thay vì storagesPage)
+//        model.addAttribute("storagePage", storagePage);
+//        model.addAttribute("productName", productName);
+//        model.addAttribute("startDate", startDate);
+//        model.addAttribute("endDate", endDate);
+//        model.addAttribute("currentPage", page);
+//        model.addAttribute("pageSize", size);
+//        model.addAttribute("totalPages", storagePage.getTotalPages());
+//        model.addAttribute("totalItems", storagePage.getTotalElements());
+//        model.addAttribute("suppliers", supplierService.findAll(Pageable.unpaged()));
+//
+//        return "storage/list";
+//    }
+@GetMapping("/list-import")
+public String showStorageList(
+        @RequestParam(value = "productName", required = false) String productName,
+        @RequestParam(value = "startDate", required = false) String startDate,
+        @RequestParam(value = "endDate", required = false) String endDate,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "6") int size,
+        Model model) {
 
-        // Xử lý ngày
-        LocalDate start = null;
-        LocalDate end = null;
-        try {
-            if (startDate != null && !startDate.isEmpty()) {
-                start = LocalDate.parse(startDate);
-            }
-            if (endDate != null && !endDate.isEmpty()) {
-                end = LocalDate.parse(endDate);
-            }
-        } catch (DateTimeParseException e) {
-            model.addAttribute("error", "Định dạng ngày không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD.");
+    // Xử lý ngày
+    LocalDate start = null;
+    LocalDate end = null;
+    try {
+        if (startDate != null && !startDate.isEmpty()) {
+            start = LocalDate.parse(startDate);
         }
-
-        List<StorageDto> filteredStorages = storageService.findByCriteria(productName, start, end);
-        Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
-        Page<StorageDto> storagePage = storageService.paginateStorageList(filteredStorages, pageable);
-
-        // Đặt tên biến nhất quán (storagePage thay vì storagesPage)
-        model.addAttribute("storagePage", storagePage);
-        model.addAttribute("productName", productName);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("currentPage", "storage");
-        model.addAttribute("pageSize", size);
-        model.addAttribute("totalPages", storagePage.getTotalPages());
-        model.addAttribute("totalItems", storagePage.getTotalElements());
-        model.addAttribute("suppliers", supplierService.findAll(Pageable.unpaged()));
-
-        return "storage/list";
+        if (endDate != null && !endDate.isEmpty()) {
+            end = LocalDate.parse(endDate);
+        }
+    } catch (DateTimeParseException e) {
+        model.addAttribute("error", "Định dạng ngày không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD.");
     }
+
+    Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+    Page<StorageTransaction> storagePage = storageService.findByCriteria(productName, start, end, pageable);
+
+    model.addAttribute("storagePage", storagePage);
+    model.addAttribute("productName", productName);
+    model.addAttribute("startDate", startDate);
+    model.addAttribute("endDate", endDate);
+    model.addAttribute("currentPage", "storage");
+    model.addAttribute("suppliers", supplierService.findAll(Pageable.unpaged()));
+
+    return "storage/list";
+}
 
     @GetMapping("/show-create")
     public String showCreateStorage(Model model) {
@@ -257,12 +289,12 @@ public class StorageController extends BaseAdminController {
                                RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("productDTO", productDTO);
-            model.addAttribute("currentPage", "storage");
             model.addAttribute("showAddProductModal", true);
             model.addAttribute("inforStorages", storageService.findAllStorage());
             model.addAttribute("suppliers", supplierService.findAll());
             model.addAttribute("categorys", categoryRepository.findAll());
             model.addAttribute("storageImportDTO", new StorageImportDTO());
+            model.addAttribute("currentPage", "storage");
             return "storage/import-storage";
         }
         try {
@@ -286,10 +318,10 @@ public class StorageController extends BaseAdminController {
     public String showProductSelection(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "6") int size,
             Model model) {
-        Page<Storage> storagePage = storageService.searchProductsInStorage(keyword, PageRequest.of(page, size, Sort.by("storageId").descending()));
-        
+        Page<Storage> storagePage = storageService.searchProductsInStorage(keyword, PageRequest.of(page, size));
+
         // Truyền Storage objects thay vì Product để có thể truy cập storageId
         model.addAttribute("storages", storagePage.getContent());
         model.addAttribute("keyword", keyword);
@@ -306,6 +338,7 @@ public class StorageController extends BaseAdminController {
                               Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("exportDTO", exportDTO);
+            model.addAttribute("currentPage", "storage");
             model.addAttribute("errorMessage", "Vui lòng kiểm tra lại dữ liệu nhập vào");
             return "storage/export-form";
         }
