@@ -52,11 +52,11 @@
                     <div class="row align-items-center">
                         <div class="col">
                             <h2 class="mb-1">
-                                <i class="fas fa-boxes text-primary"></i>
+                                <i class="fas fa-truck-loading text-primary"></i>
                                 Quản lý xuất kho
                             </h2>
                             <p href="/storage/export" class="text-muted mb-0">
-                                Thêm mới nhập kho
+                                Lịch sử xuất kho
                             </p>
 
                         </div>
@@ -97,27 +97,27 @@
                     </div>
                     <nav th:if="${totalPages > 1}" aria-label="Export history pagination">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <li class="page-item" th:classappend="${exportPage == 0} ? 'disabled'">
                                 <a class="page-link" th:href="@{/storage/history(page=0)}">
                                     <i class="fas fa-angle-double-left"></i>
                                 </a>
                             </li>
-                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                <a class="page-link" th:href="@{/storage/history(page=${currentPage - 1})}">
+                            <li class="page-item" th:classappend="${exportPage == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/storage/history(page=${exportPage - 1})}">
                                     <i class="fas fa-angle-left"></i>
                                 </a>
                             </li>
                             <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                                th:if="${pageNum >= currentPage - 2 and pageNum <= currentPage + 2}"
-                                class="page-item" th:classappend="${pageNum == currentPage} ? 'active'">
+                                th:if="${pageNum >= exportPage - 2 and pageNum <= exportPage + 2}"
+                                class="page-item" th:classappend="${pageNum == exportPage} ? 'active'">
                                 <a class="page-link" th:href="@{/storage/history(page=${pageNum})}" th:text="${pageNum + 1}"></a>
                             </li>
-                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                                <a class="page-link" th:href="@{/storage/history(page=${currentPage + 1})}">
+                            <li class="page-item" th:classappend="${exportPage >= totalPages - 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/storage/history(page=${exportPage + 1})}">
                                     <i class="fas fa-angle-right"></i>
                                 </a>
                             </li>
-                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                            <li class="page-item" th:classappend="${exportPage >= totalPages - 1} ? 'disabled'">
                                 <a class="page-link" th:href="@{/storage/history(page=${totalPages - 1})}">
                                     <i class="fas fa-angle-double-right"></i>
                                 </a>
@@ -125,7 +125,7 @@
                         </ul>
                     </nav>
                     <div class="text-center text-muted mt-2">
-                        Trang <span th:text="${currentPage + 1}"></span> trong tổng số <span th:text="${totalPages}"></span> trang
+                        Trang <span th:text="${exportPage + 1}"></span> trong tổng số <span th:text="${totalPages}"></span> trang
                         (<span th:text="${totalElements}"></span> lần xuất kho)
                     </div>
                 </div>

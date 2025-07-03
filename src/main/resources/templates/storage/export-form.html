@@ -50,17 +50,19 @@
                 <div class="row align-items-center">
                     <div class="col">
                         <h2 class="mb-1">
-                            <i class="fas fa-boxes text-primary"></i>
+                            <i class="fas fa-truck-loading text-primary"></i>
                             Quản lý xuất kho
                         </h2>
                         <p href="/storage/export" class="text-muted mb-0">
-                            Thêm mới nhập kho
+                            Xuất kho sản phẩm
                         </p>
-
                     </div>
                     <div class="col-auto">
                         <a th:href="@{/storage/history}" class="btn btn-success">
                             <i class="fas fa-history "></i> Lịch sử xuất kho
+                        </a>
+                        <a th:href="@{/storage/list-import}" class="btn btn-success">
+                            <i class="fas fa-boxes"></i> Quản lý nhập kho
                         </a>
                     </div>
                 </div>

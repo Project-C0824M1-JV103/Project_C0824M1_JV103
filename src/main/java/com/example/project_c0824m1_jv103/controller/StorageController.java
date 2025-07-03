@@ -373,11 +373,11 @@ public String showStorageList(
     @GetMapping("/history")
     public String exportHistory(Model model,
                                @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size) {
+                               @RequestParam(defaultValue = "6") int size) {
         // Lấy tất cả bản ghi xuất kho (quantity < 0)
         Page<Storage> exportRecords = storageService.getExportHistory(PageRequest.of(page, size));
         model.addAttribute("exportRecords", exportRecords.getContent());
-        model.addAttribute("currentPage", page);
+        model.addAttribute("exportPage", page);
         model.addAttribute("totalPages", exportRecords.getTotalPages());
         model.addAttribute("totalElements", exportRecords.getTotalElements());
         model.addAttribute("currentPage", "storage");
