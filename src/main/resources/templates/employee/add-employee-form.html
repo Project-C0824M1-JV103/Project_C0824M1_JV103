@@ -184,12 +184,19 @@
                     >
                         <div class="form-inner">
                             <div class="mb-3">
-                                <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                <div class="label-validation-row">
+                                    <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <div class="validation-message-container">
+                                        <div class="text-danger server-error" th:if="${#fields.hasErrors('fullName')}"
+                                             th:errors="*{fullName}"></div>
+                                    </div>
+                                </div>
                                 <input
                                         type="text"
                                         th:field="*{fullName}"
                                         class="form-control"
-                                        required
+                                        th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'"
+                                        placeholder="Nhập họ và tên"
                                 />
                             </div>
 
@@ -203,12 +210,20 @@
                                 </div>
                                 <input type="tel" th:field="*{phone}" class="form-control" 
                                        th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'"
-                                       placeholder="Nhập số điện thoại" required/>
+                                       placeholder="Nhập số điện thoại" />
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Công việc <span class="text-danger">*</span></label>
-                                <select th:field="*{role}" class="form-select" required>
+                                <div class="label-validation-row">
+                                    <label class="form-label">Công việc <span class="text-danger">*</span></label>
+                                    <div class="validation-message-container">
+                                        <div class="text-danger server-error" th:if="${#fields.hasErrors('role')}"
+                                             th:errors="*{role}"></div>
+                                    </div>
+                                </div>
+                                <select th:field="*{role}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('role')} ? 'is-invalid'">
+                                    <option value="">-- Chọn công việc --</option>
                                     <option th:each="role : ${roles}" th:if="${role.name() != 'Admin'}"
                                             th:value="${role}"
                                             th:text="${role.name() == 'Sales' ? 'Nhân viên bán hàng'
@@ -216,7 +231,6 @@
                                         : (role.name() == 'Warehouse' ? 'Thủ kho' : role.name()))}">
                                     </option>
                                 </select>
-                                <div class="text-danger" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
                             </div>
 
                             <div class="mb-3">
@@ -230,7 +244,7 @@
                                 </div>
                                 <input type="email" th:field="*{email}" class="form-control" 
                                        th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
-                                       placeholder="Nhập email nhân viên" required/>
+                                       placeholder="Nhập email nhân viên"/>
                             </div>
 
                             <div class="mb-3">
@@ -265,21 +279,39 @@
 <script>
   let emailValidationTimeout;
   let phoneValidationTimeout;
+  let fullNameValidationTimeout;
+  
+  // Track which fields have been touched
+  const touchedFields = {
+    fullName: false,
+    email: false,
+    phone: false,
+    role: false
+  };
 
   // Validate email format
-  function validateEmailFormat() {
+  function validateEmailFormat(forceValidateEmpty = false) {
     const emailInput = document.querySelector('input[name="email"]');
     const emailValue = emailInput.value.trim();
     
     // Remove existing validation message
     removeValidationMessage(emailInput);
     
+    // Mark as touched when user starts typing
     if (emailValue.length > 0) {
-      // Check if email has valid format
-      if (!isValidEmail(emailValue)) {
-        showValidationError(emailInput, 'Email phải có định dạng hợp lệ (ví dụ: example@domain.com)');
-        return false;
-      }
+      touchedFields.email = true;
+    }
+    
+    // Check if field is required and empty (only if touched or forced)
+    if (emailValue.length === 0 && (touchedFields.email || forceValidateEmpty)) {
+      showValidationError(emailInput, 'Email không được để trống');
+      return false;
+    }
+    
+    // Check if email has valid format
+    if (!isValidEmail(emailValue)) {
+      showValidationError(emailInput, 'Email phải có định dạng hợp lệ (ví dụ: example@domain.com)');
+      return false;
     }
     
     return true;
@@ -314,25 +346,34 @@
   }
 
   // Validate phone number format
-  function validatePhoneNumberFormat() {
+  function validatePhoneNumberFormat(forceValidateEmpty = false) {
     const phoneInput = document.querySelector('input[name="phone"]');
     const phoneValue = phoneInput.value.trim();
     
     // Remove existing validation message
     removeValidationMessage(phoneInput);
     
+    // Mark as touched when user starts typing
     if (phoneValue.length > 0) {
-      // Check if phone number contains only digits
-      if (!/^\d+$/.test(phoneValue)) {
-        showValidationError(phoneInput, 'Số điện thoại chỉ được chứa các chữ số');
-        return false;
-      }
-      
-      // Check phone number length (10-11 digits)
-      if (phoneValue.length < 10 || phoneValue.length > 11) {
-        showValidationError(phoneInput, 'Số điện thoại phải có từ 10-11 chữ số');
-        return false;
-      }
+      touchedFields.phone = true;
+    }
+    
+    // Check if field is required and empty (only if touched or forced)
+    if (phoneValue.length === 0 && (touchedFields.phone || forceValidateEmpty)) {
+      showValidationError(phoneInput, 'Số điện thoại không được để trống');
+      return false;
+    }
+    
+    // Check if phone number contains only digits
+    if (!/^\d+$/.test(phoneValue)) {
+      showValidationError(phoneInput, 'Số điện thoại chỉ được chứa các chữ số');
+      return false;
+    }
+    
+    // Check phone number length (10-11 digits)
+    if (phoneValue.length < 10 || phoneValue.length > 11) {
+      showValidationError(phoneInput, 'Số điện thoại phải có từ 10-11 chữ số');
+      return false;
     }
     
     return true;
@@ -364,6 +405,67 @@
           });
       }, 500);
     }
+  }
+
+  // Validate full name format
+  function validateFullNameFormat(forceValidateEmpty = false) {
+    const fullNameInput = document.querySelector('input[name="fullName"]');
+    const fullNameValue = fullNameInput.value.trim();
+    
+    // Remove existing validation message
+    removeValidationMessage(fullNameInput);
+    
+    // Mark as touched when user starts typing
+    if (fullNameValue.length > 0) {
+      touchedFields.fullName = true;
+    }
+    
+    // Check if field is required and empty (only if touched or forced)
+    if (fullNameValue.length === 0 && (touchedFields.fullName || forceValidateEmpty)) {
+      showValidationError(fullNameInput, 'Họ và tên không được để trống');
+      return false;
+    }
+    
+    // Check minimum length
+    if (fullNameValue.length < 2) {
+      showValidationError(fullNameInput, 'Họ và tên phải có ít nhất 2 ký tự');
+      return false;
+    }
+    
+    // Check if name contains only letters, spaces, and Vietnamese characters
+    if (!/^[a-zA-ZÀ-ỹĂăÂâĐđÊêÔôƠơƯưÝýàáảãạằắẳẵặầấẩẫậèéẻẽẹềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ\s]+$/.test(fullNameValue)) {
+      showValidationError(fullNameInput, 'Họ và tên chỉ được chứa chữ cái và khoảng trắng');
+      return false;
+    }
+    
+    // Check maximum length
+    if (fullNameValue.length > 100) {
+      showValidationError(fullNameInput, 'Họ và tên không được vượt quá 100 ký tự');
+      return false;
+    }
+    
+    return true;
+  }
+
+  // Validate role selection
+  function validateRoleSelection(forceValidateEmpty = false) {
+    const roleSelect = document.querySelector('select[name="role"]');
+    const roleValue = roleSelect.value;
+    
+    // Remove existing validation message
+    removeValidationMessage(roleSelect);
+    
+    // Mark as touched when user selects
+    if (roleValue && roleValue !== '') {
+      touchedFields.role = true;
+    }
+    
+    if ((!roleValue || roleValue === '') && (touchedFields.role || forceValidateEmpty)) {
+      showValidationError(roleSelect, 'Vui lòng chọn công việc cho nhân viên');
+      return false;
+    }
+    
+    return true;
   }
 
   // Helper function to validate email format
@@ -402,27 +504,75 @@
 
   // Attach event listeners
   document.addEventListener('DOMContentLoaded', function() {
+    const fullNameInput = document.querySelector('input[name="fullName"]');
     const emailInput = document.querySelector('input[name="email"]');
     const phoneInput = document.querySelector('input[name="phone"]');
+    const roleSelect = document.querySelector('select[name="role"]');
     const form = document.querySelector('form');
+    
+    if (fullNameInput) {
+      fullNameInput.addEventListener('input', validateFullNameFormat);
+      fullNameInput.addEventListener('blur', function() {
+        touchedFields.fullName = true;
+        validateFullNameFormat(true);
+      });
+    }
     
     if (emailInput) {
       emailInput.addEventListener('input', validateEmailFormat);
-      emailInput.addEventListener('blur', validateEmail);
+      emailInput.addEventListener('blur', function() {
+        touchedFields.email = true;
+        validateEmail();
+      });
     }
     
     if (phoneInput) {
       phoneInput.addEventListener('input', validatePhoneNumberFormat);
-      phoneInput.addEventListener('blur', validatePhoneNumber);
+      phoneInput.addEventListener('blur', function() {
+        touchedFields.phone = true;
+        validatePhoneNumber();
+      });
+    }
+    
+    if (roleSelect) {
+      roleSelect.addEventListener('change', validateRoleSelection);
+      roleSelect.addEventListener('blur', function() {
+        touchedFields.role = true;
+        validateRoleSelection(true);
+      });
     }
     
     // Form submission validation
     if (form) {
       form.addEventListener('submit', function(e) {
+        // Validate all fields before submitting (force validation even if empty)
+        let isValid = true;
+        
+        // Validate full name
+        if (!validateFullNameFormat(true)) {
+          isValid = false;
+        }
+        
+        // Validate email
+        if (!validateEmailFormat(true)) {
+          isValid = false;
+        }
+        
+        // Validate phone
+        if (!validatePhoneNumberFormat(true)) {
+          isValid = false;
+        }
+        
+        // Validate role
+        if (!validateRoleSelection(true)) {
+          isValid = false;
+        }
+        
+        // Check for client-side validation errors
         const hasClientErrors = document.querySelectorAll('.client-validation-feedback').length > 0;
         const alertDiv = document.getElementById('clientValidationAlert');
         
-        if (hasClientErrors) {
+        if (!isValid || hasClientErrors) {
           e.preventDefault();
           // Show error alert
           alertDiv.style.display = 'block';

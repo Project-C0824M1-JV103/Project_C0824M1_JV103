@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public class StorageExportDTO {
+    private Integer storageId;
     private Integer productId;
     private String productName;
     private String supplierName;
@@ -16,12 +17,21 @@ public class StorageExportDTO {
     public StorageExportDTO() {
     }
 
-    public StorageExportDTO(Integer productId, String productName, String supplierName, Integer remainingQuantity, Integer exportQuantity) {
+    public StorageExportDTO(Integer storageId, Integer productId, String productName, String supplierName, Integer remainingQuantity, Integer exportQuantity) {
+        this.storageId = storageId;
         this.productId = productId;
         this.productName = productName;
         this.supplierName = supplierName;
         this.remainingQuantity = remainingQuantity;
         this.exportQuantity = exportQuantity;
+    }
+
+    public Integer getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(Integer storageId) {
+        this.storageId = storageId;
     }
 
     public Integer getProductId() {

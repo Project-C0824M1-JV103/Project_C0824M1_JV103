@@ -5,25 +5,23 @@
         <tr>
             <th>Tên</th>
             <th>Giá</th>
-            <th>CPU</th>
-            <th>Lưu trữ</th>
+            <th>Số lượng</th>
             <th>Thao tác</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="product : ${products}">
-            <td th:text="${product.productName}"></td>
-            <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
-            <td th:text="${product.cpu}"></td>
-            <td th:text="${product.memory}"></td>
+        <tr th:each="storage : ${storages}">
+            <td th:text="${storage.product.productName}"></td>
+            <td th:text="${#numbers.formatDecimal(storage.cost != null ? storage.cost : storage.product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+            <td th:text="${storage.quantity}"></td>
             <td>
-                <button class="btn btn-sm btn-primary" th:onclick="'selectProduct(' + ${product.productId} + ')'">
+                <button class="btn btn-sm btn-primary" th:onclick="'selectProduct(' + ${storage.storageId} + ')'">
                     <i class="fas fa-check"></i> Chọn
                 </button>
             </td>
         </tr>
-        <tr th:if="${products.empty}">
-            <td colspan="5" class="text-center">Không có sản phẩm nào phù hợp</td>
+        <tr th:if="${storages.empty}">
+            <td colspan="4" class="text-center">Không có sản phẩm nào phù hợp</td>
         </tr>
         </tbody>
     </table>
