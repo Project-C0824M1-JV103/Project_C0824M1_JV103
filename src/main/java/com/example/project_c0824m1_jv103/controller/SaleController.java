@@ -218,11 +218,12 @@ public class SaleController extends BaseAdminController {
     }
 
     @GetMapping("/confirmation/{saleId}")
-    public String showConfirmation(@PathVariable Integer saleId, Model model) {
+    public String showConfirmation(@PathVariable Integer saleId, Model model, Principal principal) {
         Sale sale = saleService.findById(saleId)
                 .orElseThrow(() -> new RuntimeException("Sale not found"));
         
         model.addAttribute("sale", sale);
+        model.addAttribute("currentPage", "sale");
         return "sale/sale-confirmation";
     }
 

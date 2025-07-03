@@ -27,6 +27,38 @@
             border: none;
         }
 
+        /* Pagination styles */
+        .pagination .page-link {
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+            color: #495057;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            color: #6c757d;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #667eea;
+        }
+
     </style>
 </head>
 <body>
@@ -95,39 +127,42 @@
                             </tbody>
                         </table>
                     </div>
-                    <nav th:if="${totalPages > 1}" aria-label="Export history pagination">
+                    <nav aria-label="Phân trang lịch sử xuất kho" class="mt-4">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item" th:classappend="${exportPage == 0} ? 'disabled'">
+                            <li class="page-item" th:classappend="${totalElements == 0 || exportPage == 0} ? 'disabled' : ''">
                                 <a class="page-link" th:href="@{/storage/history(page=0)}">
                                     <i class="fas fa-angle-double-left"></i>
                                 </a>
                             </li>
-                            <li class="page-item" th:classappend="${exportPage == 0} ? 'disabled'">
+                            <li class="page-item" th:classappend="${totalElements == 0 || exportPage == 0} ? 'disabled' : ''">
                                 <a class="page-link" th:href="@{/storage/history(page=${exportPage - 1})}">
                                     <i class="fas fa-angle-left"></i>
                                 </a>
                             </li>
-                            <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                                th:if="${pageNum >= exportPage - 2 and pageNum <= exportPage + 2}"
-                                class="page-item" th:classappend="${pageNum == exportPage} ? 'active'">
-                                <a class="page-link" th:href="@{/storage/history(page=${pageNum})}" th:text="${pageNum + 1}"></a>
-                            </li>
-                            <li class="page-item" th:classappend="${exportPage >= totalPages - 1} ? 'disabled'">
+                            <th:block th:if="${totalElements > 0}">
+                                <th:block th:each="page : ${#numbers.sequence(0, totalPages - 1)}">
+                                    <li class="page-item" th:classappend="${page == exportPage} ? 'active' : ''">
+                                        <a class="page-link" th:href="@{/storage/history(page=${page})}" th:text="${page + 1}"></a>
+                                    </li>
+                                </th:block>
+                            </th:block>
+                            <li class="page-item" th:classappend="${totalElements == 0 || exportPage >= totalPages - 1} ? 'disabled' : ''">
                                 <a class="page-link" th:href="@{/storage/history(page=${exportPage + 1})}">
                                     <i class="fas fa-angle-right"></i>
                                 </a>
                             </li>
-                            <li class="page-item" th:classappend="${exportPage >= totalPages - 1} ? 'disabled'">
+                            <li class="page-item" th:classappend="${totalElements == 0 || exportPage == totalPages - 1} ? 'disabled' : ''">
                                 <a class="page-link" th:href="@{/storage/history(page=${totalPages - 1})}">
                                     <i class="fas fa-angle-double-right"></i>
                                 </a>
                             </li>
                         </ul>
+                        <div class="text-center text-muted mt-2" th:if="${totalElements} != 0">
+                            Trang <span th:text="${exportPage + 1}"></span> trong tổng số
+                            <span th:text="${totalPages}"></span> trang
+                            (<span th:text="${totalElements}"></span> lần xuất kho)
+                        </div>
                     </nav>
-                    <div class="text-center text-muted mt-2">
-                        Trang <span th:text="${exportPage + 1}"></span> trong tổng số <span th:text="${totalPages}"></span> trang
-                        (<span th:text="${totalElements}"></span> lần xuất kho)
-                    </div>
                 </div>
                 </div>
             </div>
