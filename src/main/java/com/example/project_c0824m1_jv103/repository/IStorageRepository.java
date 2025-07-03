@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface IStorageRepository extends JpaRepository<Storage, Integer> {
     Optional<Storage> findByProduct_ProductId(Integer productId);
 
+    Optional<Storage> findByProduct_ProductIdAndCost(Integer productId, Double cost);
+
     @Query("SELECT s FROM Storage s WHERE s.quantity > 0")
     Page<Storage> findAllImports(Pageable pageable);
 

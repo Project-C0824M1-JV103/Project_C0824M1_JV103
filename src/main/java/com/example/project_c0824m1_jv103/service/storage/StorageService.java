@@ -185,27 +185,19 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Nhân viên không tồn tại");
         }
         
-        Optional<Storage> existingStorageOpt = storageRepository.findByProduct_ProductId(importDTO.getProductId());
+        // Tìm Storage theo cả productId và cost để tránh lỗi unique result
+        Optional<Storage> existingStorageOpt = storageRepository.findByProduct_ProductIdAndCost(importDTO.getProductId(), importDTO.getCost());
         Storage savedStorage;
         
         if (existingStorageOpt.isPresent()) {
+            // Tìm thấy Storage với cùng productId và cost -> cộng dồn
             Storage existingStorage = existingStorageOpt.get();
-            
-            if (existingStorage.getCost() != null && existingStorage.getCost().equals(importDTO.getCost())) {
-                existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
-                existingStorage.setEmployee(employee);
-                existingStorage.setTransactionDate(java.time.LocalDateTime.now());
-                savedStorage = storageRepository.save(existingStorage);
-            } else {
-                Storage newStorage = new Storage();
-                newStorage.setProduct(product);
-                newStorage.setQuantity(importDTO.getImportQuantity());
-                newStorage.setCost(importDTO.getCost());
-                newStorage.setEmployee(employee);
-                newStorage.setTransactionDate(java.time.LocalDateTime.now());
-                savedStorage = storageRepository.save(newStorage);
-            }
+            existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
+            existingStorage.setEmployee(employee);
+            existingStorage.setTransactionDate(java.time.LocalDateTime.now());
+            savedStorage = storageRepository.save(existingStorage);
         } else {
+            // Không tìm thấy Storage với cùng productId và cost -> tạo mới
             Storage newStorage = new Storage();
             newStorage.setProduct(product);
             newStorage.setQuantity(importDTO.getImportQuantity());
@@ -339,7 +331,13 @@ public class StorageService implements IStorageService {
 
     @Override
     public Optional<Storage> findByProductId(Integer productId) {
-        return storageRepository.findByProduct_ProductId(productId);
+        // Thay vì trả về Optional<Storage>, trả về Storage đầu tiên tìm được
+        // hoặc null nếu không tìm thấy để tránh lỗi unique result
+        List<Storage> storages = storageRepository.findAll().stream()
+            .filter(storage -> storage.getProduct().getProductId().equals(productId))
+            .collect(Collectors.toList());
+        
+        return storages.isEmpty() ? Optional.empty() : Optional.of(storages.get(0));
     }
 
     @Override
