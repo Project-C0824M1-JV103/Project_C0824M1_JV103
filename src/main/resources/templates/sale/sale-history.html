@@ -48,6 +48,10 @@
             background-color: #f8f9fa;
             transition: all 0.3s ease;
         }
+        .btn-actions {
+            display: flex;
+            gap: 5px;
+        }
         .pagination .page-link {
             color: #6c757d;
             border: 1px solid #dee2e6;
@@ -119,6 +123,7 @@
                         <table class="table table-hover mb-0">
                             <thead>
                             <tr>
+                                <th>STT</th>
                                 <th>
                                     <a th:href="@{/Sale/history(sortField='saleDate', sortDir=${reverseSortDir})}" class="sort-link">
                                         Ngày/Thời gian
@@ -135,14 +140,16 @@
                                 <th>Phương thức thanh toán</th>
                                 <th>
                                     <a th:href="@{/Sale/history(sortField='amount', sortDir=${reverseSortDir})}" class="sort-link">
-                                        Tổng tiền
+                                        Tổng tiền (VNĐ)
                                         <span th:if="${sortField == 'amount'}" class="arrow" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
                                     </a>
                                 </th>
+                                <th>Thao tác</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="sale : ${salePage.content}">
+                            <tr th:each="sale,s : ${salePage.content}">
+                                <td><span th:text="${s.count}"></span></td>
                                 <td th:text="${#temporals.format(sale.saleDate, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td th:text="${sale.customer.customerName}" style="text-align: left;"></td>
                                 <td class="product-list" style="text-align: left;">
@@ -152,7 +159,14 @@
                                     </ul>
                                 </td>
                                 <td th:text="${sale.paymentMethod}"></td>
-                                <td class="fw-bold" th:text="${#numbers.formatDecimal(sale.amount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                                <td class="fw-bold" th:text="${#numbers.formatDecimal(sale.amount, 0, 'COMMA', 0, 'POINT')} "></td>
+                                <td >
+                                    <div  class="btn-actions">
+                                        <a th:href="@{/Sale/confirmation/{id}(id=${sale.saleId}, printPdf=true)}" class="btn btn-sm btn-outline-primary" title="Xem hoá đơn chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
                             </tr>
                             <!-- Empty state message -->
                             <tr th:if="${#lists.isEmpty(salePage.content)}">
@@ -170,6 +184,7 @@
                                     </div>
                                 </td>
                             </tr>
+
                             </tbody>
                         </table>
                     </div>
