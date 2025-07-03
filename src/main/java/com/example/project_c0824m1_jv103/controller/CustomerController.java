@@ -69,7 +69,7 @@ public class CustomerController extends BaseAdminController  {
         // Add model attributes
         model.addAttribute("customerPage", customerPage);
         model.addAttribute("customers", customerPage.getContent());
-        model.addAttribute("currentPage", "business");
+        model.addAttribute("currentPage", "customer");
         model.addAttribute("totalPages", customerPage.getTotalPages());
         model.addAttribute("totalElements", customerPage.getTotalElements());
         model.addAttribute("pageNumber", page);
@@ -98,7 +98,7 @@ public class CustomerController extends BaseAdminController  {
             
             model.addAttribute("customer", customerObj);
             model.addAttribute("totalOrders", totalOrders);
-            model.addAttribute("currentPage", "business");
+            model.addAttribute("currentPage", "customer");
             return "admin/editCustomer";
         } else {
             return "redirect:/Customer?error=notfound";
@@ -122,7 +122,7 @@ public class CustomerController extends BaseAdminController  {
                 Long totalOrders = saleService.countSalesByCustomerId(id);
                 model.addAttribute("totalOrders", totalOrders);
                 model.addAttribute("customer", customer);
-                model.addAttribute("currentPage", "business");
+                model.addAttribute("currentPage", "customer");
                 return "admin/editCustomer";
             }
             
@@ -153,7 +153,7 @@ public class CustomerController extends BaseAdminController  {
                 Long totalOrders = saleService.countSalesByCustomerId(id);
                 model.addAttribute("totalOrders", totalOrders);
                 model.addAttribute("customer", customer);
-                model.addAttribute("currentPage", "business");
+                model.addAttribute("currentPage", "customer");
                 return "admin/editCustomer";
             }
 
