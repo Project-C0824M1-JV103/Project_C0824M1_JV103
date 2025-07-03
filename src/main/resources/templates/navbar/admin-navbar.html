@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -17,7 +17,7 @@
                 <h6 class="text-white mb-1" th:text="${currentUser.fullName}">Admin User</h6>
                 <small class="text-light opacity-75" th:text="${currentUser.email}">admin@email.com</small>
                 <div class="mt-2">
-                    <span class="badge bg-light text-dark px-2 py-1" th:text="${currentUser.role}">ADMIN</span>
+                    <span class="badge bg-light text-dark px-2 py-1" th:text="${currentUser.role}"></span>
                 </div>
             </div>
             
@@ -39,32 +39,31 @@
                     <i class="fas fa-tachometer-alt"></i>
                     Dashboard
                 </a>
-<!--                <a th:href="@{/Customer}" class="nav-link" th:classappend="${currentPage == 'customer'} ? 'active' : ''">-->
-<!--                    <i class="fas fa-users"></i>-->
-<!--                    Quản lý khách hàng-->
-<!--                </a>-->
-                <a th:href="@{/product}" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
+                <a sec:authorize="isAuthenticated() and hasAnyRole('ADMIN', 'SALES', 'BUSINESS')" th:href="@{/Customer}" class="nav-link" th:classappend="${currentPage == 'customer'} ? 'active' : ''">
+                    <i class="fas fa-users"></i>
+                    Quản lý khách hàng
+                </a>
+                <a sec:authorize="isAuthenticated() and hasAnyRole('ADMIN', 'SALES', 'BUSINESS')" th:href="@{/product}" class="nav-link" th:classappend="${currentPage == 'product'} ? 'active' : ''">
                     <i class="fas fa-box-open"></i>
                     Quản lý sản phẩm
                 </a>
-                <a th:href="@{/Sale}" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
+                <a sec:authorize="isAuthenticated() and hasAnyRole('ADMIN', 'SALES')" th:href="@{/Sale}" class="nav-link" th:classappend="${currentPage == 'sale'} ? 'active' : ''">
                     <i class="fas fa-chart-line"></i>
                     Quản lý bán hàng
                 </a>
-<!--                <a class="nav-link" th:classappend="${currentPage == 'sale-history' ? 'active' : ''}" th:href="@{/Sale/history}">Lịch Sử Bán Hàng</a>-->
-                <a th:href="@{/employees}" class="nav-link" th:classappend="${currentPage == 'employee'} ? 'active' : ''">
+                <a sec:authorize="isAuthenticated() and hasRole('ADMIN')" th:href="@{/employees}" class="nav-link" th:classappend="${currentPage == 'employee'} ? 'active' : ''">
                     <i class="fas fa-user-tie"></i>
                     Quản lý nhân viên
                 </a>
-                <a th:href="@{/Business}" class="nav-link" th:classappend="${currentPage == 'business'} ? 'active' : ''">
+                <a sec:authorize="isAuthenticated() and hasAnyRole('ADMIN', 'BUSINESS')" th:href="@{/Business}" class="nav-link" th:classappend="${currentPage == 'business'} ? 'active' : ''">
                     <i class="fas fa-briefcase"></i>
                     Quản lý kinh doanh
                 </a>
-                <a th:href="@{/storage}" class="nav-link" th:classappend="${currentPage == 'storage'} ? 'active' : ''">
+                <a sec:authorize="isAuthenticated() and hasAnyRole('ADMIN', 'WAREHOUSE')" th:href="@{/storage}" class="nav-link" th:classappend="${currentPage == 'storage'} ? 'active' : ''">
                     <i class="fas fa-warehouse"></i>
                     Quản lý kho
                 </a>
-                <a  th:href="@{/Supplier}" class="nav-link" th:classappend="${currentPage == 'supplier'} ? 'active' : ''">
+                <a sec:authorize="isAuthenticated() and hasAnyRole('ADMIN', 'WAREHOUSE', 'BUSINESS')" th:href="@{/Supplier}" class="nav-link" th:classappend="${currentPage == 'supplier'} ? 'active' : ''">
                     <i class="fas fa-truck"></i>
                     Nhà cung cấp
                 </a>
