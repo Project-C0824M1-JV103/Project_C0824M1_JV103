@@ -387,19 +387,19 @@ public String showStorageList(
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Integer id, Model model) {
         try {
-            Storage storage = storageService.getStorageById(id);
+            StorageTransaction transaction = storageService.getStorageTransactionById(id);
 
             // Convert to StorageDto
             StorageDto storageDto = new StorageDto();
-            storageDto.setStorageId(storage.getStorageId());
-            storageDto.setProductId(storage.getProduct().getProductId());
-            storageDto.setQuantity(storage.getQuantity());
-            storageDto.setCost(storage.getCost());
-            storageDto.setEmployeeId(storage.getEmployee() != null ? storage.getEmployee().getEmployeeId() : null);
-            storageDto.setTransactionDate(storage.getTransactionDate());
+            storageDto.setStorageId(transaction.getTransactionId());
+            storageDto.setProductId(transaction.getProduct().getProductId());
+            storageDto.setQuantity(transaction.getQuantity());
+            storageDto.setCost(transaction.getCost());
+            storageDto.setEmployeeId(transaction.getEmployee() != null ? transaction.getEmployee().getEmployeeId() : null);
+            storageDto.setTransactionDate(transaction.getTransactionDate());
 
             model.addAttribute("storageDto", storageDto);
-            model.addAttribute("storage", storage);
+            model.addAttribute("transaction", transaction);
             model.addAttribute("currentPage", "storage");
             model.addAttribute("suppliers", supplierService.findAll());
             model.addAttribute("employees", employeeService.findAll());
@@ -412,15 +412,15 @@ public String showStorageList(
     }
 
     @PostMapping("/update/{id}")
-    public String updateStorage(@PathVariable Integer id,
+    public String updateStorageTransaction(@PathVariable Integer id,
                                @Valid @ModelAttribute StorageDto storageDto,
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes,
                                Model model) {
         if (bindingResult.hasErrors()) {
             try {
-                Storage storage = storageService.getStorageById(id);
-                model.addAttribute("storage", storage);
+                StorageTransaction transaction = storageService.getStorageTransactionById(id);
+                model.addAttribute("transaction", transaction);
                 model.addAttribute("currentPage", "storage");
                 model.addAttribute("suppliers", supplierService.findAll());
                 model.addAttribute("employees", employeeService.findAll());
@@ -433,13 +433,13 @@ public String showStorageList(
         }
 
         try {
-            storageService.updateStorage(id, storageDto);
-            redirectAttributes.addFlashAttribute("message", "Cập nhật thông tin nhập kho thành công");
+            storageService.updateStorageTransaction(id, storageDto);
+            redirectAttributes.addFlashAttribute("message", "Cập nhật thông tin giao dịch nhập kho thành công");
             return "redirect:/storage/list-import";
         } catch (RuntimeException e) {
             try {
-                Storage storage = storageService.getStorageById(id);
-                model.addAttribute("storage", storage);
+                StorageTransaction transaction = storageService.getStorageTransactionById(id);
+                model.addAttribute("transaction", transaction);
                 model.addAttribute("suppliers", supplierService.findAll());
                 model.addAttribute("employees", employeeService.findAll());
                 model.addAttribute("error", e.getMessage());
@@ -449,6 +449,17 @@ public String showStorageList(
                 return "redirect:/storage/list-import";
             }
         }
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteStorageTransaction(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            storageService.deleteStorageTransaction(id);
+            redirectAttributes.addFlashAttribute("message", "Xóa giao dịch nhập kho thành công");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/storage/list-import";
     }
 
     // API để lấy sản phẩm theo nhà cung cấp

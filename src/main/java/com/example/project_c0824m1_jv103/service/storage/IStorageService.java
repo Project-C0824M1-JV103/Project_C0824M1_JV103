@@ -25,8 +25,8 @@ public interface IStorageService {
     List<StorageDto> findAll();
     List<StorageDto> findByCriteria(String productName, LocalDate startDate, LocalDate endDate);
 
-    // Thêm method để chỉnh sửa nhập kho
-    Storage updateStorage(Integer storageId, StorageDto storageDto);
+    // Thêm method để chỉnh sửa nhập kho sử dụng StorageTransaction
+    StorageTransaction updateStorageTransaction(Integer transactionId, StorageDto storageDto);
     Page<StorageDto> paginateStorageList(List<StorageDto> storageList, Pageable pageable);
 
     Optional<Storage> findByProductId(Integer productId);
@@ -35,4 +35,10 @@ public interface IStorageService {
     void saveStorage(StorageTransaction storage);
     Page<StorageTransaction> findAll(Pageable pageable);
     Page<StorageTransaction> findByCriteria(String productName, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    
+    // Thêm method để lấy StorageTransaction theo ID
+    StorageTransaction getStorageTransactionById(Integer transactionId);
+    
+    // Thêm method để xóa StorageTransaction
+    void deleteStorageTransaction(Integer transactionId);
 }
