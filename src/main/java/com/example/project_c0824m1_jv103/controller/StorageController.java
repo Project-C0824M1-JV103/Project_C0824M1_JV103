@@ -465,21 +465,17 @@ public String showStorageList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size
     ) {
-        // Sắp xếp theo storageId giảm dần (mới nhất lên đầu)
         Pageable pageable = PageRequest.of(page, size, Sort.by("storageId").descending());
         Page<Storage> storages;
         boolean isSearch = false;
 
         if (productName != null && !productName.isEmpty()) {
-            // Tìm kiếm với sắp xếp giảm dần
             storages = storageService.searchProductsInStorage(productName, pageable);
             isSearch = true;
         } else {
-            // Lấy tất cả với sắp xếp giảm dần
             storages = storageService.getAllStorageRecords(pageable);
         }
 
-        // Chuyển đổi Storage thành ProductDTO để tương thích với frontend
         List<Map<String, Object>> products = storages.getContent().stream()
             .map(storage -> {
                 Map<String, Object> product = new HashMap<>();
@@ -487,6 +483,7 @@ public String showStorageList(
                 product.put("productId", storage.getProduct().getProductId());
                 product.put("productName", storage.getProduct().getProductName());
                 product.put("price", storage.getCost() != null ? storage.getCost() : storage.getProduct().getPrice());
+                product.put("currentCost", storage.getCost());
                 product.put("cpu", storage.getProduct().getCpu());
                 product.put("memory", storage.getProduct().getMemory());
                 product.put("supplierId", storage.getProduct().getSupplier() != null ? storage.getProduct().getSupplier().getSuplierId() : null);

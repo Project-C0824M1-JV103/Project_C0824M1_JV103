@@ -763,6 +763,7 @@
 
                 const name = this.getAttribute('data-product-name');
                 const cost = this.getAttribute('data-product-cost');
+                const currentCost = this.getAttribute('data-current-cost');
                 const productId = this.getAttribute('data-product-id');
                 const supplierId = this.getAttribute('data-supplier-id');
                 const supplierName = this.getAttribute('data-supplier-name');
@@ -773,6 +774,8 @@
                 document.querySelector('input[name="productId"]').value = productId;
                 document.querySelector('input[name="supplierName"]').value = supplierName;
                 document.querySelector('input[name="supplierId"]').value = supplierId;
+                // Lưu giá hiện tại để so sánh sau này
+                document.querySelector('input[name="cost"]').setAttribute('data-original-cost', currentCost || cost);
 
                 const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
                 if (modal) modal.hide();
@@ -822,6 +825,7 @@
                         <button type="button" class="btn btn-select-product"
                             data-product-name="${p.productName}"
                             data-product-cost="${p.price}"
+                            data-current-cost="${p.currentCost || p.price}"
                             data-product-id="${p.productId}"
                             data-supplier-id="${p.supplierId || ''}"
                             data-supplier-name="${p.supplierName || ''}">

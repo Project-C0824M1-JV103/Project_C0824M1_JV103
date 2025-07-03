@@ -184,15 +184,27 @@ public class StorageService implements IStorageService {
         if (employee == null) {
             throw new RuntimeException("Nhân viên không tồn tại");
         }
+        
         Optional<Storage> existingStorageOpt = storageRepository.findByProduct_ProductId(importDTO.getProductId());
         Storage savedStorage;
+        
         if (existingStorageOpt.isPresent()) {
             Storage existingStorage = existingStorageOpt.get();
-            existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
-            existingStorage.setCost(importDTO.getCost()); // cập nhật giá nhập mới nhất
-            existingStorage.setEmployee(employee);
-            existingStorage.setTransactionDate(java.time.LocalDateTime.now());
-            savedStorage = storageRepository.save(existingStorage);
+            
+            if (existingStorage.getCost() != null && existingStorage.getCost().equals(importDTO.getCost())) {
+                existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
+                existingStorage.setEmployee(employee);
+                existingStorage.setTransactionDate(java.time.LocalDateTime.now());
+                savedStorage = storageRepository.save(existingStorage);
+            } else {
+                Storage newStorage = new Storage();
+                newStorage.setProduct(product);
+                newStorage.setQuantity(importDTO.getImportQuantity());
+                newStorage.setCost(importDTO.getCost());
+                newStorage.setEmployee(employee);
+                newStorage.setTransactionDate(java.time.LocalDateTime.now());
+                savedStorage = storageRepository.save(newStorage);
+            }
         } else {
             Storage newStorage = new Storage();
             newStorage.setProduct(product);
