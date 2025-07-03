@@ -305,7 +305,8 @@
                     </div>
                 </div>
                 <input type="text" id="fullName" class="form-control" placeholder="Nhập họ và tên"
-                       th:field="*{fullName}" th:readonly="${!isEditing}"/>
+                       th:field="*{fullName}" th:readonly="${!isEditing}"
+                       th:attr="data-original-value=${originalEmployee.fullName}"/>
             </div>
 
             <div class="mb-3">
@@ -317,7 +318,8 @@
                 </div>
                 <div class="input-group">
                     <input type="email" id="email" class="form-control" placeholder="Nhập email"
-                           th:field="*{email}" th:readonly="${!isEditing}"/>
+                           th:field="*{email}" th:readonly="${!isEditing}"
+                           th:attr="data-original-value=${originalEmployee.email}"/>
                     <button type="button" class="btn btn-outline-secondary" id="verifyEmailBtn" style="display:none;">Verify</button>
                     <button type="button" class="btn btn-success" id="verifiedEmailBtn" style="display:none;" disabled>
                         <i class="bi bi-check-circle-fill"></i> Verified
@@ -333,7 +335,8 @@
                     </div>
                 </div>
                 <input type="text" id="phone" class="form-control" placeholder="Nhập số điện thoại"
-                       th:field="*{phone}" th:readonly="${!isEditing}"/>
+                       th:field="*{phone}" th:readonly="${!isEditing}"
+                       th:attr="data-original-value=${originalEmployee.phone}"/>
             </div>
 
             <div class="mb-3">
@@ -343,10 +346,10 @@
 
             <div class="row">
                 <div class="col-md-6 mb-2">
-                    <button type="button" id="editBtn" class="btn btn-primary">Thay đổi</button>
+                    <button type="submit" id="confirmBtn" class="btn btn-primary" disabled>Xác nhận</button>
                 </div>
                 <div class="col-md-6 mb-2">
-                    <button type="submit" id="confirmBtn" class="btn btn-primary" disabled>Xác nhận</button>
+                    <button type="button" id="editBtn" class="btn btn-primary">Thay đổi</button>
                 </div>
             </div>
         </form>
@@ -537,13 +540,21 @@
     if (editBtn) {
         editBtn.addEventListener("click", () => {
             if (isEditing || hasError) {
-                // Khôi phục giá trị ban đầu
+                // Khôi phục giá trị ban đầu từ data-original-value
                 fields.forEach(id => {
                     const input = document.getElementById(id);
                     if (input) {
-                        input.value = originalValues[id];
+                        input.value = input.getAttribute('data-original-value');
                         input.readOnly = true;
                     }
+                });
+                // Xóa các thông báo lỗi trong error-container
+                document.querySelectorAll('.error-container').forEach(container => {
+                    container.innerHTML = '';
+                });
+                // Xóa alert báo lỗi tổng nếu có
+                document.querySelectorAll('.alert-danger').forEach(alert => {
+                    alert.remove();
                 });
                 isEditing = false;
                 hasError = false;

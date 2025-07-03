@@ -49,6 +49,7 @@ public class HomeController {
         Employee employee = employeeService.findByEmail(userDetails.getUsername());
         BeanUtils.copyProperties(employee, dto);
         model.addAttribute("employee", dto);
+        model.addAttribute("originalEmployee", dto);
         if (!model.containsAttribute("passwordDto")) {
             model.addAttribute("passwordDto", new EmployeePersonalPasswordDto());
         }
@@ -67,6 +68,8 @@ public class HomeController {
                                      HttpServletResponse response) {
 
         Employee currentEmployee = employeeService.findByEmail(userDetails.getUsername());
+        EmployeePersonalDto originalDto = new EmployeePersonalDto();
+        BeanUtils.copyProperties(currentEmployee, originalDto);
 
         if (!dto.getEmail().equalsIgnoreCase(currentEmployee.getEmail())) {
             if (employeeService.isEmailExistsForOtherEmployee(dto.getEmail(), currentEmployee.getEmployeeId())) {
@@ -84,6 +87,7 @@ public class HomeController {
             model.addAttribute("isEditing", true);
             model.addAttribute("hasError", true);
             model.addAttribute("employee", dto);
+            model.addAttribute("originalEmployee", originalDto);
             model.addAttribute("passwordDto", new EmployeePersonalPasswordDto());
             return "homePage/personal_info";
         }
@@ -104,6 +108,7 @@ public class HomeController {
             model.addAttribute("isEditing", true);
             model.addAttribute("hasError", true);
             model.addAttribute("employee", dto);
+            model.addAttribute("originalEmployee", originalDto);
             model.addAttribute("passwordDto", new EmployeePersonalPasswordDto());
             return "homePage/personal_info";
         }
