@@ -45,6 +45,8 @@ import com.example.project_c0824m1_jv103.repository.IProductImagesRepository;
 
 @Service
 public class StorageService implements IStorageService {
+    @Autowired
+    private IStorageTransactionRepository TRstorageRepository;
 
     @Autowired
     private IStorageRepository storageRepository;
@@ -78,18 +80,17 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Số lượng xuất phải lớn hơn 0");
         }
 
-        // Find the storage record for the product, which holds the actual warehouse stock
-        Storage storage = storageRepository.findByProduct_ProductId(exportDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy kho chứa sản phẩm này."));
+        // Find the specific storage record by storageId
+        Storage storage = storageRepository.findById(exportDTO.getStorageId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lô hàng này trong kho."));
 
-        // Check if there is enough quantity in storage (warehouse)
+        // Check if there is enough quantity in this specific storage batch
         if (storage.getQuantity() < exportDTO.getExportQuantity()) {
-            throw new RuntimeException("Số lượng trong kho không đủ để xuất.");
+            throw new RuntimeException("Số lượng trong lô hàng này không đủ để xuất. Chỉ còn " + storage.getQuantity() + " sản phẩm.");
         }
 
-        // Find the product to update its retail quantity
-        Product product = productRepository.findById(exportDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+        // Get the product to update its retail quantity
+        Product product = storage.getProduct();
 
         // Decrease quantity in storage
         storage.setQuantity(storage.getQuantity() - exportDTO.getExportQuantity());
@@ -107,10 +108,10 @@ public class StorageService implements IStorageService {
             StorageTransaction exportTransaction = new StorageTransaction(
                 product,
                 -exportDTO.getExportQuantity(), // Số âm cho xuất kho
-                product.getPrice(),
+                storage.getCost(), // Sử dụng giá nhập của lô cụ thể
                 employee,
                 StorageTransaction.TransactionType.EXPORT,
-                "Xuất kho " + exportDTO.getExportQuantity() + " sản phẩm " + product.getProductName()
+                "Xuất kho " + exportDTO.getExportQuantity() + " sản phẩm " + product.getProductName() + " từ lô " + storage.getStorageId()
             );
             
             storageTransactionRepository.save(exportTransaction);
@@ -332,5 +333,67 @@ public class StorageService implements IStorageService {
     @Override
     public Page<Storage> searchProductsInStorage(String keyword, Pageable pageable) {
         return storageRepository.findByProduct_ProductNameContainingIgnoreCase(keyword, pageable);
+    }
+    @Override
+    @Transactional
+    public void saveStorage(StorageTransaction storage) {
+        Product product = productRepository.findById(storage.getProduct().getProductId())
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+        Employee employee = storage.getEmployee() != null ? employeeRepository.findById(storage.getEmployee().getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại")) : null;
+
+        storage.setProduct(product);
+        storage.setEmployee(employee);
+        if (storage.getTransactionType() == StorageTransaction.TransactionType.IMPORT) {
+            product.setQuantity(product.getQuantity() + storage.getQuantity());
+        } else if (storage.getTransactionType() == StorageTransaction.TransactionType.EXPORT) {
+            product.setQuantity(product.getQuantity() - storage.getQuantity());
+        }
+        productRepository.save(product);
+
+        TRstorageRepository.save(storage);
+    }
+
+    @Override
+    public Page<StorageTransaction> findAll(Pageable pageable) {
+        return TRstorageRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<StorageTransaction> findByCriteria(String productName, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        List<StorageTransaction> storages = TRstorageRepository.findAll();
+
+        // Áp dụng điều kiện lọc linh hoạt
+        if (productName != null && !productName.isEmpty()) {
+            storages = storages.stream()
+                    .filter(storage -> storage.getProduct().getProductName().toLowerCase().contains(productName.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        if (startDate != null || endDate != null) {
+            storages = storages.stream()
+                    .filter(storage -> {
+                        LocalDate transactionDate = storage.getTransactionDate().toLocalDate();
+                        boolean isAfterStart = startDate == null || !transactionDate.isBefore(startDate);
+                        boolean isBeforeEnd = endDate == null || !transactionDate.isAfter(endDate);
+                        return isAfterStart && isBeforeEnd;
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        // Lọc chỉ nhập kho (IMPORT)
+        storages = storages.stream()
+                .filter(storage -> storage.getTransactionType() == StorageTransaction.TransactionType.IMPORT)
+                .collect(Collectors.toList());
+
+        // Sắp xếp theo transactionDate giảm dần (mới nhất lên đầu)
+        storages.sort(Comparator.comparing(StorageTransaction::getTransactionDate, Comparator.reverseOrder()));
+
+        // Phân trang
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), storages.size());
+        List<StorageTransaction> pagedStorages = storages.subList(start, end);
+
+        return new PageImpl<>(pagedStorages, pageable, storages.size());
     }
 }

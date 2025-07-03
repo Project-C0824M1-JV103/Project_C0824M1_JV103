@@ -71,6 +71,7 @@ public class SupplierController extends BaseAdminController {
         Optional<Supplier> supplier = supplierService.findById(id);
         if (supplier.isPresent()) {
             model.addAttribute("supplier", supplier.get());
+            model.addAttribute("currentPage", "supplier");
             return "supplier/edit";
         } else {
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp!");
@@ -98,6 +99,7 @@ public class SupplierController extends BaseAdminController {
     @GetMapping("/add")
     public String showAddSupplierForm(Model model) {
         model.addAttribute("supplierDto", new SupplierDto());
+        model.addAttribute("currentPage", "supplier");
         return "supplier/add-supplier-form";
     }
 
@@ -106,32 +108,25 @@ public class SupplierController extends BaseAdminController {
                              BindingResult bindingResult,
                              Model model,
                              RedirectAttributes redirectAttributes) {
-        System.out.println("Supplier name: " + supplierDto.getSuplierName());
-        System.out.println("Has image file: " + (supplierDto.getImageFile() != null && !supplierDto.getImageFile().isEmpty()));
 
         try {
             // Kiểm tra validation errors cơ bản
             if (bindingResult.hasErrors()) {
-                System.out.println("Binding result has errors");
-                bindingResult.getAllErrors().forEach(error ->
-                    System.out.println("Error: " + error.getDefaultMessage())
-                );
                 model.addAttribute("error", "Vui lòng kiểm tra lại thông tin đã nhập");
+                model.addAttribute("currentPage", "supplier");
                 return "supplier/add-supplier-form";
             }
 
             // Kiểm tra validation trùng lặp (email và phone)
             String validationError = supplierService.validateNewSupplier(supplierDto);
             if (validationError != null) {
-                System.out.println("Custom validation failed: " + validationError);
                 model.addAttribute("error", validationError);
+                model.addAttribute("currentPage", "supplier");
                 return "supplier/add-supplier-form";
             }
 
             // Lưu supplier
             supplierService.saveSupplier(supplierDto);
-
-            System.out.println("Supplier added successfully");
 
             redirectAttributes.addFlashAttribute("message", "Thêm nhà cung cấp thành công!");
             return "redirect:/Supplier";

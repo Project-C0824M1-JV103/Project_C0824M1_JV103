@@ -204,6 +204,25 @@
         .ck.ck-editor {
             width: 100%;
         }
+
+        /* Filter styling */
+        .form-check-inline {
+            margin-right: 20px;
+        }
+
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+
+        .form-check-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-check-label i {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -231,6 +250,16 @@
                     </div>
                 </div>
 
+                <!-- Success/Error Messages -->
+                <div th:if="${message}" class="alert alert-success" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span th:text="${message}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
                 <!-- Form Section -->
                 <div class="form-section">
                     <div class="form-header">
@@ -241,18 +270,14 @@
                     </div>
 
                     <div class="form-body">
-                        <!-- Success/Error Messages -->
-                        <div th:if="${error}" class="alert alert-danger" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <span th:text="${error}"></span>
-                        </div>
-
                         <form
-                                th:action="@{/Business/update/{id}(id=${productRetailDTO.productId})}"
-                                th:object="${productRetailDTO}"
+                                th:action="@{/Business/retail/update}"
+                                th:object="${productRetailDto}"
                                 method="post"
                                 novalidate
+                                id="retailForm"
                         >
+                            <input type="hidden" th:field="*{productId}" name="productId" />
                             <!-- Nút chọn sản phẩm -->
                             <div class="text-center mb-4">
                                 <button type="button" class="btn btn-primary btn-select-product" data-bs-toggle="modal"
@@ -275,70 +300,6 @@
                                         />
                                     </div>
                                 </div>
-                                <!-- Bộ nhớ -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Bộ nhớ (GB)</label>
-                                        <input
-                                                type="text"
-                                                th:field="*{memory}"
-                                                class="form-control"
-                                                placeholder="Ví dụ: 128"
-                                                readonly/>
-
-                                    </div>
-                                </div>
-
-                                <!-- Giá -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            Giá nhập kho (VNĐ)
-                                        </label>
-                                        <div class="currency-input">
-                                            <input
-                                                    type="number"
-                                                    th:field="*{price}"
-                                                    class="form-control"
-                                                    step="1000"
-                                                    placeholder="0"
-                                                    style="padding-right: 50px"
-                                                    readonly
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Số lượng -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            Số lượng
-                                        </label>
-                                        <input
-                                                type="number"
-                                                th:field="*{quantity}"
-                                                class="form-control"
-                                                min="0"
-                                                placeholder="0"
-                                                readonly
-                                        />
-                                    </div>
-                                </div>
-
-                                <!-- Hãng -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            Danh mục
-                                        </label>
-                                        <input
-                                                th:field="*{categoryName}"
-                                                class="form-control"
-                                                readonly
-                                        >
-                                    </div>
-                                </div>
 
                                 <!-- Nhà cung cấp -->
                                 <div class="col-md-6">
@@ -353,27 +314,72 @@
                                         >
                                     </div>
                                 </div>
+
+                                <!-- Bộ nhớ -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Bộ nhớ (GB)</label>
+                                        <input
+                                                type="text"
+                                                th:field="*{memory}"
+                                                class="form-control"
+                                                readonly/>
+
+                                    </div>
+                                </div>
+
+                                <!-- Số lượng -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Số lượng còn
+                                        </label>
+                                        <input
+                                                type="number"
+                                                th:field="*{quantity}"
+                                                class="form-control"
+                                                min="0"
+                                                placeholder="0"
+                                                readonly
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Hãng -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Danh mục
+                                        </label>
+                                        <input
+                                                th:field="*{categoryName}"
+                                                class="form-control"
+                                                readonly
+                                        >
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div class="row justify-content-center">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label class="form-label">
-                                            Nhập giá bán lẻ <span class="required">*</span>
-                                        </label>
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <label class="form-label mb-0">
+                                                Nhập giá bán lẻ (VNĐ) <span class="required">*</span>
+                                            </label>
+                                            <div th:if="${#fields.hasErrors('retailPrice')}">
+                                                <span th:errors="*{retailPrice}" class="text-danger small"></span>
+                                            </div>
+                                        </div>
                                         <input
-                                                type="number"
+                                                type="text"
                                                 th:field="*{retailPrice}"
                                                 class="form-control"
                                                 th:classappend="${#fields.hasErrors('retailPrice')} ? 'is-invalid'"
                                                 required
+                                                id="retailPriceInput"
                                         >
-                                        <div
-                                                th:if="${#fields.hasErrors('retailPrice')}"
-                                                class="invalid-feedback"
-                                        >
-                                            <span th:errors="*{retailPrice}"></span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -385,7 +391,7 @@
                                         <button type="submit" class="btn btn-primary">
                                             <i class="fas fa-save me-1"></i>Cập nhật giá bán lẻ
                                         </button>
-                                        <a href="/product" class="btn btn-secondary">
+                                        <a href="/Business" class="btn btn-secondary">
                                             <i class="fas fa-times me-1"></i>Quay lại
                                         </a>
                                     </div>
@@ -441,6 +447,25 @@
                             </button>
                         </div>
                     </div>
+                    
+                    <!-- Checkbox filters -->
+                    <div class="row mt-3" style="text-align: center">
+                        <div class="col-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="filter" id="filterAll" value="" checked>
+                                <label class="form-check-label" for="filterAll">
+                                    <i class="fas fa-list"></i> Toàn bộ sản phẩm
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="filter" id="filterZeroPrice" value="zeroPrice">
+                                <label class="form-check-label" for="filterZeroPrice">
+                                    <i class="fas fa-tag"></i> Sản phẩm chưa có giá
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <input type="hidden" name="page" value="0"/>
                     <input type="hidden" name="size" value="6"/>
                 </form>
@@ -468,11 +493,11 @@
                     <thead>
                         <tr>
                             <th>Tên sản phẩm</th>
-                            <th>Bộ nhớ</th>
-                            <th>Giá nhập</th>
+                            <th>Bộ nhớ (GB)</th>
                             <th>Số lượng</th>
                             <th>Danh mục</th>
                             <th>Nhà cung cấp</th>
+                            <th>Giá sản phẩm (VNĐ)</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
@@ -482,10 +507,10 @@
                 <tr>
                     <td>${product.productName}</td>
                     <td>${product.memory || ''}</td>
-                    <td>${product.price.toLocaleString('vi-VN')} VNĐ</td>
                     <td>${product.quantity}</td>
                     <td>${product.categoryName || ''}</td>
                     <td>${product.supplierName || ''}</td>
+                    <td>${product.price.toLocaleString('en-US')}</td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary btn-select-product"
                                 data-product-id="${product.productId}"
@@ -550,7 +575,7 @@
         const params = new URLSearchParams(formData);
         params.set('page', page);
 
-        fetch(`/Sale/products/data?${params.toString()}`)
+        fetch(`/Business/products/data?${params.toString()}`)
             .then(response => response.json())
             .then(data => updateProductTable(data))
             .catch(error => {
@@ -564,7 +589,7 @@
         const formData = new FormData(form);
         const params = new URLSearchParams(formData);
         params.set('page', '0');
-        fetch(`/Sale/products/data?${params.toString()}`)
+        fetch(`/Business/products/data?${params.toString()}`)
             .then(response => response.json())
             .then(data => updateProductTable(data))
             .catch(error => {
@@ -575,12 +600,23 @@
     function refreshProductList() {
         const form = document.getElementById('productSearchForm');
         form.reset();
-        fetch('/Sale/products/data?page=0&size=6')
+        // Reset về filter mặc định
+        document.getElementById('filterAll').checked = true;
+        fetch('/Business/products/data?page=0&size=6')
             .then(response => response.json())
             .then(data => updateProductTable(data))
             .catch(error => {
                 alert('Có lỗi xảy ra khi làm mới danh sách sản phẩm!');
             });
+    }
+
+    // Thêm event listener cho radio buttons
+    function attachFilterEvents() {
+        document.querySelectorAll('input[name="filter"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                searchProducts();
+            });
+        });
     }
 
     function attachSelectProductEvents() {
@@ -594,12 +630,13 @@
 
     // Khi chọn sản phẩm, gán vào các input (trừ retailPrice)
     function selectProduct(productId) {
-        fetch(`/Sale/products/${productId}`)
+        fetch(`/Business/products/${productId}`)
             .then(response => response.json())
             .then(product => {
+                document.querySelector('input[name="productId"]').value = product.productId || '';
                 document.querySelector('input[name="productName"]').value = product.productName || '';
                 document.querySelector('input[name="memory"]').value = product.memory || '';
-                document.querySelector('input[name="price"]').value = product.price || '';
+                // document.querySelector('input[name="price"]').value = product.price || '';
                 document.querySelector('input[name="quantity"]').value = product.quantity || '';
                 document.querySelector('input[name="categoryName"]').value = product.categoryName || '';
                 document.querySelector('input[name="supplierName"]').value = product.supplierName || '';
@@ -620,7 +657,40 @@
                 refreshProductList();
             });
         }
+        
+        // Gắn event listener cho filter
+        attachFilterEvents();
     });
+
+    // Format số có dấu phẩy khi nhập giá bán lẻ
+    const retailPriceInput = document.getElementById('retailPriceInput');
+    if (retailPriceInput) {
+        retailPriceInput.addEventListener('input', function () {
+            let val = this.value.replace(/[^0-9]/g, '');
+            if (val) {
+                this.value = Number(val).toLocaleString('en-US');
+            } else {
+                this.value = '';
+            }
+        });
+        retailPriceInput.addEventListener('blur', function () {
+            let val = this.value.replace(/[^0-9]/g, '');
+            if (val) {
+                this.value = Number(val).toLocaleString('en-US');
+            } else {
+                this.value = '';
+            }
+        });
+    }
+    // Loại bỏ dấu phẩy khi submit form
+    const retailForm = document.getElementById('retailForm');
+    if (retailForm) {
+        retailForm.addEventListener('submit', function () {
+            if (retailPriceInput) {
+                retailPriceInput.value = retailPriceInput.value.replace(/[^0-9]/g, '');
+            }
+        });
+    }
 </script>
 
 </body>

@@ -57,9 +57,10 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/*.css", "/css/**", "/js/**", "/favicon.ico").permitAll() // Các đường dẫn không cần login
-                        .requestMatchers("/Customer/**").hasAnyRole("ADMIN","SALES")
+                        .requestMatchers("/Customer/**").hasAnyRole("ADMIN","SALES","BUSINESS")
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN")
                         .requestMatchers("/product/**").hasAnyRole("ADMIN","SALES","BUSINESS")
+                        .requestMatchers("/Sale/history").hasAnyRole("SALES","ADMIN","BUSINESS")
                         .requestMatchers("/Sale/**").hasAnyRole("SALES","ADMIN")
                         .requestMatchers("/Warehouse/**").hasAnyRole("WAREHOUSE","ADMIN")
                         .requestMatchers("/Supplier/**").hasAnyRole("ADMIN", "BUSINESS", "WAREHOUSE")

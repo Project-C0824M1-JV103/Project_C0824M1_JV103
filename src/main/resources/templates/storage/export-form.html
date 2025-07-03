@@ -66,6 +66,7 @@
 
                     <!-- Export Form -->
                     <form th:action="@{/storage/export}" th:object="${exportDTO}" method="post">
+                        <input type="hidden" th:field="*{storageId}"/>
                         <input type="hidden" th:field="*{productId}"/>
                         
                         <div class="form-group">
@@ -161,10 +162,11 @@
             });
     }
 
-    function selectProduct(productId) {
-        fetch(`/storage/product/${productId}`)
+    function selectProduct(storageId) {
+        fetch(`/storage/storage/${storageId}`)
             .then(response => response.json())
             .then(data => {
+                document.getElementById('storageId').value = data.storageId;
                 document.getElementById('productId').value = data.productId;
                 document.getElementById('productName').value = data.productName;
                 document.getElementById('supplierName').value = data.supplierName;
