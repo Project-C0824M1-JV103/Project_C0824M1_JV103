@@ -4,7 +4,7 @@
         <thead>
         <tr>
             <th>Tên</th>
-            <th>Giá</th>
+            <th>Giá (VNĐ)</th>
             <th>Số lượng</th>
             <th>Thao tác</th>
         </tr>
@@ -12,7 +12,7 @@
         <tbody>
         <tr th:each="storage : ${storages}">
             <td th:text="${storage.product.productName}"></td>
-            <td th:text="${#numbers.formatDecimal(storage.cost != null ? storage.cost : storage.product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+            <td th:text="${#numbers.formatDecimal(storage.cost != null ? storage.cost : storage.product.price, 0, 'COMMA', 0, 'POINT')}"></td>
             <td th:text="${storage.quantity}"></td>
             <td>
                 <button class="btn btn-sm btn-primary" th:onclick="'selectProduct(' + ${storage.storageId} + ')'">
