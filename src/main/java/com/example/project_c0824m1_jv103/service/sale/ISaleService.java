@@ -11,4 +11,10 @@ public interface ISaleService {
     Optional<Sale> findById(Integer id);
     Long countSalesByCustomerId(Integer customerId);
     Page<Sale> findAll(Pageable pageable);
+
+    // Báo cáo doanh thu
+    int countSalesByDate(java.time.LocalDate date);
+    java.math.BigDecimal sumAmountByDate(java.time.LocalDate date);
+    int countSalesByMonth(int year, int month);
+    java.math.BigDecimal sumAmountByMonth(int year, int month);
 }

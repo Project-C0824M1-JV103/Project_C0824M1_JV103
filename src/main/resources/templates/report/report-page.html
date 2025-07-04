@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quản lý báo cáo</title>
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+  />
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          rel="stylesheet"
+  />
+  <link rel="stylesheet" th:href="@{/admin-navbar.css}"/>
+
+  <style>
+    .main-content {
+      background-color: #f8f9fa;
+      min-height: 100vh;
+    }
+
+    .header-section {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .table th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .table td {
+      padding: 15px;
+      vertical-align: middle;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f8f9fa;
+      transition: all 0.3s ease;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+      padding-right: 0;
+    }
+
+    .modal.show .modal-dialog {
+      transform: none;
+    }
+
+
+    /* Animation */
+    .fade {
+      transition: opacity 0.15s linear;
+    }
+
+    .fade:not(.show) {
+      opacity: 0;
+    }
+
+    .modal.fade .modal-dialog {
+      transition: transform 0.3s ease-out;
+      transform: translate(0, -50px);
+    }
+
+    .modal.show .modal-dialog {
+      transform: none;
+    }
+
+    /* Button hover effects */
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header .btn-close {
+      filter: invert(1);
+    }
+
+    .btn-gradient-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      color: #fff !important;
+      border: none;
+    }
+    .btn-gradient-primary:hover, .btn-gradient-primary:focus {
+      filter: brightness(0.95);
+      color: #fff !important;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Include Admin Navbar -->
+    <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
+
+    <div class="col-md-9 col-lg-10">
+      <div class="main-content p-4">
+        <!-- Header Section -->
+        <div class="header-section">
+          <div class="row align-items-center">
+            <div class="col">
+              <h2 class="mb-1">
+                <i class="fas fa-table text-primary"></i>
+                Quản lý báo cáo
+              </h2>
+              <p class="text-muted mb-0">
+                Danh sách tác vụ
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Thêm 2 button chuyển trang -->
+        <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1" style="gap: 36px; min-height: 60vh;">
+          <a th:href="@{/Report/sale-report}" class="btn btn-gradient-primary shadow p-4 w-75 mb-3" style="font-size: 1.25rem; border-radius: 12px; min-width: 350px; max-width: 600px;">
+            <i class="fas fa-chart-bar"></i> Báo cáo bán hàng
+          </a>
+          <a th:href="@{/Report/customer-report}" class="btn btn-gradient-primary shadow p-4 w-75 mb-3" style="font-size: 1.25rem; border-radius: 12px; min-width: 350px; max-width: 600px;">
+            <i class="fas fa-file-alt"></i> Quản lý báo cáo khách hàng
+          </a>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Báo cáo doanh thu bán hàng</title>
+    <!-- Bootstrap CSS -->
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+    />
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/admin-navbar.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .header-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .chart-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .chart-body {
+            max-width: 1600px;
+        }
+
+        .btn-primary {
+            font-size: 1rem;
+            padding: 10px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+
+        .search-section .input-group {
+            width: 100%;
+        }
+
+        .search-section .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .search-section .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-section .input-group-text {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px 0 0 8px;
+            font-weight: 500;
+        }
+
+        .search-section .form-control {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Include Admin Navbar -->
+        <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
+
+        <div class="col-md-9 col-lg-10">
+            <div class="main-content p-4">
+                <!-- Header Section -->
+                <div class="header-section">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-1">
+                                <i class="fas fa-chart-bar text-primary"></i>
+                                Báo cáo bán hàng
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Biểu đồ doanh thu bán hàng
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+<!--                Seach Section-->
+                <div class="search-section">
+                    <form id="reportSearchForm" class="row g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-filter"></i></span>
+                                <select id="reportType" class="form-control">
+                                    <option value="">-Chọn hình thức báo cáo-</option>
+                                    <option value="day">Theo ngày</option>
+                                    <option value="month">Theo tháng</option>
+                                    <option value="year">Theo năm</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4" id="day-range-group">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                                <input type="date" id="fromDate" class="form-control"/>
+                                <span class="input-group-text">-</span>
+                                <input type="date" id="toDate" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4" id="month-range-group" style="display:none">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input type="number" id="month" min="1" max="12" class="form-control" placeholder="Tháng"/>
+                                <span class="input-group-text">/</span>
+                                <input type="number" id="monthYear" class="form-control" placeholder="Năm"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4" id="year-range-group" style="display:none">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                <input type="number" id="year" class="form-control" placeholder="Năm"/>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" onclick="loadReport()" class="btn btn-primary w-100">
+                                <i class="fas fa-search"></i> Tìm kiếm
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h4 class="mb-0" style="text-align: center">
+                            <i class="fas fa-chart-bar"></i>
+                            Biểu đồ bán hàng
+                        </h4>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function showRangeInputs() {
+        const type = document.getElementById('reportType').value;
+        document.getElementById('day-range-group').style.display = type === 'day' ? '' : 'none';
+        document.getElementById('month-range-group').style.display = type === 'month' ? '' : 'none';
+        document.getElementById('year-range-group').style.display = type === 'year' ? '' : 'none';
+    }
+
+    document.getElementById('reportType').addEventListener('change', showRangeInputs);
+
+    let chart;
+
+    function loadReport() {
+        const type = document.getElementById('reportType').value;
+        let params = `type=${type}`;
+        let yOrdersConfig, yAmountConfig;
+
+        if(type === '') {
+            alert('Vui lòng chọn đầy đủ thông tin!');
+            return;
+        } else if (type === 'day' || type === 'month') {
+            yOrdersConfig = {min: 0, max: 100, stepSize: 10};
+            yAmountConfig = {min: 0, max: 500000000, stepSize: 50000000};
+            if (type === 'day') {
+                const fromDate = document.getElementById('fromDate').value;
+                const toDate = document.getElementById('toDate').value;
+                if (!fromDate || !toDate) {
+                    alert('Vui lòng chọn đầy đủ thông tin!');
+                    return;
+                }
+                params += `&fromDate=${fromDate}&toDate=${toDate}`;
+            } else {
+                const month = document.getElementById('month').value;
+                const year = document.getElementById('monthYear').value;
+                if (!month || !year) {
+                    alert('Vui lòng chọn đầy đủ thông tin!');
+                    return;
+                }
+                params += `&month=${month}&year=${year}`;
+            }
+        } else if (type === 'year') {
+            yOrdersConfig = {min: 0, max: 1000, stepSize: 100};
+            yAmountConfig = {min: 0, max: 5000000000, stepSize: 500000000};
+            const year = document.getElementById('year').value;
+            if (!year) {
+                alert('Vui lòng chọn đầy đủ thông tin!');
+                return;
+            }
+            params += `&year=${year}`;
+        }
+
+        fetch(`/Report/sale-report/data?${params}`)
+            .then(res => res.json())
+            .then(res => {
+                const labels = res.data.map(e => e.label);
+                const orderCounts = res.data.map(e => e.orderCount);
+                const totalAmounts = res.data.map(e => e.totalAmount);
+                renderChart(labels, orderCounts, totalAmounts, yOrdersConfig, yAmountConfig);
+            });
+    }
+
+    function renderChart(labels, orderCounts, totalAmounts, yOrdersConfig, yAmountConfig) {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Số đơn hàng',
+                        data: orderCounts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        yAxisID: 'y-orders',
+                    },
+                    {
+                        label: 'Tổng tiền (VNĐ)',
+                        data: totalAmounts,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        yAxisID: 'y-amount',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {mode: 'index', intersect: false},
+                scales: {
+                    x: {title: {display: true, text: 'Ngày/Tháng'}},
+                    'y-orders': {
+                        type: 'linear',
+                        position: 'left',
+                        title: {display: true, text: 'Số đơn hàng'},
+                        beginAtZero: true,
+                        min: yOrdersConfig.min,
+                        max: yOrdersConfig.max,
+                        ticks: {
+                            stepSize: yOrdersConfig.stepSize,
+                            callback: function (value) {
+                                return value;
+                            }
+                        }
+                    },
+                    'y-amount': {
+                        type: 'linear',
+                        position: 'right',
+                        title: {display: true, text: 'Tổng tiền (VNĐ)'},
+                        beginAtZero: true,
+                        min: yAmountConfig.min,
+                        max: yAmountConfig.max,
+                        ticks: {
+                            stepSize: yAmountConfig.stepSize,
+                            callback: function (value) {
+                                return value.toLocaleString('en-US') + " VNĐ";
+                            }
+                        },
+                        grid: {drawOnChartArea: false}
+                    }
+                }
+            }
+        });
+    }
+
+    // Tự động chọn mặc định là tháng hiện tại
+    window.onload = function () {
+        const now = new Date();
+        document.getElementById('month').value = now.getMonth() + 1;
+        document.getElementById('monthYear').value = now.getFullYear();
+        document.getElementById('year').value = now.getFullYear();
+        showRangeInputs();
+    }
+</script>
+</body>
+</html> 

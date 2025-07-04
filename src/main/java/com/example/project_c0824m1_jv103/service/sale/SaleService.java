@@ -54,4 +54,30 @@ public class SaleService implements ISaleService {
     public Page<Sale> findAll(Pageable pageable) {
         return saleRepository.findAll(pageable);
     }
+
+    @Override
+    public int countSalesByDate(java.time.LocalDate date) {
+        java.time.LocalDateTime start = date.atStartOfDay();
+        java.time.LocalDateTime end = date.plusDays(1).atStartOfDay();
+        return saleRepository.countSalesByDate(start, end);
+    }
+
+    @Override
+    public java.math.BigDecimal sumAmountByDate(java.time.LocalDate date) {
+        java.time.LocalDateTime start = date.atStartOfDay();
+        java.time.LocalDateTime end = date.plusDays(1).atStartOfDay();
+        java.math.BigDecimal sum = saleRepository.sumAmountByDate(start, end);
+        return sum != null ? sum : java.math.BigDecimal.ZERO;
+    }
+
+    @Override
+    public int countSalesByMonth(int year, int month) {
+        return saleRepository.countSalesByMonth(year, month);
+    }
+
+    @Override
+    public java.math.BigDecimal sumAmountByMonth(int year, int month) {
+        java.math.BigDecimal sum = saleRepository.sumAmountByMonth(year, month);
+        return sum != null ? sum : java.math.BigDecimal.ZERO;
+    }
 }

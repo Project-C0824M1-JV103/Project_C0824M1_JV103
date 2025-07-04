@@ -10,4 +10,20 @@ public interface ISaleRepository extends JpaRepository<Sale, Integer> {
     // Đếm số đơn hàng theo customer
     @Query("SELECT COUNT(s) FROM Sale s WHERE s.customer.customerId = :customerId")
     Long countSalesByCustomerId(@Param("customerId") Integer customerId);
+
+    // Đếm số đơn hàng theo ngày
+    @Query("SELECT COUNT(s) FROM Sale s WHERE s.saleDate >= :dateStart AND s.saleDate < :dateEnd")
+    int countSalesByDate(@Param("dateStart") java.time.LocalDateTime dateStart, @Param("dateEnd") java.time.LocalDateTime dateEnd);
+
+    // Tổng tiền theo ngày
+    @Query("SELECT SUM(s.amount) FROM Sale s WHERE s.saleDate >= :dateStart AND s.saleDate < :dateEnd")
+    java.math.BigDecimal sumAmountByDate(@Param("dateStart") java.time.LocalDateTime dateStart, @Param("dateEnd") java.time.LocalDateTime dateEnd);
+
+    // Đếm số đơn hàng theo tháng
+    @Query("SELECT COUNT(s) FROM Sale s WHERE YEAR(s.saleDate) = :year AND MONTH(s.saleDate) = :month")
+    int countSalesByMonth(@Param("year") int year, @Param("month") int month);
+
+    // Tổng tiền theo tháng
+    @Query("SELECT SUM(s.amount) FROM Sale s WHERE YEAR(s.saleDate) = :year AND MONTH(s.saleDate) = :month")
+    java.math.BigDecimal sumAmountByMonth(@Param("year") int year, @Param("month") int month);
 }
