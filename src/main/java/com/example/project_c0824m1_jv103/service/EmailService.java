@@ -36,13 +36,16 @@ public class EmailService {
         otpStorage.put(email, new OtpInfo(otp, expiry));
         System.out.println(otp);
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(email);
-            message.setSubject("Mã xác thực OTP");
-            message.setText("Mã OTP của bạn là: " + otp + "\nMã có hiệu lực trong 5 phút.");
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(email);
+            helper.setSubject("Xác nhận địa chỉ email của bạn");
+            String html = buildOtpHtml(otp);
+            helper.setText(html, true);
             mailSender.send(message);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -128,6 +131,21 @@ public class EmailService {
         html.append("<div style='text-align:center;color:#6c757d;font-size:0.95rem;'>© 2025 Công ty cổ phần C0824M1. Trụ sở tại Codegym Đà Nẵng</div>");
         html.append("</fieldset>");
         html.append("</div></div></div>");
+        return html.toString();
+    }
+
+    private String buildOtpHtml(String otp) {
+        StringBuilder html = new StringBuilder();
+        html.append("<div style='font-family:sans-serif;background:#f8f9fa;padding:24px;'>");
+        html.append("  <div style='max-width:500px;margin:auto;background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:32px;'>");
+        html.append("    <h2 style='color:#222;margin-bottom:16px;'>Xác nhận địa chỉ email của bạn</h2>");
+        html.append("    <p style='color:#444;margin-bottom:24px;'>Hãy chắc chắn đây là địa chỉ email chính xác của bạn.<br>Vui lòng nhập mã xác thực sau để tiếp tục sử dụng hệ thống:</p>");
+        html.append("    <div style='font-size:2.5rem;font-weight:700;letter-spacing:2px;color:#222;text-align:center;margin:24px 0;'>" + otp + "</div>");
+        html.append("    <div style='color:#888;text-align:center;margin-bottom:24px;'>Mã xác thực sẽ hết hạn sau 5 phút.</div>");
+        html.append("    <div style='color:#444;margin-bottom:16px;'>Cảm ơn bạn,<br><b>TPQDT Phone</b></div>");
+        html.append("    <div style='font-size:0.95rem;color:#888;text-align:center;margin-top:32px;'>Chúng tôi có thể sử dụng email của bạn cho các mục đích bảo mật và hỗ trợ dịch vụ. Không chia sẻ mã này cho bất kỳ ai.</div>");
+        html.append("  </div>");
+        html.append("</div>");
         return html.toString();
     }
 }
