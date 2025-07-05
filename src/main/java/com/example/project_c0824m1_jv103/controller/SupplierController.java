@@ -66,31 +66,85 @@ public class SupplierController extends BaseAdminController {
         return modelAndView;
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
-        Optional<Supplier> supplier = supplierService.findById(id);
-        if (supplier.isPresent()) {
-            model.addAttribute("supplier", supplier.get());
-            model.addAttribute("currentPage", "supplier");
-            return "supplier/edit";
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp!");
-            return "redirect:/Supplier"; // Fixed redirect to match case
-        }
+//    @GetMapping("/edit/{id}")
+//    public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
+//        Optional<Supplier> supplier = supplierService.findById(id);
+//        if (supplier.isPresent()) {
+//            model.addAttribute("supplier", supplier.get());
+//            model.addAttribute("currentPage", "supplier");
+//            return "supplier/edit";
+//        } else {
+//            redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp!");
+//            return "redirect:/Supplier"; // Fixed redirect to match case
+//        }
+//    }
+//
+//    @PostMapping("/save")
+//    public String saveSupplier(@Valid @ModelAttribute("supplier") Supplier supplier,
+//                               BindingResult result,
+//                               @RequestParam(value = "image", required = false) MultipartFile image,
+//                               RedirectAttributes redirectAttributes) {
+//        if (result.hasErrors()) {
+//            return "supplier/edit"; // Trả về lại form nếu có lỗi
+//        }
+//        try {
+//            supplierService.saveSupplier(supplier, image);
+//            redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("error", "Lỗi khi chỉnh sửa nhà cung cấp: " + e.getMessage());
+//        }
+//        return "redirect:/Supplier";
+//    }
+@GetMapping("/edit/{id}")
+public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
+    Optional<Supplier> supplier = supplierService.findById(id);
+    if (supplier.isPresent()) {
+        model.addAttribute("supplier", supplier.get());
+        model.addAttribute("currentPage", "supplier");
+        return "supplier/edit";
+    } else {
+        redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp!");
+        return "redirect:/Supplier";
     }
+}
 
     @PostMapping("/save")
-    public String saveSupplier(@Valid @ModelAttribute("supplier") Supplier supplier,
-                               BindingResult result,
-                               @RequestParam(value = "image", required = false) MultipartFile image,
-                               RedirectAttributes redirectAttributes) {
+    public String saveSupplier(
+            @Valid @ModelAttribute("supplier") Supplier supplier,
+            BindingResult result,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            RedirectAttributes redirectAttributes,
+            Model model) {
         if (result.hasErrors()) {
-            return "supplier/edit"; // Trả về lại form nếu có lỗi
+            model.addAttribute("supplier", supplier);
+            return "supplier/edit";
         }
+
         try {
-            supplierService.saveSupplier(supplier, image);
-            redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
+            Optional<Supplier> existingSupplier = supplierService.findById(supplier.getSuplierId());
+            if (existingSupplier.isPresent()) {
+                Supplier currentSupplier = existingSupplier.get();
+                SupplierDto supplierDto = new SupplierDto();
+                supplierDto.setSuplierId(supplier.getSuplierId());
+                supplierDto.setSuplierName(supplier.getSuplierName());
+                supplierDto.setEmail(supplier.getEmail());
+                supplierDto.setPhoneNumber(supplier.getPhoneNumber());
+                supplierDto.setImageFile(image);
+
+                String validationError = supplierService.validateNewSupplier(supplierDto);
+                if (validationError != null) {
+                    model.addAttribute("supplier", supplier);
+                    model.addAttribute("error", validationError);
+                    return "supplier/edit";
+                }
+
+                supplierService.saveSupplier(supplier, image);
+                redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp để cập nhật!");
+            }
         } catch (Exception e) {
+            model.addAttribute("supplier", supplier);
             redirectAttributes.addFlashAttribute("error", "Lỗi khi chỉnh sửa nhà cung cấp: " + e.getMessage());
         }
         return "redirect:/Supplier";

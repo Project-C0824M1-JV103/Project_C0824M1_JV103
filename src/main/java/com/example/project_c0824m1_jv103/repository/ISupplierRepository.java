@@ -49,4 +49,7 @@ public interface ISupplierRepository extends JpaRepository<Supplier, Integer> {
     // Kiểm tra tồn tại theo số điện thoại nhưng không phải ID hiện tại (cho update)
     @Query("SELECT COUNT(s) > 0 FROM Supplier s WHERE s.phoneNumber = :phoneNumber AND s.suplierId != :id")
     boolean existsByPhoneNumberAndIdNot(@Param("phoneNumber") String phoneNumber, @Param("id") Integer id);
+
+    boolean existsBySuplierNameIgnoreCase(String suplierName);
+    boolean existsBySuplierNameIgnoreCaseAndSuplierIdNot(String suplierName, Integer suplierId);
 }
