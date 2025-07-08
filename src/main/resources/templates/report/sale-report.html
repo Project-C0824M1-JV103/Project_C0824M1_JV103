@@ -20,6 +20,8 @@
     />
     <link rel="stylesheet" th:href="@{/admin-navbar.css}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- CSS riêng cho input năm, dropdown, nút chọn nhanh đặt phía trên -->
     <style>
         .main-content {
             background-color: #f8f9fa;
@@ -101,6 +103,36 @@
             padding: 8px 12px;
             transition: all 0.3s ease;
         }
+
+        #year-range-group .input-group {
+            gap: 0;
+        }
+
+        #year-range-group .form-control {
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        #year-range-group .btn {
+            border-left: none;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border: 2px solid #e9ecef;
+            border-left: none;
+            background-color: white;
+            color: #6c757d;
+        }
+
+        #year-range-group .btn:hover {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        #year-range-group .btn:focus {
+            box-shadow: none;
+            border-color: #667eea;
+        }
     </style>
 </head>
 <body>
@@ -143,23 +175,26 @@
                         <div class="col-md-4" id="day-range-group">
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
-                                <input type="date" id="fromDate" class="form-control"/>
+                                <input type="date" id="fromDate" class="form-control" min="2015-01-01"/>
                                 <span class="input-group-text">-</span>
-                                <input type="date" id="toDate" class="form-control"/>
+                                <input type="date" id="toDate" class="form-control" min="2015-01-01"/>
                             </div>
                         </div>
                         <div class="col-md-4" id="month-range-group" style="display:none">
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                <input type="number" id="month" min="1" max="12" class="form-control" placeholder="Tháng"/>
-                                <span class="input-group-text">/</span>
-                                <input type="number" id="monthYear" class="form-control" placeholder="Năm"/>
+                                <input type="month" id="monthInput" class="form-control"/>
                             </div>
                         </div>
                         <div class="col-md-4" id="year-range-group" style="display:none">
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                                <input type="number" id="year" class="form-control" placeholder="Năm"/>
+                                <input type="number" id="year" class="form-control" placeholder="Năm" maxlength="4" oninput="this.value = this.value.slice(0, 4)"/>
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="yearDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <ul class="dropdown-menu" id="yearDropdownMenu" style="max-height: 200px; overflow-y: auto;">
+                                </ul>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -168,6 +203,49 @@
                             </button>
                         </div>
                     </form>
+                </div>
+
+                <!-- Thẻ thống kê tổng quan -->
+                <div class="row mb-4" id="report-summary-row">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:56px;height:56px;background:linear-gradient(135deg,#7b2ff2,#f357a8);">
+                                    <i class="fas fa-dollar-sign text-white" style="font-size:2rem;"></i>
+                                </div>
+                                <div>
+                                    <div class="h4 fw-bold mb-0" id="totalRevenue">0 VNĐ</div>
+                                    <div class="text-muted">Tổng doanh thu</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:56px;height:56px;background:linear-gradient(135deg,#ff5858,#f09819);">
+                                    <i class="fas fa-shopping-cart text-white" style="font-size:2rem;"></i>
+                                </div>
+                                <div>
+                                    <div class="h4 fw-bold mb-0" id="totalOrders">0</div>
+                                    <div class="text-muted">Tổng đơn hàng</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:56px;height:56px;background:linear-gradient(135deg,#43cea2,#185a9d);">
+                                    <i class="fas fa-chart-line text-white" style="font-size:2rem;"></i>
+                                </div>
+                                <div>
+                                    <div class="h4 fw-bold mb-0" id="avgRevenue">0 VNĐ</div>
+                                    <div class="text-muted">Trung bình/đơn</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -180,6 +258,13 @@
                     </div>
                     <div class="chart-body">
                         <canvas id="revenueChart"></canvas>
+                        <div id="report-error-message" class="text-center text-muted py-5" style="display:none;">
+                            <div>
+                                <i class="fas fa-chart-bar text-primary"></i>
+                                <h6 class="mt-2">Không có kết quả tìm kiếm phù hợp</h6>
+                                <p class="mb-0">Vui lòng thử lại với từ khóa hoặc khoảng thời gian khác</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -193,55 +278,183 @@
         document.getElementById('day-range-group').style.display = type === 'day' ? '' : 'none';
         document.getElementById('month-range-group').style.display = type === 'month' ? '' : 'none';
         document.getElementById('year-range-group').style.display = type === 'year' ? '' : 'none';
+        
+        // Chỉ reset summary và destroy chart khi thay đổi loại báo cáo
+        if (typeof resetSummary === 'function') resetSummary();
+        if (typeof chart !== 'undefined' && chart) {
+            chart.destroy();
+        }
     }
 
     document.getElementById('reportType').addEventListener('change', showRangeInputs);
 
     let chart;
 
+    function validateDateRange() {
+        const type = document.getElementById('reportType').value;
+        const currentYear = new Date().getFullYear();
+        
+        if (type === 'day') {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            
+            if (!fromDate || !toDate) {
+                showReportError("Vui lòng chọn đầy đủ ngày bắt đầu và kết thúc!");
+                if (chart) chart.destroy();
+                return false;
+            }
+            
+            const fromYear = new Date(fromDate).getFullYear();
+            if (fromYear < 2015 || fromYear > currentYear) {
+                showReportError(`Năm của ngày bắt đầu phải từ 2015 đến ${currentYear}!`);
+                if (chart) chart.destroy();
+                return false;
+            }
+            
+            const toYear = new Date(toDate).getFullYear();
+            if (toYear < 2015 || toYear > currentYear) {
+                showReportError(`Năm của ngày kết thúc phải từ 2015 đến ${currentYear}!`);
+                if (chart) chart.destroy();
+                return false;
+            }
+            
+            if (fromDate > toDate) {
+                showReportError("Ngày bắt đầu không được lớn hơn ngày kết thúc!");
+                if (chart) chart.destroy();
+                return false;
+            } else {
+                hideReportError();
+                return true;
+            }
+        } else if (type === 'month') {
+            const monthValue = document.getElementById('monthInput').value;
+            if (!monthValue) {
+                showReportError("Vui lòng chọn tháng và năm!");
+                if (chart) chart.destroy();
+                return false;
+            }
+            
+            const [year, month] = monthValue.split('-');
+            const yearNum = parseInt(year);
+            if (yearNum < 2015 || yearNum > currentYear) {
+                showReportError(`Năm phải từ 2015 đến ${currentYear}!`);
+                if (chart) chart.destroy();
+                return false;
+            } else {
+                hideReportError();
+                return true;
+            }
+        } else if (type === 'year') {
+            const year = document.getElementById('year').value;
+            if (!year) {
+                showReportError("Vui lòng nhập năm!");
+                if (chart) chart.destroy();
+                return false;
+            }
+            const yearNum = parseInt(year);
+            if (yearNum < 2015 || yearNum > currentYear) {
+                showReportError(`Năm phải từ 2015 đến ${currentYear}!`);
+                if (chart) chart.destroy();
+                return false;
+            } else {
+                hideReportError();
+                return true;
+            }
+        } else {
+            hideReportError();
+            return true;
+        }
+    }
+    function showReportError(msg) {
+        const errorDiv = document.getElementById('report-error-message');
+        const canvas = document.getElementById('revenueChart');
+        errorDiv.style.display = '';
+        canvas.style.display = 'none';
+        if (msg) {
+            errorDiv.querySelector('h6').textContent = msg;
+            errorDiv.querySelector('p').textContent = 'Vui lòng thử lại với từ khóa hoặc khoảng thời gian khác';
+        } else {
+            errorDiv.querySelector('h6').textContent = 'Không có kết quả tìm kiếm phù hợp';
+            errorDiv.querySelector('p').textContent = 'Vui lòng thử lại với từ khóa hoặc khoảng thời gian khác';
+        }
+        resetSummary();
+    }
+    function hideReportError() {
+        const errorDiv = document.getElementById('report-error-message');
+        const canvas = document.getElementById('revenueChart');
+        errorDiv.style.display = 'none';
+        canvas.style.display = '';
+    }
+    // Gắn sự kiện cho input ngày (bỏ validateDateRange tự động, chỉ kiểm tra khi tìm kiếm)
+    // document.getElementById('fromDate').addEventListener('change', validateDateRange);
+    // document.getElementById('toDate').addEventListener('change', validateDateRange);
+    // document.getElementById('reportType').addEventListener('change', validateDateRange);
+
     function loadReport() {
         const type = document.getElementById('reportType').value;
+        
+        if(type === '') {
+            return;
+        }
+        
+        if (!validateDateRange()) {
+            if (chart) chart.destroy();
+            return;
+        }
+        
         let params = `type=${type}`;
         let yOrdersConfig, yAmountConfig;
 
-        if(type === '') {
-            alert('Vui lòng chọn đầy đủ thông tin!');
-            return;
-        } else if (type === 'day' || type === 'month') {
+        if (type === 'day' || type === 'month') {
             yOrdersConfig = {min: 0, max: 100, stepSize: 10};
             yAmountConfig = {min: 0, max: 500000000, stepSize: 50000000};
             if (type === 'day') {
                 const fromDate = document.getElementById('fromDate').value;
                 const toDate = document.getElementById('toDate').value;
                 if (!fromDate || !toDate) {
-                    alert('Vui lòng chọn đầy đủ thông tin!');
+                    alert('Vui lòng chọn đầy đủ ngày bắt đầu và kết thúc!');
                     return;
                 }
                 params += `&fromDate=${fromDate}&toDate=${toDate}`;
             } else {
-                const month = document.getElementById('month').value;
-                const year = document.getElementById('monthYear').value;
-                if (!month || !year) {
-                    alert('Vui lòng chọn đầy đủ thông tin!');
+                const monthValue = document.getElementById('monthInput').value;
+                if (!monthValue) {
+                    alert('Vui lòng chọn tháng và năm!');
                     return;
                 }
-                params += `&month=${month}&year=${year}`;
+                const [year, month] = monthValue.split('-');
+                params += `&month=${parseInt(month, 10)}&year=${year}`;
             }
         } else if (type === 'year') {
             yOrdersConfig = {min: 0, max: 1000, stepSize: 100};
             yAmountConfig = {min: 0, max: 5000000000, stepSize: 500000000};
             const year = document.getElementById('year').value;
-            if (!year) {
-                alert('Vui lòng chọn đầy đủ thông tin!');
-                return;
-            }
             params += `&year=${year}`;
         }
 
         fetch(`/Report/sale-report/data?${params}`)
             .then(res => res.json())
             .then(res => {
-                const labels = res.data.map(e => e.label);
+                if (!res.data || res.data.length === 0) {
+                    showReportError("Không có dữ liệu cho khoảng thời gian đã chọn!");
+                    if (chart) chart.destroy();
+                    return;
+                }
+                document.getElementById('totalRevenue').textContent = (res.totalRevenue ? Number(res.totalRevenue).toLocaleString('en-US') : 0) + ' VNĐ';
+                document.getElementById('totalOrders').textContent = (res.totalOrders ? Number(res.totalOrders).toLocaleString('en-US') : 0);
+                document.getElementById('avgRevenue').textContent = (res.avgRevenue ? Number(res.avgRevenue).toLocaleString('en-US') : 0) + ' VNĐ';
+                hideReportError();
+                const labels = res.data.map(e => {
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(e.label)) {
+                        const [y, m, d] = e.label.split('-');
+                        return `${d}/${m}/${y}`;
+                    }
+                    if (/^\d{4}-\d{1,2}$/.test(e.label)) {
+                        const [y, m] = e.label.split('-');
+                        return `Tháng ${parseInt(m, 10)}/${y}`;
+                    }
+                    return e.label;
+                });
                 const orderCounts = res.data.map(e => e.orderCount);
                 const totalAmounts = res.data.map(e => e.totalAmount);
                 renderChart(labels, orderCounts, totalAmounts, yOrdersConfig, yAmountConfig);
@@ -309,14 +522,54 @@
         });
     }
 
-    // Tự động chọn mặc định là tháng hiện tại
+    function resetSummary() {
+        document.getElementById('totalRevenue').textContent = '0 VNĐ';
+        document.getElementById('totalOrders').textContent = '0';
+        document.getElementById('avgRevenue').textContent = '0 VNĐ';
+    }
+
     window.onload = function () {
         const now = new Date();
-        document.getElementById('month').value = now.getMonth() + 1;
-        document.getElementById('monthYear').value = now.getFullYear();
-        document.getElementById('year').value = now.getFullYear();
+        const currentYear = now.getFullYear();
+        const currentDate = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        
+        // Cập nhật max date cho input ngày
+        document.getElementById('fromDate').max = currentDate;
+        document.getElementById('toDate').max = currentDate;
+        
+        // Cập nhật max cho input tháng
+        document.getElementById('monthInput').max = `${currentYear}-12`;
+        
+        document.getElementById('monthInput').value = `${currentYear}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+        
+        const yearDropdownMenu = document.getElementById('yearDropdownMenu');
+        
+        for (let year = currentYear; year >= 2015; year--) {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.className = 'dropdown-item';
+            a.href = '#';
+            a.textContent = year;
+            a.onclick = function(e) {
+                e.preventDefault();
+                document.getElementById('year').value = year;
+            };
+            li.appendChild(a);
+            yearDropdownMenu.appendChild(li);
+        }
+        document.getElementById('year').value = currentYear;
+        
         showRangeInputs();
+        
+        // Hiển thị thông báo hướng dẫn khi trang load lần đầu
+        showReportError("Vui lòng chọn hình thức báo cáo!");
     }
+
+    window.addEventListener('resize', function() {
+        if (chart) {
+            chart.resize();
+        }
+    });
 </script>
 </body>
 </html> 

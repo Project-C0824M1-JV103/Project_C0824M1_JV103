@@ -2,6 +2,7 @@ package com.example.project_c0824m1_jv103.controller;
 
 import com.example.project_c0824m1_jv103.controller.Admin.BaseAdminController;
 import com.example.project_c0824m1_jv103.model.Customer;
+import com.example.project_c0824m1_jv103.model.Sale;
 import com.example.project_c0824m1_jv103.service.customer.ICustomerService;
 import com.example.project_c0824m1_jv103.service.sale.ISaleService;
 import com.example.project_c0824m1_jv103.service.EmailService;
@@ -199,5 +200,39 @@ public class CustomerController extends BaseAdminController  {
         res.put("verified", verified);
         res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
         return res;
+    }
+
+    @GetMapping("/purchase-history/{customerId}")
+    @ResponseBody
+    public Map<String, Object> getPurchaseHistory(@PathVariable Integer customerId,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "5") int size) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<Customer> customerOpt = iCustomerService.findById(customerId);
+            if (customerOpt.isPresent()) {
+                Customer customer = customerOpt.get();
+                
+                // Tạo Pageable với page size = 5
+                Pageable pageable = PageRequest.of(page, size, Sort.by("saleDate").descending());
+                Page<Sale> salesPage = saleService.findByCustomerOrderByDateDesc(customer, pageable);
+                
+                response.put("success", true);
+                response.put("customer", customer);
+                response.put("sales", salesPage.getContent());
+                response.put("totalPurchases", salesPage.getTotalElements());
+                response.put("currentPage", page);
+                response.put("totalPages", salesPage.getTotalPages());
+                response.put("hasNext", salesPage.hasNext());
+                response.put("hasPrevious", salesPage.hasPrevious());
+            } else {
+                response.put("success", false);
+                response.put("message", "Khách hàng không tồn tại");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi lấy lịch sử mua hàng");
+        }
+        return response;
     }
 }

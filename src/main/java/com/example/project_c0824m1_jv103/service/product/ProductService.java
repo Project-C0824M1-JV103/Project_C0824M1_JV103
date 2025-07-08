@@ -162,6 +162,11 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Page<Product> findActiveProducts(Pageable pageable) {
+        return productRepository.findAllWithQuantityAndPrice(pageable);
+    }
+
+    @Override
     public Page<ProductDTO> searchProducts(
             String productName,
             Double minPrice,
