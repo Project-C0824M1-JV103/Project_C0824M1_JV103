@@ -67,24 +67,28 @@ public class ReportController extends BaseAdminController {
                 data.add(entry);
             }
         } else if ("month".equals(type)) {
-            // Lấy dữ liệu theo từng ngày của tháng
             int y = year;
             int m = month;
+            LocalDate firstDay = LocalDate.of(y, m, 1);
+            int daysInMonth = firstDay.lengthOfMonth();
+
             LocalDate now = LocalDate.now();
-            int daysInMonth = LocalDate.of(y, m, 1).lengthOfMonth();
-            int lastDay = (y == now.getYear() && m == now.getMonthValue()) ? now.getDayOfMonth() : daysInMonth;
+            int lastDay = daysInMonth;
+            if (y == now.getYear() && m == now.getMonthValue()) {
+                lastDay = now.getDayOfMonth();
+            }
+
             for (int d = 1; d <= lastDay; d++) {
                 LocalDate date = LocalDate.of(y, m, d);
                 int orderCount = saleService.countSalesByDate(date);
                 BigDecimal totalAmount = saleService.sumAmountByDate(date);
                 Map<String, Object> entry = new HashMap<>();
-                entry.put("label", date.toString());
+                entry.put("label", date.toString()); // yyyy-MM-dd
                 entry.put("orderCount", orderCount);
                 entry.put("totalAmount", totalAmount);
                 data.add(entry);
             }
         } else if ("year".equals(type)) {
-            // Lấy dữ liệu theo từng tháng của năm
             int y = year;
             for (int m = 1; m <= 12; m++) {
                 int orderCount = saleService.countSalesByMonth(y, m);
@@ -96,7 +100,19 @@ public class ReportController extends BaseAdminController {
                 data.add(entry);
             }
         }
+        // Thống kê tổng quan
+        int totalOrders = 0;
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+        for (Map<String, Object> entry : data) {
+            totalOrders += (int) entry.get("orderCount");
+            BigDecimal amount = (BigDecimal) entry.get("totalAmount");
+            if (amount != null) totalRevenue = totalRevenue.add(amount);
+        }
+        BigDecimal avgRevenue = totalOrders > 0 ? totalRevenue.divide(BigDecimal.valueOf(totalOrders), 0, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
         result.put("data", data);
+        result.put("totalOrders", totalOrders);
+        result.put("totalRevenue", totalRevenue);
+        result.put("avgRevenue", avgRevenue);
         return result;
     }
 }
