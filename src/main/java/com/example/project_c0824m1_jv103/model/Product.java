@@ -1,6 +1,7 @@
 package com.example.project_c0824m1_jv103.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
@@ -41,19 +42,24 @@ public class Product {
     
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonIgnore
     private Category category;
     
     @ManyToOne
     @JoinColumn(name = "suplier_id")
+    @JsonIgnore
     private Supplier supplier;
     
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ProductImages> productImages;
     
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<SaleDetails> saleDetails;
     
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Storage> storages;
     
     // Constructors
