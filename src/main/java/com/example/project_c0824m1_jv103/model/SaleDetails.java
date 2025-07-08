@@ -1,6 +1,7 @@
 package com.example.project_c0824m1_jv103.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "SaleDetails")
@@ -17,6 +18,7 @@ public class SaleDetails {
     
     @ManyToOne
     @JoinColumn(name = "sale_id")
+    @JsonIgnore
     private Sale sale;
     
     @Column(name = "quantity", nullable = false)

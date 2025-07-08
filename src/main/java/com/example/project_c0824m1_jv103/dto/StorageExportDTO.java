@@ -7,6 +7,7 @@ public class StorageExportDTO {
     private Integer storageId;
     private Integer productId;
     private String productName;
+    private String memory;
     private String supplierName;
     private Integer remainingQuantity;
     
@@ -17,13 +18,22 @@ public class StorageExportDTO {
     public StorageExportDTO() {
     }
 
-    public StorageExportDTO(Integer storageId, Integer productId, String productName, String supplierName, Integer remainingQuantity, Integer exportQuantity) {
+    public StorageExportDTO(Integer storageId, Integer productId, String productName, String memory, String supplierName, Integer remainingQuantity, Integer exportQuantity) {
         this.storageId = storageId;
         this.productId = productId;
         this.productName = productName;
+        this.memory = memory;
         this.supplierName = supplierName;
         this.remainingQuantity = remainingQuantity;
         this.exportQuantity = exportQuantity;
+    }
+
+    public String getMemory() {
+        return memory;
+    }
+
+    public void setMemory(String memory) {
+        this.memory = memory;
     }
 
     public Integer getStorageId() {

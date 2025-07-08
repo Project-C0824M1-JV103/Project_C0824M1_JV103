@@ -433,18 +433,27 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Script xem trước hình ảnh -->
 <script>
+    // Global variables - Cache DOM elements
+    let selectedFile = null;
+    let hasCurrentImage = !!document.querySelector('.image-preview img');
+    let currentImageUrl = hasCurrentImage ? document.querySelector('.image-preview img')?.getAttribute('src') : null;
+    const uploadArea = document.querySelector('.image-upload-area');
+    const imageInput = document.getElementById('image');
+    const removeCurrentImageInput = document.getElementById('removeCurrentImage');
+    const form = document.querySelector('form');
+    const loadingOverlay = document.getElementById('loading-overlay');
+
+    // Image validation function
     function validateImage(file) {
-        // Kiểm tra kích thước file (5MB max)
+        // Check file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
             return {
                 error: `Ảnh "${file.name}" có kích thước quá lớn (tối đa 5MB).`
             };
         }
 
-        // Kiểm tra định dạng file
+        // Check file type
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
         if (!validTypes.includes(file.type)) {
             return {
@@ -452,165 +461,325 @@
             };
         }
 
-        return { error: null }; // Hợp lệ
+        return { error: null };
     }
-    document.getElementById('image').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
 
-        // Validate image
-        const validation = validateImage(file);
-        if (validation.error) {
-            alert(validation.error);
-            e.target.value = ''; // Clear input
-            return;
-        }
-
-        selectedFile = file;
-        updatePreview();
-
-        // Nếu chọn ảnh mới thì đánh dấu xóa ảnh cũ nếu có
-        if (hasCurrentImage) {
-            document.getElementById('removeCurrentImage').value = 'true';
-        }
-
-        e.target.value = ''; // Clear input
-    });
-    uploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        this.style.backgroundColor = '#f8f9fa';
-        this.style.borderColor = '#dee2e6';
-
-        const file = e.dataTransfer.files[0];
-        if (!file) return;
-
-        // Validate image
-        const validation = validateImage(file);
-        if (validation.error) {
-            alert(validation.error);
-            return;
-        }
-
-        selectedFile = file;
-        updatePreview();
-
-        if (hasCurrentImage) {
-            document.getElementById('removeCurrentImage').value = 'true';
-        }
-    });
-    let selectedFile = null;
-    let hasCurrentImage = !!document.querySelector('.image-preview img');
-    let currentImageUrl = hasCurrentImage ? document.querySelector('.image-preview img')?.getAttribute('src') : null;
-
-    document.getElementById('image').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            selectedFile = file;
-            updatePreview();
-            // Nếu chọn ảnh mới thì đánh dấu xóa ảnh cũ nếu có
-            if (hasCurrentImage) {
-                document.getElementById('removeCurrentImage').value = 'true';
-            }
-        }
-        // Clear input để chọn lại cùng file nếu muốn
-        e.target.value = '';
-    });
-
+    // 2. Sửa lại hàm updatePreview để đảm bảo bind event đúng cách
     function updatePreview() {
         const preview = document.getElementById('imagePreview');
         preview.innerHTML = '';
+
         if (selectedFile) {
+            // Xử lý ảnh mới
             const reader = new FileReader();
             reader.onload = function(e) {
-                const imgDiv = document.createElement('div');
-                imgDiv.className = 'image-preview';
-                imgDiv.innerHTML = `
-          <img src="${e.target.result}" alt="New Image" />
-          <button type="button" class="btn-delete" onclick="removeFile()" title="Xóa ảnh này">
-            <i class="fas fa-times"></i>
-          </button>
-        `;
-                preview.appendChild(imgDiv);
+                preview.innerHTML = `
+                <div class="image-preview">
+                    <img src="${e.target.result}" alt="New Image"/>
+                    <button type="button" class="btn-delete" onclick="removeNewImage()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
             };
             reader.readAsDataURL(selectedFile);
-            // Cập nhật text
-            const uploadArea = document.querySelector('.image-upload-area p');
-            uploadArea.textContent = `Đã chọn 1 ảnh`;
-        } else if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {
-            // Nếu chưa chọn file mới, hiển thị lại ảnh hiện tại (nếu chưa xóa)
+        }
+        else if (hasCurrentImage && currentImageUrl &&
+            document.getElementById('removeCurrentImage').value !== 'true') {
+            // Xử lý ảnh hiện tại - QUAN TRỌNG: Sử dụng event listener thay vì inline onclick
             const imgDiv = document.createElement('div');
             imgDiv.className = 'image-preview';
             imgDiv.innerHTML = `
-        <img src="${currentImageUrl}" alt="Current Image" />
-        <button type="button" class="btn-delete" onclick="removeCurrentImage()" title="Xóa ảnh hiện tại">
-          <i class="fas fa-times"></i>
-        </button>
-      `;
+            <img src="${currentImageUrl}" alt="Current Image"/>
+            <button type="button" class="btn-delete" id="deleteCurrentBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
             preview.appendChild(imgDiv);
-            const uploadArea = document.querySelector('.image-upload-area p');
-            uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
-        } else {
-            // Reset upload area text
-            const uploadArea = document.querySelector('.image-upload-area p');
-            uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';
+
+            // Bind event bằng JavaScript thay vì inline HTML
+            document.getElementById('deleteCurrentBtn').addEventListener('click', removeCurrentImage);
         }
     }
 
-    function removeFile() {
-        if (confirm('Xóa ảnh này?')) {
+    // Remove newly selected image
+    function removeNewImage() {
+        if (confirm('Bạn có chắc chắn muốn xóa ảnh mới này?')) {
             selectedFile = null;
-            // Nếu có ảnh cũ và chưa xóa, hiện lại ảnh cũ
-            if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {
-                updatePreview();
-            } else {
-                updatePreview();
-            }
+            imageInput.value = '';
+            updatePreview();
         }
     }
 
     function removeCurrentImage() {
-        if (confirm('Xóa ảnh hiện tại?')) {
+        if (confirm('Bạn có chắc chắn muốn xóa ảnh hiện tại?')) {
+            // Cập nhật tất cả biến trạng thái
             hasCurrentImage = false;
             document.getElementById('removeCurrentImage').value = 'true';
-            updatePreview();
+
+            // Xóa preview và reset các biến liên quan
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            currentImageUrl = null;
+
+            // Cập nhật UI
+            document.querySelector('.image-upload-area p').textContent = 'Kéo thả ảnh vào đây hoặc click để chọn';
         }
     }
 
-    // Drag and drop functionality
-    const uploadArea = document.querySelector('.image-upload-area');
-    uploadArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        this.style.backgroundColor = '#f0f2ff';
-        this.style.borderColor = '#667eea';
-    });
-    uploadArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        this.style.backgroundColor = '#f8f9fa';
-        this.style.borderColor = '#dee2e6';
-    });
-    uploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        this.style.backgroundColor = '#f8f9fa';
-        this.style.borderColor = '#dee2e6';
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            selectedFile = files[0];
-            updatePreview();
-            if (hasCurrentImage) {
-                document.getElementById('removeCurrentImage').value = 'true';
-            }
+    // Handle file input change
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const validation = validateImage(file);
+        if (validation.error) {
+            alert(validation.error);
+            e.target.value = '';
+            return;
         }
+
+        selectedFile = file;
+        if (hasCurrentImage) {
+            removeCurrentImageInput.value = 'true';
+        }
+        updatePreview();
     });
 
-    // Trước khi submit form, set lại file input nếu có file mới
-    document.querySelector('form').addEventListener('submit', function(e) {
+    // Drag and drop handlers
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+    });
+
+    uploadArea.addEventListener('dragleave', function() {
+        this.classList.remove('drag-over');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+
+        const validation = validateImage(file);
+        if (validation.error) {
+            alert(validation.error);
+            return;
+        }
+
+        selectedFile = file;
+        if (hasCurrentImage) {
+            removeCurrentImageInput.value = 'true';
+        }
+        updatePreview();
+    });
+
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
         if (selectedFile) {
             const dt = new DataTransfer();
             dt.items.add(selectedFile);
-            document.getElementById('image').files = dt.files;
+            imageInput.files = dt.files;
+        }
+        loadingOverlay.style.display = 'flex';
+    });
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updatePreview();
+
+        // Add click handler for upload button
+        document.querySelector('.image-upload-area button').addEventListener('click', function() {
+            imageInput.click();
+        });
+    });
+    // 3. Thêm sự kiện khi trang load xong
+    document.addEventListener('DOMContentLoaded', function() {
+        // Bind sự kiện cho nút xóa ảnh hiện tại nếu có
+        if (document.getElementById('deleteCurrentBtn')) {
+            document.getElementById('deleteCurrentBtn').addEventListener('click', removeCurrentImage);
         }
     });
 </script>
+<!-- Script xem trước hình ảnh -->
+<!--<script>-->
+<!--    function validateImage(file) {-->
+<!--        // Kiểm tra kích thước file (5MB max)-->
+<!--        if (file.size > 5 * 1024 * 1024) {-->
+<!--            return {-->
+<!--                error: `Ảnh "${file.name}" có kích thước quá lớn (tối đa 5MB).`-->
+<!--            };-->
+<!--        }-->
+
+<!--        // Kiểm tra định dạng file-->
+<!--        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];-->
+<!--        if (!validTypes.includes(file.type)) {-->
+<!--            return {-->
+<!--                error: `Ảnh "${file.name}" không đúng định dạng. Chỉ chấp nhận JPG, PNG, GIF.`-->
+<!--            };-->
+<!--        }-->
+
+<!--        return { error: null }; // Hợp lệ-->
+<!--    }-->
+<!--    document.getElementById('image').addEventListener('change', function(e) {-->
+<!--        const file = e.target.files[0];-->
+<!--        if (!file) return;-->
+
+<!--        // Validate image-->
+<!--        const validation = validateImage(file);-->
+<!--        if (validation.error) {-->
+<!--            alert(validation.error);-->
+<!--            e.target.value = ''; // Clear input-->
+<!--            return;-->
+<!--        }-->
+
+<!--        selectedFile = file;-->
+<!--        updatePreview();-->
+
+<!--        // Nếu chọn ảnh mới thì đánh dấu xóa ảnh cũ nếu có-->
+<!--        if (hasCurrentImage) {-->
+<!--            document.getElementById('removeCurrentImage').value = 'true';-->
+<!--        }-->
+
+<!--        e.target.value = ''; // Clear input-->
+<!--    });-->
+<!--    uploadArea.addEventListener('drop', function(e) {-->
+<!--        e.preventDefault();-->
+<!--        this.style.backgroundColor = '#f8f9fa';-->
+<!--        this.style.borderColor = '#dee2e6';-->
+
+<!--        const file = e.dataTransfer.files[0];-->
+<!--        if (!file) return;-->
+
+<!--        // Validate image-->
+<!--        const validation = validateImage(file);-->
+<!--        if (validation.error) {-->
+<!--            alert(validation.error);-->
+<!--            return;-->
+<!--        }-->
+
+<!--        selectedFile = file;-->
+<!--        updatePreview();-->
+
+<!--        if (hasCurrentImage) {-->
+<!--            document.getElementById('removeCurrentImage').value = 'true';-->
+<!--        }-->
+<!--    });-->
+<!--    let selectedFile = null;-->
+<!--    let hasCurrentImage = !!document.querySelector('.image-preview img');-->
+<!--    let currentImageUrl = hasCurrentImage ? document.querySelector('.image-preview img')?.getAttribute('src') : null;-->
+
+<!--    document.getElementById('image').addEventListener('change', function(e) {-->
+<!--        const file = e.target.files[0];-->
+<!--        if (file) {-->
+<!--            selectedFile = file;-->
+<!--            updatePreview();-->
+<!--            // Nếu chọn ảnh mới thì đánh dấu xóa ảnh cũ nếu có-->
+<!--            if (hasCurrentImage) {-->
+<!--                document.getElementById('removeCurrentImage').value = 'true';-->
+<!--            }-->
+<!--        }-->
+<!--        // Clear input để chọn lại cùng file nếu muốn-->
+<!--        e.target.value = '';-->
+<!--    });-->
+
+<!--    function updatePreview() {-->
+<!--        const preview = document.getElementById('imagePreview');-->
+<!--        preview.innerHTML = '';-->
+<!--        if (selectedFile) {-->
+<!--            const reader = new FileReader();-->
+<!--            reader.onload = function(e) {-->
+<!--                const imgDiv = document.createElement('div');-->
+<!--                imgDiv.className = 'image-preview';-->
+<!--                imgDiv.innerHTML = `-->
+<!--          <img src="${e.target.result}" alt="New Image" />-->
+<!--          <button type="button" class="btn-delete" onclick="removeFile()" title="Xóa ảnh này">-->
+<!--            <i class="fas fa-times"></i>-->
+<!--          </button>-->
+<!--        `;-->
+<!--                preview.appendChild(imgDiv);-->
+<!--            };-->
+<!--            reader.readAsDataURL(selectedFile);-->
+<!--            // Cập nhật text-->
+<!--            const uploadArea = document.querySelector('.image-upload-area p');-->
+<!--            uploadArea.textContent = `Đã chọn 1 ảnh`;-->
+<!--        } else if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {-->
+<!--            // Nếu chưa chọn file mới, hiển thị lại ảnh hiện tại (nếu chưa xóa)-->
+<!--            const imgDiv = document.createElement('div');-->
+<!--            imgDiv.className = 'image-preview';-->
+<!--            imgDiv.innerHTML = `-->
+<!--        <img src="${currentImageUrl}" alt="Current Image" />-->
+<!--        <button type="button" class="btn-delete" onclick="removeCurrentImage()" title="Xóa ảnh hiện tại">-->
+<!--          <i class="fas fa-times"></i>-->
+<!--        </button>-->
+<!--      `;-->
+<!--            preview.appendChild(imgDiv);-->
+<!--            const uploadArea = document.querySelector('.image-upload-area p');-->
+<!--            uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';-->
+<!--        } else {-->
+<!--            // Reset upload area text-->
+<!--            const uploadArea = document.querySelector('.image-upload-area p');-->
+<!--            uploadArea.textContent = 'Kéo thả file ảnh vào đây hoặc click để chọn';-->
+<!--        }-->
+<!--    }-->
+
+<!--    function removeFile() {-->
+<!--        if (confirm('Xóa ảnh này?')) {-->
+<!--            selectedFile = null;-->
+<!--            // Nếu có ảnh cũ và chưa xóa, hiện lại ảnh cũ-->
+<!--            if (hasCurrentImage && currentImageUrl && document.getElementById('removeCurrentImage').value !== 'true') {-->
+<!--                updatePreview();-->
+<!--            } else {-->
+<!--                updatePreview();-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+
+<!--    function removeCurrentImage() {-->
+<!--        if (confirm('Xóa ảnh hiện tại?')) {-->
+<!--            hasCurrentImage = false;-->
+<!--            document.getElementById('removeCurrentImage').value = 'true';-->
+<!--            updatePreview();-->
+<!--        }-->
+<!--    }-->
+
+<!--    // Drag and drop functionality-->
+<!--    const uploadArea = document.querySelector('.image-upload-area');-->
+<!--    uploadArea.addEventListener('dragover', function(e) {-->
+<!--        e.preventDefault();-->
+<!--        this.style.backgroundColor = '#f0f2ff';-->
+<!--        this.style.borderColor = '#667eea';-->
+<!--    });-->
+<!--    uploadArea.addEventListener('dragleave', function(e) {-->
+<!--        e.preventDefault();-->
+<!--        this.style.backgroundColor = '#f8f9fa';-->
+<!--        this.style.borderColor = '#dee2e6';-->
+<!--    });-->
+<!--    uploadArea.addEventListener('drop', function(e) {-->
+<!--        e.preventDefault();-->
+<!--        this.style.backgroundColor = '#f8f9fa';-->
+<!--        this.style.borderColor = '#dee2e6';-->
+<!--        const files = e.dataTransfer.files;-->
+<!--        if (files.length > 0) {-->
+<!--            selectedFile = files[0];-->
+<!--            updatePreview();-->
+<!--            if (hasCurrentImage) {-->
+<!--                document.getElementById('removeCurrentImage').value = 'true';-->
+<!--            }-->
+<!--        }-->
+<!--    });-->
+
+<!--    // Trước khi submit form, set lại file input nếu có file mới-->
+<!--    document.querySelector('form').addEventListener('submit', function(e) {-->
+<!--        if (selectedFile) {-->
+<!--            const dt = new DataTransfer();-->
+<!--            dt.items.add(selectedFile);-->
+<!--            document.getElementById('image').files = dt.files;-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
 
 <div class="admin-loading-overlay" id="loading-overlay">
     <div class="admin-loading-box">

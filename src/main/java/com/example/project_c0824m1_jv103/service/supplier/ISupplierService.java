@@ -27,6 +27,7 @@ public interface ISupplierService {
     boolean isPhoneNumberExistsForUpdate(String phoneNumber, Integer id);
 
     // Validation method for new supplier
-    String validateNewSupplier(SupplierDto supplierDto);
 
+    boolean isSupplierNameExistsForUpdate(String suplierName, Integer id);
+    String validateNewSupplier(SupplierDto supplierDto);
 }

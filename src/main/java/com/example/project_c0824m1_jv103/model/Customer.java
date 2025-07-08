@@ -2,6 +2,7 @@ package com.example.project_c0824m1_jv103.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,7 +36,8 @@ public class Customer {
     @Column(name = "email", length = 255)
     private String email;
     
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Sale> sales;
     
     // Constructors

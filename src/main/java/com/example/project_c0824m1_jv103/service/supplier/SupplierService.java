@@ -147,35 +147,91 @@ public class SupplierService implements ISupplierService {
         return supplierRepository.existsByPhoneNumberAndIdNot(phoneNumber.trim(), id);
     }
 
-    @Override
-    public String validateNewSupplier(SupplierDto supplierDto) {
-        if (supplierDto == null) {
-            return "Thông tin nhà cung cấp không được để trống";
-        }
+//    @Override
+//    public String validateNewSupplier(SupplierDto supplierDto) {
+//        if (supplierDto == null) {
+//            return "Thông tin nhà cung cấp không được để trống";
+//        }
+//
+//        // Kiểm tra tên nhà cung cấp đã tồn tại
+//        if (supplierDto.getSuplierName() != null && !supplierDto.getSuplierName().trim().isEmpty()) {
+//            if (isSupplierNameExists(supplierDto.getSuplierName())) {
+//                return "Tên nhà cung cấp '" + supplierDto.getSuplierName() + "' đã được sử dụng bởi nhà cung cấp khác";
+//            }
+//        }
+//
+//        // Kiểm tra email đã tồn tại
+//        if (supplierDto.getEmail() != null && !supplierDto.getEmail().trim().isEmpty()) {
+//            if (isEmailExists(supplierDto.getEmail())) {
+//                return "Email '" + supplierDto.getEmail() + "' đã được sử dụng bởi nhà cung cấp khác";
+//            }
+//        }
+//
+//        // Kiểm tra số điện thoại đã tồn tại
+//        if (supplierDto.getPhoneNumber() != null && !supplierDto.getPhoneNumber().trim().isEmpty()) {
+//            if (isPhoneNumberExists(supplierDto.getPhoneNumber())) {
+//                return "Số điện thoại '" + supplierDto.getPhoneNumber() + "' đã được sử dụng bởi nhà cung cấp khác";
+//            }
+//        }
+//
+//        return null; // Không có lỗi
+//    }
+@Override
+public boolean isSupplierNameExistsForUpdate(String suplierName, Integer id) {
+    if (suplierName == null || suplierName.trim().isEmpty() || id == null) return false;
+    return supplierRepository.existsBySuplierNameIgnoreCaseAndSuplierIdNot(suplierName.trim(), id);
+}
 
-        // Kiểm tra tên nhà cung cấp đã tồn tại
-        if (supplierDto.getSuplierName() != null && !supplierDto.getSuplierName().trim().isEmpty()) {
+    @Override
+public String validateNewSupplier(SupplierDto supplierDto) {
+    if (supplierDto == null) {
+        return "Thông tin nhà cung cấp không được để trống";
+    }
+
+    Integer id = supplierDto.getSuplierId();
+
+    // Kiểm tra tên nhà cung cấp đã tồn tại
+    if (supplierDto.getSuplierName() != null && !supplierDto.getSuplierName().trim().isEmpty()) {
+        if (id == null) { // Thêm mới
             if (isSupplierNameExists(supplierDto.getSuplierName())) {
                 return "Tên nhà cung cấp '" + supplierDto.getSuplierName() + "' đã được sử dụng bởi nhà cung cấp khác";
             }
+        } else { // Chỉnh sửa
+            if (isSupplierNameExistsForUpdate(supplierDto.getSuplierName(), id)) {
+                return "Tên nhà cung cấp '" + supplierDto.getSuplierName() + "' đã được sử dụng bởi nhà cung cấp khác";
+            }
         }
+    }
 
-        // Kiểm tra email đã tồn tại
-        if (supplierDto.getEmail() != null && !supplierDto.getEmail().trim().isEmpty()) {
+    // Kiểm tra email đã tồn tại
+    if (supplierDto.getEmail() != null && !supplierDto.getEmail().trim().isEmpty()) {
+        if (id == null) { // Thêm mới
             if (isEmailExists(supplierDto.getEmail())) {
                 return "Email '" + supplierDto.getEmail() + "' đã được sử dụng bởi nhà cung cấp khác";
             }
+        } else { // Chỉnh sửa
+            if (isEmailExistsForUpdate(supplierDto.getEmail(), id)) {
+                return "Email '" + supplierDto.getEmail() + "' đã được sử dụng bởi nhà cung cấp khác";
+            }
         }
+    }
 
-        // Kiểm tra số điện thoại đã tồn tại
-        if (supplierDto.getPhoneNumber() != null && !supplierDto.getPhoneNumber().trim().isEmpty()) {
+    // Kiểm tra số điện thoại đã tồn tại
+    if (supplierDto.getPhoneNumber() != null && !supplierDto.getPhoneNumber().trim().isEmpty()) {
+        if (id == null) { // Thêm mới
             if (isPhoneNumberExists(supplierDto.getPhoneNumber())) {
                 return "Số điện thoại '" + supplierDto.getPhoneNumber() + "' đã được sử dụng bởi nhà cung cấp khác";
             }
+        } else { // Chỉnh sửa
+            if (isPhoneNumberExistsForUpdate(supplierDto.getPhoneNumber(), id)) {
+                return "Số điện thoại '" + supplierDto.getPhoneNumber() + "' đã được sử dụng bởi nhà cung cấp khác";
+            }
         }
-
-        return null; // Không có lỗi
     }
+
+    return null; // Không có lỗi
+}
+
 
     @Override
     public Page<Supplier> findAll(Pageable pageable) {

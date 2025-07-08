@@ -364,6 +364,7 @@ public String showStorageList(
                 storage.getStorageId(),
                 product.getProductId(),
                 product.getProductName(),
+                product.getMemory(),
                 product.getSupplier() != null ? product.getSupplier().getSuplierName() : "N/A",
                 storage.getQuantity() != null ? storage.getQuantity() : 0,
                 null

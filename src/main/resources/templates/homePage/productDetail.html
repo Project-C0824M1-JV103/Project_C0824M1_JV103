@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${product.productName + ' - GetTech'}">GetTech - Chi tiết sản phẩm</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    />
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/homePage.css}" />
+    <link rel="stylesheet" th:href="@{/css/navbar.css}" />
+    <link rel="stylesheet" th:href="@{/css/productDetail.css}" />
+    <!-- CKEditor CDN -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <div th:insert="~{navbar/navbar :: body}"></div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-section">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item" th:if="${product.category}">
+                        <a href="#" th:text="${product.category.categoryName}">Danh mục</a>
+                    </li>
+                    <li class="breadcrumb-item active" th:text="${product.productName}">Sản phẩm</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Product Detail Section -->
+    <div class="product-detail-section">
+        <div class="container">
+            <div class="row">
+                <!-- Product Images -->
+                <div class="col-lg-6">
+                    <div class="product-image-gallery">
+                        <div class="main-image-container">
+                            <img 
+                                th:src="${product.productImages != null && !product.productImages.isEmpty() ? product.productImages[0].imageUrl : 'https://via.placeholder.com/600x600.png?text=No+Image'}"
+                                th:alt="${product.productName}"
+                                class="main-product-image"
+                                id="mainImage"
+                            />
+                            <div class="image-overlay">
+                                <button class="zoom-btn" onclick="openImageModal()">
+                                    <i class="bi bi-zoom-in"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Thumbnail Images -->
+                        <div class="thumbnail-container" th:if="${product.productImages != null && product.productImages.size() > 1}">
+                            <div class="thumbnail-scroll">
+                                <div class="thumbnail-item" th:each="image, iterStat : ${product.productImages}">
+                                                                        <img
+                                        th:src="${image.imageUrl}"
+                                        th:alt="${image.caption ?: product.productName}"
+                                        th:class="'thumbnail-image thumbnail-clickable' + (${iterStat.index == 0} ? ' active' : '')"
+                                        th:data-image-url="${image.imageUrl}"
+                                        th:data-index="${iterStat.index}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Information -->
+                <div class="col-lg-6">
+                    <div class="product-info-container">
+                        <!-- Product Title -->
+                        <div class="product-header">
+                            <h1 class="product-title" th:text="${product.productName}">Tên sản phẩm</h1>
+                            <div class="product-meta">
+                                <span class="category-badge" th:if="${product.category}">
+                                    <i class="bi bi-tag"></i>
+                                    <span th:text="${product.category.categoryName}">Danh mục</span>
+                                </span>
+                                <span th:class="'stock-status ' + (${product.quantity > 0} ? 'in-stock' : 'out-of-stock')">
+                                    <i th:class="'bi bi-box' + (${product.quantity > 0} ? '' : ' text-danger')"></i>
+                                    <span th:text="${product.quantity > 0} ? ('Còn hàng (' + ${product.quantity} + ')') : 'Hết hàng'">Trạng thái</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Price & Promotions -->
+                        <div class="price-section">
+                            <div class="current-price">
+                                <span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">10.000.000 ₫</span>
+                            </div>
+                            <div class="promotion-badges">
+                                <span class="badge-promotion">🎉 Giảm ngay 500K</span>
+                                <span class="badge-gift">🎁 Tặng kèm ốp lưng</span>
+                            </div>
+                            
+                            <!-- Installment Options -->
+                            <div class="installment-section">
+                                <h4 class="installment-title">💳 Tùy chọn trả góp</h4>
+                                <div class="installment-options">
+                                    <div class="installment-item">
+                                        <span class="period">3 tháng</span>
+                                        <span class="amount" th:text="${#numbers.formatDecimal(product.price / 3, 0, 'COMMA', 0, 'POINT')} + ' ₫/tháng'">3.333.333 ₫/tháng</span>
+                                        <span class="interest">0% lãi suất</span>
+                                    </div>
+                                    <div class="installment-item">
+                                        <span class="period">6 tháng</span>
+                                        <span class="amount" th:text="${#numbers.formatDecimal(product.price / 6, 0, 'COMMA', 0, 'POINT')} + ' ₫/tháng'">1.666.667 ₫/tháng</span>
+                                        <span class="interest">0% lãi suất</span>
+                                    </div>
+                                    <div class="installment-item">
+                                        <span class="period">12 tháng</span>
+                                        <span class="amount" th:text="${#numbers.formatDecimal(product.price / 12, 0, 'COMMA', 0, 'POINT')} + ' ₫/tháng'">833.333 ₫/tháng</span>
+                                        <span class="interest">Chỉ từ 0.8%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Variants -->
+                        <div class="variants-section">
+                            <h3 class="variants-title">Lựa chọn phiên bản</h3>
+                            
+                            <!-- Storage Options -->
+                            <div class="variant-group">
+                                <label class="variant-label">Dung lượng:</label>
+                                <div class="variant-options">
+                                    <div class="variant-option selected" data-storage="128GB">
+                                        <span class="variant-text">128GB</span>
+                                        <span class="variant-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">>10.000.000 ₫</span>
+                                    </div>
+                                    <div class="variant-option" data-storage="256GB">
+                                        <span class="variant-text">256GB</span>
+                                        <span class="variant-price" th:text="${#numbers.formatDecimal(product.price + 3000000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">13.000.000 ₫</span>
+                                    </div>
+                                    <div class="variant-option" data-storage="512GB">
+                                        <span class="variant-text">512GB</span>
+                                        <span class="variant-price" th:text="${#numbers.formatDecimal(product.price + 6000000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">16.000.000 ₫</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Color Options -->
+                            <div class="variant-group">
+                                <label class="variant-label">Màu sắc:</label>
+                                <div class="color-options">
+                                    <div class="color-option selected" data-color="black" style="background-color: #1a1a1a;" title="Đen">
+                                        <i class="bi bi-check"></i>
+                                    </div>
+                                    <div class="color-option" data-color="white" style="background-color: #f8f8f8;" title="Trắng">
+                                        <i class="bi bi-check"></i>
+                                    </div>
+                                    <div class="color-option" data-color="blue" style="background-color: #3b82f6;" title="Xanh">
+                                        <i class="bi bi-check"></i>
+                                    </div>
+                                    <div class="color-option" data-color="red" style="background-color: #ef4444;" title="Đỏ">
+                                        <i class="bi bi-check"></i>
+                                    </div>
+                                    <div class="color-option" data-color="gold" style="background-color: #fbbf24;" title="Vàng">
+                                        <i class="bi bi-check"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Action Buttons -->
+                        <div class="action-section">
+                            <div class="quantity-selector">
+                                <label for="quantity">Số lượng:</label>
+                                <div class="quantity-input">
+                                    <button type="button" class="qty-btn" onclick="decreaseQuantity()">-</button>
+                                    <input type="number" id="quantity" value="1" min="1" th:max="${product.quantity}" readonly>
+                                    <button type="button" class="qty-btn" onclick="increaseQuantity()">+</button>
+                                </div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-add-cart" th:disabled="${product.quantity <= 0}">
+                                    <i class="bi bi-cart-plus"></i>
+                                    Thêm vào giỏ hàng
+                                </button>
+                                <button class="btn btn-success btn-buy-now" th:disabled="${product.quantity <= 0}">
+                                    <i class="bi bi-lightning-charge"></i>
+                                    Mua ngay
+                                </button>
+                                <button class="btn btn-outline-primary btn-wishlist">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Delivery & Warranty Info -->
+                        <div class="delivery-warranty-info">
+                            <div class="info-section">
+                                <h4 class="info-title">
+                                    <i class="bi bi-truck"></i>
+                                    Thông tin giao hàng
+                                </h4>
+                                <div class="info-items">
+                                    <div class="info-item">
+                                        <i class="bi bi-geo-alt"></i>
+                                        <span>Giao hàng toàn quốc</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="bi bi-clock"></i>
+                                        <span>Giao hàng trong 2-4 giờ (HCM/HN)</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="bi bi-cash"></i>
+                                        <span>Miễn phí ship đơn từ 500K</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="info-section">
+                                <h4 class="info-title">
+                                    <i class="bi bi-shield-check"></i>
+                                    Chế độ bảo hành
+                                </h4>
+                                <div class="info-items">
+                                    <div class="info-item">
+                                        <i class="bi bi-award"></i>
+                                        <span>Bảo hành chính hãng 12 tháng</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                        <span>Đổi trả 15 ngày đầu</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="bi bi-tools"></i>
+                                        <span>Hỗ trợ kỹ thuật 24/7</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="info-section">
+                                <h4 class="info-title">
+                                    <i class="bi bi-telephone"></i>
+                                    Hỗ trợ khách hàng
+                                </h4>
+                                <div class="info-items">
+                                    <div class="info-item">
+                                        <i class="bi bi-headset"></i>
+                                        <span>Hotline: 1900 232460</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="bi bi-chat-dots"></i>
+                                        <span>Chat trực tuyến 24/7</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="bi bi-envelope"></i>
+                                        <span>Email: support@gettech.vn</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Specifications Section -->
+    <div class="specs-section-full">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="specs-container">
+                        <h3 class="specs-title">
+                            <i class="bi bi-lightning-charge"></i>
+                            Thông số kỹ thuật
+                        </h3>
+                        <div class="specs-grid">
+                            <div class="spec-item" th:if="${product.size}">
+                                <span class="spec-label">Kích thước màn hình:</span>
+                                <span class="spec-value" th:text="${product.size} + '&quot;'">6.1"</span>
+                            </div>
+                            <div class="spec-item" th:if="${product.memory}">
+                                <span class="spec-label">Bộ nhớ:</span>
+                                <span class="spec-value" th:text="${product.memory} + 'GB'">128GB</span>
+                            </div>
+                            <div class="spec-item" th:if="${product.cpu}">
+                                <span class="spec-label">Chip xử lý:</span>
+                                <span class="spec-value" th:text="${product.cpu}">A15 Bionic</span>
+                            </div>
+                            <div class="spec-item" th:if="${product.cameraBack}">
+                                <span class="spec-label">Camera sau:</span>
+                                <span class="spec-value" th:text="${product.cameraBack} + 'MP'">12MP</span>
+                            </div>
+                            <div class="spec-item" th:if="${product.cameraFront}">
+                                <span class="spec-label">Camera trước:</span>
+                                <span class="spec-value" th:text="${product.cameraFront} + 'MP'">12MP</span>
+                            </div>
+                            <div class="spec-item" th:if="${product.supplier}">
+                                <span class="spec-label">Nhà cung cấp:</span>
+                                <span class="spec-value" th:text="${product.supplier.suplierName}">Supplier</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Description Section -->
+    <div class="description-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="description-container">
+                        <h3 class="description-title">Mô tả sản phẩm</h3>
+                        <div class="description-content">
+                            <!-- CKEditor will display rich content here -->
+                            <div id="descriptionDisplay" th:utext="${product.description ?: 'Chưa có mô tả cho sản phẩm này.'}">
+                                Đang tải mô tả sản phẩm...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="reviews-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="reviews-container">
+                        <div class="row">
+                            <!-- Review Summary -->
+                            <div class="col-lg-4">
+                                <div class="review-summary">
+                                    <h3 class="review-title">
+                                        <i class="bi bi-star-fill"></i>
+                                        Đánh giá sản phẩm
+                                    </h3>
+                                    <div class="overall-rating">
+                                        <span class="rating-number">4.8</span>
+                                        <div class="rating-stars">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <span class="total-reviews">(127 đánh giá)</span>
+                                    </div>
+                                    
+                                    <div class="rating-breakdown">
+                                        <div class="rating-row">
+                                            <span class="stars">5★</span>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 78%"></div>
+                                            </div>
+                                            <span class="count">99</span>
+                                        </div>
+                                        <div class="rating-row">
+                                            <span class="stars">4★</span>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 15%"></div>
+                                            </div>
+                                            <span class="count">19</span>
+                                        </div>
+                                        <div class="rating-row">
+                                            <span class="stars">3★</span>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 5%"></div>
+                                            </div>
+                                            <span class="count">7</span>
+                                        </div>
+                                        <div class="rating-row">
+                                            <span class="stars">2★</span>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 2%"></div>
+                                            </div>
+                                            <span class="count">2</span>
+                                        </div>
+                                        <div class="rating-row">
+                                            <span class="stars">1★</span>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 0%"></div>
+                                            </div>
+                                            <span class="count">0</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-primary btn-write-review">
+                                        <i class="bi bi-pencil"></i>
+                                        Viết đánh giá
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Review List -->
+                            <div class="col-lg-8">
+                                <div class="reviews-list">
+                                    <div class="review-filters">
+                                        <button class="filter-btn active">Tất cả</button>
+                                        <button class="filter-btn">5 sao</button>
+                                        <button class="filter-btn">4 sao</button>
+                                        <button class="filter-btn">3 sao</button>
+                                        <button class="filter-btn">Có hình ảnh</button>
+                                    </div>
+                                    
+                                    <div class="review-items">
+                                        <div class="review-item">
+                                            <div class="reviewer-info">
+                                                <div class="reviewer-avatar">
+                                                    <span>AN</span>
+                                                </div>
+                                                <div class="reviewer-details">
+                                                    <h5 class="reviewer-name">Anh Nguyễn</h5>
+                                                    <div class="review-rating">
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                    </div>
+                                                    <span class="review-date">2 ngày trước</span>
+                                                </div>
+                                            </div>
+                                            <div class="review-content">
+                                                <p>Sản phẩm rất tốt, giao hàng nhanh. Camera chụp ảnh đẹp, pin trâu. Đóng gói cẩn thận. Sẽ ủng hộ shop lần sau!</p>
+                                                <div class="review-images">
+                                                    <img src="https://via.placeholder.com/100x100?text=Review+1" alt="Review" class="review-image">
+                                                    <img src="https://via.placeholder.com/100x100?text=Review+2" alt="Review" class="review-image">
+                                                </div>
+                                                <div class="review-actions">
+                                                    <button class="action-btn">
+                                                        <i class="bi bi-hand-thumbs-up"></i>
+                                                        Hữu ích (12)
+                                                    </button>
+                                                    <button class="action-btn">
+                                                        <i class="bi bi-chat"></i>
+                                                        Trả lời
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="review-item">
+                                            <div class="reviewer-info">
+                                                <div class="reviewer-avatar">
+                                                    <span>ML</span>
+                                                </div>
+                                                <div class="reviewer-details">
+                                                    <h5 class="reviewer-name">Mai Linh</h5>
+                                                    <div class="review-rating">
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star"></i>
+                                                    </div>
+                                                    <span class="review-date">5 ngày trước</span>
+                                                </div>
+                                            </div>
+                                            <div class="review-content">
+                                                <p>Mình rất hài lòng với sản phẩm. Thiết kế đẹp, màn hình sắc nét. Chỉ có điều pin hơi yếu một chút so với mong đợi.</p>
+                                                <div class="review-actions">
+                                                    <button class="action-btn">
+                                                        <i class="bi bi-hand-thumbs-up"></i>
+                                                        Hữu ích (8)
+                                                    </button>
+                                                    <button class="action-btn">
+                                                        <i class="bi bi-chat"></i>
+                                                        Trả lời
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="review-item">
+                                            <div class="reviewer-info">
+                                                <div class="reviewer-avatar">
+                                                    <span>HT</span>
+                                                </div>
+                                                <div class="reviewer-details">
+                                                    <h5 class="reviewer-name">Hoàng Tuấn</h5>
+                                                    <div class="review-rating">
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                        <i class="bi bi-star-fill"></i>
+                                                    </div>
+                                                    <span class="review-date">1 tuần trước</span>
+                                                </div>
+                                            </div>
+                                            <div class="review-content">
+                                                <p>Shop giao hàng siêu nhanh! Máy chạy mượt, không lag. Đóng gói kỹ lưỡng. Rất đáng tiền!</p>
+                                                <div class="review-actions">
+                                                    <button class="action-btn">
+                                                        <i class="bi bi-hand-thumbs-up"></i>
+                                                        Hữu ích (15)
+                                                    </button>
+                                                    <button class="action-btn">
+                                                        <i class="bi bi-chat"></i>
+                                                        Trả lời
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="load-more-reviews">
+                                        <button class="btn btn-outline-primary">
+                                            Xem thêm đánh giá
+                                            <i class="bi bi-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products Section -->
+    <div class="related-products-section" th:if="${relatedProducts != null && !relatedProducts.isEmpty()}">
+        <div class="container">
+            <div class="section-title-container">
+                <h2 class="section-title">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    Sản phẩm liên quan
+                </h2>
+                <p class="section-subtitle">Khám phá thêm các sản phẩm cùng danh mục</p>
+            </div>
+
+            <div class="related-products-grid">
+                <div class="product-card" th:each="relatedProduct : ${relatedProducts}">
+                    <a th:href="@{'/product/' + ${relatedProduct.productId}}" class="product-image-wrapper">
+                        <img th:src="${relatedProduct.productImages != null && !relatedProduct.productImages.isEmpty() ? relatedProduct.productImages[0].imageUrl : 'https://via.placeholder.com/300x300.png?text=No+Image'}"
+                             th:alt="${relatedProduct.productName}" class="product-image"/>
+                    </a>
+                    <div class="product-info">
+                        <h3 class="product-name">
+                            <a th:href="@{'/product/' + ${relatedProduct.productId}}" th:text="${relatedProduct.productName}">Product Name</a>
+                        </h3>
+                        <p class="product-price" th:text="${#numbers.formatDecimal(relatedProduct.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                            10.000.000 ₫
+                        </p>
+                    </div>
+                    <div class="product-actions">
+                        <button class="wishlist-btn" title="Thêm vào yêu thích"><i class="bi bi-heart"></i></button>
+                        <button class="add-to-cart-btn" title="Thêm vào giỏ hàng"><i class="bi bi-cart-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:text="${product.productName}">Product Images</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Buy Bar -->
+    <div class="sticky-buy-bar" id="stickyBuyBar">
+        <div class="container">
+            <div class="sticky-buy-content">
+                <div class="product-quick-info">
+                    <img th:src="${product.productImages != null && !product.productImages.isEmpty() ? product.productImages[0].imageUrl : 'https://via.placeholder.com/60x60.png?text=No+Image'}"
+                         th:alt="${product.productName}" class="sticky-product-image">
+                    <div class="sticky-product-details">
+                        <h5 class="sticky-product-name" th:text="${product.productName}">Tên sản phẩm</h5>
+                        <div class="sticky-product-price">
+                            <span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">10.000.000 ₫</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sticky-actions">
+                    <div class="sticky-quantity">
+                        <button type="button" class="qty-btn-sticky" onclick="decreaseStickyQuantity()">-</button>
+                        <input type="number" id="stickyQuantity" value="1" min="1" th:max="${product.quantity}" readonly>
+                        <button type="button" class="qty-btn-sticky" onclick="increaseStickyQuantity()">+</button>
+                    </div>
+                    
+                    <div class="sticky-buttons">
+                        <button class="btn-sticky btn-add-cart-sticky" th:disabled="${product.quantity <= 0}">
+                            <i class="bi bi-cart-plus"></i>
+                            Thêm vào giỏ
+                        </button>
+                        <button class="btn-sticky btn-buy-now-sticky" th:disabled="${product.quantity <= 0}">
+                            <i class="bi bi-lightning-charge"></i>
+                            Mua ngay
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 footer-col">
+                    <h5 class="footer-title">Về GetTech</h5>
+                    <p class="footer-text">GetTech là cửa hàng chuyên cung cấp các sản phẩm công nghệ chính hãng, từ điện thoại, laptop đến phụ kiện. Cam kết chất lượng và dịch vụ hậu mãi tốt nhất.</p>
+                </div>
+                <div class="col-lg-2 col-md-6 footer-col">
+                    <h5 class="footer-title">Liên kết</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Về chúng tôi</a></li>
+                        <li><a href="#">Sản phẩm</a></li>
+                        <li><a href="#">Khuyến mãi</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-col">
+                    <h5 class="footer-title">Hỗ trợ khách hàng</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Chính sách bảo hành</a></li>
+                        <li><a href="#">Chính sách đổi trả</a></li>
+                        <li><a href="#">Hướng dẫn mua hàng</a></li>
+                        <li><a href="#">Câu hỏi thường gặp</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-col">
+                    <h5 class="footer-title">Kết nối với chúng tôi</h5>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 GetTech. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Image gallery functionality
+        function changeMainImage(imageUrl, index) {
+            document.getElementById('mainImage').src = imageUrl;
+            
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail-image').forEach((img, i) => {
+                img.classList.toggle('active', i === index);
+            });
+        }
+
+        function openImageModal() {
+            const mainImage = document.getElementById('mainImage');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = mainImage.src;
+            modalImage.alt = mainImage.alt;
+            
+            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            modal.show();
+        }
+
+        // Quantity functionality
+        function increaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const currentValue = parseInt(quantityInput.value);
+            const maxValue = parseInt(quantityInput.max);
+            
+            if (currentValue < maxValue) {
+                quantityInput.value = currentValue + 1;
+            }
+        }
+
+        function decreaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const currentValue = parseInt(quantityInput.value);
+            
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        }
+
+        // Initialize CKEditor for description display (read-only)
+        document.addEventListener('DOMContentLoaded', function() {
+            // If description has HTML content, we'll just display it as-is
+            // CKEditor for display only (read-only mode)
+            const descriptionContent = document.getElementById('descriptionDisplay').innerHTML;
+            
+            // You can initialize CKEditor in read-only mode if needed
+            if (descriptionContent && descriptionContent.trim() !== '' && descriptionContent !== 'Chưa có mô tả cho sản phẩm này.') {
+                // The content is already rendered by Thymeleaf th:utext
+                // CKEditor is not needed for read-only display
+            }
+
+            // Add event listeners for thumbnail images
+            document.querySelectorAll('.thumbnail-clickable').forEach(function(thumbnail) {
+                thumbnail.addEventListener('click', function() {
+                    const imageUrl = this.dataset.imageUrl;
+                    const index = parseInt(this.dataset.index);
+                    changeMainImage(imageUrl, index);
+                });
+            });
+        });
+
+        // Variant Selection
+        document.querySelectorAll('.variant-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from siblings
+                this.parentNode.querySelectorAll('.variant-option').forEach(sibling => {
+                    sibling.classList.remove('selected');
+                });
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Update price if storage variant
+                if (this.dataset.storage) {
+                    updatePrice(this.dataset.storage);
+                }
+            });
+        });
+
+        // Color Selection
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from siblings
+                this.parentNode.querySelectorAll('.color-option').forEach(sibling => {
+                    sibling.classList.remove('selected');
+                });
+                // Add selected class to clicked option
+                this.classList.add('selected');
+            });
+        });
+
+        // Review Filters
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all filters
+                document.querySelectorAll('.filter-btn').forEach(filter => {
+                    filter.classList.remove('active');
+                });
+                // Add active class to clicked filter
+                this.classList.add('active');
+                // Add your filter logic here
+                filterReviews(this.textContent.trim());
+            });
+        });
+
+        // Sticky Buy Bar
+        const stickyBuyBar = document.getElementById('stickyBuyBar');
+        const actionSection = document.querySelector('.action-section');
+        
+        function toggleStickyBar() {
+            if (actionSection) {
+                const rect = actionSection.getBoundingClientRect();
+                if (rect.bottom < 0) {
+                    stickyBuyBar.classList.add('show');
+                } else {
+                    stickyBuyBar.classList.remove('show');
+                }
+            }
+        }
+
+        // Sticky quantity functions
+        window.increaseStickyQuantity = function() {
+            const quantityInput = document.getElementById('stickyQuantity');
+            const currentValue = parseInt(quantityInput.value);
+            const maxValue = parseInt(quantityInput.max);
+            
+            if (currentValue < maxValue) {
+                quantityInput.value = currentValue + 1;
+                // Sync with main quantity
+                document.getElementById('quantity').value = currentValue + 1;
+            }
+        };
+
+        window.decreaseStickyQuantity = function() {
+            const quantityInput = document.getElementById('stickyQuantity');
+            const currentValue = parseInt(quantityInput.value);
+            
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+                // Sync with main quantity
+                document.getElementById('quantity').value = currentValue - 1;
+            }
+        };
+
+        // Scroll event for sticky bar
+        window.addEventListener('scroll', toggleStickyBar);
+
+        // Store original base price on page load
+        let originalBasePrice = 0;
+        
+        // Initialize base price when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            originalBasePrice = parseFloat(document.querySelector('.current-price span').textContent.replace(/[^\d]/g, ''));
+        });
+
+        // Price update function
+        function updatePrice(storage) {
+            let newPrice = originalBasePrice; // Always use the original base price
+            
+            switch(storage) {
+                case '256GB':
+                    newPrice = originalBasePrice + 3000000;
+                    break;
+                case '512GB':
+                    newPrice = originalBasePrice + 6000000;
+                    break;
+                default:
+                    newPrice = originalBasePrice;
+            }
+            
+            // Update main price
+            document.querySelector('.current-price span').textContent = 
+                new Intl.NumberFormat('vi-VN').format(newPrice) + ' ₫';
+            
+            // Update sticky price
+            document.querySelector('.sticky-product-price span').textContent = 
+                new Intl.NumberFormat('vi-VN').format(newPrice) + ' ₫';
+                
+            // Update installment prices based on new price
+            updateInstallmentPrices(newPrice);
+        }
+        
+        // Update installment prices
+        function updateInstallmentPrices(price) {
+            const installmentItems = document.querySelectorAll('.installment-item');
+            installmentItems.forEach((item, index) => {
+                const amountSpan = item.querySelector('.amount');
+                let monthlyPayment = 0;
+                
+                switch(index) {
+                    case 0: // 3 months
+                        monthlyPayment = price / 3;
+                        break;
+                    case 1: // 6 months
+                        monthlyPayment = price / 6;
+                        break;
+                    case 2: // 12 months
+                        monthlyPayment = price / 12;
+                        break;
+                }
+                
+                amountSpan.textContent = new Intl.NumberFormat('vi-VN').format(Math.round(monthlyPayment)) + ' ₫/tháng';
+            });
+        }
+
+        // Review filter function
+        function filterReviews(filter) {
+            const reviewItems = document.querySelectorAll('.review-item');
+            
+            reviewItems.forEach(item => {
+                const rating = item.querySelectorAll('.review-rating i.bi-star-fill').length;
+                let show = true;
+                
+                switch(filter) {
+                    case '5 sao':
+                        show = rating === 5;
+                        break;
+                    case '4 sao':
+                        show = rating === 4;
+                        break;
+                    case '3 sao':
+                        show = rating === 3;
+                        break;
+                    case 'Có hình ảnh':
+                        show = item.querySelector('.review-images') !== null;
+                        break;
+                    default:
+                        show = true;
+                }
+                
+                item.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        // Add to cart functionality (placeholder)
+        document.querySelector('.btn-add-cart')?.addEventListener('click', function() {
+            const quantity = document.getElementById('quantity').value;
+            // Add your cart logic here
+            alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+        });
+
+        // Buy now functionality (placeholder)
+        document.querySelector('.btn-buy-now')?.addEventListener('click', function() {
+            const quantity = document.getElementById('quantity').value;
+            // Add your buy now logic here
+            alert(`Đang chuyển đến trang thanh toán với ${quantity} sản phẩm!`);
+        });
+
+        // Sticky buttons functionality
+        document.querySelector('.btn-add-cart-sticky')?.addEventListener('click', function() {
+            const quantity = document.getElementById('stickyQuantity').value;
+            alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+        });
+
+        document.querySelector('.btn-buy-now-sticky')?.addEventListener('click', function() {
+            const quantity = document.getElementById('stickyQuantity').value;
+            alert(`Đang chuyển đến trang thanh toán với ${quantity} sản phẩm!`);
+        });
+
+        // Wishlist functionality (placeholder)
+        document.querySelector('.btn-wishlist')?.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('bi-heart')) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                this.classList.add('active');
+                alert('Đã thêm vào danh sách yêu thích!');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                this.classList.remove('active');
+                alert('Đã xóa khỏi danh sách yêu thích!');
+            }
+        });
+
+        // Load more reviews functionality
+        document.querySelector('.load-more-reviews button')?.addEventListener('click', function() {
+            // Add your load more logic here
+            alert('Đang tải thêm đánh giá...');
+        });
+
+        // Write review functionality
+        document.querySelector('.btn-write-review')?.addEventListener('click', function() {
+            // Add your write review logic here
+            alert('Mở form viết đánh giá...');
+        });
+    </script>
+</body>
+</html> 
