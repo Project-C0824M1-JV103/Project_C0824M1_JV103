@@ -7,6 +7,8 @@ import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.service.EmailService;
 import com.example.project_c0824m1_jv103.service.employee.IEmployeeService;
 import com.example.project_c0824m1_jv103.service.security.UserDetailsServiceImpl;
+import com.example.project_c0824m1_jv103.model.Product;
+import com.example.project_c0824m1_jv103.service.product.IProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -24,8 +26,15 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/")
@@ -37,8 +46,25 @@ public class HomeController {
     @Autowired
     private EmailService emailService;
 
-    @GetMapping("")
-    public String showHome() {
+    @Autowired
+    private IProductService productService;
+
+    @GetMapping
+    public String home(Model model,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "20") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productService.findActiveProducts(pageable);
+        model.addAttribute("productPage", productPage);
+
+        int totalPages = productPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+
         return "homePage/homePage";
     }
 
@@ -187,4 +213,49 @@ public class HomeController {
         res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
         return res;
     }
+
+    // --- Product Detail Page ---
+    @GetMapping("/product/{id}")
+    public String productDetail(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+
+            
+            Product product = productService.findProductById(id);
+            if (product == null) {
+
+                redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm không tồn tại!");
+                return "redirect:/";
+            }
+            
+
+            
+            // Add product to model
+            model.addAttribute("product", product);
+            
+            // Add related products from same category (optional)
+            if (product.getCategory() != null) {
+                Pageable pageable = PageRequest.of(0, 4);
+                Page<Product> relatedProducts = productService.findActiveProducts(pageable);
+                // Filter out current product and same category
+                List<Product> filteredRelated = relatedProducts.getContent().stream()
+                    .filter(p -> !p.getProductId().equals(product.getProductId()) && 
+                                p.getCategory() != null &&
+                                p.getCategory().getCategoryId().equals(product.getCategory().getCategoryId()))
+                    .limit(4)
+                    .collect(Collectors.toList());
+                model.addAttribute("relatedProducts", filteredRelated);
+
+            }
+            
+
+            return "homePage/productDetail";
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải thông tin sản phẩm!");
+            return "redirect:/";
+        }
+    }
+    
+
 }

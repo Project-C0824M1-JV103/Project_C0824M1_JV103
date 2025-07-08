@@ -38,7 +38,7 @@ public class ProductDTO {
     @NotBlank(message = "Thông tin lưu trữ không được để trống")
     private String memory;
     
-    @Size(max = 1000, message = "Mô tả không được vượt quá 1000 ký tự")
+    @Size(max = 100000000, message = "Mô tả không được vượt quá 100000000 ký tự")
     @NotBlank(message = "Mô tả không được để trống")
     private String description; // Mô tả thêm
     

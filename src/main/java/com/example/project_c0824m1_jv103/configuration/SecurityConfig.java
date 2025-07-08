@@ -56,7 +56,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/*.css", "/css/**", "/js/**", "/favicon.ico").permitAll() // Các đường dẫn không cần login
+                        .requestMatchers("/", "/login", "/*.css", "/css/**", "/js/**", "/favicon.ico","/product/{id}").permitAll() // Các đường dẫn không cần login
                         .requestMatchers("/Customer/**").hasAnyRole("ADMIN","SALES","BUSINESS")
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN")
                         .requestMatchers("/product/**").hasAnyRole("ADMIN","SALES","BUSINESS")
