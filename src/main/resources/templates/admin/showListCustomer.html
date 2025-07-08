@@ -653,7 +653,7 @@
             
             document.getElementById('purchaseHistoryContent').innerHTML = loadingContent;
             
-            fetch('/Customer/purchase-history/' + customerId + '?page=' + page + '&size=5')
+            fetch('/Customer/purchase-history/' + customerId + '?page=' + page + '&size=6')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -716,10 +716,7 @@
                 
                 sales.forEach((sale, index) => {
                     const saleDate = new Date(sale.saleDate).toLocaleDateString('en-US');
-                    const amount = new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'VND'
-                    }).format(sale.amount);
+                    const amount = new Intl.NumberFormat('en-US').format(sale.amount);
                     
                     // Get product names from sale details
                     let productInfo = 'Không có thông tin';

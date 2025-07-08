@@ -86,8 +86,8 @@
         }
 
         .text-danger {
-            font-size: 0.85em;
-            margin-top: 4px;
+            min-height: 1.5em;
+            font-size: 0.95rem;
         }
 
         .alert {
@@ -181,7 +181,7 @@
                                 <div class="label-validation-row">
                                     <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
                                     <div class="validation-message-container">
-                                        <div class="text-danger server-error" th:if="${#fields.hasErrors('fullName')}"
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('fullName')}"
                                              th:errors="*{fullName}"></div>
                                     </div>
                                 </div>
@@ -197,7 +197,7 @@
                                 <div class="label-validation-row">
                                     <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                                     <div class="validation-message-container">
-                                        <div class="text-danger server-error" th:if="${#fields.hasErrors('phone')}"
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('phone')}"
                                              th:errors="*{phone}"></div>
                                     </div>
                                 </div>
@@ -209,7 +209,7 @@
                                 <div class="label-validation-row">
                                     <label class="form-label">Công việc <span class="text-danger">*</span></label>
                                     <div class="validation-message-container">
-                                        <div class="text-danger server-error" th:if="${#fields.hasErrors('role')}"
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('role')}"
                                              th:errors="*{role}"></div>
                                     </div>
                                 </div>
@@ -229,7 +229,7 @@
                                     <label class="form-label">Email (tên đăng nhập) <span
                                             class="text-danger">*</span></label>
                                     <div class="validation-message-container">
-                                        <div class="text-danger server-error" th:if="${#fields.hasErrors('email')}"
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('email')}"
                                              th:errors="*{email}"></div>
                                     </div>
                                 </div>
