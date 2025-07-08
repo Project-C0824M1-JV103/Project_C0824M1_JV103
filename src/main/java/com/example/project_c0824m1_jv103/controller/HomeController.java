@@ -131,8 +131,10 @@ public class HomeController {
         BeanUtils.copyProperties(employee, employeeDto);
         model.addAttribute("employee", employeeDto);
         model.addAttribute("isEditing", false);
+        model.addAttribute("originalEmployee", employeeDto);
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("isEditing", false); // Đảm bảo luôn đóng form đổi thông tin cá nhân khi lỗi đổi mật khẩu
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -140,6 +142,7 @@ public class HomeController {
 
         if (!EncryptPasswordUtils.ParseEncrypt(passwordDto.getOldPassword(), employee.getPassword())) {
             bindingResult.rejectValue("oldPassword", "error.password", "Mật khẩu hiện tại không đúng!");
+            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -147,6 +150,7 @@ public class HomeController {
 
         if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword", "error.password", "Mật khẩu xác nhận không khớp!");
+            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -155,6 +159,7 @@ public class HomeController {
         if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword()) &&
             passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
             bindingResult.rejectValue("newPassword", "error.password", "Mật khẩu mới không được trùng với mật khẩu cũ!");
+            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";

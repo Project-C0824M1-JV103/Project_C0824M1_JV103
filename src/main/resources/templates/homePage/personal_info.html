@@ -257,6 +257,7 @@
         }
         .input-group.only-input > .form-control {
             border-radius: 8px !important;
+            border-right: 1.5px solid #ccc !important;
         }
         #verifiedEmailBtn {
             border-radius: 0 8px 8px 0;
@@ -316,7 +317,7 @@
                         <span th:each="err, stat : ${#fields.errors('email')}" th:text="${err}" class="text-danger small"></span>
                     </div>
                 </div>
-                <div class="input-group">
+                <div class="input-group" id="emailInputGroup">
                     <input type="email" id="email" class="form-control" placeholder="Nhập email"
                            th:field="*{email}" th:readonly="${!isEditing}"
                            th:attr="data-original-value=${originalEmployee.email}"/>
@@ -508,15 +509,15 @@
             const input = document.getElementById(id);
             if (input) {
                 originalValues[id] = input.value;
-                input.readOnly = !(isEditing || hasError);
+                input.readOnly = !isEditing; // Chỉ mở khi isEditing == true
             }
         });
 
         if (confirmBtn) {
-            confirmBtn.disabled = !(isEditing || hasError);
+            confirmBtn.disabled = !isEditing;
         }
         if (editBtn) {
-            editBtn.textContent = (isEditing || hasError) ? "Hủy" : "Thay đổi";
+            editBtn.textContent = isEditing ? "Hủy" : "Thay đổi";
         }
 
         // Hiển thị thông báo từ server
@@ -667,15 +668,15 @@
         if (emailVerified && email === lastVerifiedEmail) {
             verifyBtn.style.display = 'none';
             verifiedBtn.style.display = 'inline-block';
-            if (inputGroup) inputGroup.classList.add('only-input');
+            inputGroup.classList.remove('only-input');
         } else if (isValidEmail(email) && !emailInput.readOnly) {
             verifyBtn.style.display = 'inline-block';
             verifiedBtn.style.display = 'none';
-            if (inputGroup) inputGroup.classList.remove('only-input');
+            inputGroup.classList.remove('only-input');
         } else {
             verifyBtn.style.display = 'none';
             verifiedBtn.style.display = 'none';
-            if (inputGroup) inputGroup.classList.add('only-input');
+            inputGroup.classList.add('only-input');
         }
         if (inputGroup) console.log('updateVerifyButton:', inputGroup.className);
     }
