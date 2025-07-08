@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ISaleRepository extends JpaRepository<Sale, Integer> {
     
     // Đếm số đơn hàng theo customer
@@ -26,4 +28,5 @@ public interface ISaleRepository extends JpaRepository<Sale, Integer> {
     // Tổng tiền theo tháng
     @Query("SELECT SUM(s.amount) FROM Sale s WHERE YEAR(s.saleDate) = :year AND MONTH(s.saleDate) = :month")
     java.math.BigDecimal sumAmountByMonth(@Param("year") int year, @Param("month") int month);
+    List<Sale> findByCustomer_CustomerId(Integer customerId);
 }

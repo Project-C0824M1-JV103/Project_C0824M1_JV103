@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Báo cáo Khách hàng</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" th:href="@{/admin-navbar.css}">
+  <link rel="stylesheet" th:href="@{/admin-common.css}">
+  <style>
+    :root {
+      --primary-color: #667eea;
+      --secondary-color: #6c757d;
+      --success-color: #28a745;
+      --info-color: #17a2b8;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --light-gray: #f8f9fa;
+      --border-radius: 8px;
+      --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-content {
+      padding: 20px;
+      background-color: var(--light-gray);
+      min-height: 100vh;
+    }
+
+    .header-section {
+      background: white;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      margin-bottom: 20px;
+    }
+
+    .filter-card {
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      margin-bottom: 20px;
+    }
+
+    .filter-card .card-header {
+      background-color: white;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      font-weight: 600;
+    }
+
+    .table-responsive {
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      white-space: nowrap;
+      vertical-align: middle;
+      padding: 15px;
+    }
+
+    .table tbody td {
+      vertical-align: middle;
+      padding: 12px 15px;
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(102, 126, 234, 0.05);
+    }
+
+    .badge {
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 50px;
+    }
+
+    .badge-male {
+      background-color: rgba(0, 123, 255, 0.1);
+      color: #007bff;
+    }
+
+    .badge-female {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+
+    .revenue-cell {
+      font-weight: 600;
+      color: var(--success-color);
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.875rem;
+      border-radius: 4px;
+    }
+
+    .pagination .page-link {
+      border-radius: 4px !important;
+      margin: 0 3px;
+    }
+
+    .page-item.active .page-link {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .empty-state {
+      padding: 40px;
+      text-align: center;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: #adb5bd;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .table-responsive {
+        border-radius: 0;
+      }
+
+      .table thead th,
+      .table tbody td {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+      }
+
+      .filter-card .col-md-3 {
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
+
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10 ms-sm-auto">
+      <div class="main-content">
+        <!-- Header Section -->
+        <div class="header-section">
+          <div class="row align-items-center">
+            <div class="col">
+              <h2 class="mb-1">
+                <i class="fas fa-chart-line text-primary me-2"></i>
+                Quản lý báo cáo khách hàng
+              </h2>
+              <p class="text-muted mb-0">
+                Phân tích và thống kê hoạt động khách hàng
+              </p>
+            </div>
+            <div class="col-auto">
+              <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-download me-1"></i> Xuất báo cáo
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                  <li><a class="dropdown-item" href="#" th:href="@{/CustomerReport/export/excel(gender=${selectedGender}, minAge=${minAge}, maxAge=${maxAge})}"><i class="fas fa-file-excel me-2"></i>Excel</a></li>
+                  <li><a class="dropdown-item" href="#" th:href="@{/CustomerReport/export/pdf(gender=${selectedGender}, minAge=${minAge}, maxAge=${maxAge})}"><i class="fas fa-file-pdf me-2"></i>PDF</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="card filter-card">
+          <div class="card-header">
+            <i class="fas fa-filter me-2"></i>Bộ lọc
+          </div>
+          <div class="card-body">
+            <form th:action="@{/CustomerReport}" method="get">
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <label class="form-label">Giới tính</label>
+                  <select name="gender" class="form-select" th:value="${selectedGender}">
+                    <option value="">Tất cả</option>
+                    <option value="Male">Nam</option>
+                    <option value="Female">Nữ</option>
+                    <option value="Other">Khác</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Tuổi từ</label>
+                  <input type="number" name="minAge" class="form-control" th:value="${minAge}" min="0" max="120" placeholder="Từ tuổi">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Tuổi đến</label>
+                  <input type="number" name="maxAge" class="form-control" th:value="${maxAge}" min="0" max="120" placeholder="Đến tuổi">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                  <button type="submit" class="btn btn-primary w-100 me-2">
+                    <i class="fas fa-filter me-1"></i> Lọc
+                  </button>
+                  <a th:href="@{/CustomerReport}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-sync-alt me-1"></i> Đặt lại
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Report Summary -->
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="card-title text-muted">Tổng khách hàng</h6>
+                <h3 class="mb-0" th:text="${reports.totalElements}">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="card-title text-muted">Tổng đơn hàng</h6>
+                <h3 class="mb-0" th:text="${totalOrders}">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="card-title text-muted">Tổng doanh thu</h6>
+                <h3 class="mb-0" th:text="${'₫' + #numbers.formatDecimal(totalRevenue, 1, 'COMMA', 2, 'POINT')}">0</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Report Table -->
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>Khách hàng</th>
+              <th>Thông tin</th>
+              <th>Giới tính</th>
+              <th>Tuổi</th>
+              <th>Số đơn</th>
+              <th>Doanh thu</th>
+              <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="report, stat : ${reports.content}">
+              <td th:text="${report.customerId}"></td>
+              <td>
+                <div class="fw-semibold" th:text="${report.customerName}"></div>
+              </td>
+              <td>
+                <div th:text="${report.phoneNumber}"></div>
+                <small class="text-muted" th:text="${report.email}"></small>
+              </td>
+              <td>
+                                    <span th:switch="${report.gender}" class="badge">
+                                        <span th:case="'Male'" class="badge-male">Nam</span>
+                                        <span th:case="'Female'" class="badge-female">Nữ</span>
+                                        <span th:case="*" class="badge bg-secondary">Khác</span>
+                                    </span>
+              </td>
+              <td th:text="${report.age}"></td>
+              <td th:text="${report.totalSales}"></td>
+              <td class="revenue-cell" th:text="${'₫' + #numbers.formatDecimal(report.totalAmount, 1, 'COMMA', 2, 'POINT')}"></td>
+              <td>
+                <div class="d-flex">
+                  <a th:href="@{/CustomerReport/view/{id}(id=${report.customerId})}" class="btn btn-sm btn-info me-2" title="Xem chi tiết">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a th:href="@{/CustomerReport/export/{id}(id=${report.customerId})}" class="btn btn-sm btn-success" title="Xuất báo cáo">
+                    <i class="fas fa-download"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Empty state -->
+            <tr th:if="${reports.totalElements == 0}">
+              <td colspan="8">
+                <div class="empty-state py-5">
+                  <i class="fas fa-chart-pie fa-4x"></i>
+                  <h4 class="mt-3">Không có dữ liệu</h4>
+                  <p class="text-muted">Không tìm thấy báo cáo nào phù hợp với tiêu chí lọc</p>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:if="${reports.totalPages > 1}" aria-label="Page navigation" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" th:class="${reports.first} ? 'disabled' : ''">
+              <a class="page-link" th:href="@{/CustomerReport(page=0, gender=${selectedGender}, minAge=${minAge}, maxAge=${maxAge})}" aria-label="First">
+                <i class="fas fa-angle-double-left"></i>
+              </a>
+            </li>
+            <li class="page-item" th:class="${reports.first} ? 'disabled' : ''">
+              <a class="page-link" th:href="@{/CustomerReport(page=${reports.number - 1}, gender=${selectedGender}, minAge=${minAge}, maxAge=${maxAge})}" aria-label="Previous">
+                <i class="fas fa-angle-left"></i>
+              </a>
+            </li>
+
+            <li th:each="pageNum : ${#numbers.sequence(0, reports.totalPages - 1)}"
+                class="page-item" th:class="${pageNum == reports.number} ? 'active' : ''">
+              <a class="page-link" th:href="@{/CustomerReport(page=${pageNum}, gender=${selectedGender}, minAge=${minAge}, maxAge=${maxAge})}" th:text="${pageNum + 1}"></a>
+            </li>
+
+            <li class="page-item" th:class="${reports.last} ? 'disabled' : ''">
+              <a class="page-link" th:href="@{/CustomerReport(page=${reports.number + 1}, gender=${selectedGender}, minAge=${minAge}, maxAge=${maxAge})}" aria-label="Next">
+                <i class="fas fa-angle-right"></i>
+              </a>
+            </li>
+            <li class="page-item" th:class="${reports.last} ? 'disabled' : ''">
+              <a class="page-link" th:href="@{/CustomerReport(page=${reports.totalPages - 1}, gender=${selectedGender}, minAge=${minAge}, maxAge=${maxAge})}" aria-label="Last">
+                <i class="fas fa-angle-double-right"></i>
+              </a>
+            </li>
+          </ul>
+          <div class="text-center text-muted mt-2">
+            Trang <span th:text="${reports.number + 1}"></span> / <span th:text="${reports.totalPages}"></span>
+            - Hiển thị <span th:text="${reports.numberOfElements}"></span> trong tổng số <span th:text="${reports.totalElements}"></span> kết quả
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Enable tooltips
+  document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Add animation to table rows
+    const tableRows = document.querySelectorAll('tbody tr');
+    tableRows.forEach((row, index) => {
+      row.style.opacity = '0';
+      row.style.transform = 'translateY(20px)';
+      row.style.transition = `all 0.3s ease ${index * 0.05}s`;
+
+      setTimeout(() => {
+        row.style.opacity = '1';
+        row.style.transform = 'translateY(0)';
+      }, 50);
+    });
+  });
+</script>
+</body>
+</html>

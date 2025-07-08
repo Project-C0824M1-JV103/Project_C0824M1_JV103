@@ -309,7 +309,7 @@
                     </div>
 
                     <div class="form-body">
-                        <form th:action="@{/Supplier/save}" th:object="${supplier}" method="post" enctype="multipart/form-data">
+                        <form th:action="@{/Supplier/save}" th:object="${supplierDto}" method="post" enctype="multipart/form-data">
                             <input type="hidden" th:field="*{suplierId}"/>
 
                             <div class="form-row">
@@ -365,9 +365,9 @@
 
                                         </h6>
                                         <div id="imagePreview">
-                                            <th:block th:if="${supplier.imageUrl}">
+                                            <th:block th:if="${supplierDto.imageUrl}">
                                                 <div class="image-preview" data-file-index="-1">
-                                                    <img th:src="${supplier.imageUrl}" alt="Current Image" />
+                                                    <img th:src="${supplierDto.imageUrl}" alt="Current Image" />
                                                     <button type="button" class="btn-delete" onclick="removeCurrentImage()" title="Xóa ảnh hiện tại">
                                                         <i class="fas fa-times"></i>
                                                     </button>

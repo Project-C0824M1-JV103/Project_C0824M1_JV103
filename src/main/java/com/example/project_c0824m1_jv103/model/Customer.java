@@ -37,7 +37,8 @@ public class Customer {
     
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Sale> sales;
-    
+    @Column(name = "gender", length = 10)
+    private String gender; // Thêm trường giới tính (Male/Female)
     // Constructors
     public Customer() {}
     
@@ -104,5 +105,12 @@ public class Customer {
     
     public void setSales(List<Sale> sales) {
         this.sales = sales;
+    }
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 } 
