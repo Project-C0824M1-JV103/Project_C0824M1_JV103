@@ -184,16 +184,20 @@ public class StorageService implements IStorageService {
         if (employee == null) {
             throw new RuntimeException("Nhân viên không tồn tại");
         }
-        Optional<Storage> existingStorageOpt = storageRepository.findByProduct_ProductId(importDTO.getProductId());
+        
+        // Tìm Storage theo cả productId và cost để tránh lỗi unique result
+        Optional<Storage> existingStorageOpt = storageRepository.findByProduct_ProductIdAndCost(importDTO.getProductId(), importDTO.getCost());
         Storage savedStorage;
+        
         if (existingStorageOpt.isPresent()) {
+            // Tìm thấy Storage với cùng productId và cost -> cộng dồn
             Storage existingStorage = existingStorageOpt.get();
             existingStorage.setQuantity(existingStorage.getQuantity() + importDTO.getImportQuantity());
-            existingStorage.setCost(importDTO.getCost()); // cập nhật giá nhập mới nhất
             existingStorage.setEmployee(employee);
             existingStorage.setTransactionDate(java.time.LocalDateTime.now());
             savedStorage = storageRepository.save(existingStorage);
         } else {
+            // Không tìm thấy Storage với cùng productId và cost -> tạo mới
             Storage newStorage = new Storage();
             newStorage.setProduct(product);
             newStorage.setQuantity(importDTO.getImportQuantity());
@@ -227,9 +231,9 @@ public class StorageService implements IStorageService {
 
     @Override
     @Transactional
-    public Storage updateStorage(Integer storageId, StorageDto storageDto) {
-        Storage existingStorage = storageRepository.findById(storageId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bản ghi nhập kho"));
+    public StorageTransaction updateStorageTransaction(Integer transactionId, StorageDto storageDto) {
+        StorageTransaction existingTransaction = storageTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bản ghi giao dịch"));
 
         // Validate input
         if (storageDto.getQuantity() == null || storageDto.getQuantity() <= 0) {
@@ -240,28 +244,91 @@ public class StorageService implements IStorageService {
             throw new RuntimeException("Giá nhập phải lớn hơn 0");
         }
 
+        // Chỉ cho phép chỉnh sửa transaction IMPORT
+        if (existingTransaction.getTransactionType() != StorageTransaction.TransactionType.IMPORT) {
+            throw new RuntimeException("Chỉ có thể chỉnh sửa giao dịch nhập kho");
+        }
+
         // Update fields that can be changed
-        Integer oldQuantity = existingStorage.getQuantity();
+        Integer oldQuantity = existingTransaction.getQuantity();
         Integer newQuantity = storageDto.getQuantity();
 
-        // Update storage record
-        existingStorage.setQuantity(newQuantity);
-        existingStorage.setCost(storageDto.getCost());
+        // Update transaction record
+        existingTransaction.setQuantity(newQuantity);
+        existingTransaction.setCost(storageDto.getCost());
+        existingTransaction.setTransactionDate(LocalDateTime.now());
 
         // Update employee if provided
         if (storageDto.getEmployeeId() != null) {
             Employee employee = employeeRepository.findById(storageDto.getEmployeeId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
-            existingStorage.setEmployee(employee);
+            existingTransaction.setEmployee(employee);
         }
 
-        // Update product quantity based on difference
-        Product product = existingStorage.getProduct();
-        int quantityDifference = newQuantity - oldQuantity;
-        product.setQuantity(product.getQuantity() + quantityDifference);
-        productRepository.save(product);
+        // Update description
+        existingTransaction.setDescription("Cập nhật giao dịch nhập kho " + newQuantity + " sản phẩm " + existingTransaction.getProduct().getProductName());
 
-        return storageRepository.save(existingStorage);
+        // Update related storage records
+        Product product = existingTransaction.getProduct();
+        int quantityDifference = newQuantity - oldQuantity;
+        
+        // Cập nhật tồn kho trong Storage
+        List<Storage> storages = storageRepository.findByProduct_ProductIdAndCostOrderByTransactionDateAsc(
+                product.getProductId(), storageDto.getCost());
+        
+        if (!storages.isEmpty()) {
+            // Cập nhật storage record có cùng cost
+            Storage storageToUpdate = storages.get(0);
+            storageToUpdate.setQuantity(storageToUpdate.getQuantity() + quantityDifference);
+            storageToUpdate.setTransactionDate(LocalDateTime.now());
+            storageRepository.save(storageToUpdate);
+        }
+
+        return storageTransactionRepository.save(existingTransaction);
+    }
+
+    @Override
+    public StorageTransaction getStorageTransactionById(Integer transactionId) {
+        return storageTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy giao dịch"));
+    }
+
+    @Override
+    @Transactional
+    public void deleteStorageTransaction(Integer transactionId) {
+        StorageTransaction transaction = storageTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy giao dịch"));
+        
+        // Chỉ cho phép xóa giao dịch IMPORT
+        if (transaction.getTransactionType() != StorageTransaction.TransactionType.IMPORT) {
+            throw new RuntimeException("Chỉ có thể xóa giao dịch nhập kho");
+        }
+        
+        // Cập nhật lại số lượng trong Storage
+        Product product = transaction.getProduct();
+        List<Storage> storages = storageRepository.findByProduct_ProductIdAndCostOrderByTransactionDateAsc(
+                product.getProductId(), transaction.getCost());
+        
+        if (!storages.isEmpty()) {
+            Storage storageToUpdate = storages.get(0);
+            int newQuantity = storageToUpdate.getQuantity() - transaction.getQuantity();
+            
+            if (newQuantity < 0) {
+                throw new RuntimeException("Không thể xóa giao dịch này vì sẽ làm số lượng tồn kho trở thành âm");
+            }
+            
+            if (newQuantity == 0) {
+                // Xóa storage record nếu số lượng = 0
+                storageRepository.delete(storageToUpdate);
+            } else {
+                // Cập nhật số lượng mới
+                storageToUpdate.setQuantity(newQuantity);
+                storageRepository.save(storageToUpdate);
+            }
+        }
+        
+        // Xóa giao dịch
+        storageTransactionRepository.delete(transaction);
     }
 
     @Override
@@ -327,7 +394,13 @@ public class StorageService implements IStorageService {
 
     @Override
     public Optional<Storage> findByProductId(Integer productId) {
-        return storageRepository.findByProduct_ProductId(productId);
+        // Thay vì trả về Optional<Storage>, trả về Storage đầu tiên tìm được
+        // hoặc null nếu không tìm thấy để tránh lỗi unique result
+        List<Storage> storages = storageRepository.findAll().stream()
+            .filter(storage -> storage.getProduct().getProductId().equals(productId))
+            .collect(Collectors.toList());
+        
+        return storages.isEmpty() ? Optional.empty() : Optional.of(storages.get(0));
     }
 
     @Override

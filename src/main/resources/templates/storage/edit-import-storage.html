@@ -245,27 +245,27 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="info-label">Tên sản phẩm:</div>
-                                    <div class="info-value" th:text="${storage.product.productName}"></div>
+                                    <div class="info-value" th:text="${transaction.product.productName}"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="info-label">Nhà cung cấp hiện tại:</div>
-                                    <div class="info-value" th:text="${storage.product.supplier.suplierName}"></div>
+                                    <div class="info-value" th:text="${transaction.product.supplier.suplierName}"></div>
                                 </div>
                             </div>
                             <div class="row mt-2">
                                 <div class="col-md-6">
                                     <div class="info-label">Ngày nhập:</div>
-                                    <div class="info-value" th:text="${#temporals.format(storage.transactionDate, 'dd/MM/yyyy HH:mm')}"></div>
+                                    <div class="info-value" th:text="${#temporals.format(transaction.transactionDate, 'dd/MM/yyyy HH:mm')}"></div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="info-label">Số lượng tồn kho:</div>
-                                    <div class="info-value" th:text="${storage.product.quantity} + ' sản phẩm'"></div>
-                                </div>
+<!--                                <div class="col-md-6">-->
+<!--                                    <div class="info-label">Số lượng tồn kho:</div>-->
+<!--                                    <div class="info-value" th:text="${storage.quantity} + ' sản phẩm'"></div>-->
+<!--                                </div>-->
                             </div>
                         </div>
 
                         <form
-                                th:action="@{/storage/update/{id}(id=${storage.storageId})}"
+                                th:action="@{/storage/update/{id}(id=${transaction.transactionId})}"
                                 th:object="${storageDto}"
                                 method="post"
                                 novalidate
@@ -278,7 +278,7 @@
                                         <input
                                                 type="text"
                                                 class="form-control readonly-field"
-                                                th:value="${storage.product.productName}"
+                                                th:value="${transaction.product.productName}"
                                                 readonly
                                         />
                                         <input type="hidden" th:field="*{productId}" />

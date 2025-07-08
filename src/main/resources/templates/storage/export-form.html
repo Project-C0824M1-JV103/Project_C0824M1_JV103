@@ -29,6 +29,12 @@
         .btn-actions {
             margin-top: 20px;
         }
+        .header-section .text-muted { font-size: 0.95rem; color: #6c757d; }
+
+        .btn-success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -40,16 +46,30 @@
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content">
-                <div class="export-form">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="mb-0">
-                            <i class="fas fa-box-open text-primary"></i>
-                            Xuất kho
+                <div class="header-section">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h2 class="mb-1">
+                            <i class="fas fa-truck-loading text-primary"></i>
+                            Quản lý xuất kho
                         </h2>
-                        <a href="/storage/history" class="btn btn-outline-info">
-                            <i class="fas fa-history"></i> Lịch sử xuất kho
+                        <p href="/storage/export" class="text-muted mb-0">
+                            Xuất kho sản phẩm
+                        </p>
+                    </div>
+                    <div class="col-auto">
+                        <a th:href="@{/storage/history}" class="btn btn-success">
+                            <i class="fas fa-history "></i> Lịch sử xuất kho
+                        </a>
+                        <a th:href="@{/storage/list-import}" class="btn btn-success">
+                            <i class="fas fa-boxes"></i> Quản lý nhập kho
                         </a>
                     </div>
+                </div>
+
+            </div>
+                <div class="export-form">
+
 
                     <!-- Alert Messages -->
                     <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">

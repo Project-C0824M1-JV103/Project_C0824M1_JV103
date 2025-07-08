@@ -20,6 +20,45 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+        .header-section .text-muted { font-size: 0.95rem; color: #6c757d; }
+
+        .btn-success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        /* Pagination styles */
+        .pagination .page-link {
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+            color: #495057;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            color: #6c757d;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #667eea;
+        }
+
     </style>
 </head>
 <body>
@@ -28,21 +67,46 @@
         <div th:replace="~{navbar/admin-navbar :: admin-sidebar}"></div>
         <div class="col-md-9 col-lg-10">
             <div class="main-content">
-                <div class="export-form">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="mb-0">
-                            <i class="fas fa-history text-info"></i>
-                            Lịch sử xuất kho
-                        </h2>
-                        <a href="/storage/export" class="btn btn-outline-primary">
-                            <i class="fas fa-dolly"></i> Xuất sản phẩm
-                        </a>
+<!--                <div class="header-section">-->
+<!--                    <div class="row align-items-center">-->
+<!--                        <div class="col">-->
+<!--                            <h2 class="mb-1">-->
+<!--                                <i class="fas fa-history text-primary"></i>-->
+<!--                                Lịch sử xuất kho-->
+<!--                            </h2>-->
+<!--                            <a href="/storage/export" class="text-muted mb-0">-->
+<!--                                <i class="fas fa-dolly"></i> Xuất sản phẩm-->
+<!--                            </a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+                <div class="header-section">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-1">
+                                <i class="fas fa-truck-loading text-primary"></i>
+                                Quản lý xuất kho
+                            </h2>
+                            <p href="/storage/export" class="text-muted mb-0">
+                                Lịch sử xuất kho
+                            </p>
+
+                        </div>
+                        <div class="col-auto">
+                            <a th:href="@{/storage/export}" class="btn btn-success">
+                                <i class="fas fa-plus "></i> Xuất sản phẩm
+                            </a>
+                        </div>
                     </div>
+
+                </div>
+                <div class="history-section">
+                <div class="export-form">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                             <tr>
-                                <th>#</th>
+                                <th>STT</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Nhà cung cấp</th>
                                 <th>Số lượng xuất</th>
@@ -63,39 +127,43 @@
                             </tbody>
                         </table>
                     </div>
-                    <nav th:if="${totalPages > 1}" aria-label="Export history pagination">
+                    <nav aria-label="Phân trang lịch sử xuất kho" class="mt-4">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <li class="page-item" th:classappend="${totalElements == 0 || exportPage == 0} ? 'disabled' : ''">
                                 <a class="page-link" th:href="@{/storage/history(page=0)}">
                                     <i class="fas fa-angle-double-left"></i>
                                 </a>
                             </li>
-                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                <a class="page-link" th:href="@{/storage/history(page=${currentPage - 1})}">
+                            <li class="page-item" th:classappend="${totalElements == 0 || exportPage == 0} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/storage/history(page=${exportPage - 1})}">
                                     <i class="fas fa-angle-left"></i>
                                 </a>
                             </li>
-                            <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                                th:if="${pageNum >= currentPage - 2 and pageNum <= currentPage + 2}"
-                                class="page-item" th:classappend="${pageNum == currentPage} ? 'active'">
-                                <a class="page-link" th:href="@{/storage/history(page=${pageNum})}" th:text="${pageNum + 1}"></a>
-                            </li>
-                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                                <a class="page-link" th:href="@{/storage/history(page=${currentPage + 1})}">
+                            <th:block th:if="${totalElements > 0}">
+                                <th:block th:each="page : ${#numbers.sequence(0, totalPages - 1)}">
+                                    <li class="page-item" th:classappend="${page == exportPage} ? 'active' : ''">
+                                        <a class="page-link" th:href="@{/storage/history(page=${page})}" th:text="${page + 1}"></a>
+                                    </li>
+                                </th:block>
+                            </th:block>
+                            <li class="page-item" th:classappend="${totalElements == 0 || exportPage >= totalPages - 1} ? 'disabled' : ''">
+                                <a class="page-link" th:href="@{/storage/history(page=${exportPage + 1})}">
                                     <i class="fas fa-angle-right"></i>
                                 </a>
                             </li>
-                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                            <li class="page-item" th:classappend="${totalElements == 0 || exportPage == totalPages - 1} ? 'disabled' : ''">
                                 <a class="page-link" th:href="@{/storage/history(page=${totalPages - 1})}">
                                     <i class="fas fa-angle-double-right"></i>
                                 </a>
                             </li>
                         </ul>
+                        <div class="text-center text-muted mt-2" th:if="${totalElements} != 0">
+                            Trang <span th:text="${exportPage + 1}"></span> trong tổng số
+                            <span th:text="${totalPages}"></span> trang
+                            (<span th:text="${totalElements}"></span> lần xuất kho)
+                        </div>
                     </nav>
-                    <div class="text-center text-muted mt-2">
-                        Trang <span th:text="${currentPage + 1}"></span> trong tổng số <span th:text="${totalPages}"></span> trang
-                        (<span th:text="${totalElements}"></span> lần xuất kho)
-                    </div>
+                </div>
                 </div>
             </div>
         </div>
