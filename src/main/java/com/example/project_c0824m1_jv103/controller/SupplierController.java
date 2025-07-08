@@ -118,50 +118,42 @@ public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, 
     @PostMapping("/save")
     public String saveSupplier(
             @Valid @ModelAttribute("supplierDto") SupplierDto supplierDto,
-            BindingResult result,
+            BindingResult bindingResult,
             @RequestParam(value = "image", required = false) MultipartFile image,
             RedirectAttributes redirectAttributes,
             Model model) {
+
+        // Kiểm tra validation cơ bản (annotation)
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("currentPage", "supplier");
+            return "supplier/edit";
+        }
+
+        // Kiểm tra validation từ service (giữ nguyên logic cũ)
+        String validationError = supplierService.validateNewSupplier(supplierDto);
+        if (validationError != null) {
+            // Phân tích thông báo lỗi để xác định trường nào bị lỗi
+            if (validationError.contains("Email")) {
+                bindingResult.rejectValue("email", "", validationError);
+            } else if (validationError.contains("Số điện thoại")) {
+                bindingResult.rejectValue("phoneNumber", "", validationError);
+            } else if (validationError.contains("Tên nhà cung cấp")) {
+                bindingResult.rejectValue("suplierName", "", validationError);
+            } else {
+                bindingResult.reject("", validationError); // Lỗi chung
+            }
+
+            model.addAttribute("currentPage", "supplier");
+            return "supplier/edit";
+        }
+
         try {
-            // Kiểm tra validation errors cơ bản
-            if (result.hasErrors()) {
-                StringBuilder errorMessage = new StringBuilder("Vui lòng kiểm tra lại thông tin đã nhập: ");
-                result.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append("; "));
-                model.addAttribute("error", errorMessage.toString());
-                model.addAttribute("currentPage", "supplier");
-                return "supplier/edit";
-            }
-
-            // Kiểm tra validation trùng lặp (email và phone)
-            String validationError = supplierService.validateNewSupplier(supplierDto);
-            if (validationError != null) {
-                model.addAttribute("error", validationError);
-                model.addAttribute("currentPage", "supplier");
-                return "supplier/edit";
-            }
-
-            // Gán file ảnh nếu có
             supplierDto.setImageFile(image);
-
-            // Lưu supplier
             supplierService.saveSupplier(supplierDto);
-
             redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
             return "redirect:/Supplier";
-        } catch (IOException e) {
-            System.err.println("Image upload error - " + e.getMessage());
-            model.addAttribute("error", "Lỗi khi tải ảnh lên: " + e.getMessage());
-            model.addAttribute("currentPage", "supplier");
-            return "supplier/edit";
-        } catch (RuntimeException e) {
-            System.err.println("Runtime error - " + e.getMessage());
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("currentPage", "supplier");
-            return "supplier/edit";
         } catch (Exception e) {
-            System.err.println("Unexpected error - " + e.getMessage());
-            e.printStackTrace();
-            model.addAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+            bindingResult.reject("", "Có lỗi xảy ra: " + e.getMessage());
             model.addAttribute("currentPage", "supplier");
             return "supplier/edit";
         }

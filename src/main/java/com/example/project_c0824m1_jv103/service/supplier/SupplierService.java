@@ -207,11 +207,11 @@ public String validateNewSupplier(SupplierDto supplierDto) {
     if (supplierDto.getEmail() != null && !supplierDto.getEmail().trim().isEmpty()) {
         if (id == null) { // Thêm mới
             if (isEmailExists(supplierDto.getEmail())) {
-                return "Email '" + supplierDto.getEmail() + "' đã được sử dụng bởi nhà cung cấp khác";
+                return "Email đã được sử dụng bởi nhà cung cấp khác";
             }
         } else { // Chỉnh sửa
             if (isEmailExistsForUpdate(supplierDto.getEmail(), id)) {
-                return "Email '" + supplierDto.getEmail() + "' đã được sử dụng bởi nhà cung cấp khác";
+                return "Email đã được sử dụng bởi nhà cung cấp khác";
             }
         }
     }
@@ -220,11 +220,11 @@ public String validateNewSupplier(SupplierDto supplierDto) {
     if (supplierDto.getPhoneNumber() != null && !supplierDto.getPhoneNumber().trim().isEmpty()) {
         if (id == null) { // Thêm mới
             if (isPhoneNumberExists(supplierDto.getPhoneNumber())) {
-                return "Số điện thoại '" + supplierDto.getPhoneNumber() + "' đã được sử dụng bởi nhà cung cấp khác";
+                return "Số điện thoại đã được sử dụng bởi nhà cung cấp khác";
             }
         } else { // Chỉnh sửa
             if (isPhoneNumberExistsForUpdate(supplierDto.getPhoneNumber(), id)) {
-                return "Số điện thoại '" + supplierDto.getPhoneNumber() + "' đã được sử dụng bởi nhà cung cấp khác";
+                return "Số điện thoại đã được sử dụng bởi nhà cung cấp khác";
             }
         }
     }
