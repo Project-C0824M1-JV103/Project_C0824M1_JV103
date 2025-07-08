@@ -30,4 +30,9 @@ public interface ISupplierService {
 
     boolean isSupplierNameExistsForUpdate(String suplierName, Integer id);
     String validateNewSupplier(SupplierDto supplierDto);
+
+    // System-wide validation methods
+    boolean isEmailExistsInSystem(String email);
+    boolean isPhoneExistsInSystem(String phone);
+    boolean isSupplierNameExistsInSystem(String supplierName);
 }

@@ -91,16 +91,10 @@
         }
 
         .alert {
-            max-width: 600px;
-            margin: 0 auto 20px auto;
+            margin-bottom: 20px;
         }
 
-        .invalid-feedback {
-            display: block;
-            color: #dc3545;
-            font-size: 0.875em;
-            margin-top: 5px;
-        }
+
 
         .label-validation-row {
             display: flex;
@@ -195,7 +189,6 @@
                                         type="text"
                                         th:field="*{fullName}"
                                         class="form-control"
-                                        th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'"
                                         placeholder="Nhập họ và tên"
                                 />
                             </div>
@@ -209,7 +202,6 @@
                                     </div>
                                 </div>
                                 <input type="tel" th:field="*{phone}" class="form-control" 
-                                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'"
                                        placeholder="Nhập số điện thoại" />
                             </div>
 
@@ -221,8 +213,7 @@
                                              th:errors="*{role}"></div>
                                     </div>
                                 </div>
-                                <select th:field="*{role}" class="form-select"
-                                        th:classappend="${#fields.hasErrors('role')} ? 'is-invalid'">
+                                <select th:field="*{role}" class="form-select">
                                     <option value="">-- Chọn công việc --</option>
                                     <option th:each="role : ${roles}" th:if="${role.name() != 'Admin'}"
                                             th:value="${role}"
@@ -243,7 +234,6 @@
                                     </div>
                                 </div>
                                 <input type="email" th:field="*{email}" class="form-control" 
-                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
                                        placeholder="Nhập email nhân viên"/>
                             </div>
 
@@ -335,7 +325,7 @@
           .then(response => response.json())
           .then(data => {
             if (data.exists) {
-              showValidationError(emailInput, 'Email này đã được sử dụng bởi nhân viên khác');
+              showValidationError(emailInput, 'Email này đã được sử dụng trong hệ thống');
             }
           })
           .catch(error => {
@@ -397,7 +387,7 @@
           .then(response => response.json())
           .then(data => {
             if (data.exists) {
-              showValidationError(phoneInput, 'Số điện thoại này đã được sử dụng bởi nhân viên khác');
+              showValidationError(phoneInput, 'Số điện thoại này đã được sử dụng trong hệ thống');
             }
           })
           .catch(error => {
@@ -476,8 +466,6 @@
 
   // Show validation error
   function showValidationError(inputElement, message) {
-    inputElement.classList.add('is-invalid');
-    
     const container = inputElement.parentNode.querySelector('.label-validation-row .validation-message-container');
     if (container) {
       let feedback = container.querySelector('.client-validation-feedback');
@@ -492,7 +480,6 @@
 
   // Remove validation message
   function removeValidationMessage(inputElement) {
-    inputElement.classList.remove('is-invalid');
     const container = inputElement.parentNode.querySelector('.label-validation-row .validation-message-container');
     if (container) {
       const feedback = container.querySelector('.client-validation-feedback');

@@ -202,22 +202,22 @@ public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, 
         }
     }
 
-    // API endpoint để kiểm tra email đã tồn tại
+    // API endpoint để kiểm tra email đã tồn tại trong toàn hệ thống
     @GetMapping("/check-email")
     @ResponseBody
     public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
         Map<String, Boolean> response = new HashMap<>();
-        boolean exists = supplierService.isEmailExists(email);
+        boolean exists = supplierService.isEmailExistsInSystem(email);
         response.put("exists", exists);
         return response;
     }
 
-    // API endpoint để kiểm tra số điện thoại đã tồn tại
+    // API endpoint để kiểm tra số điện thoại đã tồn tại trong toàn hệ thống
     @GetMapping("/check-phone")
     @ResponseBody
     public Map<String, Boolean> checkPhoneNumber(@RequestParam("phoneNumber") String phoneNumber) {
         Map<String, Boolean> response = new HashMap<>();
-        boolean exists = supplierService.isPhoneNumberExists(phoneNumber);
+        boolean exists = supplierService.isPhoneExistsInSystem(phoneNumber);
         response.put("exists", exists);
         return response;
     }
@@ -227,7 +227,7 @@ public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, 
     @ResponseBody
     public Map<String, Boolean> checkSupplierName(@RequestParam("suplierName") String suplierName) {
         Map<String, Boolean> response = new HashMap<>();
-        boolean exists = supplierService.isSupplierNameExists(suplierName);
+        boolean exists = supplierService.isSupplierNameExistsInSystem(suplierName);
         response.put("exists", exists);
         return response;
     }

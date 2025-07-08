@@ -265,22 +265,22 @@ public class EmployeeController extends BaseAdminController {
         return "redirect:/employees";
     }
 
-    // API endpoint để kiểm tra email đã tồn tại
+    // API endpoint để kiểm tra email đã tồn tại trong toàn hệ thống
     @GetMapping("/check-email")
     @ResponseBody
     public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
         Map<String, Boolean> response = new HashMap<>();
-        boolean exists = employeeService.findByEmail(email) != null;
+        boolean exists = employeeService.isEmailExistsInSystem(email);
         response.put("exists", exists);
         return response;
     }
 
-    // API endpoint để kiểm tra số điện thoại đã tồn tại
+    // API endpoint để kiểm tra số điện thoại đã tồn tại trong toàn hệ thống
     @GetMapping("/check-phone")
     @ResponseBody
     public Map<String, Boolean> checkPhone(@RequestParam("phone") String phone) {
         Map<String, Boolean> response = new HashMap<>();
-        boolean exists = employeeService.findByPhone(phone) != null;
+        boolean exists = employeeService.isPhoneExistsInSystem(phone);
         response.put("exists", exists);
         return response;
     }
