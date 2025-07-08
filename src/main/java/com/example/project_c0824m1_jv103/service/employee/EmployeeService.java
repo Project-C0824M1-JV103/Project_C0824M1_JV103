@@ -171,4 +171,20 @@ public class EmployeeService implements IEmployeeService {
         
         return existsInEmployee || existsInCustomer || existsInSupplier;
     }
+
+    @Override
+    public boolean isEmailExistsInSystem(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return employeeRepository.isEmailExistsInSystem(email);
+    }
+
+    @Override
+    public boolean isPhoneExistsInSystem(String phone) {
+        if (phone == null || phone.trim().isEmpty()) {
+            return false;
+        }
+        return employeeRepository.isPhoneExistsInSystem(phone);
+    }
 }

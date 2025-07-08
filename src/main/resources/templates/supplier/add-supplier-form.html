@@ -163,13 +163,6 @@
       font-weight: 600;
     }
 
-    .invalid-feedback {
-      display: block;
-      color: #dc3545;
-      font-size: 0.875em;
-      margin-top: 5px;
-    }
-
     .required {
       color: #dc3545;
     }
@@ -277,7 +270,6 @@
                       type="text"
                       th:field="*{suplierName}"
                       class="form-control"
-                      th:classappend="${#fields.hasErrors('suplierName')} ? 'is-invalid'"
                       placeholder="Nhập tên nhà cung cấp"
                       required
                     />
@@ -299,7 +291,6 @@
                       type="email"
                       th:field="*{email}"
                       class="form-control"
-                      th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
                       placeholder="Nhập email nhà cung cấp"
                       required
                     />
@@ -321,7 +312,6 @@
                       type="tel"
                       th:field="*{phoneNumber}"
                       class="form-control"
-                      th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
                       placeholder="Nhập số điện thoại"
                       required
                     />
@@ -342,7 +332,6 @@
                     <textarea
                       th:field="*{address}"
                       class="form-control"
-                      th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'"
                       placeholder="Nhập địa chỉ nhà cung cấp"
                       rows="3"
                       required
@@ -608,7 +597,7 @@
           .then(response => response.json())
           .then(data => {
             if (data.exists) {
-              showValidationError(emailInput, 'Email này đã được sử dụng bởi nhà cung cấp khác');
+              showValidationError(emailInput, 'Email này đã được sử dụng trong hệ thống');
             }
           })
           .catch(error => {
@@ -661,7 +650,7 @@
           .then(response => response.json())
           .then(data => {
             if (data.exists) {
-              showValidationError(phoneInput, 'Số điện thoại này đã được sử dụng bởi nhà cung cấp khác');
+              showValidationError(phoneInput, 'Số điện thoại này đã được sử dụng trong hệ thống');
             }
           })
           .catch(error => {
@@ -708,7 +697,7 @@
           .then(response => response.json())
           .then(data => {
             if (data.exists) {
-              showValidationError(nameInput, 'Tên nhà cung cấp này đã được sử dụng bởi nhà cung cấp khác');
+              showValidationError(nameInput, 'Tên nhà cung cấp này đã tồn tại');
             }
           })
           .catch(error => {
@@ -739,8 +728,6 @@
 
   // Show validation error
   function showValidationError(inputElement, message) {
-    inputElement.classList.add('is-invalid');
-    
     // Find the label container
     const formGroup = inputElement.closest('.form-group');
     const labelContainer = formGroup.querySelector('.d-flex.align-items-center');
@@ -765,7 +752,6 @@
 
   // Remove validation message
   function removeValidationMessage(inputElement) {
-    inputElement.classList.remove('is-invalid');
     const formGroup = inputElement.closest('.form-group');
     const labelContainer = formGroup.querySelector('.d-flex.align-items-center');
     const clientError = labelContainer.querySelector('.client-validation-error');

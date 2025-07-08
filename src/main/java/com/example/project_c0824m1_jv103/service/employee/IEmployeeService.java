@@ -31,4 +31,8 @@ public interface IEmployeeService {
 
     boolean isEmailExists(String email, Integer employeeId);
     boolean isPhoneExists(String phoneNumber, Integer employeeId);
+
+    // System-wide validation methods
+    boolean isEmailExistsInSystem(String email);
+    boolean isPhoneExistsInSystem(String phone);
 }
