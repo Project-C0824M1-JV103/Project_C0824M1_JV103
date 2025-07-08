@@ -30,6 +30,7 @@ public interface IProductService {
     Page<ProductDTO> findAllWithQuantityAndZeroPrice(Pageable pageable);
 
     Page<ProductDTO> findAll(Pageable pageable);
+    Page<Product> findActiveProducts(Pageable pageable);
 
     // Tìm kiếm sản phẩm với nhiều điều kiện
     Page<ProductDTO> searchProducts(

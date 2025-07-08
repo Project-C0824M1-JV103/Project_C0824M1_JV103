@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <title>Cửa hàng điện thoại</title>
+    <title>GetTech - Cửa hàng công nghệ</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,505 +12,208 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     />
     <link rel="stylesheet" th:href="@{/css/homePage.css}" />
+    <link rel="stylesheet" th:href="@{/css/navbar.css}" />
   </head>
   <body>
     <!-- Navbar -->
-    <div th:insert="~{navbar/navbar}"></div>
+    <div th:insert="~{navbar/navbar :: body}"></div>
 
-    <!-- Main Content -->
-    <div class="main-wrapper">
-      <!-- Filter Section -->
-      <div class="filter-container">
-        <!-- Brand Filter -->
-        <div class="brand-filter">
-          <button class="filter-btn active">
-            <i class="bi bi-funnel"></i> Lọc
-          </button>
-          <button class="brand-btn">
-            <img
-              src="https://cdn.tgdd.vn/Brand/1/Panasonic-50x50.png"
-              alt="Panasonic"
-            />
-            Panasonic
-          </button>
-          <button class="brand-btn">
-            <img
-              src="https://cdn.tgdd.vn/Brand/1/Daikin-50x50.png"
-              alt="Daikin"
-            />
-            Daikin
-          </button>
-          <button class="brand-btn">
-            <img src="https://cdn.tgdd.vn/Brand/1/AQUA-50x50.png" alt="Aqua" />
-            AQUA
-          </button>
-          <button class="brand-btn">
-            <img src="https://cdn.tgdd.vn/Brand/1/LG-50x50.png" alt="LG" />
-            LG
-          </button>
-          <button class="brand-btn">
-            <img
-              src="https://cdn.tgdd.vn/Brand/1/Casper-50x50.png"
-              alt="Casper"
-            />
-            Casper
-          </button>
-          <button class="brand-btn">
-            <img
-              src="https://cdn.tgdd.vn/Brand/1/Samsung-50x50.png"
-              alt="Samsung"
-            />
-            SAMSUNG
-          </button>
-
-
+    <!-- Category Navigation -->
+    <div class="category-nav">
+      <div class="category-content">
+        <div class="category-list">
+          <a href="#" class="category-item">
+            <div class="category-icon">
+              <i class="bi bi-headphones"></i>
+            </div>
+            <div class="category-name">Headphones</div>
+          </a>
+          <a href="#" class="category-item">
+            <div class="category-icon">
+              <i class="bi bi-phone"></i>
+            </div>
+            <div class="category-name">iPhone</div>
+          </a>
+          <a href="#" class="category-item">
+            <div class="category-icon">
+              <i class="bi bi-keyboard"></i>
+            </div>
+            <div class="category-name">Keyboards</div>
+          </a>
+          <a href="#" class="category-item">
+            <div class="category-icon">
+              <i class="bi bi-laptop"></i>
+            </div>
+            <div class="category-name">Laptops</div>
+          </a>
+          <a href="#" class="category-item">
+            <div class="category-icon">
+              <i class="bi bi-display"></i>
+            </div>
+            <div class="category-name">Monitors</div>
+          </a>
+          <a href="#" class="category-item">
+            <div class="category-icon">
+              <i class="bi bi-pc-display"></i>
+            </div>
+            <div class="category-name">Desktops</div>
+          </a>
+          <a href="#" class="category-item">
+            <div class="category-icon">
+              <i class="bi bi-usb-drive"></i>
+            </div>
+            <div class="category-name">Pendrives</div>
+          </a>
         </div>
-
-
       </div>
+    </div>
 
-      <!-- Products Section -->
-      <div class="section-header">
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="hero-background"></div>
+      <div class="hero-content">
+        <div class="hero-text">
+          <div class="special-badge">Special offers</div>
+          <h1 class="hero-title">Refurbished iPhones</h1>
+          <p class="hero-subtitle">
+            Smooth, responsive Super Retina XDR display with ProMotion.
+          </p>
+          <a href="#" class="cta-button">Shop now</a>
+        </div>
+        <div class="hero-image">
+          <img
+            src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
+            alt="iPhone 15 Pro Max"
+            style="width: 400px; height: 400px; object-fit: cover"
+          />
+        </div>
+      </div>
+      <div class="pagination-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <!-- All Products Section -->
+    <div class="product-section container mt-5">
+      <div class="section-title-container">
         <h2 class="section-title">
           <i class="bi bi-grid-3x3-gap"></i>
           Tất Cả Sản Phẩm
         </h2>
         <p class="section-subtitle">
-          Khám phá bộ sưu tập điện thoại đa dạng của chúng tôi
+          Khám phá bộ sưu tập sản phẩm công nghệ mới nhất
         </p>
       </div>
 
       <!-- Products Grid -->
-      <div class="products-grid">
-        <!-- Row 1 -->
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
+      <div class="products-grid" th:if="${productPage.hasContent()}">
+        <div class="product-card" th:each="product : ${productPage.content}">
+          <!-- Product Image -->
+          <a th:href="@{'/product/' + ${product.productId}}" class="product-image-wrapper">
+            <img th:src="${product.productImages != null && !product.productImages.isEmpty() ? product.productImages[0].imageUrl : 'https://via.placeholder.com/300x300.png?text=No+Image'}"
+                 th:alt="${product.productName}" class="product-image"/>
+          </a>
+          <!-- Product Info -->
+          <div class="product-info">
+            <h3 class="product-name">
+              <a th:href="@{'/product/' + ${product.productId}}" th:text="${product.productName}">Product Name</a>
+            </h3>
+            <p class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+              10.000.000 ₫
+            </p>
           </div>
-          <div class="product-special-offer">
-            <i class="bi bi-phone"></i>
-            <span>TRÚNG IPHONE 16</span>
-          </div>
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
-            alt="iPhone 15 Pro Max"
-          />
-          <h6 class="product-name">iPhone 15 Pro Max 256GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">29.990.000₫</span>
-            <span class="old-price">32.990.000₫ -9%</span>
-            <span class="gift-info">Quà 1.299.000₫</span>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 4.9</span>
-            <span class="sold">Đã bán 48,9k</span>
-            <button class="compare-btn">
-              <i class="bi bi-plus-circle"></i> So sánh
-            </button>
-          </div>
-        </div>
-
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
-          </div>
-          <div class="product-special-offer online">
-            <i class="bi bi-globe"></i>
-            <span>MUA ONLINE RẺ HƠN</span>
-          </div>
-          <img
-            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/s/ss-s24-ultra-xam-222_1.png"
-            alt="Samsung Galaxy S24"
-          />
-          <h6 class="product-name">Samsung Galaxy S24 Ultra 512GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">25.990.000₫</span>
-            <span class="old-price">37.490.000₫ -33%</span>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 4.9</span>
-            <span class="sold">Đã bán 28,3k</span>
-            <button class="compare-btn">
-              <i class="bi bi-arrow-repeat"></i> So sánh
-            </button>
-          </div>
-        </div>
-
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
-          </div>
-          <div class="product-special-offer fastest">
-            <i class="bi bi-lightning"></i>
-            <span>TRÚNG VỀ DI NHẤT</span>
-          </div>
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/313889/xiaomi-14-ultra-white-thumbnew-600x600.jpg"
-            alt="Xiaomi 14 Ultra"
-          />
-          <h6 class="product-name">Xiaomi 14 Ultra 512GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">24.990.000₫</span>
-            <span class="old-price">27.990.000₫ -11%</span>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 5.0</span>
-            <span class="sold">Đã bán 15,2k</span>
-            <button class="compare-btn">
-              <i class="bi bi-plus-circle"></i> So sánh
-            </button>
-          </div>
-        </div>
-
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-new">Mẫu mới</span>
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
-          </div>
-          <div class="product-special-offer support">
-            <i class="bi bi-headset"></i>
-            <span>HỖ TRỢ TIỆN ĐIỆN</span>
-          </div>
-          <img
-            src="https://www.duchuymobile.com/images/detailed/65/realme-gt5-pro-cam.jpg"
-            alt="Realme GT5 Pro"
-          />
-          <h6 class="product-name">Realme GT5 Pro 16GB/512GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">19.990.000₫</span>
-            <span class="old-price">24.990.000₫ -20%</span>
-            <div class="online-special">
-              <span class="online-label">Online giá rẻ quá</span>
-              <span class="online-price">18.590.000₫</span>
-              <span class="gift-info"
-                >Giảm thêm 200.000₫ và Quà 1.200.000₫</span
-              >
-            </div>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 4.8</span>
-            <span class="sold">Đã bán 9,2k</span>
-            <button class="compare-btn">
-              <i class="bi bi-plus-circle"></i> So sánh
-            </button>
-          </div>
-        </div>
-
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
-          </div>
-          <div class="product-special-offer vinfast">
-            <i class="bi bi-car-front"></i>
-            <span>TRÚNG VINFAST VF3</span>
-          </div>
-          <img
-            src="https://cdn.xtmobile.vn/vnt_upload/product/01_2024/thumbs/(500x500)_crop_oppo-find-x7-12gb-256gb-xtmobile.png"
-            alt="OPPO Find X7"
-          />
-          <h6 class="product-name">OPPO Find X7 Ultra 256GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">18.990.000₫</span>
-            <span class="old-price">22.990.000₫ -17%</span>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 4.9</span>
-            <span class="sold">Đã bán 1,4k</span>
-            <button class="compare-btn">
-              <i class="bi bi-plus-circle"></i> So sánh
-            </button>
-          </div>
-        </div>
-
-        <!-- Row 2 -->
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
-          </div>
-          <div class="product-special-offer online">
-            <i class="bi bi-globe"></i>
-            <span>MUA ONLINE RẺ HƠN</span>
-          </div>
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/336625/realme-14-5g-xam-thumb-600x600.jpg"
-            alt="Realme C67"
-          />
-          <h6 class="product-name">Realme C67 5G 128GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">5.990.000₫</span>
-            <span class="old-price">6.990.000₫ -14%</span>
-            <span class="gift-info">Quà 300.000₫</span>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 4.7</span>
-            <span class="sold">Đã bán 9,7k</span>
-            <button class="compare-btn">
-              <i class="bi bi-plus-circle"></i> So sánh
-            </button>
-          </div>
-        </div>
-
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-new">Mẫu mới</span>
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
-          </div>
-          <div class="product-special-offer online">
-            <i class="bi bi-globe"></i>
-            <span>MUA ONLINE RẺ HƠN</span>
-          </div>
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/305886/samsung-galaxy-a24-green-thumb-600x600.jpg"
-            alt="Samsung Galaxy A24"
-          />
-          <h6 class="product-name">Samsung Galaxy A24 128GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">9.390.000₫</span>
-            <span class="old-price">11.490.000₫ -18%</span>
-            <span class="gift-info">Quà 300.000₫</span>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 4.9</span>
-            <span class="sold">Đã bán 3,4k</span>
-            <button class="compare-btn">
-              <i class="bi bi-plus-circle"></i> So sánh
-            </button>
-          </div>
-        </div>
-
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-new">Mẫu mới</span>
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
-          </div>
-          <div class="product-special-offer online">
-            <i class="bi bi-globe"></i>
-            <span>MUA ONLINE RẺ HƠN</span>
-          </div>
-          <img
-            src="https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/42/333281/realme-note-60x-4gb-191224-040048-245-600x600.jpg"
-            alt="Realme Note 60x"
-          />
-          <h6 class="product-name">Realme Note 60x 4GB/128GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">12.790.000₫</span>
-            <span class="old-price">13.990.000₫ -8%</span>
-            <span class="gift-info">Quà 1.500.000₫</span>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 4.9</span>
-            <span class="sold">Đã bán 2,1k</span>
-            <button class="compare-btn">
-              <i class="bi bi-plus-circle"></i> So sánh
-            </button>
-          </div>
-        </div>
-
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-new">Mẫu mới</span>
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
-          </div>
-          <div class="product-special-offer fastest">
-            <i class="bi bi-lightning"></i>
-            <span>TRÚNG VỀ DI NHẤT</span>
-          </div>
-          <img
-            src="https://cdn1.viettelstore.vn/images/Product/ProductImage/medium/A36.Pur1746084263.jpg"
-            alt="OPPO Reno11 F"
-          />
-          <h6 class="product-name">OPPO Reno11 F 5G 256GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">13.190.000₫</span>
-            <span class="old-price">14.490.000₫ -8%</span>
-            <div class="online-special">
-              <span class="online-label">Online giá rẻ quá</span>
-              <span class="online-price">12.590.000₫</span>
-              <span class="gift-info">Giảm thêm 200.000₫</span>
-            </div>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 4.8</span>
-            <span class="sold">Đã bán 8,6k</span>
-            <button class="compare-btn">
-              <i class="bi bi-plus-circle"></i> So sánh
-            </button>
-          </div>
-        </div>
-
-        <div class="product-item">
-          <div class="product-badges">
-            <span class="badge-installment">Trả chậm 0% trả trước 0đ</span>
-          </div>
-          <div class="product-special-offer support">
-            <i class="bi bi-headset"></i>
-            <span>HỖ TRỢ TIỆN ĐIỆN</span>
-          </div>
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/321434/realme-note-50-black-thumb-600x600.jpg"
-            alt="Realme Note 50"
-          />
-          <h6 class="product-name">Realme Note 50 128GB</h6>
-          <p class="product-specs">1 chiều chi lạnh</p>
-          <div class="product-pricing">
-            <span class="current-price">17.790.000₫</span>
-            <span class="gift-info">Giảm thêm 200.000₫</span>
-          </div>
-          <div class="product-rating">
-            <span class="stars">★ 4.9</span>
-            <span class="sold">Đã bán 3,4k</span>
-            <button class="compare-btn">
-              <i class="bi bi-plus-circle"></i> So sánh
-            </button>
+          <!-- Product Actions -->
+          <div class="product-actions">
+            <button class="wishlist-btn" title="Thêm vào yêu thích"><i class="bi bi-heart"></i></button>
+            <button class="add-to-cart-btn" title="Thêm vào giỏ hàng"><i class="bi bi-cart-plus"></i></button>
           </div>
         </div>
       </div>
-
-      <!-- Load More Button -->
-      <div class="load-more-container">
-        <button class="load-more-btn">
-          <i class="bi bi-arrow-down-circle"></i> Xem thêm sản phẩm
-        </button>
+      <div class="text-center mt-4" th:if="${!productPage.hasContent()}">
+        <p>Không tìm thấy sản phẩm nào.</p>
       </div>
+
+      <!-- Pagination -->
+      <nav aria-label="Page navigation" class="pagination-container" th:if="${productPage.totalPages > 1}">
+        <ul class="pagination">
+          <li class="page-item" th:classappend="${!productPage.hasPrevious()} ? 'disabled'">
+            <a class="page-link" th:href="@{/(page=${productPage.number - 1}, size=${productPage.size})}">Trước</a>
+          </li>
+          <li class="page-item" th:each="pageNumber : ${pageNumbers}" th:classappend="${pageNumber == productPage.number + 1} ? 'active'">
+            <a class="page-link" th:href="@{/(page=${pageNumber - 1}, size=${productPage.size})}" th:text="${pageNumber}">1</a>
+          </li>
+          <li class="page-item" th:classappend="${!productPage.hasNext()} ? 'disabled'">
+            <a class="page-link" th:href="@{/(page=${productPage.number + 1}, size=${productPage.size})}">Sau</a>
+          </li>
+        </ul>
+      </nav>
     </div>
 
     <!-- Footer -->
     <footer class="site-footer">
       <div class="container">
         <div class="row">
-          <div class="col-md-3">
-            <h5><i class="bi bi-headset"></i> Tổng đài hỗ trợ</h5>
-            <p>
-              Kỹ thuật:
-              <a href="tel:1900123456" class="footer-link">1900 123 456</a>
-              (8:00 - 21:30)
-            </p>
-            <p>
-              Bảo hành:
-              <a href="tel:1900456789" class="footer-link">1900 456 789</a>
-              (8:00 - 21:00)
-            </p>
+          <div class="col-lg-4 col-md-6 footer-col">
+            <h5 class="footer-title">Về GetTech</h5>
+            <p class="footer-text">GetTech là cửa hàng chuyên cung cấp các sản phẩm công nghệ chính hãng, từ điện thoại, laptop đến phụ kiện. Cam kết chất lượng và dịch vụ hậu mãi tốt nhất.</p>
           </div>
-          <div class="col-md-3">
-            <h5><i class="bi bi-envelope"></i> Email liên hệ</h5>
-            <p>
-              Hỗ trợ khách hàng:<br /><a
-                href="mailto:cskh@codegym.vn"
-                class="footer-link"
-                >cskh@codegym.vn</a
-              >
-            </p>
-            <p>
-              Hợp tác phát triển:<br /><a
-                href="mailto:hoptac@codegym.vn"
-                class="footer-link"
-                >hoptac@codegym.vn</a
-              >
-            </p>
+          <div class="col-lg-2 col-md-6 footer-col">
+            <h5 class="footer-title">Liên kết</h5>
+            <ul class="footer-links">
+              <li><a href="#">Về chúng tôi</a></li>
+              <li><a href="#">Sản phẩm</a></li>
+              <li><a href="#">Khuyến mãi</a></li>
+              <li><a href="#">Liên hệ</a></li>
+            </ul>
           </div>
-          <div class="col-md-3">
-            <h5><i class="bi bi-link-45deg"></i> Liên kết khác</h5>
-            <p><a href="/" class="footer-link">Về trang chính</a></p>
-            <p>
-              <a href="/account" class="footer-link">Thông tin tài khoản</a>
-            </p>
+          <div class="col-lg-3 col-md-6 footer-col">
+            <h5 class="footer-title">Hỗ trợ khách hàng</h5>
+            <ul class="footer-links">
+              <li><a href="#">Chính sách bảo hành</a></li>
+              <li><a href="#">Chính sách đổi trả</a></li>
+              <li><a href="#">Hướng dẫn mua hàng</a></li>
+              <li><a href="#">Câu hỏi thường gặp</a></li>
+            </ul>
           </div>
-          <div class="col-md-3">
-            <h5><i class="bi bi-info-circle"></i> Thông tin khác</h5>
-            <p>
-              <a href="/purchase-history" class="footer-link"
-                >Lịch sử mua hàng</a
-              >
-            </p>
-            <p>
-              <a href="/warranty-policy" class="footer-link"
-                >Chính sách bảo hành</a
-              >
-            </p>
-            <p>
-              <a href="/return-policy" class="footer-link"
-                >Chính sách đổi trả</a
-              >
-            </p>
-            <p><a href="/promotions" class="footer-link">Khuyến mãi</a></p>
+          <div class="col-lg-3 col-md-6 footer-col">
+            <h5 class="footer-title">Kết nối với chúng tôi</h5>
+            <div class="social-icons">
+              <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="social-icon"><i class="bi bi-twitter"></i></a>
+              <a href="#" class="social-icon"><i class="bi bi-youtube"></i></a>
+            </div>
           </div>
         </div>
-        <div class="text-center mt-3">
-          <p class="mb-0">
-            © 2025 Công ty cổ phần C0824M1. Trụ sở tại Codegym Đà Nẵng
-          </p>
+        <div class="footer-bottom">
+          <p>&copy; 2024 GetTech. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
 
+
     <!-- JavaScript -->
     <script>
-      // Filter functionality
-      document.addEventListener("DOMContentLoaded", function () {
-        // Brand filter buttons
-        const brandButtons = document.querySelectorAll(".brand-btn");
-        brandButtons.forEach((button) => {
-          button.addEventListener("click", function () {
-            this.classList.toggle("active");
+      document.addEventListener('DOMContentLoaded', function() {
+        // Category navigation
+        document.querySelectorAll('.category-item').forEach(item => {
+          item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const categoryName = this.querySelector('.category-name').textContent;
+            alert(`Navigating to ${categoryName} category`);
           });
         });
 
-        // Sort buttons
-        const sortButtons = document.querySelectorAll(".sort-btn");
-        sortButtons.forEach((button) => {
-          button.addEventListener("click", function () {
-            sortButtons.forEach((btn) => btn.classList.remove("active"));
-            this.classList.add("active");
+        // Pagination dots
+        document.querySelectorAll('.dot').forEach((dot, index) => {
+          dot.addEventListener('click', function() {
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            this.classList.add('active');
+            console.log(`Switched to slide ${index + 1}`);
           });
         });
-
-        // Compare buttons
-        const compareButtons = document.querySelectorAll(".compare-btn");
-        compareButtons.forEach((button) => {
-          button.addEventListener("click", function () {
-            const productName =
-              this.closest(".product-item").querySelector(
-                ".product-name"
-              ).textContent;
-            alert(`Đã thêm "${productName}" vào danh sách so sánh!`);
-          });
-        });
-
-        // Load more button
-        const loadMoreBtn = document.querySelector(".load-more-btn");
-        if (loadMoreBtn) {
-          loadMoreBtn.addEventListener("click", function () {
-            alert("Đang tải thêm sản phẩm...");
-          });
-        }
-      });
-
-      // Scroll to top functionality
-      window.addEventListener("scroll", function () {
-        const scrollBtn = document.getElementById("scrollToTop");
-        if (window.pageYOffset > 300) {
-          if (!scrollBtn) {
-            const btn = document.createElement("button");
-            btn.id = "scrollToTop";
-            btn.innerHTML = '<i class="bi bi-arrow-up"></i>';
-            btn.className = "scroll-to-top-btn";
-            btn.addEventListener("click", () => {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            });
-            document.body.appendChild(btn);
-          }
-        } else if (scrollBtn) {
-          scrollBtn.remove();
-        }
       });
     </script>
   </body>
