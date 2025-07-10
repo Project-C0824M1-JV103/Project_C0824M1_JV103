@@ -94,8 +94,6 @@ public class HomeController {
                                      HttpServletResponse response) {
 
         Employee currentEmployee = employeeService.findByEmail(userDetails.getUsername());
-        EmployeePersonalDto originalDto = new EmployeePersonalDto();
-        BeanUtils.copyProperties(currentEmployee, originalDto);
 
         if (!dto.getEmail().equalsIgnoreCase(currentEmployee.getEmail())) {
             if (employeeService.isEmailExistsForOtherEmployee(dto.getEmail(), currentEmployee.getEmployeeId())) {
@@ -113,7 +111,6 @@ public class HomeController {
             model.addAttribute("isEditing", true);
             model.addAttribute("hasError", true);
             model.addAttribute("employee", dto);
-            model.addAttribute("originalEmployee", originalDto);
             model.addAttribute("passwordDto", new EmployeePersonalPasswordDto());
             return "homePage/personal_info";
         }
@@ -134,7 +131,6 @@ public class HomeController {
             model.addAttribute("isEditing", true);
             model.addAttribute("hasError", true);
             model.addAttribute("employee", dto);
-            model.addAttribute("originalEmployee", originalDto);
             model.addAttribute("passwordDto", new EmployeePersonalPasswordDto());
             return "homePage/personal_info";
         }
@@ -157,10 +153,8 @@ public class HomeController {
         BeanUtils.copyProperties(employee, employeeDto);
         model.addAttribute("employee", employeeDto);
         model.addAttribute("isEditing", false);
-        model.addAttribute("originalEmployee", employeeDto);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("isEditing", false); // Đảm bảo luôn đóng form đổi thông tin cá nhân khi lỗi đổi mật khẩu
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -168,7 +162,6 @@ public class HomeController {
 
         if (!EncryptPasswordUtils.ParseEncrypt(passwordDto.getOldPassword(), employee.getPassword())) {
             bindingResult.rejectValue("oldPassword", "error.password", "Mật khẩu hiện tại không đúng!");
-            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -176,7 +169,6 @@ public class HomeController {
 
         if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword", "error.password", "Mật khẩu xác nhận không khớp!");
-            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -185,7 +177,6 @@ public class HomeController {
         if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword()) &&
             passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
             bindingResult.rejectValue("newPassword", "error.password", "Mật khẩu mới không được trùng với mật khẩu cũ!");
-            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -228,13 +219,17 @@ public class HomeController {
     @GetMapping("/product/{id}")
     public String productDetail(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         try {
+
+            
             Product product = productService.findProductById(id);
             if (product == null) {
 
                 redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm không tồn tại!");
                 return "redirect:/";
             }
+            
 
+            
             // Add product to model
             model.addAttribute("product", product);
             
@@ -263,5 +258,33 @@ public class HomeController {
         }
     }
     
+
+    @GetMapping("/api/product/{id}/info")
+    @ResponseBody
+    public Map<String, Object> getProductInfo(@PathVariable("id") Integer id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Product product = productService.findProductById(id);
+            if (product == null) {
+                response.put("success", false);
+                response.put("message", "Sản phẩm không tồn tại");
+                return response;
+            }
+
+            response.put("success", true);
+            response.put("productId", product.getProductId());
+            response.put("productName", product.getProductName());
+            response.put("price", product.getPrice());
+            response.put("quantity", product.getQuantity());
+            response.put("memory", product.getMemory());
+
+            return response;
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra");
+            return response;
+        }
+    }
+
 
 }

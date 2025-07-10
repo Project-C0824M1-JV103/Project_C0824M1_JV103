@@ -130,20 +130,15 @@
                             <h3 class="variants-title">Lựa chọn phiên bản</h3>
                             
                             <!-- Storage Options -->
-                            <div class="variant-group">
+                            <div class="variant-group" th:if="${productVariants != null && !productVariants.isEmpty()}">
                                 <label class="variant-label">Dung lượng:</label>
                                 <div class="variant-options">
-                                    <div class="variant-option selected" data-storage="128GB">
-                                        <span class="variant-text">128GB</span>
-                                        <span class="variant-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">>10.000.000 ₫</span>
-                                    </div>
-                                    <div class="variant-option" data-storage="256GB">
-                                        <span class="variant-text">256GB</span>
-                                        <span class="variant-price" th:text="${#numbers.formatDecimal(product.price + 3000000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">13.000.000 ₫</span>
-                                    </div>
-                                    <div class="variant-option" data-storage="512GB">
-                                        <span class="variant-text">512GB</span>
-                                        <span class="variant-price" th:text="${#numbers.formatDecimal(product.price + 6000000, 0, 'COMMA', 0, 'POINT')} + ' ₫'">16.000.000 ₫</span>
+                                    <div th:each="variant, iterStat : ${productVariants}" 
+                                         th:class="'variant-option' + (${variant.productId == product.productId} ? ' selected' : '')"
+                                         th:data-product-id="${variant.productId}"
+                                         th:data-storage="${variant.memory + 'GB'}">
+                                        <span class="variant-text" th:text="${variant.memory + 'GB'}">128GB</span>
+                                        <span class="variant-price" th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">10.000.000 ₫</span>
                                     </div>
                                 </div>
                             </div>
@@ -733,9 +728,9 @@
                 // Add selected class to clicked option
                 this.classList.add('selected');
                 
-                // Update price if storage variant
-                if (this.dataset.storage) {
-                    updatePrice(this.dataset.storage);
+                // Get product info from API if variant has productId
+                if (this.dataset.productId) {
+                    fetchProductInfo(this.dataset.productId);
                 }
             });
         });
@@ -808,39 +803,42 @@
         // Scroll event for sticky bar
         window.addEventListener('scroll', toggleStickyBar);
 
-        // Store original base price on page load
-        let originalBasePrice = 0;
-        
-        // Initialize base price when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            originalBasePrice = parseFloat(document.querySelector('.current-price span').textContent.replace(/[^\d]/g, ''));
-        });
-
-        // Price update function
-        function updatePrice(storage) {
-            let newPrice = originalBasePrice; // Always use the original base price
-            
-            switch(storage) {
-                case '256GB':
-                    newPrice = originalBasePrice + 3000000;
-                    break;
-                case '512GB':
-                    newPrice = originalBasePrice + 6000000;
-                    break;
-                default:
-                    newPrice = originalBasePrice;
-            }
-            
-            // Update main price
-            document.querySelector('.current-price span').textContent = 
-                new Intl.NumberFormat('vi-VN').format(newPrice) + ' ₫';
-            
-            // Update sticky price
-            document.querySelector('.sticky-product-price span').textContent = 
-                new Intl.NumberFormat('vi-VN').format(newPrice) + ' ₫';
+        // Fetch product info from API
+        async function fetchProductInfo(productId) {
+            try {
+                const response = await fetch(`/api/product/${productId}/info`);
+                const data = await response.json();
                 
-            // Update installment prices based on new price
-            updateInstallmentPrices(newPrice);
+                if (data.success) {
+                    // Update main price
+                    document.querySelector('.current-price span').textContent = 
+                        new Intl.NumberFormat('vi-VN').format(data.price) + ' ₫';
+                    
+                    // Update sticky price
+                    document.querySelector('.sticky-product-price span').textContent = 
+                        new Intl.NumberFormat('vi-VN').format(data.price) + ' ₫';
+                    
+                    // Update installment prices
+                    updateInstallmentPrices(data.price);
+                    
+                    // Update quantity max values
+                    document.getElementById('quantity').setAttribute('max', data.quantity);
+                    document.getElementById('stickyQuantity').setAttribute('max', data.quantity);
+                    
+                    // Reset quantity to 1 if current value exceeds new max
+                    const currentQty = parseInt(document.getElementById('quantity').value);
+                    if (currentQty > data.quantity) {
+                        document.getElementById('quantity').value = Math.min(1, data.quantity);
+                        document.getElementById('stickyQuantity').value = Math.min(1, data.quantity);
+                    }
+                    
+                    console.log('Updated product info:', data);
+                } else {
+                    console.error('Error fetching product info:', data.message);
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+            }
         }
         
         // Update installment prices
@@ -895,57 +893,57 @@
             });
         }
 
-        // Add to cart functionality (placeholder)
+        // Add to cart functionality
         document.querySelector('.btn-add-cart')?.addEventListener('click', function() {
             const quantity = document.getElementById('quantity').value;
             // Add your cart logic here
-            alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+            console.log(`Adding ${quantity} products to cart`);
         });
 
-        // Buy now functionality (placeholder)
+        // Buy now functionality
         document.querySelector('.btn-buy-now')?.addEventListener('click', function() {
             const quantity = document.getElementById('quantity').value;
             // Add your buy now logic here
-            alert(`Đang chuyển đến trang thanh toán với ${quantity} sản phẩm!`);
+            console.log(`Proceeding to checkout with ${quantity} products`);
         });
 
         // Sticky buttons functionality
         document.querySelector('.btn-add-cart-sticky')?.addEventListener('click', function() {
             const quantity = document.getElementById('stickyQuantity').value;
-            alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+            console.log(`Adding ${quantity} products to cart from sticky bar`);
         });
 
         document.querySelector('.btn-buy-now-sticky')?.addEventListener('click', function() {
             const quantity = document.getElementById('stickyQuantity').value;
-            alert(`Đang chuyển đến trang thanh toán với ${quantity} sản phẩm!`);
+            console.log(`Proceeding to checkout with ${quantity} products from sticky bar`);
         });
 
-        // Wishlist functionality (placeholder)
+        // Wishlist functionality
         document.querySelector('.btn-wishlist')?.addEventListener('click', function() {
             const icon = this.querySelector('i');
             if (icon.classList.contains('bi-heart')) {
                 icon.classList.remove('bi-heart');
                 icon.classList.add('bi-heart-fill');
                 this.classList.add('active');
-                alert('Đã thêm vào danh sách yêu thích!');
+                console.log('Added to wishlist');
             } else {
                 icon.classList.remove('bi-heart-fill');
                 icon.classList.add('bi-heart');
                 this.classList.remove('active');
-                alert('Đã xóa khỏi danh sách yêu thích!');
+                console.log('Removed from wishlist');
             }
         });
 
         // Load more reviews functionality
         document.querySelector('.load-more-reviews button')?.addEventListener('click', function() {
             // Add your load more logic here
-            alert('Đang tải thêm đánh giá...');
+            console.log('Loading more reviews...');
         });
 
         // Write review functionality
         document.querySelector('.btn-write-review')?.addEventListener('click', function() {
             // Add your write review logic here
-            alert('Mở form viết đánh giá...');
+            console.log('Opening review form...');
         });
     </script>
 </body>

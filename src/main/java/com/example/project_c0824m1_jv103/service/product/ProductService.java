@@ -28,6 +28,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import com.example.project_c0824m1_jv103.dto.StorageImportProductDTO;
@@ -414,5 +416,67 @@ public class ProductService implements IProductService {
     public Page<ProductDTO> searchProductsWithQuantityAndZeroPrice(String productName, Pageable pageable) {
         Page<Product> productPage = productRepository.searchProductsWithQuantityAndZeroPrice(productName, pageable);
         return productPage.map(productMapper::toDTO);
+    }
+
+    @Override
+    public List<Product> findProductVariants(Product product) {
+        String productName = product.getProductName();
+        
+        // Tạo base name bằng cách loại bỏ storage info
+        String baseName = extractBaseName(productName);
+        
+        // Tìm tất cả sản phẩm có tên chứa base name
+        List<Product> allProducts = productRepository.findAll();
+        
+        // Filter và sort variants
+        List<Product> variants = allProducts.stream()
+            .filter(p -> extractBaseName(p.getProductName()).equalsIgnoreCase(baseName))
+            .filter(p -> p.getQuantity() > 0) // Chỉ lấy sản phẩm còn hàng
+            .sorted((p1, p2) -> {
+                Integer storage1 = extractStorageSize(p1.getProductName());
+                Integer storage2 = extractStorageSize(p2.getProductName());
+                return Integer.compare(storage1, storage2);
+            })
+            .collect(Collectors.toList());
+            
+        return variants;
+    }
+    
+    /**
+     * Trích xuất tên cơ bản bằng cách loại bỏ thông tin storage
+     * VD: "iPhone 16 ProMax 128GB" -> "iPhone 16 ProMax"
+     */
+    private String extractBaseName(String productName) {
+        // Pattern để match storage info: số + GB, TB, etc.
+        String pattern = "\\s*(\\d+)(GB|TB|MB)\\s*";
+        return productName.replaceAll(pattern, "").trim();
+    }
+    
+    /**
+     * Trích xuất dung lượng storage từ tên sản phẩm
+     * VD: "iPhone 16 ProMax 256GB" -> 256
+     */
+    private Integer extractStorageSize(String productName) {
+        String pattern = "(\\d+)(GB|TB|MB)";
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(productName);
+        
+        if (m.find()) {
+            int size = Integer.parseInt(m.group(1));
+            String unit = m.group(2);
+            
+            // Convert to GB for consistent comparison
+            switch (unit.toUpperCase()) {
+                case "TB":
+                    return size * 1024;
+                case "MB":
+                    return size / 1024;
+                default: // GB
+                    return size;
+            }
+        }
+        
+        // Nếu không tìm thấy storage info, return 0
+        return 0;
     }
 }
