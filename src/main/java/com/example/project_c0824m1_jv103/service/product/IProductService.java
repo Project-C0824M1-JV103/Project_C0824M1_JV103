@@ -68,4 +68,7 @@ public interface IProductService {
 
     Page<ProductDTO> searchProductsWithQuantity(String productName, Pageable pageable);
     Page<ProductDTO> searchProductsWithQuantityAndZeroPrice(String productName, Pageable pageable);
+    
+    // Product Variants
+    List<Product> findProductVariants(Product product);
 }
