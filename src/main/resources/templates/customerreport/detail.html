@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết Báo cáo Khách hàng</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" th:href="@{/admin-navbar.css}">
+  <link rel="stylesheet" th:href="@{/admin-common.css}">
+  <style>
+    :root {
+      --primary-color: #667eea;
+      --secondary-color: #6c757d;
+      --success-color: #28a745;
+      --info-color: #17a2b8;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --light-gray: #f8f9fa;
+      --border-radius: 8px;
+      --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-content {
+      padding: 20px;
+      background-color: var(--light-gray);
+      min-height: 100vh;
+    }
+
+    .header-section {
+      background: white;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      margin-bottom: 20px;
+    }
+
+    .customer-card {
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      margin-bottom: 20px;
+    }
+
+    .customer-card .card-header {
+      background-color: white;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      font-weight: 600;
+    }
+
+    .customer-info-item {
+      margin-bottom: 10px;
+    }
+
+    .customer-info-label {
+      font-weight: 600;
+      color: var(--secondary-color);
+      min-width: 120px;
+      display: inline-block;
+    }
+
+    .table-responsive {
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      white-space: nowrap;
+      vertical-align: middle;
+      padding: 15px;
+    }
+
+    .table tbody td {
+      vertical-align: middle;
+      padding: 12px 15px;
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(102, 126, 234, 0.05);
+    }
+
+    .table-sm {
+      font-size: 0.875rem;
+    }
+
+    .table-sm th,
+    .table-sm td {
+      padding: 8px 12px;
+    }
+
+    .badge {
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 50px;
+    }
+
+    .badge-male {
+      background-color: rgba(0, 123, 255, 0.1);
+      color: #007bff;
+    }
+
+    .badge-female {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+
+    .revenue-cell {
+      font-weight: 600;
+      color: var(--success-color);
+    }
+
+    .payment-method {
+      font-weight: 500;
+    }
+
+    .payment-cash {
+      color: var(--success-color);
+    }
+
+    .payment-card {
+      color: var(--primary-color);
+    }
+
+    .payment-transfer {
+      color: var(--info-color);
+    }
+
+    @media (max-width: 768px) {
+      .table-responsive {
+        border-radius: 0;
+      }
+
+      .table thead th,
+      .table tbody td {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+      }
+
+      .customer-info-item {
+        margin-bottom: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div th:replace="navbar/admin-navbar :: admin-sidebar"></div>
+
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10 ms-sm-auto">
+      <div class="main-content">
+        <!-- Header Section -->
+        <div class="header-section">
+          <div class="row align-items-center">
+            <div class="col">
+              <h2 class="mb-1">
+                <i class="fas fa-chart-line text-primary me-2"></i>
+                Chi tiết Báo cáo Khách hàng
+              </h2>
+              <p class="text-muted mb-0">
+                Thông tin chi tiết và lịch sử mua hàng
+              </p>
+            </div>
+            <div class="col-auto">
+              <a th:href="@{/CustomerReport/export/{id}(id=${customerInfo.customerId})}" class="btn btn-success">
+                <i class="fas fa-download me-1"></i> Xuất báo cáo
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Info Card -->
+        <div class="card customer-card">
+          <div class="card-header">
+            <i class="fas fa-user me-2"></i>Thông tin khách hàng
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 col-lg-4">
+                <div class="customer-info-item">
+                  <span class="customer-info-label">Mã KH:</span>
+                  <span th:text="${customerInfo.customerId}"></span>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="customer-info-item">
+                  <span class="customer-info-label">Họ tên:</span>
+                  <span th:text="${customerInfo.customerName}"></span>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="customer-info-item">
+                  <span class="customer-info-label">Điện thoại:</span>
+                  <span th:text="${customerInfo.phoneNumber}"></span>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="customer-info-item">
+                  <span class="customer-info-label">Email:</span>
+                  <span th:text="${customerInfo.email ?: 'N/A'}"></span>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="customer-info-item">
+                  <span class="customer-info-label">Giới tính:</span>
+                  <span th:switch="${customerInfo.gender}" class="badge">
+                                        <span th:case="'Male'" class="badge-male">Nam</span>
+                                        <span th:case="'Female'" class="badge-female">Nữ</span>
+                                        <span th:case="*" class="badge bg-secondary">Khác</span>
+                                    </span>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="customer-info-item">
+                  <span class="customer-info-label">Tuổi:</span>
+                  <span th:text="${customerInfo.age}"></span>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="customer-info-item">
+                  <span class="customer-info-label">Tổng đơn hàng:</span>
+                  <span th:text="${customerInfo.totalSales}"></span>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="customer-info-item">
+                  <span class="customer-info-label">Tổng chi tiêu:</span>
+                  <span class="revenue-cell" th:text="${'₫' + #numbers.formatDecimal(customerInfo.totalAmount, 1, 'COMMA', 2, 'POINT')}"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales History -->
+        <div class="card customer-card">
+          <div class="card-header">
+            <i class="fas fa-shopping-cart me-2"></i>Lịch sử mua hàng
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                <tr>
+                  <th>Mã đơn</th>
+                  <th>Ngày mua</th>
+                  <th>Tổng tiền</th>
+                  <th>Thanh toán</th>
+                  <th>Sản phẩm</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="sale, stat : ${sales}">
+                  <td th:text="${sale.saleId}"></td>
+                  <td th:text="${#temporals.format(sale.saleDate, 'dd/MM/yyyy HH:mm')}"></td>
+                  <td class="revenue-cell" th:text="${'₫' + #numbers.formatDecimal(sale.amount, 1, 'COMMA', 2, 'POINT')}"></td>
+                  <td>
+                                            <span th:switch="${sale.paymentMethod}" class="payment-method">
+                                                <span th:case="'CASH'" class="payment-cash"><i class="fas fa-money-bill-wave me-1"></i> Tiền mặt</span>
+                                                <span th:case="'CARD'" class="payment-card"><i class="fas fa-credit-card me-1"></i> Thẻ</span>
+                                                <span th:case="'TRANSFER'" class="payment-transfer"><i class="fas fa-exchange-alt me-1"></i> Chuyển khoản</span>
+                                                <span th:case="*" class="text-muted"><i class="fas fa-question-circle me-1"></i> Khác</span>
+                                            </span>
+                  </td>
+                  <td>
+                    <div class="table-responsive">
+                      <table class="table table-sm table-borderless">
+                        <thead>
+                        <tr>
+                          <th>Tên SP</th>
+                          <th>SL</th>
+                          <th>Đơn giá</th>
+                          <th>Thành tiền</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="detail : ${sale.saleDetails}">
+                          <td th:text="${detail.product.productName}"></td>
+                          <td th:text="${detail.quantity}"></td>
+                          <td th:text="${'₫' + #numbers.formatDecimal(detail.unitPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+                          <td th:text="${'₫' + #numbers.formatDecimal(detail.quantity * detail.unitPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Empty state -->
+                <tr th:if="${sales.empty}">
+                  <td colspan="5" class="text-center py-4">
+                    <div class="text-muted">
+                      <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                      <h5>Không có đơn hàng nào</h5>
+                      <p>Khách hàng chưa có giao dịch mua hàng</p>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-end mt-4">
+          <a th:href="@{/CustomerReport}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Enable tooltips
+  document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Add animation to table rows
+    const tableRows = document.querySelectorAll('tbody tr');
+    tableRows.forEach((row, index) => {
+      row.style.opacity = '0';
+      row.style.transform = 'translateY(20px)';
+      row.style.transition = `all 0.3s ease ${index * 0.05}s`;
+
+      setTimeout(() => {
+        row.style.opacity = '1';
+        row.style.transform = 'translateY(0)';
+      }, 50);
+    });
+  });
+</script>
+</body>
+</html>
