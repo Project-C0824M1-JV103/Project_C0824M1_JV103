@@ -19,54 +19,6 @@
     <div th:insert="~{navbar/navbar :: body}"></div>
 
     <!-- Category Navigation -->
-    <div class="category-nav">
-      <div class="category-content">
-        <div class="category-list">
-          <a href="#" class="category-item">
-            <div class="category-icon">
-              <i class="bi bi-headphones"></i>
-            </div>
-            <div class="category-name">Headphones</div>
-          </a>
-          <a href="#" class="category-item">
-            <div class="category-icon">
-              <i class="bi bi-phone"></i>
-            </div>
-            <div class="category-name">iPhone</div>
-          </a>
-          <a href="#" class="category-item">
-            <div class="category-icon">
-              <i class="bi bi-keyboard"></i>
-            </div>
-            <div class="category-name">Keyboards</div>
-          </a>
-          <a href="#" class="category-item">
-            <div class="category-icon">
-              <i class="bi bi-laptop"></i>
-            </div>
-            <div class="category-name">Laptops</div>
-          </a>
-          <a href="#" class="category-item">
-            <div class="category-icon">
-              <i class="bi bi-display"></i>
-            </div>
-            <div class="category-name">Monitors</div>
-          </a>
-          <a href="#" class="category-item">
-            <div class="category-icon">
-              <i class="bi bi-pc-display"></i>
-            </div>
-            <div class="category-name">Desktops</div>
-          </a>
-          <a href="#" class="category-item">
-            <div class="category-icon">
-              <i class="bi bi-usb-drive"></i>
-            </div>
-            <div class="category-name">Pendrives</div>
-          </a>
-        </div>
-      </div>
-    </div>
 
     <!-- Hero Section -->
     <div class="hero-section">
@@ -81,11 +33,34 @@
           <a href="#" class="cta-button">Shop now</a>
         </div>
         <div class="hero-image">
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
-            alt="iPhone 15 Pro Max"
-            style="width: 400px; height: 400px; object-fit: cover"
-          />
+          <div class="carousel-container" id="heroCarousel">
+            <div class="carousel-wrapper">
+              <div class="carousel-slide">
+                <img
+                  src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
+                  alt="iPhone 15 Pro Max"
+                />
+              </div>
+              <div class="carousel-slide">
+                <img
+                  src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
+                  alt="Samsung Galaxy S24 Ultra"
+                />
+              </div>
+              <div class="carousel-slide">
+                <img
+                  src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
+                  alt="Xiaomi 14 Ultra"
+                />
+              </div>
+            </div>
+            <button class="carousel-nav carousel-prev" onclick="previousSlide()">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="carousel-nav carousel-next" onclick="nextSlide()">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
         </div>
       </div>
       <div class="pagination-dots">
@@ -157,8 +132,8 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-4 col-md-6 footer-col">
-            <h5 class="footer-title">Về GetTech</h5>
-            <p class="footer-text">GetTech là cửa hàng chuyên cung cấp các sản phẩm công nghệ chính hãng, từ điện thoại, laptop đến phụ kiện. Cam kết chất lượng và dịch vụ hậu mãi tốt nhất.</p>
+            <h5 class="footer-title">Về TPQDT Phone</h5>
+            <p class="footer-text">TPQDT Phone là cửa hàng chuyên cung cấp các sản phẩm điện thoại chính hãng.</p>
           </div>
           <div class="col-lg-2 col-md-6 footer-col">
             <h5 class="footer-title">Liên kết</h5>
@@ -189,7 +164,7 @@
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2024 GetTech. All Rights Reserved.</p>
+          <p>&copy; 2025 TPQDT Phone. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
@@ -197,7 +172,57 @@
 
     <!-- JavaScript -->
     <script>
+      // Carousel functionality
+      let currentSlide = 0;
+      const slides = document.querySelectorAll('.carousel-slide');
+      const totalSlides = slides.length;
+      const carouselWrapper = document.querySelector('.carousel-wrapper');
+      const dots = document.querySelectorAll('.dot');
+      let autoPlayInterval;
+
+      function updateCarousel() {
+        const translateX = -currentSlide * 100;
+        carouselWrapper.style.transform = `translateX(${translateX}%)`;
+        
+        // Update pagination dots
+        dots.forEach((dot, index) => {
+          dot.classList.toggle('active', index === currentSlide);
+        });
+      }
+
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateCarousel();
+      }
+
+      function previousSlide() {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+      }
+
+      function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        updateCarousel();
+      }
+
+      function startAutoPlay() {
+        autoPlayInterval = setInterval(nextSlide, 4000); // Auto-advance every 4 seconds
+      }
+
+      function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+      }
+
       document.addEventListener('DOMContentLoaded', function() {
+        // Initialize carousel
+        updateCarousel();
+        startAutoPlay();
+
+        // Pause auto-play on hover
+        const carouselContainer = document.getElementById('heroCarousel');
+        carouselContainer.addEventListener('mouseenter', stopAutoPlay);
+        carouselContainer.addEventListener('mouseleave', startAutoPlay);
+
         // DEBUG: Check all product links
         console.log("=== DEBUG: Checking product links ===");
         document.querySelectorAll('a[href*="/product/"]').forEach((link, index) => {
@@ -213,12 +238,10 @@
           });
         });
 
-        // Pagination dots
+        // Pagination dots for carousel
         document.querySelectorAll('.dot').forEach((dot, index) => {
           dot.addEventListener('click', function() {
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-            this.classList.add('active');
-            console.log(`Switched to slide ${index + 1}`);
+            goToSlide(index);
           });
         });
         
