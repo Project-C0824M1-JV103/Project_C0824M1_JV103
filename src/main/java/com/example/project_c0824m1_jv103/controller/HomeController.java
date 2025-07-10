@@ -218,19 +218,18 @@ public class HomeController {
     @GetMapping("/product/{id}")
     public String productDetail(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         try {
-
-            
             Product product = productService.findProductById(id);
             if (product == null) {
-
                 redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm không tồn tại!");
                 return "redirect:/";
             }
             
-
-            
             // Add product to model
             model.addAttribute("product", product);
+            
+            // Find product variants (same model but different storage)
+            List<Product> productVariants = productService.findProductVariants(product);
+            model.addAttribute("productVariants", productVariants);
             
             // Add related products from same category (optional)
             if (product.getCategory() != null) {
@@ -244,16 +243,41 @@ public class HomeController {
                     .limit(4)
                     .collect(Collectors.toList());
                 model.addAttribute("relatedProducts", filteredRelated);
-
             }
             
-
             return "homePage/productDetail";
         } catch (Exception e) {
-
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải thông tin sản phẩm!");
             return "redirect:/";
+        }
+    }
+    
+
+    @GetMapping("/api/product/{id}/info")
+    @ResponseBody
+    public Map<String, Object> getProductInfo(@PathVariable("id") Integer id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Product product = productService.findProductById(id);
+            if (product == null) {
+                response.put("success", false);
+                response.put("message", "Sản phẩm không tồn tại");
+                return response;
+            }
+            
+            response.put("success", true);
+            response.put("productId", product.getProductId());
+            response.put("productName", product.getProductName());
+            response.put("price", product.getPrice());
+            response.put("quantity", product.getQuantity());
+            response.put("memory", product.getMemory());
+            
+            return response;
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra");
+            return response;
         }
     }
     
