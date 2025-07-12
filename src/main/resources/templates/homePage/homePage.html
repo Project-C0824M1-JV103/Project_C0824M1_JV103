@@ -13,6 +13,167 @@
     />
     <link rel="stylesheet" th:href="@{/css/homePage.css}" />
     <link rel="stylesheet" th:href="@{/css/navbar.css}" />
+    <style>
+      .hero-section {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
+        padding: 60px 0 40px 0;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .hero-slider-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 1200px;
+        min-width: 900px;
+        min-height: 340px; /* cố định chiều cao */
+        height: 100%;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .hero-advertise {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        min-height: 340px; /* cố định chiều cao */
+        opacity: 0;
+        transform: translateX(0);
+        transition: opacity 0.7s, transform 0.7s;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 100px;
+        gap: 120px;
+        min-width: 900px;
+        width: 100%;
+        max-width: 1200px;
+        border-radius: 32px;
+        z-index: 2;
+      }
+      .hero-advertise.active {
+        opacity: 1;
+        pointer-events: auto;
+        position: relative;
+        transform: translateX(0);
+      }
+      .hero-advertise.slide-out-left {
+        opacity: 0;
+        transform: translateX(-100%);
+        transition: opacity 0.7s, transform 0.7s;
+      }
+      .hero-advertise.slide-in-right {
+        opacity: 1;
+        transform: translateX(0);
+        transition: opacity 0.7s, transform 0.7s;
+      }
+      .hero-advertise.slide-out-right {
+        opacity: 0;
+        transform: translateX(100%);
+        transition: opacity 0.7s, transform 0.7s;
+      }
+      .hero-advertise.slide-in-left {
+        opacity: 1;
+        transform: translateX(0);
+        transition: opacity 0.7s, transform 0.7s;
+      }
+      @keyframes floatAd {
+        0% { transform: translateY(0) scale(1);}
+        100% { transform: translateY(-18px) scale(1.03);}
+      }
+      .ad-content {
+        max-width: 400px;
+      }
+      .ad-badge {
+        display: inline-block;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: #fff;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 6px 18px;
+        font-size: 1rem;
+        margin-bottom: 18px;
+      }
+      .ad-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #1E293B;
+        margin-bottom: 18px;
+        line-height: 1.2;
+      }
+      .ad-desc {
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 28px;
+      }
+      .ad-cta {
+        display: inline-block;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: #fff;
+        font-weight: 700;
+        border-radius: 24px;
+        padding: 12px 32px;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: background 0.3s, transform 0.2s;
+      }
+      .ad-cta:hover {
+        background: linear-gradient(45deg, #5a6ddb, #5b3d8e);
+        transform: translateY(-2px) scale(1.05);
+      }
+      .ad-image img {
+        width: 260px;
+        height: auto;
+        border-radius: 18px;
+      }
+      @media (max-width: 900px) {
+        .hero-advertise {
+          flex-direction: column;
+          padding: 30px 20px;
+          gap: 24px;
+        }
+        .ad-image img {
+          width: 180px;
+        }
+        .ad-title {
+          font-size: 2rem;
+        }
+      }
+      .hero-slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        background: rgba(255,255,255,0.85);
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+        color: #667eea;
+        box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      }
+      .hero-slider-btn:hover {
+        background: #667eea;
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(102,126,234,0.18);
+      }
+      .hero-slider-prev {
+        left: 18px;
+      }
+      .hero-slider-next {
+        right: 18px;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -22,51 +183,48 @@
 
     <!-- Hero Section -->
     <div class="hero-section">
-      <div class="hero-background"></div>
-      <div class="hero-content">
-        <div class="hero-text">
-          <div class="special-badge">Special offers</div>
-          <h1 class="hero-title">Refurbished iPhones</h1>
-          <p class="hero-subtitle">
-            Smooth, responsive Super Retina XDR display with ProMotion.
-          </p>
-          <a href="#" class="cta-button">Shop now</a>
-        </div>
-        <div class="hero-image">
-          <div class="carousel-container" id="heroCarousel">
-            <div class="carousel-wrapper">
-              <div class="carousel-slide">
-                <img
-                  src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
-                  alt="iPhone 15 Pro Max"
-                />
-              </div>
-              <div class="carousel-slide">
-                <img
-                  src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
-                  alt="Samsung Galaxy S24 Ultra"
-                />
-              </div>
-              <div class="carousel-slide">
-                <img
-                  src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg"
-                  alt="Xiaomi 14 Ultra"
-                />
-              </div>
-            </div>
-            <button class="carousel-nav carousel-prev" onclick="previousSlide()">
-              <i class="bi bi-chevron-left"></i>
-            </button>
-            <button class="carousel-nav carousel-next" onclick="nextSlide()">
-              <i class="bi bi-chevron-right"></i>
-            </button>
+      <div class="hero-slider-wrapper">
+        <!-- Nút prev -->
+        <button class="hero-slider-btn hero-slider-prev" type="button" aria-label="Trước">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <!-- Nút next -->
+        <button class="hero-slider-btn hero-slider-next" type="button" aria-label="Sau">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+        <div class="hero-advertise active" style="background: #fff;">
+          <div class="ad-content">
+            <span class="ad-badge">Khuyến mãi lớn</span>
+            <h1 class="ad-title">Mua iPhone 15 Pro Max<br>Giá sốc hôm nay!</h1>
+            <p class="ad-desc">Giảm ngay 5.000.000₫ cho 20 khách đầu tiên.<br>Chỉ tại TPQDT Phone.</p>
+            <a href="#" class="ad-cta">Mua ngay</a>
+          </div>
+          <div class="ad-image">
+            <img src="https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg" alt="iPhone 15 Pro Max" />
           </div>
         </div>
-      </div>
-      <div class="pagination-dots">
-        <div class="dot active"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
+        <div class="hero-advertise" style="background: #fff;">
+          <div class="ad-content">
+            <span class="ad-badge">OPPO Reno 8T 4G</span>
+            <h1 class="ad-title">OPPO Reno 8T 4G<br>Ưu đãi cực lớn!</h1>
+            <p class="ad-desc">Tặng kèm quà hấp dẫn khi mua hôm nay.<br>Chỉ tại TPQDT Phone.</p>
+            <a href="#" class="ad-cta">Xem chi tiết</a>
+          </div>
+          <div class="ad-image">
+            <img src="https://cellphones.com.vn/sforum/wp-content/uploads/2023/01/oppo-reno-8t-4g-poster-1.jpg" alt="OPPO Reno 8T 4G" />
+          </div>
+        </div>
+        <div class="hero-advertise" style="background: #fff;">
+          <div class="ad-content">
+            <span class="ad-badge">OPPO F15</span>
+            <h1 class="ad-title">OPPO F15<br>Giá tốt nhất thị trường!</h1>
+            <p class="ad-desc">Số lượng có hạn, nhanh tay đặt ngay.<br>Chỉ tại TPQDT Phone.</p>
+            <a href="#" class="ad-cta">Mua ngay</a>
+          </div>
+          <div class="ad-image">
+            <img src="https://cellphones.com.vn/sforum/wp-content/uploads/2020/01/poster-OPPO-F15-3.jpg" alt="OPPO F15" />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -172,76 +330,13 @@
 
     <!-- JavaScript -->
     <script>
-      // Carousel functionality
-      let currentSlide = 0;
-      const slides = document.querySelectorAll('.carousel-slide');
-      const totalSlides = slides.length;
-      const carouselWrapper = document.querySelector('.carousel-wrapper');
-      const dots = document.querySelectorAll('.dot');
-      let autoPlayInterval;
-
-      function updateCarousel() {
-        const translateX = -currentSlide * 100;
-        carouselWrapper.style.transform = `translateX(${translateX}%)`;
-        
-        // Update pagination dots
-        dots.forEach((dot, index) => {
-          dot.classList.toggle('active', index === currentSlide);
-        });
-      }
-
-      function nextSlide() {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        updateCarousel();
-      }
-
-      function previousSlide() {
-        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-        updateCarousel();
-      }
-
-      function goToSlide(slideIndex) {
-        currentSlide = slideIndex;
-        updateCarousel();
-      }
-
-      function startAutoPlay() {
-        autoPlayInterval = setInterval(nextSlide, 4000); // Auto-advance every 4 seconds
-      }
-
-      function stopAutoPlay() {
-        clearInterval(autoPlayInterval);
-      }
-
       document.addEventListener('DOMContentLoaded', function() {
-        // Initialize carousel
-        updateCarousel();
-        startAutoPlay();
-
-        // Pause auto-play on hover
-        const carouselContainer = document.getElementById('heroCarousel');
-        carouselContainer.addEventListener('mouseenter', stopAutoPlay);
-        carouselContainer.addEventListener('mouseleave', startAutoPlay);
-
-        // DEBUG: Check all product links
-        console.log("=== DEBUG: Checking product links ===");
-        document.querySelectorAll('a[href*="/product/"]').forEach((link, index) => {
-          console.log(`Product Link ${index + 1}:`, link.href);
-        });
-        
         // Category navigation
         document.querySelectorAll('.category-item').forEach(item => {
           item.addEventListener('click', function(e) {
             e.preventDefault();
             const categoryName = this.querySelector('.category-name').textContent;
             alert(`Navigating to ${categoryName} category`);
-          });
-        });
-
-        // Pagination dots for carousel
-        document.querySelectorAll('.dot').forEach((dot, index) => {
-          dot.addEventListener('click', function() {
-            goToSlide(index);
           });
         });
         
@@ -251,11 +346,106 @@
             console.log("=== DEBUG: Product link clicked ===");
             console.log("URL:", this.href);
             console.log("Product ID:", this.href.split('/product/')[1]);
-            
-            // Let the default behavior happen (navigation)
-            // e.preventDefault(); // Remove this to allow navigation
           });
         });
+
+        // SLIDER LOGIC
+        const slides = document.querySelectorAll('.hero-advertise');
+        const wrapper = document.querySelector('.hero-slider-wrapper');
+        const prevBtn = document.querySelector('.hero-slider-prev');
+        const nextBtn = document.querySelector('.hero-slider-next');
+        
+        let current = 0;
+        let isSliding = false;
+        let autoSlideInterval;
+
+        // Đặt chiều cao lớn nhất cho wrapper
+        let maxHeight = 0;
+        slides.forEach(slide => {
+          const prevPos = slide.style.position;
+          const prevOp = slide.style.opacity;
+          const prevTrans = slide.style.transform;
+          slide.style.position = 'static';
+          slide.style.opacity = 1;
+          slide.style.transform = 'none';
+          const h = slide.offsetHeight;
+          if (h > maxHeight) maxHeight = h;
+          slide.style.position = prevPos;
+          slide.style.opacity = prevOp;
+          slide.style.transform = prevTrans;
+        });
+        wrapper.style.minHeight = maxHeight + 'px';
+        wrapper.style.height = maxHeight + 'px';
+
+        function showSlide(newIdx, direction) {
+          if (isSliding || newIdx === current) return;
+          isSliding = true;
+
+          // Reset tất cả slides trước
+          slides.forEach((slide, i) => {
+            slide.classList.remove('active', 'slide-in-right', 'slide-out-left', 'slide-in-left', 'slide-out-right');
+            slide.style.zIndex = 1;
+          });
+
+          // Thêm hiệu ứng trượt
+          if (direction === 1) {
+            // Next: slide hiện tại trượt ra trái, slide mới trượt vào từ phải
+            slides[current].classList.add('slide-out-left');
+            slides[newIdx].classList.add('slide-in-right');
+          } else {
+            // Prev: slide hiện tại trượt ra phải, slide mới trượt vào từ trái
+            slides[current].classList.add('slide-out-right');
+            slides[newIdx].classList.add('slide-in-left');
+          }
+          slides[newIdx].style.zIndex = 2;
+
+          setTimeout(() => {
+            slides.forEach((slide, i) => {
+              slide.classList.remove('slide-in-right', 'slide-out-left', 'slide-in-left', 'slide-out-right');
+              slide.classList.toggle('active', i === newIdx);
+            });
+            current = newIdx;
+            isSliding = false;
+          }, 700);
+        }
+
+        function nextSlide() {
+          if (isSliding) return;
+          let next = (current + 1) % slides.length;
+          showSlide(next, 1); // direction = 1: next (trượt sang trái)
+          resetAutoSlide();
+        }
+
+        function prevSlide() {
+          if (isSliding) return;
+          let prev = (current - 1 + slides.length) % slides.length;
+          showSlide(prev, -1); // direction = -1: prev (trượt sang phải)
+          resetAutoSlide();
+        }
+
+        // Khởi tạo slide đầu tiên
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('active', i === 0);
+          slide.style.zIndex = i === 0 ? 2 : 1;
+        });
+
+        // Nút tới lui
+        if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+        if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+
+        // Tự động chuyển slide
+        function autoSlide() {
+          autoSlideInterval = setInterval(() => {
+            if (!isSliding) nextSlide();
+          }, 4000);
+        }
+
+        function resetAutoSlide() {
+          clearInterval(autoSlideInterval);
+          autoSlide();
+        }
+
+        autoSlide();
       });
     </script>
   </body>
