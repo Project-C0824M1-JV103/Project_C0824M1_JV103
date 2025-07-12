@@ -54,7 +54,7 @@ public class HomeController {
                        @RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productService.findActiveProducts(pageable);
+        Page<Product> productPage = productService.findActiveProductsWithoutDuplicates(pageable);
         model.addAttribute("productPage", productPage);
 
         int totalPages = productPage.getTotalPages();
@@ -236,14 +236,24 @@ public class HomeController {
                 redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm không tồn tại!");
                 return "redirect:/";
             }
-            
 
-            
             // Add product to model
             model.addAttribute("product", product);
             
             // Find product variants (same model but different storage)
             List<Product> productVariants = productService.findProductVariants(product);
+            // Sort variants by memory from smallest to largest
+            productVariants.sort((p1, p2) -> {
+                try {
+                    // Extract numeric value from memory string (e.g., "128" from "128GB")
+                    int memory1 = Integer.parseInt(p1.getMemory().replaceAll("[^0-9]", ""));
+                    int memory2 = Integer.parseInt(p2.getMemory().replaceAll("[^0-9]", ""));
+                    return Integer.compare(memory1, memory2);
+                } catch (NumberFormatException e) {
+                    // If parsing fails, sort alphabetically
+                    return p1.getMemory().compareTo(p2.getMemory());
+                }
+            });
             model.addAttribute("productVariants", productVariants);
 
             // Add related products from same category (optional)

@@ -136,8 +136,8 @@
                                     <div th:each="variant, iterStat : ${productVariants}" 
                                          th:class="'variant-option' + (${variant.productId == product.productId} ? ' selected' : '')"
                                          th:data-product-id="${variant.productId}"
-                                         th:data-storage="${variant.memory + 'GB'}">
-                                        <span class="variant-text" th:text="${variant.memory + 'GB'}">128GB</span>
+                                         th:data-storage="${variant.memory}">
+                                        <span class="variant-text" th:text="${variant.memory} + 'GB'">128GB</span>
                                         <span class="variant-price" th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">10.000.000 ₫</span>
                                     </div>
                                 </div>
@@ -282,7 +282,7 @@
                             </div>
                             <div class="spec-item" th:if="${product.memory}">
                                 <span class="spec-label">Bộ nhớ:</span>
-                                <span class="spec-value" th:text="${product.memory} + 'GB'">128GB</span>
+                                <span class="spec-value" th:text="${product.memory}">128GB</span>
                             </div>
                             <div class="spec-item" th:if="${product.cpu}">
                                 <span class="spec-label">Chip xử lý:</span>
@@ -826,6 +826,14 @@
                     if (currentQty > data.quantity) {
                         document.getElementById('quantity').value = Math.min(1, data.quantity);
                         document.getElementById('stickyQuantity').value = Math.min(1, data.quantity);
+                    }
+                    
+                    // Update memory display in specs if available
+                    if (data.memory) {
+                        const memorySpecElement = document.querySelector('.spec-item .spec-value');
+                        if (memorySpecElement) {
+                            memorySpecElement.textContent = data.memory;
+                        }
                     }
                     
                     console.log('Updated product info:', data);

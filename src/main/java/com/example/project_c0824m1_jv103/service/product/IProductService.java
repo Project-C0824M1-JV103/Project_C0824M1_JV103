@@ -32,6 +32,9 @@ public interface IProductService {
     Page<ProductDTO> findAll(Pageable pageable);
     Page<Product> findActiveProducts(Pageable pageable);
 
+    // Lấy danh sách sản phẩm không trùng tên (chỉ lấy sản phẩm đầu tiên của mỗi tên)
+    Page<Product> findActiveProductsWithoutDuplicates(Pageable pageable);
+
     // Tìm kiếm sản phẩm với nhiều điều kiện
     Page<ProductDTO> searchProducts(
             String productName,

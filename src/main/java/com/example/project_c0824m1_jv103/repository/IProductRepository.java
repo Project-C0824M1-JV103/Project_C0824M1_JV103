@@ -58,4 +58,9 @@ public interface IProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("SELECT p FROM Product p WHERE p.quantity > 0 AND p.price = 0 AND (:productName IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :productName, '%')))")
     Page<Product> searchProductsWithQuantityAndZeroPrice(@Param("productName") String productName, Pageable pageable);
+
+    // Query để lấy sản phẩm không trùng tên - chỉ lấy sản phẩm đầu tiên của mỗi tên
+    @Query("SELECT p FROM Product p WHERE p.price > 0 AND p.quantity > 0 AND p.productId IN " +
+           "(SELECT MIN(p2.productId) FROM Product p2 WHERE p2.price > 0 AND p2.quantity > 0 GROUP BY p2.productName)")
+    Page<Product> findActiveProductsWithoutDuplicates(Pageable pageable);
 }
