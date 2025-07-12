@@ -194,8 +194,57 @@
                             </div>
                         </div>
 
-                        <!-- Delivery & Warranty Info -->
-                        <div class="delivery-warranty-info">
+                        <!-- Product Specifications -->
+                        <div class="product-specifications">
+                            <h4 class="specs-title">
+                                <i class="bi bi-cpu"></i>
+                                Thông số kỹ thuật
+                            </h4>
+                            <div class="specs-list">
+                                <div class="spec-row" th:if="${product.size}">
+                                    <div class="spec-label">
+                                        <i class="bi bi-display"></i>
+                                        Kích thước màn hình
+                                    </div>
+                                    <div class="spec-value" th:text="${product.size} + '&quot;'">6.1"</div>
+                                </div>
+                                
+                                <div class="spec-row" th:if="${product.memory}">
+                                    <div class="spec-label">
+                                        <i class="bi bi-hdd"></i>
+                                        Bộ nhớ
+                                    </div>
+                                    <div class="spec-value" th:text="${product.memory}">128GB</div>
+                                </div>
+                                
+                                <div class="spec-row" th:if="${product.cpu}">
+                                    <div class="spec-label">
+                                        <i class="bi bi-cpu"></i>
+                                        Chip xử lý
+                                    </div>
+                                    <div class="spec-value" th:text="${product.cpu}">A15 Bionic</div>
+                                </div>
+                                
+                                <div class="spec-row" th:if="${product.cameraBack}">
+                                    <div class="spec-label">
+                                        <i class="bi bi-camera"></i>
+                                        Camera sau
+                                    </div>
+                                    <div class="spec-value" th:text="${product.cameraBack} + 'MP'">12MP</div>
+                                </div>
+                                
+                                <div class="spec-row" th:if="${product.cameraFront}">
+                                    <div class="spec-label">
+                                        <i class="bi bi-camera-video"></i>
+                                        Camera trước
+                                    </div>
+                                    <div class="spec-value" th:text="${product.cameraFront} + 'MP'">12MP</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery & Support Info -->
+                        <div class="delivery-support-info">
                             <div class="info-section">
                                 <h4 class="info-title">
                                     <i class="bi bi-truck"></i>
@@ -213,27 +262,6 @@
                                     <div class="info-item">
                                         <i class="bi bi-cash"></i>
                                         <span>Miễn phí ship đơn từ 500K</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="info-section">
-                                <h4 class="info-title">
-                                    <i class="bi bi-shield-check"></i>
-                                    Chế độ bảo hành
-                                </h4>
-                                <div class="info-items">
-                                    <div class="info-item">
-                                        <i class="bi bi-award"></i>
-                                        <span>Bảo hành chính hãng 12 tháng</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <i class="bi bi-arrow-clockwise"></i>
-                                        <span>Đổi trả 15 ngày đầu</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <i class="bi bi-tools"></i>
-                                        <span>Hỗ trợ kỹ thuật 24/7</span>
                                     </div>
                                 </div>
                             </div>
@@ -265,55 +293,72 @@
         </div>
     </div>
 
-    <!-- Product Specifications Section -->
-    <div class="specs-section-full">
+        <!-- Product Description & Warranty Section -->
+    <div class="description-warranty-section">
         <div class="container">
             <div class="row">
-                <div class="col-12">
-                    <div class="specs-container">
-                        <h3 class="specs-title">
-                            <i class="bi bi-lightning-charge"></i>
-                            Thông số kỹ thuật
-                        </h3>
-                        <div class="specs-grid">
-                            <div class="spec-item" th:if="${product.size}">
-                                <span class="spec-label">Kích thước màn hình:</span>
-                                <span class="spec-value" th:text="${product.size} + '&quot;'">6.1"</span>
-                            </div>
-                            <div class="spec-item" th:if="${product.memory}">
-                                <span class="spec-label">Bộ nhớ:</span>
-                                <span class="spec-value" th:text="${product.memory}">128GB</span>
-                            </div>
-                            <div class="spec-item" th:if="${product.cpu}">
-                                <span class="spec-label">Chip xử lý:</span>
-                                <span class="spec-value" th:text="${product.cpu}">A15 Bionic</span>
-                            </div>
-                            <div class="spec-item" th:if="${product.cameraBack}">
-                                <span class="spec-label">Camera sau:</span>
-                                <span class="spec-value" th:text="${product.cameraBack} + 'MP'">12MP</span>
-                            </div>
-                            <div class="spec-item" th:if="${product.cameraFront}">
-                                <span class="spec-label">Camera trước:</span>
-                                <span class="spec-value" th:text="${product.cameraFront} + 'MP'">12MP</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Product Description Section -->
-    <div class="description-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
+                <!-- Product Description -->
+                <div class="col-lg-8">
                     <div class="description-container">
-                        <h3 class="description-title">Mô tả sản phẩm</h3>
+                        <h3 class="description-title">
+                            <i class="bi bi-file-text"></i>
+                            Mô tả sản phẩm
+                        </h3>
                         <div class="description-content">
                             <!-- CKEditor will display rich content here -->
                             <div id="descriptionDisplay" th:utext="${product.description ?: 'Chưa có mô tả cho sản phẩm này.'}">
                                 Đang tải mô tả sản phẩm...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Warranty Information -->
+                <div class="col-lg-4">
+                    <div class="warranty-container">
+                        <h3 class="warranty-title">
+                            <i class="bi bi-shield-check"></i>
+                            Chế độ bảo hành
+                        </h3>
+                        <div class="warranty-content">
+                            <div class="warranty-item">
+                                <div class="warranty-icon">
+                                    <i class="bi bi-award"></i>
+                                </div>
+                                <div class="warranty-info">
+                                    <h5>Bảo hành chính hãng</h5>
+                                    <p>12 tháng bảo hành toàn quốc</p>
+                                </div>
+                            </div>
+                            
+                            <div class="warranty-item">
+                                <div class="warranty-icon">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </div>
+                                <div class="warranty-info">
+                                    <h5>Đổi trả miễn phí</h5>
+                                    <p>15 ngày đầu tiên</p>
+                                </div>
+                            </div>
+                            
+                            <div class="warranty-item">
+                                <div class="warranty-icon">
+                                    <i class="bi bi-tools"></i>
+                                </div>
+                                <div class="warranty-info">
+                                    <h5>Hỗ trợ kỹ thuật</h5>
+                                    <p>24/7 qua hotline và chat</p>
+                                </div>
+                            </div>
+                            
+                            <div class="warranty-item">
+                                <div class="warranty-icon">
+                                    <i class="bi bi-truck"></i>
+                                </div>
+                                <div class="warranty-info">
+                                    <h5>Bảo hành tận nơi</h5>
+                                    <p>Dịch vụ sửa chữa tại nhà</p>
+                                </div>
                             </div>
                         </div>
                     </div>
