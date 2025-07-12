@@ -115,49 +115,113 @@ public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, 
     }
 }
 
-    @PostMapping("/save")
-    public String saveSupplier(
-            @Valid @ModelAttribute("supplierDto") SupplierDto supplierDto,
-            BindingResult bindingResult,
-            @RequestParam(value = "image", required = false) MultipartFile image,
-            RedirectAttributes redirectAttributes,
-            Model model) {
+//    @PostMapping("/save")
+//    public String saveSupplier(
+//            @Valid @ModelAttribute("supplierDto") SupplierDto supplierDto,
+//            BindingResult bindingResult,
+//            @RequestParam(value = "image", required = false) MultipartFile image,
+//            RedirectAttributes redirectAttributes,
+//            Model model) {
+//
+//        // Kiểm tra validation cơ bản (annotation)
+//        if (bindingResult.hasErrors()) {
+//            model.addAttribute("currentPage", "supplier");
+//            return "supplier/edit";
+//        }
+//
+//        // Kiểm tra validation từ service (giữ nguyên logic cũ)
+//        String validationError = supplierService.validateNewSupplier(supplierDto);
+//        if (validationError != null) {
+//            // Giữ lại URL ảnh cũ nếu có
+//            if (supplierDto.getSuplierId() != null) {
+//                Optional<Supplier> existingSupplier = supplierService.findById(supplierDto.getSuplierId());
+//                existingSupplier.ifPresent(s -> supplierDto.setImageUrl(s.getImageUrl()));
+//            }
+//            // Phân tích thông báo lỗi để xác định trường nào bị lỗi
+//            if (validationError.contains("Email")) {
+//                bindingResult.rejectValue("email", "", validationError);
+//            } else if (validationError.contains("Số điện thoại")) {
+//                bindingResult.rejectValue("phoneNumber", "", validationError);
+//            } else if (validationError.contains("Tên nhà cung cấp")) {
+//                bindingResult.rejectValue("suplierName", "", validationError);
+//            } else {
+//                bindingResult.reject("", validationError); // Lỗi chung
+//            }
+//
+//            model.addAttribute("currentPage", "supplier");
+//            return "supplier/edit";
+//        }
+//
+//        try {
+//            supplierDto.setImageFile(image);
+//            supplierService.saveSupplier(supplierDto);
+//            redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
+//            return "redirect:/Supplier";
+//        } catch (Exception e) {
+//            bindingResult.reject("", "Có lỗi xảy ra: " + e.getMessage());
+//            model.addAttribute("currentPage", "supplier");
+//            return "supplier/edit";
+//        }
+//    }
+@PostMapping("/save")
+public String saveSupplier(
+        @Valid @ModelAttribute("supplierDto") SupplierDto supplierDto,
+        BindingResult bindingResult,
+        @RequestParam(value = "image", required = false) MultipartFile image,
+        RedirectAttributes redirectAttributes,
+        Model model) {
 
-        // Kiểm tra validation cơ bản (annotation)
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("currentPage", "supplier");
-            return "supplier/edit";
+    // Kiểm tra validation cơ bản (annotation)
+    if (bindingResult.hasErrors()) {
+        // Giữ lại URL ảnh cũ nếu có
+        if (supplierDto.getSuplierId() != null) {
+            Optional<Supplier> existingSupplier = supplierService.findById(supplierDto.getSuplierId());
+            existingSupplier.ifPresent(s -> supplierDto.setImageUrl(s.getImageUrl()));
         }
-
-        // Kiểm tra validation từ service (giữ nguyên logic cũ)
-        String validationError = supplierService.validateNewSupplier(supplierDto);
-        if (validationError != null) {
-            // Phân tích thông báo lỗi để xác định trường nào bị lỗi
-            if (validationError.contains("Email")) {
-                bindingResult.rejectValue("email", "", validationError);
-            } else if (validationError.contains("Số điện thoại")) {
-                bindingResult.rejectValue("phoneNumber", "", validationError);
-            } else if (validationError.contains("Tên nhà cung cấp")) {
-                bindingResult.rejectValue("suplierName", "", validationError);
-            } else {
-                bindingResult.reject("", validationError); // Lỗi chung
-            }
-
-            model.addAttribute("currentPage", "supplier");
-            return "supplier/edit";
-        }
-
-        try {
-            supplierDto.setImageFile(image);
-            supplierService.saveSupplier(supplierDto);
-            redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
-            return "redirect:/Supplier";
-        } catch (Exception e) {
-            bindingResult.reject("", "Có lỗi xảy ra: " + e.getMessage());
-            model.addAttribute("currentPage", "supplier");
-            return "supplier/edit";
-        }
+        model.addAttribute("currentPage", "supplier");
+        return "supplier/edit";
     }
+
+    // Kiểm tra validation từ service
+    String validationError = supplierService.validateNewSupplier(supplierDto);
+    if (validationError != null) {
+        // Giữ lại URL ảnh cũ nếu có
+        if (supplierDto.getSuplierId() != null) {
+            Optional<Supplier> existingSupplier = supplierService.findById(supplierDto.getSuplierId());
+            existingSupplier.ifPresent(s -> supplierDto.setImageUrl(s.getImageUrl()));
+        }
+
+        if (validationError.contains("Email")) {
+            bindingResult.rejectValue("email", "", validationError);
+        } else if (validationError.contains("Số điện thoại")) {
+            bindingResult.rejectValue("phoneNumber", "", validationError);
+        } else if (validationError.contains("Tên nhà cung cấp")) {
+            bindingResult.rejectValue("suplierName", "", validationError);
+        } else {
+            bindingResult.reject("", validationError);
+        }
+
+        model.addAttribute("currentPage", "supplier");
+        return "supplier/edit";
+    }
+
+    try {
+        supplierDto.setImageFile(image);
+        supplierService.saveSupplier(supplierDto);
+        redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
+        return "redirect:/Supplier";
+    } catch (Exception e) {
+        // Giữ lại URL ảnh cũ nếu có
+        if (supplierDto.getSuplierId() != null) {
+            Optional<Supplier> existingSupplier = supplierService.findById(supplierDto.getSuplierId());
+            existingSupplier.ifPresent(s -> supplierDto.setImageUrl(s.getImageUrl()));
+        }
+
+        bindingResult.reject("", "Có lỗi xảy ra: " + e.getMessage());
+        model.addAttribute("currentPage", "supplier");
+        return "supplier/edit";
+    }
+}
 
     @GetMapping("/add")
     public String showAddSupplierForm(Model model) {
