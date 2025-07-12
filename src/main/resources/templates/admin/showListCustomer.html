@@ -564,9 +564,6 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <strong>Giới tính:</strong> <span id="customerGender"></span>
-                            </div>
-                            <div class="col-md-6">
                                 <strong>Tuổi:</strong> <span id="customerAge"></span>
                             </div>
                         </div>
@@ -656,7 +653,7 @@
             
             document.getElementById('purchaseHistoryContent').innerHTML = loadingContent;
             
-            fetch('/Customer/purchase-history/' + customerId + '?page=' + page + '&size=5')
+            fetch('/Customer/purchase-history/' + customerId + '?page=' + page + '&size=6')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -692,7 +689,6 @@
             // Update customer info
             document.getElementById('customerName').textContent = customer.customerName || 'Chưa cập nhật';
             document.getElementById('customerEmail').textContent = customer.email || 'Chưa cập nhật';
-            document.getElementById('customerGender').textContent = 'Nam'; // Default since no gender field
             document.getElementById('customerAge').textContent = customer.birthdayDate ? 
                 calculateAge(customer.birthdayDate) : 'Chưa cập nhật';
             document.getElementById('customerPhone').textContent = customer.phoneNumber || 'Chưa cập nhật';
@@ -711,33 +707,37 @@
                                 <tr>
                                     <th>STT</th>
                                     <th>Ngày mua</th>
-                                    <th>Sản phẩm mua</th>
-                                    <th>Số tiền</th>
+                                    <th>Thông tin mua hàng</th>
+                                    <th>Tổng tiền (VNĐ)</th>
                                 </tr>
                             </thead>
                             <tbody>
                 `;
                 
                 sales.forEach((sale, index) => {
-                    const saleDate = new Date(sale.saleDate).toLocaleDateString('vi-VN');
-                    const amount = new Intl.NumberFormat('vi-VN', {
-                        style: 'currency',
-                        currency: 'VND'
-                    }).format(sale.amount);
+                    const saleDate = new Date(sale.saleDate).toLocaleDateString('en-US');
+                    const amount = new Intl.NumberFormat('en-US').format(sale.amount);
                     
                     // Get product names from sale details
-                    let productNames = [];
+                    let productInfo = 'Không có thông tin';
                     if (sale.saleDetails && sale.saleDetails.length > 0) {
-                        productNames = sale.saleDetails.map(detail => 
-                            detail.product.productName + ' (x' + detail.quantity + ')'
+                        const productNames = sale.saleDetails.map(detail => 
+                            detail.quantity + ' x ' + detail.product.productName
                         );
+                        
+                        // If 2 or more products, use line breaks; otherwise use comma
+                        if (productNames.length >= 2) {
+                            productInfo = productNames.join('<br/>');
+                        } else {
+                            productInfo = productNames.join(', ');
+                        }
                     }
                     
                     historyHTML += `
                         <tr>
                             <td>${(currentPage * 5) + index + 1}</td>
                             <td>${saleDate}</td>
-                            <td>${productNames.length > 0 ? productNames.join(', ') : 'Không có thông tin'}</td>
+                            <td>${productInfo}</td>
                             <td>${amount}</td>
                         </tr>
                     `;

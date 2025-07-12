@@ -157,8 +157,10 @@ public class HomeController {
         BeanUtils.copyProperties(employee, employeeDto);
         model.addAttribute("employee", employeeDto);
         model.addAttribute("isEditing", false);
+        model.addAttribute("originalEmployee", employeeDto);
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("isEditing", false); // Đảm bảo luôn đóng form đổi thông tin cá nhân khi lỗi đổi mật khẩu
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -166,6 +168,7 @@ public class HomeController {
 
         if (!EncryptPasswordUtils.ParseEncrypt(passwordDto.getOldPassword(), employee.getPassword())) {
             bindingResult.rejectValue("oldPassword", "error.password", "Mật khẩu hiện tại không đúng!");
+            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -173,6 +176,7 @@ public class HomeController {
 
         if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword", "error.password", "Mật khẩu xác nhận không khớp!");
+            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -181,6 +185,7 @@ public class HomeController {
         if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword()) &&
             passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
             bindingResult.rejectValue("newPassword", "error.password", "Mật khẩu mới không được trùng với mật khẩu cũ!");
+            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -218,4 +223,81 @@ public class HomeController {
         res.put("message", verified ? "Xác thực thành công!" : "Mã OTP không đúng hoặc đã hết hạn.");
         return res;
     }
+
+    // --- Product Detail Page ---
+    @GetMapping("/product/{id}")
+    public String productDetail(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+
+            
+            Product product = productService.findProductById(id);
+            if (product == null) {
+
+                redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm không tồn tại!");
+                return "redirect:/";
+            }
+            
+
+            
+            // Add product to model
+            model.addAttribute("product", product);
+            
+            // Find product variants (same model but different storage)
+            List<Product> productVariants = productService.findProductVariants(product);
+            model.addAttribute("productVariants", productVariants);
+
+            // Add related products from same category (optional)
+            if (product.getCategory() != null) {
+                Pageable pageable = PageRequest.of(0, 4);
+                Page<Product> relatedProducts = productService.findActiveProducts(pageable);
+                // Filter out current product and same category
+                List<Product> filteredRelated = relatedProducts.getContent().stream()
+                    .filter(p -> !p.getProductId().equals(product.getProductId()) && 
+                                p.getCategory() != null &&
+                                p.getCategory().getCategoryId().equals(product.getCategory().getCategoryId()))
+                    .limit(4)
+                    .collect(Collectors.toList());
+                model.addAttribute("relatedProducts", filteredRelated);
+
+            }
+            
+
+            return "homePage/productDetail";
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải thông tin sản phẩm!");
+            return "redirect:/";
+        }
+    }
+    
+
+    @GetMapping("/api/product/{id}/info")
+    @ResponseBody
+    public Map<String, Object> getProductInfo(@PathVariable("id") Integer id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Product product = productService.findProductById(id);
+            if (product == null) {
+                response.put("success", false);
+                response.put("message", "Sản phẩm không tồn tại");
+                return response;
+            }
+
+            response.put("success", true);
+            response.put("productId", product.getProductId());
+            response.put("productName", product.getProductName());
+            response.put("price", product.getPrice());
+            response.put("quantity", product.getQuantity());
+            response.put("memory", product.getMemory());
+
+            return response;
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra");
+            return response;
+        }
+    }
+
+
 }

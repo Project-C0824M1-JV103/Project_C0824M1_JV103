@@ -4,6 +4,7 @@
         <thead>
         <tr>
             <th>Tên</th>
+            <th>Bộ nhớ (GB)</th>
             <th>Giá (VNĐ)</th>
             <th>Số lượng</th>
             <th>Thao tác</th>
@@ -12,6 +13,7 @@
         <tbody>
         <tr th:each="storage : ${storages}">
             <td th:text="${storage.product.productName}"></td>
+            <td th:text="${storage.product.memory}"></td>
             <td th:text="${#numbers.formatDecimal(storage.cost != null ? storage.cost : storage.product.price, 0, 'COMMA', 0, 'POINT')}"></td>
             <td th:text="${storage.quantity}"></td>
             <td>

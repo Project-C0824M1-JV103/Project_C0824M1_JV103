@@ -112,7 +112,7 @@
         <div class="product-card" th:each="product : ${productPage.content}">
           <!-- Product Image -->
           <a th:href="@{'/product/' + ${product.productId}}" class="product-image-wrapper">
-            <img th:src="${product.productImages != null && !product.productImages.isEmpty() ? product.productImages[0].imageUrl : 'https://via.placeholder.com/300x300.png?text=No+Image'}"
+            <img th:src="${product.productImages != null && !product.productImages.isEmpty() ? product.productImages[0  ].imageUrl : 'https://via.placeholder.com/300x300.png?text=No+Image'}"
                  th:alt="${product.productName}" class="product-image"/>
           </a>
           <!-- Product Info -->
@@ -128,6 +128,7 @@
           <div class="product-actions">
             <button class="wishlist-btn" title="Thêm vào yêu thích"><i class="bi bi-heart"></i></button>
             <button class="add-to-cart-btn" title="Thêm vào giỏ hàng"><i class="bi bi-cart-plus"></i></button>
+
           </div>
         </div>
       </div>
@@ -138,13 +139,13 @@
       <!-- Pagination -->
       <nav aria-label="Page navigation" class="pagination-container" th:if="${productPage.totalPages > 1}">
         <ul class="pagination">
-          <li class="page-item" th:classappend="${!productPage.hasPrevious()} ? 'disabled'">
+          <li th:class="'page-item' + (${!productPage.hasPrevious()} ? ' disabled' : '')">
             <a class="page-link" th:href="@{/(page=${productPage.number - 1}, size=${productPage.size})}">Trước</a>
           </li>
-          <li class="page-item" th:each="pageNumber : ${pageNumbers}" th:classappend="${pageNumber == productPage.number + 1} ? 'active'">
+          <li th:each="pageNumber : ${pageNumbers}" th:class="'page-item' + (${pageNumber == productPage.number + 1} ? ' active' : '')">
             <a class="page-link" th:href="@{/(page=${pageNumber - 1}, size=${productPage.size})}" th:text="${pageNumber}">1</a>
           </li>
-          <li class="page-item" th:classappend="${!productPage.hasNext()} ? 'disabled'">
+          <li th:class="'page-item' + (${!productPage.hasNext()} ? ' disabled' : '')">
             <a class="page-link" th:href="@{/(page=${productPage.number + 1}, size=${productPage.size})}">Sau</a>
           </li>
         </ul>
@@ -197,6 +198,12 @@
     <!-- JavaScript -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        // DEBUG: Check all product links
+        console.log("=== DEBUG: Checking product links ===");
+        document.querySelectorAll('a[href*="/product/"]').forEach((link, index) => {
+          console.log(`Product Link ${index + 1}:`, link.href);
+        });
+        
         // Category navigation
         document.querySelectorAll('.category-item').forEach(item => {
           item.addEventListener('click', function(e) {
@@ -212,6 +219,18 @@
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
             this.classList.add('active');
             console.log(`Switched to slide ${index + 1}`);
+          });
+        });
+        
+        // DEBUG: Add click event to all product links for debugging
+        document.querySelectorAll('a[href*="/product/"]').forEach(link => {
+          link.addEventListener('click', function(e) {
+            console.log("=== DEBUG: Product link clicked ===");
+            console.log("URL:", this.href);
+            console.log("Product ID:", this.href.split('/product/')[1]);
+            
+            // Let the default behavior happen (navigation)
+            // e.preventDefault(); // Remove this to allow navigation
           });
         });
       });

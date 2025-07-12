@@ -52,4 +52,37 @@ public interface ISupplierRepository extends JpaRepository<Supplier, Integer> {
 
     boolean existsBySuplierNameIgnoreCase(String suplierName);
     boolean existsBySuplierNameIgnoreCaseAndSuplierIdNot(String suplierName, Integer suplierId);
+
+    // ========== SYSTEM-WIDE VALIDATION METHODS ==========
+    
+    /**
+     * Kiểm tra email có tồn tại trong toàn hệ thống không (Employee, Customer, Supplier)
+     */
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM (" +
+            "SELECT email FROM employee WHERE LOWER(email) = LOWER(:email) " +
+            "UNION " +
+            "SELECT email FROM customer WHERE LOWER(email) = LOWER(:email) " +
+            "UNION " +
+            "SELECT email FROM supplier WHERE LOWER(email) = LOWER(:email)" +
+            ") AS combined_emails", nativeQuery = true)
+    boolean isEmailExistsInSystem(@Param("email") String email);
+
+    /**
+     * Kiểm tra phone có tồn tại trong toàn hệ thống không (Employee, Customer, Supplier)
+     */
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM (" +
+            "SELECT phone FROM employee WHERE phone = :phone " +
+            "UNION " +
+            "SELECT phone_number FROM customer WHERE phone_number = :phone " +
+            "UNION " +
+            "SELECT phone_number FROM supplier WHERE phone_number = :phone" +
+            ") AS combined_phones", nativeQuery = true)
+    boolean isPhoneExistsInSystem(@Param("phone") String phone);
+
+    /**
+     * Kiểm tra tên supplier có tồn tại không (chỉ trong bảng Supplier)
+     */
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM supplier " +
+            "WHERE LOWER(supplier_name) = LOWER(:supplierName)", nativeQuery = true)
+    boolean isSupplierNameExistsInSystem(@Param("supplierName") String supplierName);
 }

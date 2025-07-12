@@ -237,5 +237,29 @@ public String validateNewSupplier(SupplierDto supplierDto) {
     public Page<Supplier> findAll(Pageable pageable) {
         return supplierRepository.findAll(pageable);
     }
+
+    @Override
+    public boolean isEmailExistsInSystem(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return supplierRepository.isEmailExistsInSystem(email);
+    }
+
+    @Override
+    public boolean isPhoneExistsInSystem(String phone) {
+        if (phone == null || phone.trim().isEmpty()) {
+            return false;
+        }
+        return supplierRepository.isPhoneExistsInSystem(phone);
+    }
+
+    @Override
+    public boolean isSupplierNameExistsInSystem(String supplierName) {
+        if (supplierName == null || supplierName.trim().isEmpty()) {
+            return false;
+        }
+        return supplierRepository.isSupplierNameExistsInSystem(supplierName);
+    }
 }
 
