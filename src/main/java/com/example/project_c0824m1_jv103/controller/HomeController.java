@@ -94,6 +94,8 @@ public class HomeController {
                                      HttpServletResponse response) {
 
         Employee currentEmployee = employeeService.findByEmail(userDetails.getUsername());
+        EmployeePersonalDto originalDto = new EmployeePersonalDto();
+        BeanUtils.copyProperties(currentEmployee, originalDto);
 
         if (!dto.getEmail().equalsIgnoreCase(currentEmployee.getEmail())) {
             if (employeeService.isEmailExistsForOtherEmployee(dto.getEmail(), currentEmployee.getEmployeeId())) {
@@ -111,6 +113,7 @@ public class HomeController {
             model.addAttribute("isEditing", true);
             model.addAttribute("hasError", true);
             model.addAttribute("employee", dto);
+            model.addAttribute("originalEmployee", originalDto);
             model.addAttribute("passwordDto", new EmployeePersonalPasswordDto());
             return "homePage/personal_info";
         }
@@ -131,6 +134,7 @@ public class HomeController {
             model.addAttribute("isEditing", true);
             model.addAttribute("hasError", true);
             model.addAttribute("employee", dto);
+            model.addAttribute("originalEmployee", originalDto);
             model.addAttribute("passwordDto", new EmployeePersonalPasswordDto());
             return "homePage/personal_info";
         }
@@ -153,8 +157,10 @@ public class HomeController {
         BeanUtils.copyProperties(employee, employeeDto);
         model.addAttribute("employee", employeeDto);
         model.addAttribute("isEditing", false);
+        model.addAttribute("originalEmployee", employeeDto);
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("isEditing", false); // Đảm bảo luôn đóng form đổi thông tin cá nhân khi lỗi đổi mật khẩu
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -162,6 +168,7 @@ public class HomeController {
 
         if (!EncryptPasswordUtils.ParseEncrypt(passwordDto.getOldPassword(), employee.getPassword())) {
             bindingResult.rejectValue("oldPassword", "error.password", "Mật khẩu hiện tại không đúng!");
+            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -169,6 +176,7 @@ public class HomeController {
 
         if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword", "error.password", "Mật khẩu xác nhận không khớp!");
+            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -177,6 +185,7 @@ public class HomeController {
         if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword()) &&
             passwordDto.getNewPassword().equals(passwordDto.getConfirmPassword())) {
             bindingResult.rejectValue("newPassword", "error.password", "Mật khẩu mới không được trùng với mật khẩu cũ!");
+            model.addAttribute("isEditing", false);
             model.addAttribute("hasError", true);
             model.addAttribute("passwordDto", passwordDto);
             return "homePage/personal_info";
@@ -233,6 +242,10 @@ public class HomeController {
             // Add product to model
             model.addAttribute("product", product);
             
+            // Find product variants (same model but different storage)
+            List<Product> productVariants = productService.findProductVariants(product);
+            model.addAttribute("productVariants", productVariants);
+
             // Add related products from same category (optional)
             if (product.getCategory() != null) {
                 Pageable pageable = PageRequest.of(0, 4);

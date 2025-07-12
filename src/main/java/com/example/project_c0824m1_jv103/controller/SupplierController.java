@@ -99,7 +99,14 @@ public class SupplierController extends BaseAdminController {
 public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
     Optional<Supplier> supplier = supplierService.findById(id);
     if (supplier.isPresent()) {
-        model.addAttribute("supplier", supplier.get());
+        SupplierDto supplierDto = new SupplierDto();
+        supplierDto.setSuplierId(supplier.get().getSuplierId());
+        supplierDto.setSuplierName(supplier.get().getSuplierName());
+        supplierDto.setAddress(supplier.get().getAddress());
+        supplierDto.setPhoneNumber(supplier.get().getPhoneNumber());
+        supplierDto.setEmail(supplier.get().getEmail());
+        supplierDto.setImageUrl(supplier.get().getImageUrl());
+        model.addAttribute("supplierDto", supplierDto);
         model.addAttribute("currentPage", "supplier");
         return "supplier/edit";
     } else {
@@ -110,44 +117,46 @@ public String showEditSupplierForm(@PathVariable("id") Integer id, Model model, 
 
     @PostMapping("/save")
     public String saveSupplier(
-            @Valid @ModelAttribute("supplier") Supplier supplier,
-            BindingResult result,
+            @Valid @ModelAttribute("supplierDto") SupplierDto supplierDto,
+            BindingResult bindingResult,
             @RequestParam(value = "image", required = false) MultipartFile image,
             RedirectAttributes redirectAttributes,
             Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("supplier", supplier);
+
+        // Kiểm tra validation cơ bản (annotation)
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("currentPage", "supplier");
+            return "supplier/edit";
+        }
+
+        // Kiểm tra validation từ service (giữ nguyên logic cũ)
+        String validationError = supplierService.validateNewSupplier(supplierDto);
+        if (validationError != null) {
+            // Phân tích thông báo lỗi để xác định trường nào bị lỗi
+            if (validationError.contains("Email")) {
+                bindingResult.rejectValue("email", "", validationError);
+            } else if (validationError.contains("Số điện thoại")) {
+                bindingResult.rejectValue("phoneNumber", "", validationError);
+            } else if (validationError.contains("Tên nhà cung cấp")) {
+                bindingResult.rejectValue("suplierName", "", validationError);
+            } else {
+                bindingResult.reject("", validationError); // Lỗi chung
+            }
+
+            model.addAttribute("currentPage", "supplier");
             return "supplier/edit";
         }
 
         try {
-            Optional<Supplier> existingSupplier = supplierService.findById(supplier.getSuplierId());
-            if (existingSupplier.isPresent()) {
-                Supplier currentSupplier = existingSupplier.get();
-                SupplierDto supplierDto = new SupplierDto();
-                supplierDto.setSuplierId(supplier.getSuplierId());
-                supplierDto.setSuplierName(supplier.getSuplierName());
-                supplierDto.setEmail(supplier.getEmail());
-                supplierDto.setPhoneNumber(supplier.getPhoneNumber());
-                supplierDto.setImageFile(image);
-
-                String validationError = supplierService.validateNewSupplier(supplierDto);
-                if (validationError != null) {
-                    model.addAttribute("supplier", supplier);
-                    model.addAttribute("error", validationError);
-                    return "supplier/edit";
-                }
-
-                supplierService.saveSupplier(supplier, image);
-                redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
-            } else {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy nhà cung cấp để cập nhật!");
-            }
+            supplierDto.setImageFile(image);
+            supplierService.saveSupplier(supplierDto);
+            redirectAttributes.addFlashAttribute("message", "Chỉnh sửa nhà cung cấp thành công!");
+            return "redirect:/Supplier";
         } catch (Exception e) {
-            model.addAttribute("supplier", supplier);
-            redirectAttributes.addFlashAttribute("error", "Lỗi khi chỉnh sửa nhà cung cấp: " + e.getMessage());
+            bindingResult.reject("", "Có lỗi xảy ra: " + e.getMessage());
+            model.addAttribute("currentPage", "supplier");
+            return "supplier/edit";
         }
-        return "redirect:/Supplier";
     }
 
     @GetMapping("/add")
