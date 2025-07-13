@@ -60,17 +60,17 @@ VALUES (1, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752150111/bvteq9
        (7, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752151232/quvsccobokmjigtirzay.jpg', 'Ảnh phụ 2 Xiaomi 15 Ultra', 21);
 
 -- Thêm dữ liệu vào bảng Customer
-    INSERT INTO Customer (customer_name, phone_number, address, birthday_date, email)
-    VALUES ('Pham Van D', '0931234567', '123 Le Loi, Hanoi', '1990-05-15', 'phamvand@example.com'),
-           ('Hoang Thi E', '0942345678', '456 Nguyen Trai, HCMC', '1995-08-20', 'hoangthie@example.com'),
-           ('Nguyen Van F', '0953456789', '789 Tran Hung Dao, Da Nang', '1988-12-10', 'nguyenvanf@example.com'),
-           ('Tran Thi G', '0964567890', '101 Hai Ba Trung, Hue', '1992-03-25', 'tranthig@example.com'),
-           ('Le Van H', '0975678901', '202 Vo Thi Sau, Can Tho', '1985-07-30', 'levanh@example.com'),
-           ('Do Thi I', '0986789012', '303 Ly Thuong Kiet, Nha Trang', '1998-11-05', 'dothii@example.com'),
-           ('Vu Van J', '0997890123', '404 Pham Ngu Lao, Vinh', '1993-09-12', 'vuvanj@example.com'),
-           ('Bui Thi K', '0918901234', '505 Nguyen Hue, Quang Ngai', '1991-04-18', 'buithik@example.com'),
-           ('Phan Van L', '0929012345', '606 Hoang Dieu, Hai Phong', '1987-06-22', 'phanvanl@example.com'),
-           ('Ngo Thi M', '0930123456', '707 Le Duan, Buon Ma Thuot', '1994-10-30', 'ngothim@example.com');
+INSERT INTO Customer (customer_name, phone_number, address, birthday_date, email)
+VALUES ('Phạm Văn Huy', '0931234567', '123 Le Loi, Hanoi', '1990-05-15', 'phamvanhuy@gmail.com'),
+       ('Nguyễn Thị Lan', '0942345678', '456 Nguyen Trai, HCMC', '1995-08-20', 'nguyenthilan@gmail.com'),
+       ('Trần Văn Nam', '0953456789', '789 Tran Hung Dao, Da Nang', '1988-12-10', 'tranvannam@gmail.com'),
+       ('Lê Thị Mai', '0964567890', '101 Hai Ba Trung, Hue', '1992-03-25', 'lethimai@gmail.com'),
+       ('Hoàng Văn Long', '0975678901', '202 Vo Thi Sau, Can Tho', '1985-07-30', 'hoangvanlong@gmail.com'),
+       ('Vũ Thị Hồng', '0986789012', '303 Ly Thuong Kiet, Nha Trang', '1998-11-05', 'vuthihong@gmail.com'),
+       ('Đỗ Văn Khánh', '0997890123', '404 Pham Ngu Lao, Vinh', '1993-09-12', 'dovankhanh@gmail.com'),
+       ('Bùi Thị Ngọc', '0918901234', '505 Nguyen Hue, Quang Ngai', '1991-04-18', 'buithingoc@gmail.com'),
+       ('Phan Văn Tùng', '0929012345', '606 Hoang Dieu, Hai Phong', '1987-06-22', 'phanvantung@gmail.com'),
+       ('Ngô Thị Linh', '0930123456', '707 Le Duan, Buon Ma Thuot', '1994-10-30', 'ngothilinh@gmail.com');
 
 -- Thêm dữ liệu vào bảng Sale
 INSERT INTO Sale (customer_id, employee_id, sale_date, amount)
