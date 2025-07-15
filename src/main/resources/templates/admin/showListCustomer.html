@@ -716,10 +716,7 @@
                 
                 sales.forEach((sale, index) => {
                     const saleDate = new Date(sale.saleDate).toLocaleDateString('en-US');
-                    const amount = new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'VND'
-                    }).format(sale.amount);
+                    const amount = new Intl.NumberFormat('vi-VN').format(sale.amount);
                     
                     // Get product names from sale details
                     let productInfo = 'Không có thông tin';

@@ -5,6 +5,7 @@ import com.example.project_c0824m1_jv103.dto.EmployeeCreateDto;
 import com.example.project_c0824m1_jv103.dto.EmployeeEditDto;
 import com.example.project_c0824m1_jv103.model.Employee;
 import com.example.project_c0824m1_jv103.service.employee.EmployeeService;
+import com.example.project_c0824m1_jv103.service.EmailService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class EmployeeController extends BaseAdminController {
     private EmployeeService employeeService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("/create")
     public String showCreateForm(Model model, Principal principal) {
@@ -282,6 +285,56 @@ public class EmployeeController extends BaseAdminController {
         Map<String, Boolean> response = new HashMap<>();
         boolean exists = employeeService.isPhoneExistsInSystem(phone);
         response.put("exists", exists);
+        return response;
+    }
+
+    // API endpoint để gửi OTP xác thực email
+    @PostMapping("/send-otp")
+    @ResponseBody
+    public Map<String, Object> sendOtp(@RequestParam String email) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Kiểm tra email format trước khi gửi OTP
+            if (email == null || email.trim().isEmpty() || !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+                response.put("success", false);
+                response.put("message", "Email không hợp lệ");
+                return response;
+            }
+            
+            // Gửi OTP (sử dụng EmailService)
+            boolean sent = emailService.sendOtp(email.trim());
+            response.put("success", sent);
+            response.put("message", sent ? "OTP đã được gửi đến email của bạn" : "Không thể gửi OTP, vui lòng thử lại");
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi gửi OTP");
+        }
+        return response;
+    }
+
+    // API endpoint để xác thực OTP
+    @PostMapping("/verify-otp")
+    @ResponseBody
+    public Map<String, Object> verifyOtp(@RequestBody Map<String, String> body) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String email = body.get("email");
+            String otp = body.get("otp");
+            
+            if (email == null || otp == null || email.trim().isEmpty() || otp.trim().isEmpty()) {
+                response.put("verified", false);
+                response.put("message", "Email và OTP không được để trống");
+                return response;
+            }
+            
+            // Xác thực OTP (sử dụng EmailService)
+            boolean verified = emailService.verifyOtp(email.trim(), otp.trim());
+            response.put("verified", verified);
+            response.put("message", verified ? "Email đã được xác thực thành công" : "Mã OTP không đúng hoặc đã hết hạn");
+        } catch (Exception e) {
+            response.put("verified", false);
+            response.put("message", "Có lỗi xảy ra khi xác thực OTP");
+        }
         return response;
     }
 

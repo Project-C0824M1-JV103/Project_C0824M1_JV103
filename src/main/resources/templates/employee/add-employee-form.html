@@ -94,7 +94,64 @@
             margin-bottom: 20px;
         }
 
+        /* Loading state for input fields */
+        .form-control.loading {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M8 3a5 5 0 0 0 0 10v-2a3 3 0 0 1 0-6V3z' fill='%23666'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px 16px;
+            animation: spin 1s linear infinite;
+        }
 
+        @keyframes spin {
+            0% { 
+                background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M8 3a5 5 0 0 0 0 10v-2a3 3 0 0 1 0-6V3z' fill='%23666'/%3E%3C/svg%3E");
+                transform: rotate(0deg);
+            }
+            100% { 
+                background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M8 3a5 5 0 0 0 0 10v-2a3 3 0 0 1 0-6V3z' fill='%23666'/%3E%3C/svg%3E");
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Success state for validated fields */
+        .form-control.is-valid {
+            border-color: #28a745;
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M6.97 11.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06L7.5 9.44 5.53 7.47a.75.75 0 0 0-1.06 1.06l2.5 2.5z' fill='%2328a745'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px 16px;
+        }
+
+        /* Improved validation feedback styling */
+        .client-validation-feedback {
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #dc3545;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Better focus states */
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        .form-control.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .form-control.is-valid:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
 
         .label-validation-row {
             display: flex;
@@ -233,8 +290,16 @@
                                              th:errors="*{email}"></div>
                                     </div>
                                 </div>
-                                <input type="email" th:field="*{email}" class="form-control" 
-                                       placeholder="Nhập email nhân viên"/>
+                                <div class="input-group">
+                                    <input type="email" th:field="*{email}" class="form-control" 
+                                           placeholder="Nhập email nhân viên"/>
+                                    <button type="button" class="btn btn-outline-secondary" id="verifyEmailBtn" style="display:none;">
+                                        <i class="fas fa-shield-alt me-1"></i>Verify
+                                    </button>
+                                    <button type="button" class="btn btn-success" id="verifiedEmailBtn" style="display:none;" disabled>
+                                        <i class="fas fa-check me-1"></i>Verified
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -271,6 +336,11 @@
   let phoneValidationTimeout;
   let fullNameValidationTimeout;
   
+  // OTP workflow variables
+  let emailVerified = false;
+  let lastVerifiedEmail = '';
+  let otpSent = false;
+  
   // Track which fields have been touched
   const touchedFields = {
     fullName: false,
@@ -299,7 +369,7 @@
     }
     
     // Check if email has valid format
-    if (!isValidEmail(emailValue)) {
+    if (emailValue.length > 0 && !isValidEmail(emailValue)) {
       showValidationError(emailInput, 'Email phải có định dạng hợp lệ (ví dụ: example@domain.com)');
       return false;
     }
@@ -321,15 +391,21 @@
     if (emailValue.length > 0 && isValidEmail(emailValue)) {
       clearTimeout(emailValidationTimeout);
       emailValidationTimeout = setTimeout(() => {
+        // Show loading state
+        emailInput.classList.add('loading');
+        
         fetch('/employees/check-email?email=' + encodeURIComponent(emailValue))
           .then(response => response.json())
           .then(data => {
+            emailInput.classList.remove('loading');
             if (data.exists) {
-              showValidationError(emailInput, 'Email này đã được sử dụng trong hệ thống');
+              showValidationError(emailInput, 'Email này đã được sử dụng trong hệ thống!');
             }
           })
           .catch(error => {
+            emailInput.classList.remove('loading');
             console.error('Error checking email:', error);
+            // Don't show network errors to user
           });
       }, 500);
     }
@@ -355,13 +431,13 @@
     }
     
     // Check if phone number contains only digits
-    if (!/^\d+$/.test(phoneValue)) {
+    if (phoneValue.length > 0 && !/^\d+$/.test(phoneValue)) {
       showValidationError(phoneInput, 'Số điện thoại chỉ được chứa các chữ số');
       return false;
     }
     
     // Check phone number length (10-11 digits)
-    if (phoneValue.length < 10 || phoneValue.length > 11) {
+    if (phoneValue.length > 0 && (phoneValue.length < 10 || phoneValue.length > 11)) {
       showValidationError(phoneInput, 'Số điện thoại phải có từ 10-11 chữ số');
       return false;
     }
@@ -380,18 +456,24 @@
     }
     
     // Then check for duplicates if format is valid
-    if (phoneValue.length >= 10 && phoneValue.length <= 11) {
+    if (phoneValue.length >= 10 && phoneValue.length <= 11 && /^\d+$/.test(phoneValue)) {
       clearTimeout(phoneValidationTimeout);
       phoneValidationTimeout = setTimeout(() => {
+        // Show loading state
+        phoneInput.classList.add('loading');
+        
         fetch('/employees/check-phone?phone=' + encodeURIComponent(phoneValue))
           .then(response => response.json())
           .then(data => {
+            phoneInput.classList.remove('loading');
             if (data.exists) {
-              showValidationError(phoneInput, 'Số điện thoại này đã được sử dụng trong hệ thống');
+              showValidationError(phoneInput, 'Số điện thoại này đã được sử dụng trong hệ thống!');
             }
           })
           .catch(error => {
+            phoneInput.classList.remove('loading');
             console.error('Error checking phone number:', error);
+            // Don't show network errors to user
           });
       }, 500);
     }
@@ -417,13 +499,13 @@
     }
     
     // Check minimum length
-    if (fullNameValue.length < 2) {
+    if (fullNameValue.length > 0 && fullNameValue.length < 2) {
       showValidationError(fullNameInput, 'Họ và tên phải có ít nhất 2 ký tự');
       return false;
     }
     
     // Check if name contains only letters, spaces, and Vietnamese characters
-    if (!/^[a-zA-ZÀ-ỹĂăÂâĐđÊêÔôƠơƯưÝýàáảãạằắẳẵặầấẩẫậèéẻẽẹềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ\s]+$/.test(fullNameValue)) {
+    if (fullNameValue.length > 0 && !/^[a-zA-ZÀ-ỹĂăÂâĐđÊêÔôƠơƯưÝýàáảãạằắẳẵặầấẩẫậèéẻẽẹềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ\s]+$/.test(fullNameValue)) {
       showValidationError(fullNameInput, 'Họ và tên chỉ được chứa chữ cái và khoảng trắng');
       return false;
     }
@@ -464,8 +546,11 @@
     return emailRegex.test(email);
   }
 
-  // Show validation error
+  // Show validation error (improved version like sale page)
   function showValidationError(inputElement, message) {
+    inputElement.classList.add('is-invalid');
+    inputElement.classList.remove('is-valid');
+    
     const container = inputElement.parentNode.querySelector('.label-validation-row .validation-message-container');
     if (container) {
       let feedback = container.querySelector('.client-validation-feedback');
@@ -475,18 +560,87 @@
         container.appendChild(feedback);
       }
       feedback.textContent = message;
+      feedback.style.display = 'block';
     }
   }
 
-  // Remove validation message
+  // Remove validation message (improved version like sale page)
   function removeValidationMessage(inputElement) {
+    inputElement.classList.remove('is-invalid');
     const container = inputElement.parentNode.querySelector('.label-validation-row .validation-message-container');
     if (container) {
       const feedback = container.querySelector('.client-validation-feedback');
       if (feedback) {
-        feedback.remove();
+        feedback.style.display = 'none';
+        feedback.textContent = '';
       }
     }
+  }
+
+  // Show success state
+  function showValidationSuccess(inputElement) {
+    inputElement.classList.remove('is-invalid');
+    inputElement.classList.add('is-valid');
+    removeValidationMessage(inputElement);
+  }
+
+  // Clear all validation states
+  function clearValidationState(inputElement) {
+    inputElement.classList.remove('is-invalid', 'is-valid', 'loading');
+    removeValidationMessage(inputElement);
+  }
+
+  // Update verify button state based on email verification status
+  function updateVerifyButton() {
+    const emailInput = document.querySelector('input[name="email"]');
+    const verifyBtn = document.getElementById('verifyEmailBtn');
+    const verifiedBtn = document.getElementById('verifiedEmailBtn');
+    const email = emailInput.value.trim();
+    
+    if (emailVerified && email === lastVerifiedEmail) {
+      verifyBtn.style.display = 'none';
+      verifiedBtn.style.display = 'inline-block';
+    } else if (isValidEmail(email) && email.length > 0) {
+      verifyBtn.style.display = 'inline-block';
+      verifiedBtn.style.display = 'none';
+    } else {
+      verifyBtn.style.display = 'none';
+      verifiedBtn.style.display = 'none';
+    }
+  }
+
+  // Send OTP to email
+  function sendOTP(email) {
+    return fetch('/employees/send-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'email=' + encodeURIComponent(email)
+    })
+    .then(response => response.json());
+  }
+
+  // Verify OTP
+  function verifyOTP(email, otp) {
+    return fetch('/employees/verify-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: email, otp: otp })
+    })
+    .then(response => response.json());
+  }
+
+  // Show loading overlay
+  function showLoading() {
+    document.getElementById('loading-overlay').style.display = 'flex';
+  }
+
+  // Hide loading overlay
+  function hideLoading() {
+    document.getElementById('loading-overlay').style.display = 'none';
   }
 
   // Attach event listeners
@@ -498,7 +652,12 @@
     const form = document.querySelector('form');
     
     if (fullNameInput) {
-      fullNameInput.addEventListener('input', validateFullNameFormat);
+      fullNameInput.addEventListener('input', function() {
+        // Clear validation immediately when user starts typing
+        removeValidationMessage(fullNameInput);
+        clearTimeout(fullNameValidationTimeout);
+        fullNameValidationTimeout = setTimeout(validateFullNameFormat, 300);
+      });
       fullNameInput.addEventListener('blur', function() {
         touchedFields.fullName = true;
         validateFullNameFormat(true);
@@ -506,15 +665,31 @@
     }
     
     if (emailInput) {
-      emailInput.addEventListener('input', validateEmailFormat);
+      emailInput.addEventListener('input', function() {
+        // Clear validation immediately when user starts typing
+        removeValidationMessage(emailInput);
+        clearTimeout(emailValidationTimeout);
+        emailValidationTimeout = setTimeout(validateEmailFormat, 300);
+        
+        // Reset email verification when email changes
+        emailVerified = false;
+        lastVerifiedEmail = '';
+        updateVerifyButton();
+      });
       emailInput.addEventListener('blur', function() {
         touchedFields.email = true;
         validateEmail();
+        updateVerifyButton();
       });
     }
     
     if (phoneInput) {
-      phoneInput.addEventListener('input', validatePhoneNumberFormat);
+      phoneInput.addEventListener('input', function() {
+        // Clear validation immediately when user starts typing
+        removeValidationMessage(phoneInput);
+        clearTimeout(phoneValidationTimeout);
+        phoneValidationTimeout = setTimeout(validatePhoneNumberFormat, 300);
+      });
       phoneInput.addEventListener('blur', function() {
         touchedFields.phone = true;
         validatePhoneNumber();
@@ -522,7 +697,10 @@
     }
     
     if (roleSelect) {
-      roleSelect.addEventListener('change', validateRoleSelection);
+      roleSelect.addEventListener('change', function() {
+        touchedFields.role = true;
+        validateRoleSelection();
+      });
       roleSelect.addEventListener('blur', function() {
         touchedFields.role = true;
         validateRoleSelection(true);
@@ -556,8 +734,25 @@
         }
         
         // Check for client-side validation errors
-        const hasClientErrors = document.querySelectorAll('.client-validation-feedback').length > 0;
+        const hasClientErrors = document.querySelectorAll('.client-validation-feedback[style*="block"]').length > 0;
         const alertDiv = document.getElementById('clientValidationAlert');
+        
+        // Check if email is verified
+        if (!emailVerified) {
+          e.preventDefault();
+          const emailInput = document.querySelector('input[name="email"]');
+          showValidationError(emailInput, 'Vui lòng xác thực email trước khi lưu nhân viên');
+          alertDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span>Email chưa được xác thực. Vui lòng xác thực email trước khi tiếp tục.</span>
+          `;
+          alertDiv.style.display = 'block';
+          window.scrollTo({top: 0, behavior: 'smooth'});
+          setTimeout(() => {
+            alertDiv.style.display = 'none';
+          }, 7000);
+          return;
+        }
         
         if (!isValid || hasClientErrors) {
           e.preventDefault();
@@ -577,8 +772,200 @@
         }
       });
     }
+    
+    // === OTP WORKFLOW EVENT LISTENERS ===
+    
+    // Verify Email Button
+    const verifyBtn = document.getElementById('verifyEmailBtn');
+    if (verifyBtn) {
+      verifyBtn.addEventListener('click', function() {
+        const emailInput = document.querySelector('input[name="email"]');
+        const email = emailInput.value.trim();
+        
+        if (!isValidEmail(email)) {
+          showValidationError(emailInput, 'Email phải có định dạng hợp lệ để xác thực');
+          return;
+        }
+        
+        verifyBtn.disabled = true;
+        showLoading();
+        
+        sendOTP(email)
+          .then(data => {
+            hideLoading();
+            verifyBtn.disabled = false;
+            
+            if (data.success) {
+              otpSent = true;
+              // Open OTP modal
+              const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+              document.getElementById('otpInput').value = '';
+              document.getElementById('otpError').style.display = 'none';
+              otpModal.show();
+            } else {
+              alert(data.message || 'Không thể gửi OTP! Vui lòng thử lại.');
+            }
+          })
+          .catch(error => {
+            hideLoading();
+            verifyBtn.disabled = false;
+            console.error('Error sending OTP:', error);
+            alert('Có lỗi xảy ra khi gửi OTP! Vui lòng thử lại.');
+          });
+      });
+    }
+    
+    // Submit OTP Button
+    const submitOtpBtn = document.getElementById('submitOtpBtn');
+    if (submitOtpBtn) {
+      submitOtpBtn.addEventListener('click', function() {
+        const emailInput = document.querySelector('input[name="email"]');
+        const email = emailInput.value.trim();
+        const otp = document.getElementById('otpInput').value.trim();
+        const otpError = document.getElementById('otpError');
+        
+        if (!otp) {
+          otpError.textContent = 'Vui lòng nhập mã OTP.';
+          otpError.style.display = 'block';
+          return;
+        }
+        
+        submitOtpBtn.disabled = true;
+        showLoading();
+        
+        verifyOTP(email, otp)
+          .then(data => {
+            hideLoading();
+            submitOtpBtn.disabled = false;
+            
+            if (data.verified) {
+              emailVerified = true;
+              lastVerifiedEmail = email;
+              showValidationSuccess(emailInput);
+              updateVerifyButton();
+              
+              // Close modal
+              const otpModal = bootstrap.Modal.getInstance(document.getElementById('otpModal'));
+              otpModal.hide();
+              
+              // Show success message
+              const successAlert = document.createElement('div');
+              successAlert.className = 'alert alert-success alert-dismissible fade show';
+              successAlert.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                Email đã được xác thực thành công!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              `;
+              
+              const clientAlert = document.getElementById('clientValidationAlert');
+              clientAlert.parentNode.insertBefore(successAlert, clientAlert);
+              
+              setTimeout(() => {
+                successAlert.remove();
+              }, 5000);
+            } else {
+              otpError.textContent = data.message || 'Mã OTP không đúng hoặc đã hết hạn!';
+              otpError.style.display = 'block';
+            }
+          })
+          .catch(error => {
+            hideLoading();
+            submitOtpBtn.disabled = false;
+            console.error('Error verifying OTP:', error);
+            otpError.textContent = 'Có lỗi xảy ra khi xác thực OTP!';
+            otpError.style.display = 'block';
+          });
+      });
+    }
+    
+    // Resend OTP Button
+    const resendOtpBtn = document.getElementById('resendOtpBtn');
+    if (resendOtpBtn) {
+      resendOtpBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const emailInput = document.querySelector('input[name="email"]');
+        const email = emailInput.value.trim();
+        
+        resendOtpBtn.style.pointerEvents = 'none';
+        resendOtpBtn.textContent = 'Đang gửi...';
+        
+        sendOTP(email)
+          .then(data => {
+            if (data.success) {
+              resendOtpBtn.textContent = 'Đã gửi lại!';
+              setTimeout(() => {
+                resendOtpBtn.textContent = 'Gửi lại';
+                resendOtpBtn.style.pointerEvents = 'auto';
+              }, 3000);
+            } else {
+              resendOtpBtn.textContent = 'Lỗi! Thử lại';
+              resendOtpBtn.style.pointerEvents = 'auto';
+            }
+          })
+          .catch(() => {
+            resendOtpBtn.textContent = 'Lỗi! Thử lại';
+            resendOtpBtn.style.pointerEvents = 'auto';
+          });
+      });
+    }
+    
+    // OTP Modal Events
+    const otpModalEl = document.getElementById('otpModal');
+    if (otpModalEl) {
+      otpModalEl.addEventListener('shown.bs.modal', function () {
+        document.getElementById('otpInput').focus();
+      });
+      
+      // Allow Enter key to submit OTP
+      document.getElementById('otpInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          submitOtpBtn.click();
+        }
+      });
+    }
+    
+    // Call updateVerifyButton on initial load
+    updateVerifyButton();
   });
 </script>
+
+<!-- OTP Verification Modal -->
+<div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="otpModalLabel">
+                    <i class="fas fa-envelope-open-text me-2"></i>Xác thực Email
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-paper-plane fa-2x text-primary mb-2"></i>
+                    <p class="mb-1">Mã OTP đã được gửi đến email của bạn.</p>
+                    <p class="text-muted small">Vui lòng kiểm tra hộp thư và nhập mã OTP để xác thực.</p>
+                </div>
+                <div class="mb-3">
+                    <label for="otpInput" class="form-label">Mã OTP</label>
+                    <input type="text" class="form-control text-center" id="otpInput" 
+                           placeholder="Nhập mã OTP" maxlength="6" style="font-size: 1.2rem; letter-spacing: 0.2rem;">
+                    <div class="invalid-feedback" id="otpError" style="display:none;"></div>
+                </div>
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary" id="submitOtpBtn">
+                        <i class="fas fa-check me-1"></i>Xác nhận
+                    </button>
+                </div>
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Không nhận được mã? 
+                        <a href="#" id="resendOtpBtn" class="text-decoration-none">Gửi lại</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="admin-loading-overlay" id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
   <div class="admin-loading-box" style="background: white; padding: 30px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -590,3 +977,4 @@
 </div>
 </body>
 </html>
+
