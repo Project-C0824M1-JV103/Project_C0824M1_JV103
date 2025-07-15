@@ -177,7 +177,8 @@ public class EmployeeService implements IEmployeeService {
         if (email == null || email.trim().isEmpty()) {
             return false;
         }
-        return employeeRepository.isEmailExistsInSystem(email);
+        Long count = employeeRepository.countEmailExistsInSystem(email);
+        return count != null && count > 0;
     }
 
     @Override
@@ -185,6 +186,7 @@ public class EmployeeService implements IEmployeeService {
         if (phone == null || phone.trim().isEmpty()) {
             return false;
         }
-        return employeeRepository.isPhoneExistsInSystem(phone);
+        Long count = employeeRepository.countPhoneExistsInSystem(phone);
+        return count != null && count > 0;
     }
 }

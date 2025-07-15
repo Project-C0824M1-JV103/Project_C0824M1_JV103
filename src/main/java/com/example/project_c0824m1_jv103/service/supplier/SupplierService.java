@@ -243,7 +243,8 @@ public String validateNewSupplier(SupplierDto supplierDto) {
         if (email == null || email.trim().isEmpty()) {
             return false;
         }
-        return supplierRepository.isEmailExistsInSystem(email);
+        Long count = supplierRepository.countEmailExistsInSystem(email);
+        return count != null && count > 0;
     }
 
     @Override
@@ -251,7 +252,8 @@ public String validateNewSupplier(SupplierDto supplierDto) {
         if (phone == null || phone.trim().isEmpty()) {
             return false;
         }
-        return supplierRepository.isPhoneExistsInSystem(phone);
+        Long count = supplierRepository.countPhoneExistsInSystem(phone);
+        return count != null && count > 0;
     }
 
     @Override
@@ -259,7 +261,8 @@ public String validateNewSupplier(SupplierDto supplierDto) {
         if (supplierName == null || supplierName.trim().isEmpty()) {
             return false;
         }
-        return supplierRepository.isSupplierNameExistsInSystem(supplierName);
+        Long count = supplierRepository.countSupplierNameExistsInSystem(supplierName);
+        return count != null && count > 0;
     }
 }
 

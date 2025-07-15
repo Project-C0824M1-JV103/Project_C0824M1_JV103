@@ -222,6 +222,36 @@
             font-weight: 500;
         }
 
+        /* Hiển thị lỗi cùng hàng label như edit-product-form.html */
+        .label-with-error {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .label-with-error .form-label {
+            margin-bottom: 0;
+            display: inline;
+        }
+        .inline-error {
+            color: #dc3545;
+            font-size: 0.75em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        @media (max-width: 768px) {
+            .label-with-error {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .inline-error {
+                margin-top: 5px;
+                white-space: normal;
+            }
+        }
+
         .form-control,
         .form-select {
             border-radius: 0.5rem;
@@ -326,18 +356,17 @@
                         <input type="hidden" th:field="*{employeeId}">
 
                         <div class="mb-3">
-                            <div class="d-flex align-items-center">
+                            <div class="label-with-error">
                                 <label class="form-label mb-0">Họ và tên <span class="text-danger">*</span></label>
-                                <div class="text-danger small" style="font-size: 0.75rem;" th:if="${#fields.hasErrors('fullName')}"
-                                     th:errors="*{fullName}"></div>
+                                <div class="inline-error" th:if="${#fields.hasErrors('fullName')}" th:text="${#fields.errors('fullName')[0]}"></div>
                             </div>
                             <input type="text" th:field="*{fullName}" class="form-control"/>
                         </div>
 
                         <div class="mb-3">
-                            <div class="d-flex align-items-center">
+                            <div class="label-with-error">
                                 <label class="form-label mb-0">Số điện thoại <span class="text-danger">*</span></label>
-                                <div class="text-danger small" style="font-size: 0.75rem;" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                <div class="inline-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
                             </div>
                             <input type="text" th:field="*{phone}" class="form-control"/>
                         </div>
@@ -355,9 +384,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <div class="d-flex align-items-center">
+                            <div class="label-with-error">
                                 <label class="form-label mb-0">Email (tên đăng nhập) <span class="text-danger">*</span></label>
-                                <div class="text-danger small" style="font-size: 0.75rem;" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                <div class="inline-error" th:if="${#fields.hasErrors('email')}" th:text="${#fields.errors('email')[0]}"></div>
                             </div>
                             <input type="email" th:field="*{email}" class="form-control"/>
                         </div>

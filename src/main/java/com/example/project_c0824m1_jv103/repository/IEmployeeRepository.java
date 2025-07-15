@@ -53,24 +53,24 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     /**
      * Kiểm tra email có tồn tại trong toàn hệ thống không (Employee, Customer, Supplier)
      */
-    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM (" +
+    @Query(value = "SELECT COUNT(*) FROM (" +
             "SELECT email FROM employee WHERE LOWER(email) = LOWER(:email) " +
             "UNION " +
             "SELECT email FROM customer WHERE LOWER(email) = LOWER(:email) " +
             "UNION " +
             "SELECT email FROM supplier WHERE LOWER(email) = LOWER(:email)" +
             ") AS combined_emails", nativeQuery = true)
-    boolean isEmailExistsInSystem(@Param("email") String email);
+    Long countEmailExistsInSystem(@Param("email") String email);
 
     /**
      * Kiểm tra phone có tồn tại trong toàn hệ thống không (Employee, Customer, Supplier)
      */
-    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM (" +
+    @Query(value = "SELECT COUNT(*) FROM (" +
             "SELECT phone FROM employee WHERE phone = :phone " +
             "UNION " +
             "SELECT phone_number FROM customer WHERE phone_number = :phone " +
             "UNION " +
             "SELECT phone_number FROM supplier WHERE phone_number = :phone" +
             ") AS combined_phones", nativeQuery = true)
-    boolean isPhoneExistsInSystem(@Param("phone") String phone);
+    Long countPhoneExistsInSystem(@Param("phone") String phone);
 }

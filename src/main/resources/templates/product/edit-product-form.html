@@ -182,11 +182,14 @@
     /* Error message inline with label */
     .label-with-error {
       display: flex;
-      align-items: center;
-      gap: 10px;
+      align-items:baseline;
+      gap: 6px;
       margin-bottom: 8px;
     }
-
+    .label-with-error .form-label {
+      margin-bottom: 0; /* Đảm bảo label không đẩy span xuống */
+      display: inline;  /* Đảm bảo label nằm cùng dòng */
+    }
     .label-text {
       margin: 0;
     }
@@ -194,7 +197,7 @@
     .inline-error {
       color: #dc3545;
       font-size: 0.75em;
-      margin: 0;
+      margin-left: 0px;
       padding: 4px 8px;
 
       border-radius: 4px;
@@ -254,6 +257,14 @@
 
     .ck.ck-editor {
       width: 100%;
+    }
+
+    .form-control.is-invalid,
+    .form-select.is-invalid,
+    textarea.form-control.is-invalid {
+      border-color: #e9ecef !important; /* Màu viền mặc định */
+      background-image: none !important;
+      box-shadow: none !important;
     }
   </style>
 </head>

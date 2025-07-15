@@ -405,8 +405,8 @@
         let yOrdersConfig, yAmountConfig;
 
         if (type === 'day' || type === 'month') {
-            yOrdersConfig = {min: 0, max: 100, stepSize: 10};
-            yAmountConfig = {min: 0, max: 500000000, stepSize: 50000000};
+            yOrdersConfig = {min: 0, max: 20, stepSize: 2};
+            yAmountConfig = {min: 0, max: 200000000, stepSize: 20000000};
             if (type === 'day') {
                 const fromDate = document.getElementById('fromDate').value;
                 const toDate = document.getElementById('toDate').value;
