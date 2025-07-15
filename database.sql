@@ -33,7 +33,13 @@ VALUES ('Samsung Galaxy S21', '6.2', 15000000, '10', '12', '128', 'Exynos 2100',
        ('Oppo Find X5 Pro', '6.7', 19000000, '32', '50', '256', 'Snapdragon 8 Gen 1',
         'High-end Oppo with superior camera', 3, 3, 35),
        ('Xiaomi 15 Ultra', '6.6', 32000000, '13', '50', '256', 'Kirin 9000', 'Xiaomi flagship with advanced photography',
-        2, 1, 15);
+        2, 1, 15),
+       ('Xiaomi Redmi 13', '6.6', 5000000, '12', '48', '512', 'MediaTek Helio G91 Ultra', 'Xiaomi flagship with advanced photography',
+        2, 1, 15),
+       ('IPhone 15', '6.1', 16000000, '12', '48', '256', 'A15 Bionic',
+        'Advanced Apple smartphone with Dynamic Island', 2, 2, 20),
+       ('Samsung Galaxy Z Fold6', '7.6', 35000000, '12', '50', '512', 'Snapdragon 8 Gen 3',
+        'Premium Samsung flagship with S Pen', 1, 1, 25);
 
 -- Thêm dữ liệu vào bảng ProductImages
 INSERT INTO product_images (product_id, image_url, caption, image_id)
@@ -57,7 +63,16 @@ VALUES (1, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752150111/bvteq9
        (6, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752150076/jucgw19dwbughqwajgxx.jpg', 'Ảnh phụ 2 Oppo Find X5 Pro', 9),
        (7, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752152267/i9qobybgmx5ar3dreacl.jpg', 'Ảnh chính Xiaomi 15 Ultra', 19),
        (7, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752151231/jni3vhip2j3hsqh70p5s.jpg', 'Ảnh phụ 1 Xiaomi 15 Ultra', 20),
-       (7, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752151232/quvsccobokmjigtirzay.jpg', 'Ảnh phụ 2 Xiaomi 15 Ultra', 21);
+       (7, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752151232/quvsccobokmjigtirzay.jpg', 'Ảnh phụ 2 Xiaomi 15 Ultra', 21),
+       (8, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752561231/redmi-13-black-thumb-600x600_bzmnnq.jpg', 'Ảnh chính Xiaomi Redmi 13 ', 22),
+       (8, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752561231/redmi-13-black-1-750x500_sc0dtf.jpg', 'Ảnh phụ 1 Xiaomi Redmi 13', 23),
+       (8, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752561231/redmi-13-black-2-750x500_wntxbo.jpg', 'Ảnh phụ 2 Xiaomi Redmi 13', 24),
+       (9, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752561346/iphone-15-vang-thumb-600x600_fgw11b.jpg', 'Ảnh chính IPhone 15', 25),
+       (9, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752561346/iphone-15-yellow-2-638629454423086951-750x500_eas949.jpg', 'Ảnh phụ 1 IPhone 15', 26),
+       (9, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752561346/iphone-15-128gb-vang-3-750x500_sbnf0l.jpg', 'Ảnh phụ 2 IPhone 15', 27),
+       (10, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752561469/samsung-galaxy-z-fold6-thumb-1-600x600_paodov.jpg', 'Ảnh chính Samsung Galaxy Z Fold6', 28),
+       (10, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752561469/samsung-galaxy-z-fold6-xam-1-1-750x500_mbjlpy.jpg', 'Ảnh phụ 1 Samsung Galaxy Z Fold6', 29),
+       (10, 'https://res.cloudinary.com/dbfscepll/image/upload/v1752561470/samsung-galaxy-z-fold6-xam-2-1-750x500_jefjjl.jpg', 'Ảnh phụ 2 Samsung Galaxy Z Fold6', 30);
 
 -- Thêm dữ liệu vào bảng Customer
 INSERT INTO Customer (customer_name, phone_number, address, birthday_date, email)
