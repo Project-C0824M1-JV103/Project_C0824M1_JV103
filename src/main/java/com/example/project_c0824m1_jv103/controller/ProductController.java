@@ -186,6 +186,11 @@ public class ProductController extends BaseAdminController {
         if (imageValidationError != null) {
             model.addAttribute("error", imageValidationError);
             productDTO.setProductId(id.intValue());
+            // Reload existing images from database
+            ProductDTO existingProduct = productService.findById(id);
+            if (existingProduct != null) {
+                productDTO.setExistingImageUrls(existingProduct.getExistingImageUrls());
+            }
             model.addAttribute("productDTO", productDTO);
             model.addAttribute("categories", productService.getAllCategories());
             model.addAttribute("suppliers", productService.getAllSuppliers());
@@ -194,6 +199,11 @@ public class ProductController extends BaseAdminController {
 
         if (bindingResult.hasErrors()) {
             productDTO.setProductId(id.intValue());
+            // Reload existing images from database
+            ProductDTO existingProduct = productService.findById(id);
+            if (existingProduct != null) {
+                productDTO.setExistingImageUrls(existingProduct.getExistingImageUrls());
+            }
             model.addAttribute("productDTO", productDTO);
             model.addAttribute("categories", productService.getAllCategories());
             model.addAttribute("suppliers", productService.getAllSuppliers());
@@ -227,6 +237,8 @@ public class ProductController extends BaseAdminController {
             if (totalImagesAfterUpdate > 4) {
                 model.addAttribute("error", "Tổng số ảnh không được vượt quá 4 ảnh. Hiện tại: " + totalImagesAfterUpdate);
                 productDTO.setProductId(id.intValue());
+                // Reload existing images from database
+                productDTO.setExistingImageUrls(existingProduct.getExistingImageUrls());
                 model.addAttribute("productDTO", productDTO);
                 model.addAttribute("categories", productService.getAllCategories());
                 model.addAttribute("suppliers", productService.getAllSuppliers());
@@ -260,6 +272,15 @@ public class ProductController extends BaseAdminController {
             e.printStackTrace();
             model.addAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
             productDTO.setProductId(id.intValue());
+            // Reload existing images from database
+            try {
+                ProductDTO existingProduct = productService.findById(id);
+                if (existingProduct != null) {
+                    productDTO.setExistingImageUrls(existingProduct.getExistingImageUrls());
+                }
+            } catch (Exception ex) {
+                // Ignore this exception, just proceed without images
+            }
             model.addAttribute("productDTO", productDTO);
             model.addAttribute("categories", productService.getAllCategories());
             model.addAttribute("suppliers", productService.getAllSuppliers());
