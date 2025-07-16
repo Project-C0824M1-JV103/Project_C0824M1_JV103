@@ -94,12 +94,12 @@ public class EmployeeController extends BaseAdminController {
         // Kiểm tra trùng email
         if (employeeService.findByEmail(employeeDto.getEmail()) != null) {
             bindingResult.rejectValue("email", "errorMessage", "Email này đã được sử dụng! Vui lòng nhập email khác!");
-            List<Employee.Role> filteredRoles = Arrays.stream(Employee.Role.values())
-                    .filter(role -> role != Employee.Role.Admin)
-                    .toList();
-            model.addAttribute("roles", filteredRoles);
-            model.addAttribute("currentPage", "employee");
-            return "employee/add-employee-form";
+//            List<Employee.Role> filteredRoles = Arrays.stream(Employee.Role.values())
+//                    .filter(role -> role != Employee.Role.Admin)
+//                    .toList();
+//            model.addAttribute("roles", filteredRoles);
+//            model.addAttribute("currentPage", "employee");
+//            return "employee/add-employee-form";
         }
 
         if (bindingResult.hasErrors()) {

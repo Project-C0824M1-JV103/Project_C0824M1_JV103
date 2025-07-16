@@ -39,11 +39,11 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
             }
         }
 
-        if (employeeRepository.findByRole(Employee.Role.Sales).isEmpty()) {
-            if (employeeRepository.findByEmail("sales@example.com") == null) {
+//        if (employeeRepository.findByRole(Employee.Role.Sales).isEmpty()) {
+            if (employeeRepository.findByEmail("viettai@gmail.com") == null) {
                 Employee sales = new Employee(
-                        "Sales User",
-                        "sales@example.com",
+                        "Viết Tài",
+                        "viettai@gmail.com",
                         EncryptPasswordUtils.EncryptPasswordUtils("123456"),
                         "0123456790",
                         Employee.Role.Sales,
@@ -51,13 +51,27 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
                 );
                 employeeRepository.save(sales);
             }
-        }
+//        }
 
-        if (employeeRepository.findByRole(Employee.Role.Warehouse).isEmpty()) {
-            if (employeeRepository.findByEmail("warehouse@example.com") == null) {
+//        if (employeeRepository.findByRole(Employee.Role.Sales).isEmpty()) {
+            if (employeeRepository.findByEmail("congdat@gmail.com") == null) {
+                Employee sales = new Employee(
+                        "Công Đạt",
+                        "congdat@gmail.com",
+                        EncryptPasswordUtils.EncryptPasswordUtils("123456"),
+                        "0123456810",
+                        Employee.Role.Sales,
+                        Employee.Status.active
+                );
+                employeeRepository.save(sales);
+            }
+//        }
+
+//        if (employeeRepository.findByRole(Employee.Role.Warehouse).isEmpty()) {
+            if (employeeRepository.findByEmail("vantai@gmail.com") == null) {
                 Employee warehouse = new Employee(
-                        "Warehouse Staff",
-                        "warehouse@example.com",
+                        "Văn Tài",
+                        "vantai@gmail.com",
                         EncryptPasswordUtils.EncryptPasswordUtils("123456"),
                         "0123456791",
                         Employee.Role.Warehouse,
@@ -65,13 +79,27 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
                 );
                 employeeRepository.save(warehouse);
             }
-        }
+//        }
 
-        if (employeeRepository.findByRole(Employee.Role.Business).isEmpty()) {
-            if (employeeRepository.findByEmail("business@example.com") == null) {
+//        if (employeeRepository.findByRole(Employee.Role.Warehouse).isEmpty()) {
+            if (employeeRepository.findByEmail("vanhien@gmail.com") == null) {
+                Employee warehouse = new Employee(
+                        "Văn Hiển",
+                        "vanhien@gmail.com",
+                        EncryptPasswordUtils.EncryptPasswordUtils("123456"),
+                        "0123456811",
+                        Employee.Role.Warehouse,
+                        Employee.Status.active
+                );
+                employeeRepository.save(warehouse);
+            }
+//        }
+
+//        if (employeeRepository.findByRole(Employee.Role.Business).isEmpty()) {
+            if (employeeRepository.findByEmail("hongquan@gmail.com") == null) {
                 Employee business = new Employee(
-                        "Business Analyst",
-                        "business@example.com",
+                        "Hồng Quân",
+                        "hongquan@gmail.com",
                         EncryptPasswordUtils.EncryptPasswordUtils("123456"),
                         "0123456792",
                         Employee.Role.Business,
@@ -79,7 +107,7 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
                 );
                 employeeRepository.save(business);
             }
-        }
+//        }
     }
 
     @Override

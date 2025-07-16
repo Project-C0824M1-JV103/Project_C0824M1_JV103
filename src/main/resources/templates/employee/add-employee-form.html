@@ -315,7 +315,7 @@
                                              th:errors="*{phone}"></div>
                                     </div>
                                 </div>
-                                <input type="tel" th:field="*{phone}" class="form-control" 
+                                <input type="tel" th:field="*{phone}" class="form-control"
                                        placeholder="Nhập số điện thoại" />
                             </div>
 
@@ -795,21 +795,21 @@
         const alertDiv = document.getElementById('clientValidationAlert');
         
         // Check if email is verified
-        if (!emailVerified) {
-          e.preventDefault();
-          const emailInput = document.querySelector('input[name="email"]');
-          showValidationError(emailInput, 'Vui lòng xác thực email trước khi lưu nhân viên');
-          alertDiv.innerHTML = `
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            <span>Email chưa được xác thực. Vui lòng xác thực email trước khi tiếp tục.</span>
-          `;
-          alertDiv.style.display = 'block';
-          window.scrollTo({top: 0, behavior: 'smooth'});
-          setTimeout(() => {
-            alertDiv.style.display = 'none';
-          }, 7000);
-          return;
-        }
+        // if (!emailVerified) {
+        //   e.preventDefault();
+        //   const emailInput = document.querySelector('input[name="email"]');
+        //   showValidationError(emailInput, 'Vui lòng xác thực email trước khi lưu nhân viên');
+        //   alertDiv.innerHTML = `
+        //     <i class="fas fa-exclamation-triangle me-2"></i>
+        //     <span>Email chưa được xác thực. Vui lòng xác thực email trước khi tiếp tục.</span>
+        //   `;
+        //   alertDiv.style.display = 'block';
+        //   window.scrollTo({top: 0, behavior: 'smooth'});
+        //   setTimeout(() => {
+        //     alertDiv.style.display = 'none';
+        //   }, 7000);
+        //   return;
+        // }
         
         if (!isValid || hasClientErrors) {
           e.preventDefault();
