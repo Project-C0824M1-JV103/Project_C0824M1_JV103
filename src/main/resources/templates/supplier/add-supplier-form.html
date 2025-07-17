@@ -70,6 +70,11 @@
       box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
     }
 
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
     .image-section {
       display: flex;
       gap: 20px;
@@ -167,29 +172,129 @@
       color: #dc3545;
     }
 
+    /* Loading overlay giống employee form */
+    .admin-loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(102,126,234,0.15);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .admin-loading-box {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 32px rgba(102,126,234,0.15);
+      padding: 40px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .admin-spinner {
+      margin-bottom: 16px;
+    }
+
+    .admin-loading-text {
+      font-size: 1.2rem;
+      color: #667eea;
+      font-weight: 600;
+    }
+
     .alert {
       border-radius: 8px;
       margin-bottom: 20px;
     }
 
-    .error-container {
-      display: inline-flex;
-      flex-wrap: nowrap;
-      gap: 0;
-      align-items: center;
-      white-space: nowrap;
-    }
 
-    .error-container .text-danger.small:not(:last-child)::after {
-      content: ", ";
-      color: #dc3545;
-      margin-right: 4px;
-    }
 
     .text-danger.small {
       font-size: 0.75rem;
       margin-top: 2px;
       display: inline;
+    }
+
+    .label-validation-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      margin-bottom: 8px;
+      gap: 10px;
+    }
+
+    .label-validation-row .form-label {
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+
+    .validation-message-container {
+      flex: 1;
+      min-height: 20px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+
+    .validation-message-container .text-danger.small,
+    .validation-message-container .client-validation-feedback {
+      font-size: 0.875em;
+      margin: 0;
+      line-height: 1.2;
+      text-align: left;
+    }
+
+    .client-validation-feedback {
+      animation: none !important;
+    }
+
+    .form-control.is-invalid {
+      border-color: #ced4da !important;
+      background-image: none !important;
+      box-shadow: none !important;
+    }
+
+    .form-control.is-valid {
+      border-color: #28a745;
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M6.97 11.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06L7.5 9.44 5.53 7.47a.75.75 0 0 0-1.06 1.06l2.5 2.5z' fill='%2328a745'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px 16px;
+    }
+
+    .form-control.is-valid:focus {
+      border-color: #28a745;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    textarea.form-control.is-invalid {
+      border-color: #ced4da !important;
+      background-image: none !important;
+      box-shadow: none !important;
+    }
+
+    textarea.form-control.is-valid {
+      border-color: #28a745;
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M6.97 11.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06L7.5 9.44 5.53 7.47a.75.75 0 0 0-1.06 1.06l2.5 2.5z' fill='%2328a745'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px top 12px;
+      background-size: 16px 16px;
+    }
+
+    textarea.form-control.is-valid:focus {
+      border-color: #28a745;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    @media (max-width: 768px) {
+      .label-validation-row {
+        flex-direction: column;
+        gap: 5px;
+      }
     }
 
 
@@ -258,12 +363,13 @@
                 <!-- Tên nhà cung cấp -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <div class="d-flex align-items-center mb-1">
-                      <label class="form-label me-2 mb-0">
+                    <div class="label-validation-row">
+                      <label class="form-label">
                         Tên nhà cung cấp <span class="required">*</span>
                       </label>
-                      <div th:if="${#fields.hasErrors('suplierName')}" class="error-container">
-                        <span th:each="err, stat : ${#fields.errors('suplierName')}" th:text="${err}" class="text-danger small"></span>
+                      <div class="validation-message-container">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('suplierName')}"
+                             th:errors="*{suplierName}"></div>
                       </div>
                     </div>
                     <input
@@ -279,12 +385,13 @@
                 <!-- Email -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <div class="d-flex align-items-center mb-1">
-                      <label class="form-label me-2 mb-0">
+                    <div class="label-validation-row">
+                      <label class="form-label">
                         Email <span class="required">*</span>
                       </label>
-                      <div th:if="${#fields.hasErrors('email')}" class="error-container">
-                        <span th:each="err, stat : ${#fields.errors('email')}" th:text="${err}" class="text-danger small"></span>
+                      <div class="validation-message-container">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}"></div>
                       </div>
                     </div>
                     <input
@@ -300,12 +407,13 @@
                 <!-- Số điện thoại -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <div class="d-flex align-items-center mb-1">
-                      <label class="form-label me-2 mb-0">
+                    <div class="label-validation-row">
+                      <label class="form-label">
                         Số điện thoại <span class="required">*</span>
                       </label>
-                      <div th:if="${#fields.hasErrors('phoneNumber')}" class="error-container">
-                        <span th:each="err, stat : ${#fields.errors('phoneNumber')}" th:text="${err}" class="text-danger small"></span>
+                      <div class="validation-message-container">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('phoneNumber')}"
+                             th:errors="*{phoneNumber}"></div>
                       </div>
                     </div>
                     <input
@@ -321,12 +429,13 @@
                 <!-- Địa chỉ -->
                 <div class="col-md-6">
                   <div class="form-group">
-                    <div class="d-flex align-items-center mb-1">
-                      <label class="form-label me-2 mb-0">
+                    <div class="label-validation-row">
+                      <label class="form-label">
                         Địa chỉ <span class="required">*</span>
                       </label>
-                      <div th:if="${#fields.hasErrors('address')}" class="error-container">
-                        <span th:each="err, stat : ${#fields.errors('address')}" th:text="${err}" class="text-danger small"></span>
+                      <div class="validation-message-container">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('address')}"
+                             th:errors="*{address}"></div>
                       </div>
                     </div>
                     <textarea
@@ -559,14 +668,34 @@
   let emailValidationTimeout;
   let phoneValidationTimeout;
   let supplierNameValidationTimeout;
+  let addressValidationTimeout;
+
+  // Track which fields have been touched
+  const touchedFields = {
+    suplierName: false,
+    email: false,
+    phoneNumber: false,
+    address: false
+  };
 
   // Validate email format
-  function validateEmailFormat() {
+  function validateEmailFormat(forceValidateEmpty = false) {
     const emailInput = document.querySelector('input[name="email"]');
     const emailValue = emailInput.value.trim();
     
     // Remove existing validation message
     removeValidationMessage(emailInput);
+    
+    // Mark as touched when user starts typing
+    if (emailValue.length > 0) {
+      touchedFields.email = true;
+    }
+    
+    // Check if field is required and empty (only if touched or forced)
+    if (emailValue.length === 0 && (touchedFields.email || forceValidateEmpty)) {
+      showValidationError(emailInput, 'Email không được để trống');
+      return false;
+    }
     
     if (emailValue.length > 0) {
       // Check if email has valid format
@@ -608,12 +737,23 @@
   }
 
   // Validate phone number format
-  function validatePhoneNumberFormat() {
+  function validatePhoneNumberFormat(forceValidateEmpty = false) {
     const phoneInput = document.querySelector('input[name="phoneNumber"]');
     const phoneValue = phoneInput.value.trim();
     
     // Remove existing validation message
     removeValidationMessage(phoneInput);
+    
+    // Mark as touched when user starts typing
+    if (phoneValue.length > 0) {
+      touchedFields.phoneNumber = true;
+    }
+    
+    // Check if field is required and empty (only if touched or forced)
+    if (phoneValue.length === 0 && (touchedFields.phoneNumber || forceValidateEmpty)) {
+      showValidationError(phoneInput, 'Số điện thoại không được để trống');
+      return false;
+    }
     
     if (phoneValue.length > 0) {
       // Check if phone number contains only digits
@@ -661,12 +801,23 @@
   }
 
   // Validate supplier name format
-  function validateSupplierNameFormat() {
+  function validateSupplierNameFormat(forceValidateEmpty = false) {
     const nameInput = document.querySelector('input[name="suplierName"]');
     const nameValue = nameInput.value.trim();
     
     // Remove existing validation message
     removeValidationMessage(nameInput);
+    
+    // Mark as touched when user starts typing
+    if (nameValue.length > 0) {
+      touchedFields.suplierName = true;
+    }
+    
+    // Check if field is required and empty (only if touched or forced)
+    if (nameValue.length === 0 && (touchedFields.suplierName || forceValidateEmpty)) {
+      showValidationError(nameInput, 'Tên nhà cung cấp không được để trống');
+      return false;
+    }
     
     if (nameValue.length > 0) {
       // Check minimum length
@@ -707,6 +858,36 @@
     }
   }
 
+  // Validate address format
+  function validateAddressFormat(forceValidateEmpty = false) {
+    const addressInput = document.querySelector('textarea[name="address"]');
+    const addressValue = addressInput.value.trim();
+    
+    // Remove existing validation message
+    removeValidationMessage(addressInput);
+    
+    // Mark as touched when user starts typing
+    if (addressValue.length > 0) {
+      touchedFields.address = true;
+    }
+    
+    // Check if field is required and empty (only if touched or forced)
+    if (addressValue.length === 0 && (touchedFields.address || forceValidateEmpty)) {
+      showValidationError(addressInput, 'Địa chỉ không được để trống');
+      return false;
+    }
+    
+    if (addressValue.length > 0) {
+      // Check minimum length
+      if (addressValue.length < 5) {
+        showValidationError(addressInput, 'Địa chỉ phải có ít nhất 5 ký tự');
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
   // Helper function to validate email format
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -726,38 +907,54 @@
     return allowedTypes.includes(file.type.toLowerCase());
   }
 
-  // Show validation error
+  // Show validation error (updated for new layout)
   function showValidationError(inputElement, message) {
-    // Find the label container
+    inputElement.classList.add('is-invalid');
+    inputElement.classList.remove('is-valid');
+    
+    // Find the validation message container
     const formGroup = inputElement.closest('.form-group');
-    const labelContainer = formGroup.querySelector('.d-flex.align-items-center');
+    const container = formGroup.querySelector('.label-validation-row .validation-message-container');
     
-    // Remove existing client validation error
-    let existingError = labelContainer.querySelector('.client-validation-error');
-    if (existingError) {
-      existingError.remove();
+    if (container) {
+      let feedback = container.querySelector('.client-validation-feedback');
+      if (!feedback) {
+        feedback = document.createElement('div');
+        feedback.classList.add('client-validation-feedback', 'text-danger');
+        container.appendChild(feedback);
+      }
+      feedback.textContent = message;
+      feedback.style.display = 'block';
     }
-    
-    // Create new error container
-    const errorContainer = document.createElement('div');
-    errorContainer.classList.add('client-validation-error', 'error-container');
-    
-    const errorSpan = document.createElement('span');
-    errorSpan.classList.add('text-danger', 'small');
-    errorSpan.textContent = message;
-    
-    errorContainer.appendChild(errorSpan);
-    labelContainer.appendChild(errorContainer);
   }
 
-  // Remove validation message
+  // Remove validation message (updated for new layout)
   function removeValidationMessage(inputElement) {
+    inputElement.classList.remove('is-invalid');
+    
     const formGroup = inputElement.closest('.form-group');
-    const labelContainer = formGroup.querySelector('.d-flex.align-items-center');
-    const clientError = labelContainer.querySelector('.client-validation-error');
-    if (clientError) {
-      clientError.remove();
+    const container = formGroup.querySelector('.label-validation-row .validation-message-container');
+    
+    if (container) {
+      const feedback = container.querySelector('.client-validation-feedback');
+      if (feedback) {
+        feedback.style.display = 'none';
+        feedback.textContent = '';
+      }
     }
+  }
+
+  // Show success state
+  function showValidationSuccess(inputElement) {
+    inputElement.classList.remove('is-invalid');
+    inputElement.classList.add('is-valid');
+    removeValidationMessage(inputElement);
+  }
+
+  // Clear all validation states
+  function clearValidationState(inputElement) {
+    inputElement.classList.remove('is-invalid', 'is-valid');
+    removeValidationMessage(inputElement);
   }
 
   // Attach event listeners
@@ -765,30 +962,92 @@
     const nameInput = document.querySelector('input[name="suplierName"]');
     const emailInput = document.querySelector('input[name="email"]');
     const phoneInput = document.querySelector('input[name="phoneNumber"]');
+    const addressInput = document.querySelector('textarea[name="address"]');
     const form = document.querySelector('form');
     
     if (nameInput) {
-      nameInput.addEventListener('input', validateSupplierNameFormat);
-      nameInput.addEventListener('blur', validateSupplierName);
+      nameInput.addEventListener('input', function() {
+        // Clear validation immediately when user starts typing
+        removeValidationMessage(nameInput);
+        clearTimeout(supplierNameValidationTimeout);
+        supplierNameValidationTimeout = setTimeout(validateSupplierNameFormat, 300);
+      });
+      nameInput.addEventListener('blur', function() {
+        touchedFields.suplierName = true;
+        validateSupplierName();
+      });
     }
     
     if (emailInput) {
-      emailInput.addEventListener('input', validateEmailFormat);
-      emailInput.addEventListener('blur', validateEmail);
+      emailInput.addEventListener('input', function() {
+        // Clear validation immediately when user starts typing
+        removeValidationMessage(emailInput);
+        clearTimeout(emailValidationTimeout);
+        emailValidationTimeout = setTimeout(validateEmailFormat, 300);
+      });
+      emailInput.addEventListener('blur', function() {
+        touchedFields.email = true;
+        validateEmail();
+      });
     }
     
     if (phoneInput) {
-      phoneInput.addEventListener('input', validatePhoneNumberFormat);
-      phoneInput.addEventListener('blur', validatePhoneNumber);
+      phoneInput.addEventListener('input', function() {
+        // Clear validation immediately when user starts typing
+        removeValidationMessage(phoneInput);
+        clearTimeout(phoneValidationTimeout);
+        phoneValidationTimeout = setTimeout(validatePhoneNumberFormat, 300);
+      });
+      phoneInput.addEventListener('blur', function() {
+        touchedFields.phoneNumber = true;
+        validatePhoneNumber();
+      });
+    }
+    
+    if (addressInput) {
+      addressInput.addEventListener('input', function() {
+        // Clear validation immediately when user starts typing
+        removeValidationMessage(addressInput);
+        clearTimeout(addressValidationTimeout);
+        addressValidationTimeout = setTimeout(validateAddressFormat, 300);
+      });
+      addressInput.addEventListener('blur', function() {
+        touchedFields.address = true;
+        validateAddressFormat(true);
+      });
     }
     
     // Form submission validation
     if (form) {
       form.addEventListener('submit', function(e) {
-        const hasClientErrors = document.querySelectorAll('.client-validation-error').length > 0;
+        // Validate all fields before submitting (force validation even if empty)
+        let isValid = true;
+        
+        // Validate supplier name
+        if (!validateSupplierNameFormat(true)) {
+          isValid = false;
+        }
+        
+        // Validate email
+        if (!validateEmailFormat(true)) {
+          isValid = false;
+        }
+        
+        // Validate phone
+        if (!validatePhoneNumberFormat(true)) {
+          isValid = false;
+        }
+        
+        // Validate address
+        if (!validateAddressFormat(true)) {
+          isValid = false;
+        }
+        
+        // Check for client-side validation errors
+        const hasClientErrors = document.querySelectorAll('.client-validation-feedback[style*="block"]').length > 0;
         const alertDiv = document.getElementById('clientValidationAlert');
         
-        if (hasClientErrors) {
+        if (!isValid || hasClientErrors) {
           e.preventDefault();
           // Show error alert
           alertDiv.style.display = 'block';
@@ -801,12 +1060,15 @@
         } else {
           // Hide alert if no errors
           alertDiv.style.display = 'none';
+          // Show loading overlay
+          document.getElementById('loading-overlay').style.display = 'flex';
         }
       });
     }
   });
 </script>
 
+<!-- Loading Overlay -->
 <div class="admin-loading-overlay" id="loading-overlay">
   <div class="admin-loading-box">
     <div class="admin-spinner">
@@ -815,15 +1077,6 @@
     <div class="admin-loading-text">Đang xử lý, vui lòng chờ...</div>
   </div>
 </div>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var form = document.querySelector('form');
-    if(form) {
-      form.addEventListener('submit', function() {
-        document.getElementById('loading-overlay').style.display = 'flex';
-      });
-    }
-  });
-</script>
+
 </body>
 </html>
