@@ -94,25 +94,7 @@
             margin-bottom: 20px;
         }
 
-        /* Loading state for input fields */
-        .form-control.loading {
-            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M8 3a5 5 0 0 0 0 10v-2a3 3 0 0 1 0-6V3z' fill='%23666'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 16px 16px;
-            animation: spin 1s linear infinite;
-        }
 
-        @keyframes spin {
-            0% { 
-                background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M8 3a5 5 0 0 0 0 10v-2a3 3 0 0 1 0-6V3z' fill='%23666'/%3E%3C/svg%3E");
-                transform: rotate(0deg);
-            }
-            100% { 
-                background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M8 3a5 5 0 0 0 0 10v-2a3 3 0 0 1 0-6V3z' fill='%23666'/%3E%3C/svg%3E");
-                transform: rotate(360deg);
-            }
-        }
 
         /* Success state for validated fields */
         .form-control.is-valid {
@@ -393,6 +375,10 @@
   let phoneValidationTimeout;
   let fullNameValidationTimeout;
   
+  // AbortController for preventing multiple simultaneous requests
+  let emailAbortController = null;
+  let phoneAbortController = null;
+  
   // OTP workflow variables
   let emailVerified = false;
   let lastVerifiedEmail = '';
@@ -447,24 +433,34 @@
     // Then check for duplicates if format is valid
     if (emailValue.length > 0 && isValidEmail(emailValue)) {
       clearTimeout(emailValidationTimeout);
-      emailValidationTimeout = setTimeout(() => {
-        // Show loading state
-        emailInput.classList.add('loading');
-        
-        fetch('/employees/check-email?email=' + encodeURIComponent(emailValue))
-          .then(response => response.json())
-          .then(data => {
-            emailInput.classList.remove('loading');
-            if (data.exists) {
-              showValidationError(emailInput, 'Email này đã được sử dụng trong hệ thống!');
-            }
+      
+      // Cancel previous request if still pending
+      if (emailAbortController) {
+        emailAbortController.abort();
+      }
+      
+              emailValidationTimeout = setTimeout(() => {
+          // Create new AbortController for this request
+          emailAbortController = new AbortController();
+          
+          fetch('/employees/check-email?email=' + encodeURIComponent(emailValue), {
+            signal: emailAbortController.signal
           })
-          .catch(error => {
-            emailInput.classList.remove('loading');
-            console.error('Error checking email:', error);
-            // Don't show network errors to user
-          });
-      }, 500);
+            .then(response => response.json())
+            .then(data => {
+              emailAbortController = null;
+              if (data.exists) {
+                showValidationError(emailInput, 'Email này đã được sử dụng trong hệ thống!');
+              }
+            })
+            .catch(error => {
+              emailAbortController = null;
+              if (error.name !== 'AbortError') {
+                console.error('Error checking email:', error);
+              }
+              // Don't show network errors to user
+            });
+        }, 500);
     }
   }
 
@@ -515,24 +511,34 @@
     // Then check for duplicates if format is valid
     if (phoneValue.length >= 10 && phoneValue.length <= 11 && /^\d+$/.test(phoneValue)) {
       clearTimeout(phoneValidationTimeout);
-      phoneValidationTimeout = setTimeout(() => {
-        // Show loading state
-        phoneInput.classList.add('loading');
-        
-        fetch('/employees/check-phone?phone=' + encodeURIComponent(phoneValue))
-          .then(response => response.json())
-          .then(data => {
-            phoneInput.classList.remove('loading');
-            if (data.exists) {
-              showValidationError(phoneInput, 'Số điện thoại này đã được sử dụng trong hệ thống!');
-            }
+      
+      // Cancel previous request if still pending
+      if (phoneAbortController) {
+        phoneAbortController.abort();
+      }
+      
+              phoneValidationTimeout = setTimeout(() => {
+          // Create new AbortController for this request
+          phoneAbortController = new AbortController();
+          
+          fetch('/employees/check-phone?phone=' + encodeURIComponent(phoneValue), {
+            signal: phoneAbortController.signal
           })
-          .catch(error => {
-            phoneInput.classList.remove('loading');
-            console.error('Error checking phone number:', error);
-            // Don't show network errors to user
-          });
-      }, 500);
+            .then(response => response.json())
+            .then(data => {
+              phoneAbortController = null;
+              if (data.exists) {
+                showValidationError(phoneInput, 'Số điện thoại này đã được sử dụng trong hệ thống!');
+              }
+            })
+            .catch(error => {
+              phoneAbortController = null;
+              if (error.name !== 'AbortError') {
+                console.error('Error checking phone number:', error);
+              }
+              // Don't show network errors to user
+            });
+        }, 500);
     }
   }
 
@@ -608,7 +614,14 @@
     inputElement.classList.add('is-invalid');
     inputElement.classList.remove('is-valid');
     
-    const container = inputElement.parentNode.querySelector('.label-validation-row .validation-message-container');
+    // Try to find container from parent node first
+    let container = inputElement.parentNode.querySelector('.label-validation-row .validation-message-container');
+    
+    // If not found, try to find from grandparent node (for input-group cases)
+    if (!container && inputElement.parentNode.parentNode) {
+      container = inputElement.parentNode.parentNode.querySelector('.label-validation-row .validation-message-container');
+    }
+    
     if (container) {
       let feedback = container.querySelector('.client-validation-feedback');
       if (!feedback) {
@@ -624,7 +637,15 @@
   // Remove validation message (improved version like sale page)
   function removeValidationMessage(inputElement) {
     inputElement.classList.remove('is-invalid');
-    const container = inputElement.parentNode.querySelector('.label-validation-row .validation-message-container');
+    
+    // Try to find container from parent node first
+    let container = inputElement.parentNode.querySelector('.label-validation-row .validation-message-container');
+    
+    // If not found, try to find from grandparent node (for input-group cases)
+    if (!container && inputElement.parentNode.parentNode) {
+      container = inputElement.parentNode.parentNode.querySelector('.label-validation-row .validation-message-container');
+    }
+    
     if (container) {
       const feedback = container.querySelector('.client-validation-feedback');
       if (feedback) {
@@ -643,7 +664,7 @@
 
   // Clear all validation states
   function clearValidationState(inputElement) {
-    inputElement.classList.remove('is-invalid', 'is-valid', 'loading');
+    inputElement.classList.remove('is-invalid', 'is-valid');
     removeValidationMessage(inputElement);
   }
 
@@ -726,6 +747,13 @@
         // Clear validation immediately when user starts typing
         removeValidationMessage(emailInput);
         clearTimeout(emailValidationTimeout);
+        
+        // Cancel any pending email check request
+        if (emailAbortController) {
+          emailAbortController.abort();
+          emailAbortController = null;
+        }
+        
         emailValidationTimeout = setTimeout(validateEmailFormat, 300);
         
         // Reset email verification when email changes
@@ -745,6 +773,13 @@
         // Clear validation immediately when user starts typing
         removeValidationMessage(phoneInput);
         clearTimeout(phoneValidationTimeout);
+        
+        // Cancel any pending phone check request
+        if (phoneAbortController) {
+          phoneAbortController.abort();
+          phoneAbortController = null;
+        }
+        
         phoneValidationTimeout = setTimeout(validatePhoneNumberFormat, 300);
       });
       phoneInput.addEventListener('blur', function() {
@@ -983,6 +1018,16 @@
     
     // Call updateVerifyButton on initial load
     updateVerifyButton();
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+      if (emailAbortController) {
+        emailAbortController.abort();
+      }
+      if (phoneAbortController) {
+        phoneAbortController.abort();
+      }
+    });
   });
 </script>
 
