@@ -83,6 +83,6 @@ public interface ISupplierRepository extends JpaRepository<Supplier, Integer> {
      * Kiểm tra tên supplier có tồn tại không (chỉ trong bảng Supplier)
      */
     @Query(value = "SELECT COUNT(*) FROM supplier " +
-            "WHERE LOWER(supplier_name) = LOWER(:supplierName)", nativeQuery = true)
+            "WHERE LOWER(suplier_name) = LOWER(:supplierName)", nativeQuery = true)
     Long countSupplierNameExistsInSystem(@Param("supplierName") String supplierName);
 }
