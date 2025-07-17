@@ -1546,7 +1546,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.exists) {
-                            showValidationError(emailInput, 'Email này đã được sử dụng bởi khách hàng khác!');
+                            showValidationError(emailInput, 'Email này đã được sử dụng trong hệ thống !');
                         }
                     })
                     .catch(error => {

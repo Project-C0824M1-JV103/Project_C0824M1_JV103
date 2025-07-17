@@ -359,7 +359,7 @@ public class SaleController extends BaseAdminController {
                 // Validate email trước khi lưu customer mới  
                 if (customer.getEmail() != null && !customer.getEmail().trim().isEmpty()) {
                     if (customerService.isEmailExists(customer.getEmail())) {
-                        throw new RuntimeException("Email này đã được sử dụng trong hệ thống (khách hàng, nhân viên hoặc nhà cung cấp khác)!");
+                        throw new RuntimeException("Email này đã được sử dụng trong hệ thống !");
                     }
                 }
                 customer = customerService.save(customer);

@@ -138,7 +138,7 @@ VALUES (1, 6, '2025-07-11 10:00:00', 15000000, "VNPAY"),
        (5, 6, '2025-07-16 09:15:00', 18000000, "VNPAY");
 
 -- Thêm dữ liệu vào bảng SaleDetails
-INSERT INTO SaleDetails (product_id, sale_id, quantity, unique_price)
+INSERT INTO Sale_Details (product_id, sale_id, quantity, unique_price)
 VALUES (1, 1, 1, 15000000),
        (2, 2, 1, 20000000),
        (3, 3, 1, 18000000),
